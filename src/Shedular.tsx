@@ -10,7 +10,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
+
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import moment from "moment";
@@ -18,7 +19,18 @@ import { ReactComponent as ArrowRight } from "../src/assets/Icons/Basic/Arrow-Ri
 import { ReactComponent as Search } from "../src/assets/Icons/Basic/Search.svg";
 
 import arLocale from "date-fns/locale/ar"; // Import the Arabic locale
+import enLocale from "date-fns/locale/en-us"; // Import the Arabic locale
+import esLocale from "date-fns/locale/es"; // Import the Arabic locale
+import deLocale from "date-fns/locale/de"; // Import the Arabic locale
+import frLocale from "date-fns/locale/fr"; // Import the Arabic locale
 
+import ja from "date-fns/locale/ja";
+
+registerLocale("ar", arLocale);
+registerLocale("en", enLocale);
+registerLocale("es", esLocale);
+registerLocale("de", deLocale);
+registerLocale("fr", frLocale);
 interface ResourceType {
   name: string;
   avatar: string;
@@ -195,12 +207,14 @@ const Shedular = () => {
   const [searchResource, setSearchResource] = useState<string>("");
   const [selectedLanguage, setSelectedLanguage] = useState("en"); // Default language is English ("en")
   const [leaveDates, setLeaveDates] = useState<string[]>([]);
-
+  const [isDarkMode, setIsDarkMode] = useState(false);
   // Handle language change
   const handleLanguageChange = (event: any) => {
     setSelectedLanguage(event.target.value);
   };
-
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
   // Pass the selected language to the getDaysData function
 
   let daysOfWeek = getDaysData(selectedDate, selectedLanguage);
@@ -220,9 +234,14 @@ const Shedular = () => {
     );
     setResourcesList((prev) => (prev = newResources));
   }, [searchResource, resourcesList]);
+  useEffect(() => {
+    const className = "dark";
+    const bodyClass = window.document.body.classList;
 
+    isDarkMode ? bodyClass.add(className) : bodyClass.remove(className);
+  }, [isDarkMode]);
   return (
-    <div>
+    <div className={isDarkMode ? "dark:text-white dark:bg-slate-900" : ""}>
       <div className="text-center mt-4">
         <p className="text-lg font-bold">Developed with ❤️ by Ahmed Djalab</p>
         <a
@@ -234,10 +253,22 @@ const Shedular = () => {
           Visit Official Site
         </a>
       </div>
+      {/* Dark mode switcher */}
+      <div className="flex items-center ml-4 mt-4">
+        <p className="text-sm font-bold">Dark Mode:</p>
+        <label className="switch ml-2">
+          <input
+            type="checkbox"
+            checked={isDarkMode}
+            onChange={toggleDarkMode}
+          />
+          <span className="slider round"></span>
+        </label>
+      </div>
       <select
         value={selectedLanguage}
         onChange={handleLanguageChange}
-        className="p-2 mt-2 ml-2 rounded-md "
+        className="p-2 mt-2 ml-2 rounded-md dark:text-white dark:bg-slate-900"
       >
         <option value="en">English</option>
         <option value="ar">العربية</option>
@@ -255,7 +286,7 @@ const Shedular = () => {
         {/* for calander  */}
 
         {/* Timeline days  */}
-        <div className="flex overflow-x-auto">
+        <div className="flex overflow-x-auto dark:text-white dark:bg-slate-900">
           <Timeline
             daysOfWeek={daysOfWeek}
             resourcesLength={resourcesList.length - 1}
@@ -265,6 +296,7 @@ const Shedular = () => {
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
             isTodayinMonth={isTodayinMonth}
+            selectedLanguage={selectedLanguage}
           />
         </div>
       </div>
@@ -283,6 +315,7 @@ interface TimelineProps {
   selectedDate: any;
   setSelectedDate: any;
   isTodayinMonth: any;
+  selectedLanguage?: string;
 }
 const Timeline: React.FC<TimelineProps> = ({
   daysOfWeek,
@@ -293,6 +326,7 @@ const Timeline: React.FC<TimelineProps> = ({
   selectedDate,
   setSelectedDate,
   isTodayinMonth,
+  selectedLanguage,
 }) => {
   const myEvents = React.useMemo(() => {
     return [
@@ -465,7 +499,7 @@ const Timeline: React.FC<TimelineProps> = ({
 			 bg-red  border-r-2 border-[#dbe5ec]"
       >
         <div ref={resourcesRef} className=" w-full overflow-y-scroll">
-          <div className="flex items-center flex-col justify-between bg-white  sticky top-0 ">
+          <div className="flex items-center flex-col justify-between bg-white  sticky top-0 dark:text-white dark:bg-slate-900">
             <div className="flex w-full px-8 justify-between">
               <div>
                 <p>Emoloyess </p>
@@ -489,14 +523,14 @@ const Timeline: React.FC<TimelineProps> = ({
               key={"whitespace"}
               className="items-center border-b
 							  flex h-[52px] pl-4 w-full
-							 border-[#dbe5ec]  "
+							 border-[#dbe5ec]   "
             >
               <Search
                 className={`text-heading 
-                cursor-pointer -rotate-180 rounded-md `}
+                cursor-pointer -rotate-180 rounded-mddark:text-white dark:bg-slate-900 `}
               />
               <input
-                className="outline-none focus:ring-0 hover:ring-0 text-md"
+                className="outline-none focus:ring-0 hover:ring-0 text-md dark:text-white dark:bg-slate-900"
                 value={searchResource}
                 onChange={(e) => setSearchResource(e.target.value)}
               />
@@ -512,7 +546,10 @@ const Timeline: React.FC<TimelineProps> = ({
 							  flex h-[52px] pl-4
 							 border-[#dbe5ec]"
               >
-                <a href="#" className="inline-flex p-0 text-black bg-none">
+                <a
+                  href="#"
+                  className="inline-flex p-0 text-black bg-none dark:text-white dark:bg-slate-900"
+                >
                   <img
                     src={avatar}
                     alt={name}
@@ -533,10 +570,10 @@ const Timeline: React.FC<TimelineProps> = ({
         {/* //!header */}
         <div
           className="flex   z-13 min-h-[50px]
-				 pl-4  items-center gap-2 w-[100%] bg-[#F4F7F9] 
+				 pl-4  items-center gap-2 w-[100%] bg-[#F4F7F9] dark:text-white dark:bg-slate-900
 				"
         >
-          <div className="flex items-center gap-2   ">
+          <div className="flex items-center gap-2   dark:text-white dark:bg-slate-900">
             <button
               className="flex items-center justify-center cursor-pointer "
               onClick={decreaseMonth}
@@ -559,6 +596,7 @@ const Timeline: React.FC<TimelineProps> = ({
           <DataAndMonthPicker
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
+            selectedLanguage={selectedLanguage}
           />
 
           {!isTodayinMonth && (
@@ -571,7 +609,7 @@ const Timeline: React.FC<TimelineProps> = ({
           )}
         </div>
         <div
-          className="grid  w-full h-full relative "
+          className="grid  w-full h-full relative dark:text-white dark:bg-slate-900"
           style={{
             gridTemplateColumns: `repeat(${daysOfWeek.length}, minmax(100px, 1fr))`,
             gridTemplateRows: `repeat(${resourcesLength}, 52px)`,
@@ -586,7 +624,7 @@ const Timeline: React.FC<TimelineProps> = ({
                   className=" flex flex-col 
             items-center justify-center  border-b
              border-gray-300  p-2 px-2  sticky  bg-[#F4F7F9]
-              top-0
+              top-0 dark:text-white dark:bg-slate-900
              "
                   style={{
                     gridArea: `1 / ${day} / span 1 / span 1`,
@@ -687,8 +725,8 @@ const Timeline: React.FC<TimelineProps> = ({
                       key={cellId}
                       style={{
                         backgroundImage: weekendDays.includes(dayOfWeek)
-                          ? "linear-gradient(#dbe5ec 1px,#f4f7f9 0)"
-                          : "linear-gradient(#dbe5ec 1px,transparent 0)",
+                          ? "linear-gradient(#dbe5ec 1px,#f4f7f9 0) "
+                          : "linear-gradient(#dbe5ec 1px,transparent 0) ",
                         backgroundPosition: "-1px -1px",
                         backgroundSize: " 52px 52px",
                         borderBottom: "1px solid #dbe5ec",
@@ -743,13 +781,15 @@ function getDaysData(date: Date, language: string) {
 interface IDateAndMonthPicker {
   selectedDate: any;
   setSelectedDate: any;
+  selectedLanguage?: string;
 }
 const DataAndMonthPicker = ({
   selectedDate,
   setSelectedDate,
+  selectedLanguage,
 }: IDateAndMonthPicker) => {
   const formatDate = (date: any) => {
-    return date.toLocaleString("default", { month: "long" });
+    return date.toLocaleString(selectedLanguage ?? "en", { month: "long" });
   };
   const CustomInput = ({ value, onClick }: any) => (
     <p onClick={onClick}>{value}</p>
@@ -757,6 +797,8 @@ const DataAndMonthPicker = ({
 
   return (
     <DatePicker
+      locale={selectedLanguage ?? "en"}
+      className="dark:text-white dark:bg-slate-900"
       selected={selectedDate}
       onChange={(date) => setSelectedDate(date)}
       showMonthYearPicker
