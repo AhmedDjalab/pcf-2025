@@ -19,7 +19,7 @@ import { ReactComponent as ArrowRight } from "../src/assets/Icons/Basic/Arrow-Ri
 import { ReactComponent as Search } from "../src/assets/Icons/Basic/Search.svg";
 
 import arLocale from "date-fns/locale/ar"; // Import the Arabic locale
-import enLocale from "date-fns/locale/en-us"; // Import the Arabic locale
+import enLocale from "date-fns/locale/en-US"; // Import the Arabic locale
 import esLocale from "date-fns/locale/es"; // Import the Arabic locale
 import deLocale from "date-fns/locale/de"; // Import the Arabic locale
 import frLocale from "date-fns/locale/fr"; // Import the Arabic locale
