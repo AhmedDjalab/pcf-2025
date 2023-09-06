@@ -1,0 +1,149 @@
+// src/components/ConstructionGraph.js
+//@ts-nocheck
+
+import React, { useEffect, useRef } from "react";
+import * as d3 from "d3";
+
+// src/types.ts
+export interface ActivityData {
+  ID: string;
+  ActivityName: string;
+  StartDate: string;
+  FinishDate: string;
+  StartChainage: number;
+  FinishChainage: number;
+  Shape: string; // Shape type (line, rectangle, circle, triangle, etc.)
+}
+const ConstructionGraph = ({ data }) => {
+  const svgRef = useRef();
+  const legendRef = useRef();
+  useEffect(() => {
+    const svg = d3.select(svgRef.current);
+    const legend = d3.select(legendRef.current);
+
+    const margin = { top: 40, right: 30, bottom: 50, left: 150 };
+    const width = 1200 - margin.left - margin.right;
+    const height = 800 - margin.top - margin.bottom;
+
+    const currentDate = new Date();
+    const twoYearsLater = new Date(currentDate);
+    twoYearsLater.setFullYear(currentDate.getFullYear() + 2);
+
+    const xScale = d3
+      .scaleLinear()
+      .domain([10000, 20000])
+      .range([margin.left, width]);
+
+    const yScale = d3
+      .scaleTime()
+      .domain([currentDate, twoYearsLater])
+      .range([margin.top, height]);
+
+    const g = svg
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+    const monthGuidelines = d3.timeMonths(currentDate, twoYearsLater);
+    g.selectAll(".month-guideline")
+      .data(monthGuidelines)
+      .enter()
+      .append("line")
+      .attr("class", "month-guideline")
+      .attr("x1", (d) => xScale(10000)) // Start the line at the left edge
+      .attr("x2", (d) => xScale(20000)) // Extend it to the right edge
+      .attr("y1", (d) => yScale(d))
+      .attr("y2", (d) => yScale(d))
+      .attr("stroke", "#ccc")
+      .attr("stroke-dasharray", "2,2");
+    const xAxis = d3.axisBottom(xScale);
+    g.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", `translate(0, ${height})`)
+      .call(xAxis)
+      .selectAll("text")
+      .style("text-anchor", "middle")
+      .attr("dy", "1em");
+
+    const yAxis = d3.axisLeft(yScale).ticks(d3.timeMonth.every(1));
+    g.append("g")
+      .attr("class", "y-axis")
+      .call(yAxis)
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-0.5em")
+      .text((d) => d3.timeFormat("%a %m/%d/%Y")(d));
+
+    g.selectAll(".activity-rectangle")
+      .data(data)
+      .enter()
+      .append((d) => {
+        if (d.Shape === "line") {
+          return document.createElementNS("http://www.w3.org/2000/svg", "line");
+        } else if (d.Shape === "rect") {
+          return document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        } else if (d.Shape === "triangle") {
+          return document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "polygon"
+          );
+        }
+        return document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      })
+
+      .attr("class", "activity-rectangle")
+      .attr("fill", (d) => d.Color)
+      .attr("r", 5)
+      .attr("stroke", "black")
+      .each(function (d) {
+        const shape = d3.select(this);
+        if (d.Shape === "line") {
+          shape
+            .attr("x1", (d) => xScale(d.StartChainage))
+            .attr("x2", (d) => xScale(d.FinishChainage))
+            .attr("y1", (d) => yScale(new Date(d.StartDate)))
+            .attr("y2", (d) => yScale(new Date(d.FinishDate)));
+        } else if (d.Shape === "rect") {
+          shape
+            .attr("x", (d) => xScale(d.StartChainage))
+            .attr("y", (d) => yScale(new Date(d.StartDate)))
+            .attr(
+              "width",
+              (d) => xScale(d.FinishChainage) - xScale(d.StartChainage)
+            )
+            .attr(
+              "height",
+              (d) =>
+                yScale(new Date(d.FinishDate)) - yScale(new Date(d.StartDate))
+            );
+        } else if (d.Shape === "circle") {
+          shape
+            .attr("cx", (d) => xScale(d.StartChainage))
+            .attr("cy", (d) => yScale(new Date(d.StartDate)))
+            .attr("r", 5);
+        } else if (d.Shape === "triangle") {
+          // Define the points for the triangle (adjust as needed)
+          const trianglePoints = `${xScale(d.StartChainage)},${yScale(
+            new Date(d.StartDate)
+          )}
+                                ${xScale(d.FinishChainage)},${yScale(
+            new Date(d.FinishDate)
+          )}
+                                ${xScale(d.StartChainage)},${yScale(
+            new Date(d.FinishDate)
+          )}`;
+
+          shape.attr("points", trianglePoints);
+        }
+      });
+  }, [data]);
+
+  return (
+    <div>
+      <svg width={1200} height={800}>
+        <g ref={svgRef}></g>
+      </svg>
+      <div ref={legendRef} className="legend flex "></div>
+    </div>
+  );
+};
+
+export default ConstructionGraph;

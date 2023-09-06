@@ -7,6 +7,8 @@ import {
 import React from "react";
 import "@mobiscroll/react/dist/css/mobiscroll.min.css";
 import Shedular from "./Shedular";
+import CustomChart, { ActivityData } from "./components/TimeChart";
+import ConstructionGraph from "./components/TimeChart";
 
 const App: React.FC = () => {
   const inv = [
@@ -95,7 +97,51 @@ const App: React.FC = () => {
     ];
   }, []);
 
-  return <Shedular />;
+  const data: ActivityData[] = [
+    {
+      ID: "ID1",
+      ActivityName: "Activity 1",
+      StartDate: "05/01/2024",
+      FinishDate: "05/01/2024",
+      StartChainage: 10200,
+      FinishChainage: 12200,
+      Shape: "line",
+    },
+    {
+      ID: "ID2",
+      ActivityName: "Activity 2",
+      StartDate: "05/01/2024",
+      FinishDate: "08/01/2024",
+      StartChainage: 12200,
+      FinishChainage: 16600,
+      Shape: "rect",
+    },
+    {
+      ID: "ID3",
+      ActivityName: "Activity 3",
+      StartDate: "08/01/2024",
+      FinishDate: "10/01/2024",
+      StartChainage: 16600,
+      FinishChainage: 17600,
+      Shape: "line",
+    },
+    {
+      ID: "ID4",
+      ActivityName: "Activity 4",
+      StartDate: "10/01/2024",
+      FinishDate: "12/01/2024",
+      StartChainage: 17600,
+      FinishChainage: 19600,
+      Shape: "triangle",
+    },
+    // Add more activities with different shapes
+  ];
+
+  return (
+    <div className="App">
+      <ConstructionGraph data={data} />
+    </div>
+  );
 };
 export default App;
 
