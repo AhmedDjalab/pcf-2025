@@ -17,13 +17,19 @@ export interface ActivityData {
 const ConstructionGraph = ({ data }) => {
   const svgRef = useRef();
   const legendRef = useRef();
+  const tableRef = useRef();
+
   useEffect(() => {
+    const table = d3.select(tableRef.current);
     const svg = d3.select(svgRef.current);
     const legend = d3.select(legendRef.current);
 
     const margin = { top: 40, right: 30, bottom: 50, left: 150 };
-    const width = 1200 - margin.left - margin.right;
+    const width = 1000 - margin.left - margin.right;
     const height = 800 - margin.top - margin.bottom;
+    // Create a table to display data
+
+    // Create arrows pointing to the corresponding shapes in the graph
 
     const currentDate = new Date();
     const twoYearsLater = new Date(currentDate);
@@ -133,15 +139,76 @@ const ConstructionGraph = ({ data }) => {
 
           shape.attr("points", trianglePoints);
         }
+        shape.attr("id", `shape-${d.ID}`);
       });
+
+    data.forEach((d) => {
+      const shape = svg.select(`#shape-${d.ID}`); // Select the shape by ID
+      const row = table.select(`#${d.ID}`); // Select the table row by ID
+      if (shape.size() === 0 || row.size() === 0) {
+        console.error(`Shape or row not found for ID: ${d.ID}`);
+        return;
+      }
+      // Get the middle coordinates of the table row
+      const rowOffset = row.node().getBoundingClientRect();
+      const rowX = rowOffset.left + rowOffset.width / 2 + window.scrollX;
+      const rowY = rowOffset.top + rowOffset.height / 2 + window.scrollY;
+
+      // Get the middle coordinates of the shape
+      const shapeOffset = shape.node().getBoundingClientRect();
+      const shapeX = shapeOffset.left + shapeOffset.width / 2 + window.scrollX;
+      const shapeY = shapeOffset.top + shapeOffset.height / 2 + window.scrollY;
+      console.log(
+        "🚀 ~ file: TimeChart.tsx:154 ~ data.forEach ~ shapeX:",
+        shapeX,
+        shapeY,
+        rowX,
+        rowY
+      );
+
+      svg
+        .append("line")
+        .attr("x1", rowX)
+        .attr("y1", rowY)
+        .attr("x2", shapeX)
+        .attr("y2", shapeY)
+        .attr("stroke", "blue") // Set the line color to blue
+        .attr("stroke-dasharray", "5,5") // Set the line to a dashed pattern (adjust the values for the pattern)
+        .attr("marker-end", "url(#arrow-marker)");
+    });
   }, [data]);
 
   return (
-    <div>
-      <svg width={1200} height={800}>
-        <g ref={svgRef}></g>
-      </svg>
-      <div ref={legendRef} className="legend flex "></div>
+    <div className="flex">
+      <div className="graph-container">
+        <svg width={1000} height={800}>
+          <g ref={svgRef}></g>
+        </svg>
+      </div>
+      <div className="table-container mt-40" ref={tableRef}>
+        <table className="border-collapse w-full">
+          <thead className="bg-gray-300">
+            <tr>
+              <th className="px-4 py-2">Activity Name</th>
+              <th className="px-4 py-2">Start Date</th>
+              <th className="px-4 py-2">Finish Date</th>
+              <th className="px-4 py-2">Start Chainage</th>
+              <th className="px-4 py-2">Finish Chainage</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((d) => (
+              <tr key={d.ID} className="border-t" id={d.ID}>
+                <td className="px-4 py-2">{d.ActivityName}</td>
+                <td className="px-4 py-2">{d.StartDate}</td>
+                <td className="px-4 py-2">{d.FinishDate}</td>
+                <td className="px-4 py-2">{d.StartChainage}</td>
+                <td className="px-4 py-2">{d.FinishChainage}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
