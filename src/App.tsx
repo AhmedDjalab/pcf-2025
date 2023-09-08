@@ -9,6 +9,9 @@ import "@mobiscroll/react/dist/css/mobiscroll.min.css";
 import Shedular from "./Shedular";
 import CustomChart, { ActivityData } from "./components/TimeChart";
 import ConstructionGraph from "./components/TimeChart";
+import { DrawGraphForm } from "./components/DrawGraphForm";
+import { Provider } from "react-redux";
+import { store } from "./state";
 
 const App: React.FC = () => {
   const inv = [
@@ -138,9 +141,11 @@ const App: React.FC = () => {
   ];
 
   return (
-    <div className="App">
-      <ConstructionGraph data={data} />
-    </div>
+    <Provider store={store}>
+      <div className="App">
+        <DrawGraphForm />
+      </div>
+    </Provider>
   );
 };
 export default App;

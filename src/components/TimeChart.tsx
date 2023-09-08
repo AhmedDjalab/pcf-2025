@@ -1,9 +1,11 @@
 // src/components/ConstructionGraph.js
 //@ts-nocheck
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-
+import { DataAndMonthPicker } from "./DateAndMonthPicker";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 // src/types.ts
 export interface ActivityData {
   ID: string;
@@ -18,6 +20,15 @@ const ConstructionGraph = ({ data }) => {
   const svgRef = useRef();
   const legendRef = useRef();
   const tableRef = useRef();
+  // State to manage the selected date range
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+
+  const handleDateChange = (dates) => {
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
+  };
 
   useEffect(() => {
     const table = d3.select(tableRef.current);
@@ -49,6 +60,7 @@ const ConstructionGraph = ({ data }) => {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
     const monthGuidelines = d3.timeMonths(currentDate, twoYearsLater);
+
     g.selectAll(".month-guideline")
       .data(monthGuidelines)
       .enter()
@@ -179,35 +191,38 @@ const ConstructionGraph = ({ data }) => {
   }, [data]);
 
   return (
-    <div className="flex">
-      <div className="graph-container">
-        <svg width={1000} height={800}>
-          <g ref={svgRef}></g>
-        </svg>
-      </div>
-      <div className="table-container mt-40" ref={tableRef}>
-        <table className="border-collapse w-full">
-          <thead className="bg-gray-300">
-            <tr>
-              <th className="px-4 py-2">Activity Name</th>
-              <th className="px-4 py-2">Start Date</th>
-              <th className="px-4 py-2">Finish Date</th>
-              <th className="px-4 py-2">Start Chainage</th>
-              <th className="px-4 py-2">Finish Chainage</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((d) => (
-              <tr key={d.ID} className="border-t" id={d.ID}>
-                <td className="px-4 py-2">{d.ActivityName}</td>
-                <td className="px-4 py-2">{d.StartDate}</td>
-                <td className="px-4 py-2">{d.FinishDate}</td>
-                <td className="px-4 py-2">{d.StartChainage}</td>
-                <td className="px-4 py-2">{d.FinishChainage}</td>
+    <div className="flex flex-col">
+      <div></div>
+      <div className="flex">
+        <div className="graph-container">
+          <svg width={1000} height={800}>
+            <g ref={svgRef}></g>
+          </svg>
+        </div>
+        <div className="table-container mt-40" ref={tableRef}>
+          <table className="border-collapse w-full">
+            <thead className="bg-gray-300">
+              <tr>
+                <th className="px-4 py-2">Activity Name</th>
+                <th className="px-4 py-2">Start Date</th>
+                <th className="px-4 py-2">Finish Date</th>
+                <th className="px-4 py-2">Start Chainage</th>
+                <th className="px-4 py-2">Finish Chainage</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.map((d) => (
+                <tr key={d.ID} className="border-t" id={d.ID}>
+                  <td className="px-4 py-2">{d.ActivityName}</td>
+                  <td className="px-4 py-2">{d.StartDate}</td>
+                  <td className="px-4 py-2">{d.FinishDate}</td>
+                  <td className="px-4 py-2">{d.StartChainage}</td>
+                  <td className="px-4 py-2">{d.FinishChainage}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
