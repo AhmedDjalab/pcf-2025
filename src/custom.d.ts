@@ -22,3 +22,4 @@ declare module "chart.js" {
     };
   }
 }
+declare module "textures";

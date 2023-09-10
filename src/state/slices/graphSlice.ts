@@ -14,7 +14,7 @@ export interface ShapeType {
   backgroundTexture: string;
   color: string;
   name: string;
-  Id: string;
+  id: string;
 }
 
 export interface GraphSetting {
@@ -56,7 +56,27 @@ const GraphSlice = createSlice({
       state,
       action: PayloadAction<{ graphSettingsForm: GraphSetting }>
     ) {
-      state.settings = action.payload.graphSettingsForm;
+      const graphSettingsForm = action.payload.graphSettingsForm;
+
+      const styles = new Set<string>();
+      graphSettingsForm.graphData.forEach((data) => {
+        styles.add(data.style);
+      });
+
+      if (state.shapes.shapesData.length === 0) {
+        const uniqueStyles = Array.from(styles);
+
+        const shapes: ShapeType[] = uniqueStyles.map((style, index) => ({
+          type: "line",
+          backgroundTexture: "",
+          color: "#24303F",
+          name: style,
+          id: index.toString(),
+        }));
+        state.shapes.shapesData = shapes;
+      }
+
+      state.settings = graphSettingsForm;
     },
     updateShapesValue(
       state,
