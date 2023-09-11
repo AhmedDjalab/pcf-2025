@@ -19,8 +19,9 @@ import TexturePicker from "./TexturePicker";
 import TextureDrawing from "./TexturePicker";
 
 // Import the ShapeType interface
-
-function ShapesForm({}: MultiStepFormProps) {
+const shapeTypes = ["line", "rect", "triangle"];
+type LineType = "line" | "rect" | "triangle";
+function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
   const graphSettings = useSelector((state: RootState) => state.graph.shapes);
   const dispatch = useDispatch();
 
@@ -35,6 +36,32 @@ function ShapesForm({}: MultiStepFormProps) {
       {
         Header: "Type",
         accessor: "type",
+        Cell: ({ row }) => {
+          const handleTypeChange = (newType: LineType) => {
+            // Update the underlying data (shapesList) with the new type
+            let clonedShapes = [...shapesList];
+            const updatedShapesList = clonedShapes.map((shape) => {
+              if (shape.id === row.id) {
+                return { ...shape, type: newType };
+              }
+              return shape;
+            });
+            setShapesList(updatedShapesList);
+          };
+
+          return (
+            <select
+              value={row.values["type"]}
+              onChange={(e) => handleTypeChange(e.target.value as LineType)}
+            >
+              {shapeTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          );
+        },
       },
       {
         Header: "Background Texture",
@@ -63,9 +90,13 @@ function ShapesForm({}: MultiStepFormProps) {
         Header: "Color",
         accessor: "color",
         Cell: ({ row }) => {
-          const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
+          const [isOpen, toggle] = useState(false);
           const [currentColor, setCurrentColor] = useState(row.values["color"]);
           const handleColorChange = (newColor: string) => {
+            console.log(
+              "🚀 ~ file: ShapesForm.tsx:96 ~ handleColorChange ~ newColor:",
+              newColor
+            );
             setCurrentColor(newColor);
             setShapesList((prevShapesList) => {
               return prevShapesList.map((shape) => {
@@ -78,8 +109,10 @@ function ShapesForm({}: MultiStepFormProps) {
           };
           return (
             <PopoverColorPicker
+              isOpen={isOpen}
+              toggle={toggle}
               color={currentColor}
-              onChange={handleColorChange}
+              onChangeComplete={handleColorChange}
             />
           );
         },
@@ -125,6 +158,7 @@ function ShapesForm({}: MultiStepFormProps) {
         },
       })
     );
+    setCurrentStep(currentStep + 1);
   };
 
   // Handle changes for name input

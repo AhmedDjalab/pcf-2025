@@ -45,6 +45,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         updateGraphSettingsValue({
           graphSettingsForm: {
             ...values,
+            graphData: filteredData,
             fromDistance: parseInt(values.fromDistance),
             toDistance: parseInt(values.toDistance),
           },

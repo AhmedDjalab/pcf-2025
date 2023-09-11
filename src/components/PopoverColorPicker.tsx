@@ -2,11 +2,27 @@ import React, { useCallback, useRef, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import useClickOutside from "../hooks/useClickOutside";
 
-export const PopoverColorPicker = ({ color, onChange }: any) => {
+export const PopoverColorPicker = ({
+  color,
+  onChange,
+  isOpen,
+  toggle,
+  onChangeComplete,
+}: any) => {
+  const [currentColor, setCurrentColor] = useState(color);
   const popover = useRef<HTMLDivElement>(null);
-  const [isOpen, toggle] = useState(false);
 
-  const close = useCallback(() => toggle(false), []);
+  const close = useCallback(
+    (event: MouseEvent) => {
+      toggle(false);
+      onChangeComplete(currentColor);
+    },
+    [currentColor, onChangeComplete, toggle]
+  );
+
+  const handleChangeColor = (color: string) => {
+    setCurrentColor(color);
+  };
   useClickOutside(popover, close);
 
   return (
@@ -22,7 +38,7 @@ export const PopoverColorPicker = ({ color, onChange }: any) => {
           className="absolute z-10 shadow-[0_6px_12px_rgba(0,0,0,0.15)] rounded-[9px] left-0 top-[calc(100%_+_2px)]"
           ref={popover}
         >
-          <HexColorPicker color={color} onChange={onChange} />
+          <HexColorPicker color={color} onChange={handleChangeColor} />
         </div>
       )}
     </div>

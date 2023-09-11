@@ -10,11 +10,12 @@ export interface GraphDataType {
   style: string;
 }
 export interface ShapeType {
-  type: "line" | "rect" | "traingle";
+  type: "line" | "rect" | "triangle";
   backgroundTexture: string;
   color: string;
   name: string;
   id: string;
+  activityId: string;
 }
 
 export interface GraphSetting {
@@ -57,22 +58,31 @@ const GraphSlice = createSlice({
       action: PayloadAction<{ graphSettingsForm: GraphSetting }>
     ) {
       const graphSettingsForm = action.payload.graphSettingsForm;
-
-      const styles = new Set<string>();
+      type ShapeSet = {
+        style: string;
+        activityId: string;
+      };
+      const styles = new Set<ShapeSet>();
       graphSettingsForm.graphData.forEach((data) => {
-        styles.add(data.style);
+        styles.add({
+          style: data.style,
+          activityId: data.id,
+        });
       });
 
       if (state.shapes.shapesData.length === 0) {
         const uniqueStyles = Array.from(styles);
 
-        const shapes: ShapeType[] = uniqueStyles.map((style, index) => ({
-          type: "line",
-          backgroundTexture: "",
-          color: "#24303F",
-          name: style,
-          id: index.toString(),
-        }));
+        const shapes: ShapeType[] = uniqueStyles.map(
+          ({ style, activityId }, index) => ({
+            type: "line",
+            backgroundTexture: "",
+            color: "#24303F",
+            name: style,
+            id: index.toString(),
+            activityId: activityId,
+          })
+        );
         state.shapes.shapesData = shapes;
       }
 

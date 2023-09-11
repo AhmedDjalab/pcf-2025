@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ShapesForm from "./ShapesForm";
 import { ImportFileForm } from "./ImportFileForm";
 import Stepper from "./Stepper";
+import DrawGraphStep from "./DrawGraphStep";
 const steps = [
   {
     stepNumber: 1,
@@ -12,6 +13,11 @@ const steps = [
     stepNumber: 2,
     title: "Shapes",
     description: "Add Shapes to your graph",
+  },
+  {
+    stepNumber: 3,
+    title: "Chart",
+    description: "Draw your chart",
   },
 ];
 export interface MultiStepFormProps {
@@ -39,6 +45,7 @@ export const DrawGraphForm = ({}) => {
           setCurrentStep={setCurrentStep}
         />
       )}
+      {currentStep === 3 && <DrawGraphStep />}
     </div>
   );
 };
