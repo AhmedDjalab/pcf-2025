@@ -230,7 +230,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           />
         </label>
 
-        <div className="relative overflow-x-auto max-h-64 w-full mt-10">
+        <div className="relative   w-full mt-10">
           {graphData.length > 0 && (
             <div className="flex gap-2">
               <div className="mb-4 flex gap-2  items-center">

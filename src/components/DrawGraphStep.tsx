@@ -51,7 +51,7 @@ function DrawGraphStep() {
     const svg = d3.select(svgRef.current!);
     const tooltip = d3.select("#tooltip");
 
-    const margin = { top: 40, right: 30, bottom: 50, left: 150 };
+    const margin = { top: 40, right: 30, bottom: 100, left: 150 };
     const width = 1000 - margin.left - margin.right;
     const height = 800 - margin.top - margin.bottom;
     // Create a table to display data
