@@ -17,6 +17,7 @@ import * as d3 from "d3";
 import textures from "textures";
 import TexturePicker from "./TexturePicker";
 import TextureDrawing from "./TexturePicker";
+import texturesData from "../const/texturesArray";
 
 // Import the ShapeType interface
 const shapeTypes = ["line", "rect", "triangle"];
@@ -78,9 +79,14 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
             });
             setShapesList((prev) => (prev = updatedShapesList));
           };
+
+          let rowTexture = texturesData.find(
+            (x) => x.id === row.values["backgroundTexture"]
+          )!;
+
           return (
             <TexturePicker
-              texturetype={row.values["backgroundTexture"]}
+              texturetype={rowTexture}
               onSelectTexture={handleTextureChange}
             />
           );

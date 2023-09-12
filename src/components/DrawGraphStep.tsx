@@ -113,7 +113,9 @@ function DrawGraphStep() {
       .data(graphSettings.settings.graphData)
       .enter()
       .append((d) => {
-        let shape = shapesData.shapesData.find((x) => x.activityId == d.id)!;
+        let shape = shapesData.shapesData.find((x) =>
+          x.activityId?.includes(d.id)
+        )!;
         if (shape.type === "line") {
           return document.createElementNS("http://www.w3.org/2000/svg", "line");
         } else if (shape.type === "rect") {
@@ -131,7 +133,11 @@ function DrawGraphStep() {
 
       .each(function (d: GraphDataType) {
         const shapeInCanvas = d3.select(this);
-        let shape = shapesData.shapesData.find((x) => x.activityId == d.id)!;
+        let shape = shapesData.shapesData.find((x) =>
+          x.activityId?.includes(d.id)
+        )!;
+        console.warn("🚀 ~ file: DrawGraphStep.tsx:139 ~ shape:", shape);
+
         const textureConfig = texturesData.find(
           (x) => x.id == shape.backgroundTexture
         );

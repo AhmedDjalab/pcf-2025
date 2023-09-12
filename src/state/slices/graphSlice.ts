@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import texturesData from "../../const/texturesArray";
 
 export interface GraphDataType {
   id: string;
@@ -15,7 +16,7 @@ export interface ShapeType {
   color: string;
   name: string;
   id: string;
-  activityId: string;
+  activityId?: string[];
 }
 
 export interface GraphSetting {
@@ -62,27 +63,24 @@ const GraphSlice = createSlice({
         style: string;
         activityId: string;
       };
-      const styles = new Set<ShapeSet>();
+      const styles = new Set<string>();
       graphSettingsForm.graphData.forEach((data) => {
-        styles.add({
-          style: data.style,
-          activityId: data.id,
-        });
+        styles.add(data.style);
       });
 
       if (state.shapes.shapesData.length === 0) {
         const uniqueStyles = Array.from(styles);
 
-        const shapes: ShapeType[] = uniqueStyles.map(
-          ({ style, activityId }, index) => ({
-            type: "line",
-            backgroundTexture: "",
-            color: "#24303F",
-            name: style,
-            id: index.toString(),
-            activityId: activityId,
-          })
-        );
+        const shapes: ShapeType[] = uniqueStyles.map((style, index) => ({
+          type: "line",
+          backgroundTexture: texturesData[0].id,
+          color: "#24303F",
+          name: style,
+          id: index.toString(),
+          activityId: graphSettingsForm.graphData
+            .filter((x) => x.style === style)
+            .map((data) => data.id),
+        }));
         state.shapes.shapesData = shapes;
       }
 

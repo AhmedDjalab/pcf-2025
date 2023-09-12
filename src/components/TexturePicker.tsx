@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import useClickOutside from "../hooks/useClickOutside";
-import texturesData from "../const/texturesArray";
+import texturesData, { TextureData } from "../const/texturesArray";
 import * as d3 from "d3";
 
 export interface ITexturePickerProps {
   onSelectTexture: any;
-  texturetype: string;
+  texturetype: TextureData;
 }
 
 const TexturePicker = ({
@@ -14,9 +14,8 @@ const TexturePicker = ({
 }: ITexturePickerProps) => {
   const popover = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
-  const selectedTextureFromId =
-    texturesData.find((x) => x.id == texturetype) ?? texturesData[0];
-  const [selectedTexture, setSelectedTexture] = useState(selectedTextureFromId);
+
+  const [selectedTexture, setSelectedTexture] = useState(texturetype);
 
   const close = useCallback(() => setIsOpen(false), []);
 
