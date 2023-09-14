@@ -22,4 +22,5 @@ declare module "chart.js" {
     };
   }
 }
+declare module "uuid";
 declare module "textures";

@@ -4,8 +4,8 @@ import texturesData from "../../const/texturesArray";
 export interface GraphDataType {
   id: string;
   activityName: string;
-  startDate: Date;
-  finishDate: Date;
+  startDate: string;
+  finishDate: string;
   startChainage: number;
   finishChainage: number;
   style: string;
@@ -19,10 +19,17 @@ export interface ShapeType {
   activityId?: string[];
 }
 
+export interface TaskSlot {
+  start: number;
+  end: number;
+  name: string;
+  id: string;
+}
+
 export interface GraphSetting {
   graphData: GraphDataType[];
-  fromDate: Date;
-  toDate: Date;
+  fromDate: string;
+  toDate: string;
   fromDistance: number;
   toDistance: number;
 }
@@ -33,20 +40,22 @@ export interface ShapesSettings {
 interface GraphCreateType {
   settings: GraphSetting;
   shapes: ShapesSettings;
+  taskSlots: TaskSlot[];
   loading: boolean;
 }
 
 const initialState: GraphCreateType = {
   settings: {
     graphData: [],
-    fromDate: new Date(),
-    toDate: new Date(),
+    fromDate: new Date().toISOString(),
+    toDate: new Date().toISOString(),
     fromDistance: 0,
     toDistance: 0,
   },
   shapes: {
     shapesData: [],
   },
+  taskSlots: [],
   loading: false,
 };
 
@@ -92,6 +101,12 @@ const GraphSlice = createSlice({
     ) {
       state.shapes = action.payload.shapesForm;
     },
+    updateTaskSlotsValue(
+      state,
+      action: PayloadAction<{ taskSlots: TaskSlot[] }>
+    ) {
+      state.taskSlots = [...action.payload.taskSlots];
+    },
 
     setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
@@ -99,6 +114,7 @@ const GraphSlice = createSlice({
     resetForm(state) {
       state.settings = { ...initialState.settings };
       state.shapes = { ...initialState.shapes };
+      state.taskSlots = { ...initialState.taskSlots };
 
       state.loading = false;
     },
@@ -109,7 +125,7 @@ const GraphSlice = createSlice({
 export const {
   updateGraphSettingsValue,
   updateShapesValue,
-
+  updateTaskSlotsValue,
   setLoading,
   resetForm,
 } = GraphSlice.actions;

@@ -3,6 +3,7 @@ import ShapesForm from "./ShapesForm";
 import { ImportFileForm } from "./ImportFileForm";
 import Stepper from "./Stepper";
 import DrawGraphStep from "./DrawGraphStep";
+import TaskSlotsStep from "./TaskSlotsStep";
 const steps = [
   {
     stepNumber: 1,
@@ -16,6 +17,11 @@ const steps = [
   },
   {
     stepNumber: 3,
+    title: "Task Slots",
+    description: "divide your project to Task Slots",
+  },
+  {
+    stepNumber: 4,
     title: "Chart",
     description: "Draw your chart",
   },
@@ -45,7 +51,14 @@ export const DrawGraphForm = ({}) => {
           setCurrentStep={setCurrentStep}
         />
       )}
-      {currentStep === 3 && <DrawGraphStep />}
+      {currentStep === 3 && (
+        <TaskSlotsStep
+          currentStep={currentStep}
+          stepsLength={steps.length}
+          setCurrentStep={setCurrentStep}
+        />
+      )}
+      {currentStep === 4 && <DrawGraphStep />}
     </div>
   );
 };

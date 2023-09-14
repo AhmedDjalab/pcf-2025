@@ -45,6 +45,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         updateGraphSettingsValue({
           graphSettingsForm: {
             ...values,
+            fromDate: values.fromDate.toISOString(),
+            toDate: values.toDate.toISOString(),
             graphData: filteredData,
             fromDistance: parseInt(values.fromDistance),
             toDistance: parseInt(values.toDistance),
@@ -115,11 +117,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             .map((row: any) => {
               const startDate = moment(row[2], "MM/DD/YYYY"); // Parse Start Date
               const finishDate = moment(row[3], "MM/DD/YYYY"); // Parse Finish Date
-              console.log(
-                "🚀 ~ file: ImportFileForm.tsx:93 ~ .map ~ startDate:",
-                startDate.toDate(),
-                finishDate.toDate()
-              );
 
               if (!startDate.isValid() || !finishDate.isValid()) {
                 // Handle invalid date format here
@@ -129,8 +126,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               return {
                 id: row[0],
                 activityName: row[1],
-                startDate: startDate.toDate(), // Assign parsed Start Date
-                finishDate: finishDate.toDate(), // Assign parsed Finish Date
+                startDate: startDate.toISOString(), // Assign parsed Start Date
+                finishDate: finishDate.toISOString(), // Assign parsed Finish Date
                 startChainage: parseFloat(row[4]),
                 finishChainage: parseFloat(row[5]),
                 style: row[6],
@@ -368,10 +365,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   </th>
                   <td className="px-6 py-4">{data.activityName}</td>
                   <td className="px-6 py-4">
-                    {data.startDate.toLocaleDateString()}
+                    {new Date(data.startDate).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4">
-                    {data.finishDate.toLocaleDateString()}
+                    {new Date(data.finishDate).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4">{data.startChainage}</td>
                   <td className="px-6 py-4">{data.finishChainage}</td>
