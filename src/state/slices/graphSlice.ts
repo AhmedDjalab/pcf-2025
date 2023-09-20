@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import texturesData from "../../const/texturesArray";
+import { lineStyles } from "../../const/linesArray";
 
 export interface GraphDataType {
   id: string;
@@ -13,6 +14,7 @@ export interface GraphDataType {
 export interface ShapeType {
   type: "line" | "rect" | "triangle";
   backgroundTexture: string;
+  lineType: string;
   color: string;
   name: string;
   id: string;
@@ -32,6 +34,7 @@ export interface GraphSetting {
   toDate: string;
   fromDistance: number;
   toDistance: number;
+  timeRange: "Yearly" | "Monthly" | "Weekly";
 }
 export interface ShapesSettings {
   shapesData: ShapeType[];
@@ -51,6 +54,7 @@ const initialState: GraphCreateType = {
     toDate: new Date().toISOString(),
     fromDistance: 0,
     toDistance: 0,
+    timeRange: "Yearly",
   },
   shapes: {
     shapesData: [],
@@ -85,6 +89,7 @@ const GraphSlice = createSlice({
           backgroundTexture: texturesData[0].id,
           color: "#24303F",
           name: style,
+          lineType: lineStyles[0].id,
           id: index.toString(),
           activityId: graphSettingsForm.graphData
             .filter((x) => x.style === style)

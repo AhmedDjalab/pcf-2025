@@ -1,0 +1,119 @@
+.line {
+  width: 100%;
+  height: 2px; /* Adjust the height as needed */
+}
+
+.solid-line {
+  border-top: 2px solid black;
+}
+
+.dotted-line {
+  border-top: 2px dotted black;
+}
+
+.dashed-line {
+  border-top: 2px dashed black;
+}
+
+.double-line {
+  border-top: 2px double black;
+}
+
+.groove-line {
+  border-top: 2px groove black;
+}
+
+.ridge-line {
+  border-top: 2px ridge black;
+}
+
+.inset-line {
+  border-top: 2px inset black;
+}
+
+.outset-line {
+  border-top: 2px outset black;
+}
+
+.wave-line {
+  border-image: repeating-linear-gradient(45deg, black, transparent 20px);
+  height: 2px;
+}
+
+.zigzag-line {
+  border-image: repeating-linear-gradient(45deg, black, transparent 5px, black 10px);
+  height: 2px;
+}
+
+.arrow-line {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  background: none; /* Remove the background color */
+}
+
+.arrow-line::before,
+.arrow-line::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 2px;
+  background: black;
+  top: 0; /* Adjust the top position to center the arrows vertically */
+}
+
+.arrow-line::before {
+  left: 0;
+  transform: rotate(45deg);
+  transform-origin: 0% 50%; /* Rotate from the left side */
+}
+
+.arrow-line::after {
+  right: 0;
+  transform: rotate(-45deg);
+  transform-origin: 100% 50%; /* Rotate from the right side */
+}
+
+.arrow-both-line {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  background: black;
+}
+
+.arrow-both-line::before,
+.arrow-both-line::after {
+  content: "";
+  position: absolute;
+  border-style: solid;
+  border-width: 5px 10px 5px 0;
+  background: black;
+}
+
+.arrow-both-line::before {
+  left: 0;
+  top: -5px;
+  transform: rotate(45deg);
+}
+
+.arrow-both-line::after {
+  right: 0;
+  top: -5px;
+  transform: rotate(-45deg);
+}
+
+
+.creative-line-1 {
+  width: 100%;
+  height: 4px;
+  background-image: linear-gradient(45deg, black 25%, transparent 25%),
+    linear-gradient(-45deg, black 25%, transparent 25%);
+  background-size: 20px 20px;
+}
+
+.creative-line-2 {
+  width: 100%;
+  height: 4px;
+  background-image: radial-gradient(circle, black 25%, transparent 25%);
+  background-size: 20px 20px;
+}

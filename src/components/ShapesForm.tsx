@@ -18,6 +18,8 @@ import textures from "textures";
 import TexturePicker from "./TexturePicker";
 import TextureDrawing from "./TexturePicker";
 import texturesData from "../const/texturesArray";
+import { lineStyles } from "../const/linesArray";
+import LineStylePicker from "./LineStylePicker";
 
 // Import the ShapeType interface
 const shapeTypes = ["line", "rect", "triangle"];
@@ -25,6 +27,7 @@ type LineType = "line" | "rect" | "triangle";
 function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
   const graphSettings = useSelector((state: RootState) => state.graph.shapes);
   const dispatch = useDispatch();
+  const [rowColors, setRowColors] = useState<{ [key: string]: string }>({});
 
   // Define the table columns based on ShapeType
 
@@ -38,6 +41,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
         Header: "Type",
         accessor: "type",
         Cell: ({ row }) => {
+          console.log("🚀 ~ file: ShapesForm.tsx:44 ~ ShapesForm ~ row:", row);
           const handleTypeChange = (newType: LineType) => {
             // Update the underlying data (shapesList) with the new type
             let clonedShapes = [...shapesList];
@@ -64,6 +68,36 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
           );
         },
       },
+
+      {
+        Header: "Line Type",
+        accessor: "lineType",
+        Cell: ({ row }) => {
+          const handleTypeChange = (newType: string) => {
+            // Update the underlying data (shapesList) with the new type
+            let clonedShapes = [...shapesList];
+            const updatedShapesList = clonedShapes.map((shape) => {
+              if (shape.id === row.id) {
+                return { ...shape, lineType: newType };
+              }
+              return shape;
+            });
+            setShapesList((prev) => (prev = updatedShapesList));
+          };
+          let lineType = lineStyles.find(
+            (x) => x.id === row.values["lineType"]
+          )!;
+
+          return (
+            <LineStylePicker
+              color={"black"}
+              lineStyles={lineStyles}
+              onSelectLineStyle={handleTypeChange}
+              selectedLineStyle={lineType ?? lineStyles[0]}
+            />
+          );
+        },
+      },
       {
         Header: "Background Texture",
         accessor: "backgroundTexture",
@@ -83,9 +117,11 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
           let rowTexture = texturesData.find(
             (x) => x.id === row.values["backgroundTexture"]
           )!;
-
+          console.error("this is coors ", row.values["color"], row.id);
           return (
             <TexturePicker
+              key={row.values["id"]}
+              color={"black"}
               texturetype={rowTexture}
               onSelectTexture={handleTextureChange}
             />
@@ -184,7 +220,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
               {headerGroup.headers.map((column) => (
                 <th
                   {...column.getHeaderProps(column.getHeaderProps())}
-                  className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                  className="group text-center px-6 py-3  text-xs font-medium uppercase tracking-wider text-gray-500"
                 >
                   {column.render("Header")}
                 </th>
@@ -194,7 +230,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
         </thead>
         <tbody
           {...getTableBodyProps()}
-          className="divide-y divide-gray-200 bg-white dark:border-gray-700 dark:bg-boxdark-2 dark:text-bodydark   "
+          className="divide-y divide-gray-200  bg-white dark:border-gray-700 dark:bg-boxdark-2 dark:text-bodydark   "
         >
           {rows.map((row) => {
             prepareRow(row);
@@ -204,7 +240,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
                   return (
                     <td
                       {...cell.getCellProps()}
-                      className="whitespace-nowrap px-6 py-4"
+                      className="whitespace-nowrap px-6 py-4 text-center"
                       role="cell"
                     >
                       {cell.render("Cell")}

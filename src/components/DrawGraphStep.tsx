@@ -1,14 +1,33 @@
 //@ts-nocheck
-
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useSelector } from "react-redux";
 import { RootState } from "../state";
-import { GraphDataType } from "../state/slices/graphSlice";
+import { GraphDataType, ShapeType } from "../state/slices/graphSlice";
 import texturesData from "../const/texturesArray";
 import textures from "textures";
 import moment from "moment";
+import { zoom } from "d3-zoom";
+import {
+  LineStyle,
+  PatternAndMarkerMap,
+  lineStyles,
+} from "../const/linesArray";
+import {
+  MarkerConfig,
+  PatternConfig,
+  markersConfig,
+} from "../const/markerAndPatternsConfig";
 
+export interface ActivityData {
+  id: string;
+  activityName: string;
+  startDate: string;
+  finishDate: string;
+  startChainage: number;
+  finishChainage: number;
+  style: string; // Shape type (line, rectangle, circle, triangle, etc.)
+}
 function DrawGraphStep() {
   const graphSettings = useSelector((state: RootState) => state.graph);
   const shapesData = useSelector((state: RootState) => state.graph.shapes);
@@ -25,6 +44,9 @@ function DrawGraphStep() {
   const [toDistance, setToDistance] = useState(
     graphSettings.settings.toDistance
   );
+
+  const [selectedShapeData, setSelectedShapeData] = useState<ActivityData>();
+  const [patternsData, setPatternsData] = useState<any[]>([]);
   const generateTooltipContent = (data: GraphDataType) => {
     return `
       <strong>ID:</strong> ${data.id}<br>
@@ -46,10 +68,74 @@ function DrawGraphStep() {
     setEndDate(end);
   };
   const margin = { top: 40, right: 20, bottom: 100, left: 100 };
-  const containerWidth = 1800;
+  const containerWidth = 1400;
   const containerHeight = 1000;
   const width = containerWidth - margin.left - margin.right;
   const height = containerHeight - margin.top - margin.bottom;
+
+  // const handleZoom = (event) => {
+  //   // Get the current transform of the SVG
+  //   const transform = event.transform;
+
+  //   // Update the X and Y scales based on the zoom and pan
+  //   const newxScale = transform.rescaleX(xScale);
+  //   const newyScale = transform.rescaleY(yScale);
+
+  //   // Update the X and Y axes with the new scales
+  //   svg.select(".x-axis").call(xAxis.scale(newxScale));
+  //   svg.select(".y-axis").call(yAxis.scale(newyScale));
+
+  //   // Update the position and size of the shapes based on the new scales
+  //   svg.selectAll(".activity-rectangle").each(function (d: GraphDataType) {
+  //     const shapeInCanvas = d3.select(this);
+  //     let shape = shapesData.shapesData.find((x) =>
+  //       x.activityId?.includes(d.id)
+  //     )!;
+
+  //     if (shape.type === "line") {
+  //       shapeInCanvas
+  //         .attr("x1", newxScale(d.startChainage))
+  //         .attr("x2", newxScale(d.finishChainage))
+  //         .attr("y1", newyScale(new Date(d.startDate)))
+  //         .attr("y2", newyScale(new Date(d.finishDate)));
+  //     } else if (shape.type === "rect") {
+  //       shapeInCanvas
+  //         .attr("x", newxScale(d.startChainage))
+  //         .attr("y", newyScale(new Date(d.startDate)))
+  //         .attr(
+  //           "width",
+  //           newxScale(d.finishChainage) - newxScale(d.startChainage)
+  //         )
+  //         .attr(
+  //           "height",
+  //           newyScale(new Date(d.finishDate)) - newyScale(new Date(d.startDate))
+  //         );
+  //     } else if (shape.type === "triangle") {
+  //       // Define the points for the triangle (adjust as needed)
+  //       const trianglePoints = `${newxScale(d.startChainage)},${newyScale(
+  //         new Date(d.startDate)
+  //       )}
+  //                               ${newxScale(d.finishChainage)},${newyScale(
+  //         new Date(d.finishDate)
+  //       )}
+  //                               ${newxScale(d.startChainage)},${newyScale(
+  //         new Date(d.finishDate)
+  //       )}`;
+
+  //       shapeInCanvas.attr("points", trianglePoints);
+  //     } else {
+  //       shapeInCanvas
+  //         .attr("cx", newxScale(d.startChainage))
+  //         .attr("cy", newyScale(new Date(d.startDate)));
+  //     }
+  //   });
+
+  //   // Update the position of the legend container
+  //   legendContainer.attr(
+  //     "transform",
+  //     `translate(${transform.x}, ${transform.y}) scale(${transform.k})`
+  //   );
+  // };
   useEffect(() => {
     const legendContainer = d3.select(legendRef.current!);
     const svg = d3.select(svgRef.current!);
@@ -114,6 +200,8 @@ function DrawGraphStep() {
       .attr("dx", "-0.5em")
       .text((d) => d3.timeFormat("%a %m/%d/%Y")(d));
 
+    const defs = svg.select("defs");
+
     g.selectAll(".activity-rectangle")
       .data(graphSettings.settings.graphData)
       .enter()
@@ -137,22 +225,86 @@ function DrawGraphStep() {
       .attr("class", "activity-rectangle")
 
       .each(function (d: GraphDataType) {
+        const defs = svg.select("defs");
         const shapeInCanvas = d3.select(this);
         let shape = shapesData.shapesData.find((x) =>
           x.activityId?.includes(d.id)
         )!;
-        console.warn("🚀 ~ file: DrawGraphStep.tsx:139 ~ shape:", shape);
 
         const textureConfig = texturesData.find(
           (x) => x.id == shape.backgroundTexture
         );
 
         if (shape.type === "line") {
+          let shapeStroke = shape.color;
+          let lineStyleAttr: LineStyle;
+          if (shape.lineType !== "") {
+            lineStyleAttr =
+              lineStyles.find((x) => x.id === shape.lineType) || {};
+          }
+
+          if (lineStyleAttr.markerStartName) {
+            // addding markers to the defs
+            const markerConfig: MarkerConfig =
+              markersConfig[lineStyleAttr.markerStartName];
+            const endArrowMarker = defs
+              .append("marker")
+              .attr("id", `${markerConfig.id}+${shape.id}`)
+              .attr("viewBox", markerConfig.config.viewBox)
+              .attr("markerWidth", markerConfig.config.markerWidth)
+              .attr("markerHeight", markerConfig.config.markerHeight)
+              .attr("refX", markerConfig.config.refX)
+              .attr("refY", markerConfig.config.refY)
+              .attr("orient", markerConfig.config.orient);
+
+            endArrowMarker
+              .append("path")
+              .attr("d", markerConfig.config.d)
+              .attr("fill", shapeStroke);
+          }
+          if (lineStyleAttr.markerEndName) {
+            // addding markers to the defs
+            const markerConfig: MarkerConfig =
+              markersConfig[lineStyleAttr.markerEndName];
+            const endArrowMarker = defs
+              .append("marker")
+              .attr("id", `${markerConfig.id}+${shape.id}`)
+              .attr("viewBox", markerConfig.config.viewBox)
+              .attr("markerWidth", markerConfig.config.markerWidth)
+              .attr("markerHeight", markerConfig.config.markerHeight)
+              .attr("refX", markerConfig.config.refX)
+              .attr("refY", markerConfig.config.refY)
+              .attr("orient", markerConfig.config.orient)
+              .attr("stroke", "context-stroke")
+              .attr("fill", "context-fill");
+
+            endArrowMarker
+              .append("path")
+              .attr("d", markerConfig.config.d)
+              .attr("fill", shapeStroke);
+          }
+
           shapeInCanvas
             .attr("x1", (d) => xScale(d.startChainage))
             .attr("x2", (d) => xScale(d.finishChainage))
             .attr("y1", (d) => yScale(new Date(d.startDate)))
-            .attr("y2", (d) => yScale(new Date(d.finishDate)));
+            .attr("y2", (d) => yScale(new Date(d.finishDate)))
+
+            .attr(
+              "marker-end",
+              `url(#${lineStyleAttr.markerEndId}+${shape.id})`
+            )
+            .attr(
+              "marker-start",
+              `url(#${lineStyleAttr.markerStartId}+${shape.id})`
+            )
+            .attr("stroke", shapeStroke)
+            .attr("stroke-width", () =>
+              lineStyleAttr.style ? lineStyleAttr.style["stroke-width"] : 2
+            )
+            .attr("stroke-dasharray", () =>
+              lineStyleAttr.style ? lineStyleAttr.style["stroke-dasharray"] : ""
+            );
         } else if (shape.type === "rect") {
           shapeInCanvas
             .attr("x", (d) => xScale(d.startChainage))
@@ -186,15 +338,14 @@ function DrawGraphStep() {
             .attr("r", 5);
         }
 
-        shapeInCanvas.style("stroke", shape.color);
+        // shapeInCanvas.style("stroke", shape.color);
         // .style("fill", textureConfig?.configuration.url());
         if (textureConfig) {
           svg.call(textureConfig?.configuration.stroke(shape.color));
           shapeInCanvas.style("fill", textureConfig?.configuration.url());
-        } else {
-          shapeInCanvas.style("fill", shape.color);
         }
         shapeInCanvas.attr("id", `shape-${d.id}`);
+
         shapeInCanvas
           .on("mouseover", function (event, d) {
             // Show the tooltip and position it
@@ -210,30 +361,11 @@ function DrawGraphStep() {
           .on("mouseout", function () {
             // Hide the tooltip on mouseout
             tooltip.style("display", "none");
-          });
-        svg
-          .append("text")
-          .attr("x", (xScale(d.startChainage) + xScale(d.finishChainage)) / 2) // Center the text horizontally
-          .attr(
-            "y",
-            (yScale(new Date(d.startDate)) + yScale(new Date(d.finishDate))) / 2
-          ) // Center the text vertically
-          .text(d.activityName)
-          .style("fill", "red"); // Set the text color to red
+          })
 
-        // // Create a line connecting the activity name to the middle of its shape
-        // svg
-        //   .append("line")
-        //   .attr("x1", (xScale(d.startChainage) + xScale(d.finishChainage)) / 2) // Center the line horizontally
-        //   .attr(
-        //     "y1",
-        //     (yScale(new Date(d.startDate)) + yScale(new Date(d.finishDate))) /
-        //       2 -
-        //       2
-        //   ) // Center the line vertically
-        //   .attr("x2", xScale(d.startChainage))
-        //   .attr("y2", yScale(new Date(d.startDate)))
-        //   .style("stroke", "red"); // Set the line color to red
+          .on("click", function (event, d) {
+            setSelectedShapeData(d as ActivityData);
+          });
       });
 
     // Draw vertical lines at the start and end positions
@@ -242,10 +374,10 @@ function DrawGraphStep() {
       .enter()
       .append("line")
       .attr("class", "start-line")
-      .attr("x1", (d) => xScale(d.start)) // X-coordinate starts at the task slot's start value
-      .attr("y1", height) // Y-coordinate starts at the bottom of the chart
-      .attr("x2", (d) => xScale(d.start)) // X-coordinate ends at the same start value
-      .attr("y2", (d) => margin.top - 10) // Y-coordinate ends at the start value
+      .attr("x1", (d) => xScale(d.start))
+      .attr("y1", height)
+      .attr("x2", (d) => xScale(d.start))
+      .attr("y2", (d) => margin.top - 10)
       .attr("stroke", "#7f7a7a")
       .attr("stroke-dasharray", "2,2");
 
@@ -254,10 +386,10 @@ function DrawGraphStep() {
       .enter()
       .append("line")
       .attr("class", "end-line")
-      .attr("x1", (d) => xScale(d.end)) // X-coordinate starts at the task slot's end value
-      .attr("y1", height) // Y-coordinate starts at the bottom of the chart
-      .attr("x2", (d) => xScale(d.end)) // X-coordinate ends at the same end value
-      .attr("y2", (d) => margin.top - 10) // Y-coordinate ends at the end value
+      .attr("x1", (d) => xScale(d.end))
+      .attr("y1", height)
+      .attr("x2", (d) => xScale(d.end))
+      .attr("y2", (d) => margin.top - 10)
       .attr("stroke", "#7f7a7a")
       .attr("stroke-dasharray", "2,2");
 
@@ -275,91 +407,13 @@ function DrawGraphStep() {
         const label = d3.select(this);
         const labelWidth = label.node().getBBox().width;
 
-        // Check if there's enough space for the label horizontally
         if (labelWidth > xScale(d.end) - xScale(d.start)) {
-          // If not, rotate the label vertically
           const label = d3.select(this);
           label
-            .attr("glyph-orientation-vertical", `90`) // Rotate text vertically
+            .attr("glyph-orientation-vertical", `90`)
             .style("writing-mode", "tb");
-          // Adjust text-anchor for vertical alignment
         }
       });
-
-    shapesData.shapesData.forEach((shape, index) => {
-      // Create a group for each legend item
-      const legendItem = legendContainer
-        .append("g")
-        .attr("class", "legend-item")
-        .attr("transform", `translate(${index * 120}, 0)`); // Adjust the spacing between legend items
-
-      // Create a rectangle or polygon for the shape
-      if (shape.type === "line") {
-        legendItem
-          .append("line")
-          .attr("x1", 10)
-          .attr("y1", 10)
-          .attr("x2", 40)
-          .attr("y2", 10)
-          .style("stroke", shape.color)
-          .style("stroke-width", 2);
-      } else if (shape.type === "rect") {
-        legendItem
-          .append("rect")
-          .attr("x", 10)
-          .attr("y", 2)
-          .attr("width", 30)
-          .attr("height", 16)
-          .style("fill", shape.color)
-          .style("stroke", shape.color);
-
-        // Check if there's a texture defined for the shape
-        const textureConfig = texturesData.find(
-          (x) => x.id === shape.backgroundTexture
-        );
-        if (textureConfig) {
-          legendItem.call(textureConfig?.configuration.stroke(shape.color));
-          legendItem
-            .select("rect")
-            .style("fill", textureConfig?.configuration.url());
-        }
-      } else if (shape.type === "triangle") {
-        // Define the points for the triangle (adjust as needed)
-        const trianglePoints = "10,18 40,2 40,18";
-        legendItem
-          .append("polygon")
-          .attr("points", trianglePoints)
-          .style("fill", shape.color)
-          .style("stroke", shape.color);
-
-        // Check if there's a texture defined for the shape
-        const textureConfig = texturesData.find(
-          (x) => x.id === shape.backgroundTexture
-        );
-        if (textureConfig) {
-          legendItem.call(textureConfig?.configuration.stroke(shape.color));
-          legendItem
-            .select("polygon")
-            .style("fill", textureConfig?.configuration.url());
-        }
-      } else {
-        legendItem
-          .append("circle")
-          .attr("cx", 20)
-          .attr("cy", 10)
-          .attr("r", 8)
-          .style("fill", shape.color);
-      }
-
-      // Add text label for the shape
-      legendItem
-        .append("text")
-        .attr("x", 60) // Adjust the position of the label
-        .attr("y", 14) // Adjust the position of the label
-        .text(shape.name)
-        .style("alignment-baseline", "middle")
-        .style("font-size", "12px");
-    });
   }, [
     endDate,
     fromDistance,
@@ -369,6 +423,147 @@ function DrawGraphStep() {
     toDistance,
   ]);
 
+  const createTexture = async (shape, shapeElement) => {
+    // Check if there's a texture defined for the shape
+    const textureConfig = texturesData.find(
+      (x) => x.id === shape.backgroundTexture
+    );
+
+    if (textureConfig) {
+      try {
+        shapeElement.call(textureConfig.configuration.url());
+        shapeElement
+          .select("rect")
+          .style("fill", `url(${textureConfig.configuration.url()})`);
+      } catch (error) {
+        console.error("Error loading texture:", error);
+      }
+    }
+  };
+
+  const patterns = useMemo(() => {
+    const calculatedPatterns = [];
+
+    for (let index = 0; index < shapesData.shapesData.length; index++) {
+      const shape = shapesData.shapesData[index];
+      const linetype = lineStyles.find((l) => l.id === shape.lineType);
+      if (shape.lineType !== "" && linetype) {
+        const markerStartName = markersConfig[linetype.markerStartName] ?? null;
+        const markerEndName = markersConfig[linetype.markerEndName] ?? null;
+
+        if (markerStartName) {
+          const markerStartId = `marker-start-${shape.lineType}-${shape.id}`;
+
+          const pattern: PatternConfig = {
+            ...markerStartName,
+            id: markerStartId,
+            width: shape.markerWidth || 10, // Customize width as needed
+            height: shape.markerHeight || 10,
+          };
+
+          calculatedPatterns.push(pattern);
+        }
+        if (markerEndName) {
+          const markerEndId = `marker-end-${shape.lineType}-${shape.id}`;
+
+          const pattern: PatternConfig = {
+            ...markerEndName,
+            id: markerEndId,
+            width: shape.markerWidth || 10, // Customize width as needed
+            height: shape.markerHeight || 10,
+          };
+
+          calculatedPatterns.push(pattern);
+        }
+      }
+    }
+
+    return calculatedPatterns;
+  }, [shapesData]);
+
+  useEffect(() => {
+    console.log("patters", patterns);
+  }, [patterns]);
+
+  const createLegend = () => {
+    let lineStyleAttr: LineStyle = {};
+
+    return shapesData.shapesData.map((shape, index) => {
+      if (shape.lineType !== "") {
+        lineStyleAttr = lineStyles.find((x) => x.id === shape.lineType) || {};
+      }
+
+      return (
+        <div key={index} className="legend-item">
+          <div className="shape-container">
+            {shape.type === "line" && (
+              <svg width="40" height="20">
+                <line
+                  x1="10"
+                  y1="10"
+                  x2="30"
+                  y2="10"
+                  stroke={shape.color}
+                  markerEnd={`url(#${lineStyleAttr.markerEndId}+${shape.id})`}
+                  markerStart={`url(#${lineStyleAttr.markerStartId}+${shape.id})`}
+                  strokeWidth={
+                    lineStyleAttr.style
+                      ? lineStyleAttr.style["stroke-width"]
+                      : "2"
+                  }
+                  strokeDasharray={
+                    lineStyleAttr.style
+                      ? lineStyleAttr.style["stroke-dasharray"]
+                      : "0"
+                  }
+                />
+              </svg>
+            )}
+            {shape.type === "rect" && (
+              <svg width="40" height="20">
+                <rect
+                  x="10"
+                  y="2"
+                  width="30"
+                  height="16"
+                  fill={shape.color}
+                  stroke={shape.color}
+                  ref={(element) => {
+                    if (element) {
+                      createTexture(shape, d3.select(element));
+                    }
+                  }}
+                />
+              </svg>
+            )}
+            {shape.type === "triangle" && (
+              <svg width="40" height="20">
+                <polygon
+                  points="10,18 40,2 40,18"
+                  fill={shape.color}
+                  stroke={shape.color}
+                  ref={(element) => {
+                    if (element) {
+                      createTexture(shape, d3.select(element));
+                    }
+                  }}
+                />
+              </svg>
+            )}
+            {shape.type === "circle" && (
+              <svg width="40" height="20">
+                <circle cx="20" cy="10" r="8" fill={shape.color} />
+              </svg>
+            )}
+          </div>
+          <div className="text-container">
+            <span>{shape.name}</span>
+          </div>
+        </div>
+      );
+    });
+  };
+
   return (
     <div className="flex flex-col">
       <div></div>
@@ -376,41 +571,66 @@ function DrawGraphStep() {
         <div className="graph-container">
           <div id="tooltip" className="absolute  text-white"></div>
           <svg width={containerWidth} height={containerHeight}>
+            <defs>
+              {/* {patterns.map((pattern) => {
+                return pattern.content(
+                  pattern.width,
+                  pattern.height,
+                  pattern.id
+                );
+              })} */}
+            </defs>
             <g ref={svgRef}></g>
           </svg>
         </div>
-
-        {/* <div className="table-container mt-40" ref={tableRef}>
-          <table className="border-collapse w-full">
-            <thead className="bg-gray-300">
-              <tr>
-                <th className="px-4 py-2">Activity Name</th>
-                <th className="px-4 py-2">Start Date</th>
-                <th className="px-4 py-2">Finish Date</th>
-                <th className="px-4 py-2">Start Chainage</th>
-                <th className="px-4 py-2">Finish Chainage</th>
-              </tr>
-            </thead>
-            <tbody> */}
-        {/* {graphSettings.settings.graphData.map((d) => (
-                <tr key={d.id} className="border-t" id={d.id}>
-                  <td className="px-4 py-2">{d.activityName}</td>
-                  <td className="px-4 py-2">{d.startDate}</td>
-                  <td className="px-4 py-2">{d.finishDate}</td>
-                  <td className="px-4 py-2">{d.startChainage}</td>
-                  <td className="px-4 py-2">{d.finishChainage}</td>
-                </tr>
-              ))} */}
-        {/* </tbody>
-          </table>
-        </div> */}
       </div>
-      <div className="flex justify-center items-center ">
-        <svg
-          className="flex-wrap max-w-[500px]"
-          ref={legendRef}
-          width={500}
-        ></svg>
+
+      <div className="mb-10 w-[70%] mx-auto grid grid-cols-4 gap-2 ">
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          Activity Name
+        </div>
+        <div className="border border-gray-700 p-2">
+          {selectedShapeData?.activityName}
+        </div>
+
+        <div className="border border-gray-700 p-2 bg-slate-500">Style</div>
+        <div className="border border-gray-700 p-2">
+          {selectedShapeData?.style}
+        </div>
+
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          Start Date
+        </div>
+        <div className="border border-gray-700 p-2">
+          {moment(selectedShapeData?.startDate).format("MM/DD/YYYY")}
+        </div>
+
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          Finish Date
+        </div>
+        <div className="border border-gray-700 p-2">
+          {moment(selectedShapeData?.finishDate).format("MM/DD/YYYY")}
+        </div>
+
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          Start Chainage
+        </div>
+        <div className="border border-gray-700 p-2">
+          {selectedShapeData?.startChainage}
+        </div>
+
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          Finish Chainage
+        </div>
+        <div className="border border-gray-700 p-2">
+          {selectedShapeData?.finishChainage}
+        </div>
+      </div>
+
+      <div className="flex justify-center items-center">
+        <div className="grid grid-cols-2 gap-4 max-w-[500px]">
+          {createLegend()}
+        </div>
       </div>
     </div>
   );

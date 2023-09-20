@@ -8,13 +8,13 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 // src/types.ts
 export interface ActivityData {
-  ID: string;
-  ActivityName: string;
-  StartDate: string;
-  FinishDate: string;
-  StartChainage: number;
-  FinishChainage: number;
-  Shape: string; // Shape type (line, rectangle, circle, triangle, etc.)
+  id: string;
+  activityName: string;
+  startDate: string;
+  finishDate: string;
+  startChainage: number;
+  finishChainage: number;
+  style: string; // Shape type (line, rectangle, circle, triangle, etc.)
 }
 const ConstructionGraph = ({ data }) => {
   const svgRef = useRef();

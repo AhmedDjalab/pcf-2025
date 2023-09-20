@@ -13,7 +13,7 @@ interface StepperProps {
 
 const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
   return (
-    <ol className="w-full items-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0">
+    <ol className="w-[100%] items-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0">
       {steps.map((step) => (
         <li
           key={step.stepNumber}

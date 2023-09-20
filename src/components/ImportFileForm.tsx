@@ -4,6 +4,7 @@ import { MultiStepFormProps } from "./DrawGraphForm";
 import * as XLSX from "xlsx";
 import {
   GraphDataType,
+  GraphSetting,
   updateGraphSettingsValue,
 } from "../state/slices/graphSlice";
 import * as Yup from "yup";
@@ -18,12 +19,22 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const [filteredData, setFilteredData] = useState<GraphDataType[]>([]);
   const dispatch = useDispatch();
   const graphSettings = useSelector((state: RootState) => state.graph.settings);
-  const initialValues = {
+  type FormValues = {
+    fromDate: Date;
+    toDate: Date;
+    graphData: any[]; // Adjust the type for graphData as needed
+    fromDistance: string;
+    toDistance: string;
+    timeRange: "Yearly" | "Monthly" | "Weekly"; // Define the specific values for timeRange
+  };
+
+  const initialValues: FormValues = {
     fromDate: new Date(),
     toDate: new Date(),
     graphData: [],
     fromDistance: "10000",
     toDistance: "20000",
+    timeRange: "Yearly",
   };
   const validationSchema = Yup.object().shape({
     fromDate: Yup.date().required("From Date is required"),
@@ -50,6 +61,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             graphData: filteredData,
             fromDistance: parseInt(values.fromDistance),
             toDistance: parseInt(values.toDistance),
+            timeRange: values.timeRange,
           },
         })
       );
@@ -58,28 +70,51 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   });
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    event.preventDefault();
+    event.stopPropagation();
+    const fileInput = event.target!;
+
+    if (!fileInput) {
+      // Handle the case where event.target is null
+      return;
+    }
+    const file = fileInput.files?.[0];
+
     if (file) {
       const reader = new FileReader();
 
       reader.onload = (e) => {
         const data = e.target?.result;
         if (data) {
-          const workbook = XLSX.read(data, { type: "binary" });
+          const workbook = XLSX.read(data, { type: "binary", cellDates: true });
           const sheetName = workbook.SheetNames[0]; // Assuming data is in the first sheet
           const worksheet = workbook.Sheets[sheetName];
           const parsedData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
           // Assuming your data structure matches the XLSX columns order
-          const graphData = parsedData.slice(1).map((row: any) => ({
-            id: row[0],
-            activityName: row[1],
-            startDate: row[2],
-            finishDate: row[3],
-            startChainage: parseFloat(row[4]),
-            finishChainage: parseFloat(row[5]),
-            style: row[6],
-          })) as GraphDataType[];
+          const graphData = parsedData
+            .slice(1)
+            .filter((row: any) => row[0] !== null && row[0] !== undefined)
+            .map((row: any) => {
+              const startDate = moment(row[2], "MM/DD/YYYY"); // Parse Start Date
+              const finishDate = moment(row[3], "MM/DD/YYYY"); // Parse Finish Date
+
+              if (!startDate.isValid() || !finishDate.isValid()) {
+                // Handle invalid date format here
+                return null;
+              }
+
+              return {
+                id: row[0],
+                activityName: row[1],
+                startDate: startDate.toISOString(), // Assign parsed Start Date
+                finishDate: finishDate.toISOString(), // Assign parsed Finish Date
+                startChainage: parseFloat(row[4]),
+                finishChainage: parseFloat(row[5]),
+                style: row[6],
+              };
+            })
+            .filter((item: any) => item !== null) as GraphDataType[];
 
           setGraphData(graphData);
           formik.setFieldValue("graphData", graphData);
@@ -321,6 +356,27 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                 {formik.touched.toDistance && formik.errors.toDistance && (
                   <div className="text-red-600">{formik.errors.toDistance}</div>
                 )}
+              </div>
+
+              <div className="mb-4 flex gap-2 items-center">
+                <label
+                  htmlFor="timeRange"
+                  className="block font-medium text-gray-700"
+                >
+                  Time Range
+                </label>
+                <select
+                  value={formik.values.timeRange}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  id="timeRange"
+                  name="timeRange"
+                  className="w-full px-3 py-2 border rounded-lg outline-none focus:ring focus:ring-blue-300"
+                >
+                  <option value="yearly">Yearly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="weekly">Weekly</option>
+                </select>
               </div>
             </div>
           )}

@@ -4,11 +4,15 @@ import texturesData, { TextureData } from "../const/texturesArray";
 import * as d3 from "d3";
 
 export interface ITexturePickerProps {
+  key: string;
   onSelectTexture: any;
   texturetype: TextureData;
+  color?: string;
 }
 
 const TexturePicker = ({
+  key,
+  color,
   onSelectTexture,
   texturetype,
 }: ITexturePickerProps) => {
@@ -33,22 +37,22 @@ const TexturePicker = ({
 
     // Apply the selected texture
     const texture = selectedTexture.configuration;
-    svg.call(texture);
+    svg.call(texture.stroke(color));
 
     // Apply textures to all texture options
     texturesData.forEach((textureOption) => {
-      const optionTexture = textureOption.configuration;
+      const optionTexture = textureOption.configuration.stroke(color);
       svg.call(optionTexture);
     });
 
     // // Notify the parent component of the selected texture
     // onSelectTexture(selectedTexture.id);
-  }, [selectedTexture]);
+  }, [selectedTexture, color]);
 
   useClickOutside(popover, close);
 
   return (
-    <div className="relative" ref={popover}>
+    <div className="relative" ref={popover} key={key}>
       {/* Assign ref to the wrapper div */}
       <div
         className="cursor-pointer rounded-lg border-[3px] border-solid border-white"
