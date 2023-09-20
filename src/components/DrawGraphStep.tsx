@@ -161,9 +161,8 @@ function DrawGraphStep() {
         const textureConfig = texturesData.find(
           (x) => x.id == shape.backgroundTexture
         );
-
+        let shapeStroke = shape.color;
         if (shape.type === "line") {
-          let shapeStroke = shape.color;
           let lineStyleAttr: LineStyle;
           if (shape.lineType !== "") {
             lineStyleAttr =
@@ -233,6 +232,7 @@ function DrawGraphStep() {
           shapeInCanvas
             .attr("x", (d) => xScale(d.startChainage))
             .attr("y", (d) => yScale(new Date(d.startDate)))
+            .attr("stroke", shapeStroke)
             .attr(
               "width",
               (d) => xScale(d.finishChainage) - xScale(d.startChainage)
@@ -254,7 +254,9 @@ function DrawGraphStep() {
             new Date(d.finishDate)
           )}`;
 
-          shapeInCanvas.attr("points", trianglePoints);
+          shapeInCanvas
+            .attr("points", trianglePoints)
+            .attr("stroke", shapeStroke);
         } else {
           shapeInCanvas
             .attr("cx", (d) => xScale(d.startChainage))
