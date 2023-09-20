@@ -109,7 +109,7 @@ function DrawGraphStep() {
     let yAxis = d3.axisLeft(yScale);
 
     if (timeRange === "Yearly") {
-      yAxis.ticks(d3.timeYear.every(1)); // Show yearly ticks
+      yAxis.ticks(d3.timeYear.every([new Date(startDate)])); // Show yearly ticks
     } else if (timeRange === "Monthly") {
       yAxis.ticks(d3.timeMonth.every(1)); // Show monthly ticks
     } else if (timeRange === "Weekly") {
@@ -176,7 +176,7 @@ function DrawGraphStep() {
               markersConfig[lineStyleAttr.markerStartName];
             const endArrowMarker = defs
               .append("marker")
-              .attr("id", `${markerConfig.id}+${shape.id}`)
+              .attr("id", `${markerConfig.id}${shape.id}`)
               .attr("viewBox", markerConfig.config.viewBox)
               .attr("markerWidth", markerConfig.config.markerWidth)
               .attr("markerHeight", markerConfig.config.markerHeight)
@@ -195,7 +195,7 @@ function DrawGraphStep() {
               markersConfig[lineStyleAttr.markerEndName];
             const endArrowMarker = defs
               .append("marker")
-              .attr("id", `${markerConfig.id}+${shape.id}`)
+              .attr("id", `${markerConfig.id}${shape.id}`)
               .attr("viewBox", markerConfig.config.viewBox)
               .attr("markerWidth", markerConfig.config.markerWidth)
               .attr("markerHeight", markerConfig.config.markerHeight)
@@ -217,13 +217,10 @@ function DrawGraphStep() {
             .attr("y1", (d) => yScale(new Date(d.startDate)))
             .attr("y2", (d) => yScale(new Date(d.finishDate)))
 
-            .attr(
-              "marker-end",
-              `url(#${lineStyleAttr.markerEndId}+${shape.id})`
-            )
+            .attr("marker-end", `url(#${lineStyleAttr.markerEndId}${shape.id})`)
             .attr(
               "marker-start",
-              `url(#${lineStyleAttr.markerStartId}+${shape.id})`
+              `url(#${lineStyleAttr.markerStartId}${shape.id})`
             )
             .attr("stroke", shapeStroke)
             .attr("stroke-width", () =>
@@ -433,8 +430,8 @@ function DrawGraphStep() {
                   x2="30"
                   y2="10"
                   stroke={shape.color}
-                  markerEnd={`url(#${lineStyleAttr.markerEndId}+${shape.id})`}
-                  markerStart={`url(#${lineStyleAttr.markerStartId}+${shape.id})`}
+                  markerEnd={`url(#${lineStyleAttr.markerEndId}${shape.id})`}
+                  markerStart={`url(#${lineStyleAttr.markerStartId}${shape.id})`}
                   strokeWidth={
                     lineStyleAttr.style
                       ? lineStyleAttr.style["stroke-width"]

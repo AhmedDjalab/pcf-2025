@@ -167,48 +167,52 @@ export const markersConfig: MarkersConfig = {
     ),
   },
 
-  bracketStartMarker: {
-    id: "bracket-start-marker",
-    markerUnits: "userSpaceOnUse",
-    config: {
-      viewBox: "0 0 10 10",
-      markerWidth: 8,
-      markerHeight: 8,
-      refX: 0,
-      refY: 5,
-      orient: "auto",
-      markerUnits: "userSpaceOnUse",
-    },
-    content: (id?: string) => (
-      <marker
-        id={id || "bracket-start-marker"}
-        {...markersConfig.bracketStartMarker.config}
-      >
-        <line x1="0" y1="0" x2="0" y2="10" stroke="black" strokeWidth="2" />
-      </marker>
-    ),
-  },
-  bracketEndMarker: {
-    id: "bracket-end-marker",
-    markerUnits: "userSpaceOnUse",
-    config: {
-      viewBox: "0 0 10 10",
-      markerWidth: 8,
-      markerHeight: 8,
-      refX: 10,
-      refY: 5,
-      orient: "auto",
-      markerUnits: "userSpaceOnUse",
-    },
-    content: (id?: string) => (
-      <marker
-        id={id || "bracket-end-marker"}
-        {...markersConfig.bracketEndMarker.config}
-      >
-        <line x1="10" y1="0" x2="10" y2="10" stroke="black" strokeWidth="4" />
-      </marker>
-    ),
-  },
+  // bracketStartMarker: {
+  //   id: "bracket-start-marker",
+  //   markerUnits: "userSpaceOnUse",
+  //   config: {
+  //     viewBox: "0 0 10 10",
+  //     markerWidth: 8,
+  //     markerHeight: 8,
+  //     refX: 0,
+  //     refY: 5,
+  //     orient: "auto",
+  //     markerUnits: "userSpaceOnUse",
+  //   },
+  //   content: (id) => {
+  //     return (
+  //       <marker
+  //         id={id || "bracket-start-marker"}
+  //         {...markersConfig.bracketStartMarker.config}
+  //       >
+  //         <path d="M0,0 L0,10 L10,5 Z" fill="black" />
+  //       </marker>
+  //     );
+  //   },
+  // },
+  // bracketEndMarker: {
+  //   id: "bracket-end-marker",
+  //   markerUnits: "userSpaceOnUse",
+  //   config: {
+  //     viewBox: "0 0 10 10",
+  //     markerWidth: 8,
+  //     markerHeight: 8,
+  //     refX: 10,
+  //     refY: 5,
+  //     orient: "auto",
+  //     markerUnits: "userSpaceOnUse",
+  //   },
+  //   content: (id) => {
+  //     return (
+  //       <marker
+  //         id={id || "bracket-end-marker"}
+  //         {...markersConfig.bracketEndMarker.config}
+  //       >
+  //         <path d="M10,0 L10,10 L0,5 Z" fill="black" />
+  //       </marker>
+  //     );
+  //   },
+  // },
 };
 
 // export const patternConfig: PatternConfig = {

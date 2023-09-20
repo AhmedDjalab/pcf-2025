@@ -70,7 +70,33 @@ export const lineStyles: LineStyle[] = [
     },
     className: "stroke-black stroke-opacity-100 stroke-dotted",
   },
-
+  {
+    name: "Double Line",
+    id: "double-line",
+    style: {
+      "stroke-width": "4",
+      "stroke-dasharray": "2, 2, 8, 2",
+    },
+    className: "stroke-black stroke-opacity-100",
+  },
+  {
+    name: "Dash-Dot Line",
+    id: "dash-dot-line",
+    style: {
+      "stroke-width": "3",
+      "stroke-dasharray": "10, 5, 2, 5",
+    },
+    className: "stroke-black stroke-opacity-100",
+  },
+  {
+    name: "Zigzag Line",
+    id: "zigzag-line",
+    style: {
+      "stroke-width": "2",
+      "stroke-dasharray": "4, 2, 4, 2",
+    },
+    className: "stroke-black stroke-opacity-100",
+  },
   // {
   //   name: "Dashed Line",
   //   id: "dashed-line",
@@ -97,14 +123,14 @@ export const lineStyles: LineStyle[] = [
     markerEndName: "arrowEnd",
     markerStartName: "arrowStart",
   },
-  {
-    name: "bracket  Line",
-    id: "bracket-start-marker",
-    markerEndId: "bracket-end-marker",
-    markerStartId: "bracket-start-marker",
-    markerStartName: "bracketStartMarker",
-    markerEndName: "bracketEndMarker",
-  },
+  // {
+  //   name: "bracket  Line",
+  //   id: "bracket-start-marker",
+  //   markerEndId: "bracket-end-marker",
+  //   markerStartId: "bracket-start-marker",
+  //   markerStartName: "bracketStartMarker",
+  //   markerEndName: "bracketEndMarker",
+  // },
   // {
   //   name: "double arrow Line",
   //   id: "double-arrow-pattern-line",
