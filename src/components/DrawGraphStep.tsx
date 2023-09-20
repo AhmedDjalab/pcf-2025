@@ -115,30 +115,8 @@ function DrawGraphStep() {
     } else if (timeRange === "Weekly") {
       yAxis.ticks(d3.timeWeek.every(1)); // Show weekly ticks
     } else if (timeRange.includes("Daily")) {
-      console.log(
-        "🚀 ~ file: DrawGraphStep.tsx:116 ~ useEffect ~ timeRange === ",
-        timeRange,
-        "Daily"
-      );
       yAxis.ticks(d3.timeDay.every(1)); // Show daily ticks
     }
-    // svg
-    //   .selectAll(".y-tick")
-    //   .data(yAxis.scale().ticks())
-    //   .enter()
-    //   .append("line")
-    //   .attr("class", "y-gridline")
-
-    //   .attr("x1", xScale(fromDistance))
-    //   .attr("x2", xScale(toDistance))
-    //   .attr("y1", (d) => {
-    //     console.log("🚀 ~ file: DrawGraphStep.tsx:126 ~ useEffect ~ d:", d);
-    //     return yAxis.scale(d);
-    //   })
-    //   .attr("y2", (d) => yAxis.scale(d))
-
-    //   .attr("stroke", "#ccc")
-    //   .attr("stroke-dasharray", "2,2");
 
     g.append("g")
       .attr("class", "y-axis")
@@ -441,7 +419,9 @@ function DrawGraphStep() {
       if (shape.lineType !== "") {
         lineStyleAttr = lineStyles.find((x) => x.id === shape.lineType) || {};
       }
-
+      const textureConfig = texturesData.find(
+        (x) => x.id == shape.backgroundTexture
+      );
       return (
         <div key={index} className="legend-item">
           <div className="shape-container">
@@ -475,13 +455,8 @@ function DrawGraphStep() {
                   y="2"
                   width="30"
                   height="16"
-                  fill={shape.color}
+                  fill={textureConfig?.configuration.url()}
                   stroke={shape.color}
-                  ref={(element) => {
-                    if (element) {
-                      createTexture(shape, d3.select(element));
-                    }
-                  }}
                 />
               </svg>
             )}
@@ -489,13 +464,8 @@ function DrawGraphStep() {
               <svg width="40" height="20">
                 <polygon
                   points="10,18 40,2 40,18"
-                  fill={shape.color}
+                  fill={textureConfig?.configuration.url()}
                   stroke={shape.color}
-                  ref={(element) => {
-                    if (element) {
-                      createTexture(shape, d3.select(element));
-                    }
-                  }}
                 />
               </svg>
             )}
