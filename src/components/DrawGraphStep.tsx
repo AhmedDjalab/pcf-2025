@@ -71,7 +71,7 @@ function DrawGraphStep() {
     setEndDate(end);
   };
   const margin = { top: 40, right: 20, bottom: 100, left: 100 };
-  const containerWidth = 1400;
+  const containerWidth = 1200;
   const containerHeight = 1000;
   const width = containerWidth - margin.left - margin.right;
   const height = containerHeight - margin.top - margin.bottom;
