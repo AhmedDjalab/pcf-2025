@@ -25,7 +25,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     graphData: any[]; // Adjust the type for graphData as needed
     fromDistance: string;
     toDistance: string;
-    timeRange: "Yearly" | "Monthly" | "Weekly"; // Define the specific values for timeRange
+    timeRange: "Yearly" | "Monthly" | "Weekly" | "Daily"; // Define the specific values for timeRange
   };
 
   const initialValues: FormValues = {
@@ -373,9 +373,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   name="timeRange"
                   className="w-full px-3 py-2 border rounded-lg outline-none focus:ring focus:ring-blue-300"
                 >
-                  <option value="yearly">Yearly</option>
-                  <option value="monthly">Monthly</option>
-                  <option value="weekly">Weekly</option>
+                  <option value="Yearly">Yearly</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Daily">Daily</option>
                 </select>
               </div>
             </div>

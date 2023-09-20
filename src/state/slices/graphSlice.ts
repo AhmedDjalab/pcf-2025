@@ -34,7 +34,7 @@ export interface GraphSetting {
   toDate: string;
   fromDistance: number;
   toDistance: number;
-  timeRange: "Yearly" | "Monthly" | "Weekly";
+  timeRange: "Yearly" | "Monthly" | "Weekly" | "Daily";
 }
 export interface ShapesSettings {
   shapesData: ShapeType[];

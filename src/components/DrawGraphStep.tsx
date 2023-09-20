@@ -44,6 +44,9 @@ function DrawGraphStep() {
   const [toDistance, setToDistance] = useState(
     graphSettings.settings.toDistance
   );
+  const [timeRange, setTimeRange] = useState<
+    "Yearly" | "Monthly" | "Weekly" | "Daily"
+  >(graphSettings.settings.timeRange);
 
   const [selectedShapeData, setSelectedShapeData] = useState<ActivityData>();
   const [patternsData, setPatternsData] = useState<any[]>([]);
@@ -73,81 +76,10 @@ function DrawGraphStep() {
   const width = containerWidth - margin.left - margin.right;
   const height = containerHeight - margin.top - margin.bottom;
 
-  // const handleZoom = (event) => {
-  //   // Get the current transform of the SVG
-  //   const transform = event.transform;
-
-  //   // Update the X and Y scales based on the zoom and pan
-  //   const newxScale = transform.rescaleX(xScale);
-  //   const newyScale = transform.rescaleY(yScale);
-
-  //   // Update the X and Y axes with the new scales
-  //   svg.select(".x-axis").call(xAxis.scale(newxScale));
-  //   svg.select(".y-axis").call(yAxis.scale(newyScale));
-
-  //   // Update the position and size of the shapes based on the new scales
-  //   svg.selectAll(".activity-rectangle").each(function (d: GraphDataType) {
-  //     const shapeInCanvas = d3.select(this);
-  //     let shape = shapesData.shapesData.find((x) =>
-  //       x.activityId?.includes(d.id)
-  //     )!;
-
-  //     if (shape.type === "line") {
-  //       shapeInCanvas
-  //         .attr("x1", newxScale(d.startChainage))
-  //         .attr("x2", newxScale(d.finishChainage))
-  //         .attr("y1", newyScale(new Date(d.startDate)))
-  //         .attr("y2", newyScale(new Date(d.finishDate)));
-  //     } else if (shape.type === "rect") {
-  //       shapeInCanvas
-  //         .attr("x", newxScale(d.startChainage))
-  //         .attr("y", newyScale(new Date(d.startDate)))
-  //         .attr(
-  //           "width",
-  //           newxScale(d.finishChainage) - newxScale(d.startChainage)
-  //         )
-  //         .attr(
-  //           "height",
-  //           newyScale(new Date(d.finishDate)) - newyScale(new Date(d.startDate))
-  //         );
-  //     } else if (shape.type === "triangle") {
-  //       // Define the points for the triangle (adjust as needed)
-  //       const trianglePoints = `${newxScale(d.startChainage)},${newyScale(
-  //         new Date(d.startDate)
-  //       )}
-  //                               ${newxScale(d.finishChainage)},${newyScale(
-  //         new Date(d.finishDate)
-  //       )}
-  //                               ${newxScale(d.startChainage)},${newyScale(
-  //         new Date(d.finishDate)
-  //       )}`;
-
-  //       shapeInCanvas.attr("points", trianglePoints);
-  //     } else {
-  //       shapeInCanvas
-  //         .attr("cx", newxScale(d.startChainage))
-  //         .attr("cy", newyScale(new Date(d.startDate)));
-  //     }
-  //   });
-
-  //   // Update the position of the legend container
-  //   legendContainer.attr(
-  //     "transform",
-  //     `translate(${transform.x}, ${transform.y}) scale(${transform.k})`
-  //   );
-  // };
   useEffect(() => {
     const legendContainer = d3.select(legendRef.current!);
     const svg = d3.select(svgRef.current!);
     const tooltip = d3.select("#tooltip");
-
-    // Create a table to display data
-
-    // Create arrows pointing to the corresponding shapes in the graph
-
-    // const currentDate = new Date();
-    // const twoYearsLater = new Date(currentDate);
-    // twoYearsLater.setFullYear(currentDate.getFullYear() + 2);
 
     console.error("this is data ", toDistance);
     const xScale = d3
@@ -163,23 +95,6 @@ function DrawGraphStep() {
     const g = svg
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
-    const monthGuidelines = d3.timeMonths(
-      new Date(startDate),
-      new Date(endDate)
-    );
-
-    // ?? months
-    g.selectAll(".month-guideline")
-      .data(monthGuidelines)
-      .enter()
-      .append("line")
-      .attr("class", "month-guideline")
-      .attr("x1", (d) => xScale(fromDistance))
-      .attr("x2", (d) => xScale(toDistance))
-      .attr("y1", (d) => yScale(d))
-      .attr("y2", (d) => yScale(d))
-      .attr("stroke", "#ccc")
-      .attr("stroke-dasharray", "2,2");
 
     //?? x axis
     const xAxis = d3.axisBottom(xScale);
@@ -191,9 +106,43 @@ function DrawGraphStep() {
       .style("text-anchor", "middle")
       .attr("dy", "1em");
 
-    const yAxis = d3.axisLeft(yScale).ticks(d3.timeMonth.every(1));
+    let yAxis = d3.axisLeft(yScale);
+
+    if (timeRange === "Yearly") {
+      yAxis.ticks(d3.timeYear.every(1)); // Show yearly ticks
+    } else if (timeRange === "Monthly") {
+      yAxis.ticks(d3.timeMonth.every(1)); // Show monthly ticks
+    } else if (timeRange === "Weekly") {
+      yAxis.ticks(d3.timeWeek.every(1)); // Show weekly ticks
+    } else if (timeRange.includes("Daily")) {
+      console.log(
+        "🚀 ~ file: DrawGraphStep.tsx:116 ~ useEffect ~ timeRange === ",
+        timeRange,
+        "Daily"
+      );
+      yAxis.ticks(d3.timeDay.every(1)); // Show daily ticks
+    }
+    // svg
+    //   .selectAll(".y-tick")
+    //   .data(yAxis.scale().ticks())
+    //   .enter()
+    //   .append("line")
+    //   .attr("class", "y-gridline")
+
+    //   .attr("x1", xScale(fromDistance))
+    //   .attr("x2", xScale(toDistance))
+    //   .attr("y1", (d) => {
+    //     console.log("🚀 ~ file: DrawGraphStep.tsx:126 ~ useEffect ~ d:", d);
+    //     return yAxis.scale(d);
+    //   })
+    //   .attr("y2", (d) => yAxis.scale(d))
+
+    //   .attr("stroke", "#ccc")
+    //   .attr("stroke-dasharray", "2,2");
+
     g.append("g")
       .attr("class", "y-axis")
+      .attr("transform", "translate(30,0)")
       .call(yAxis)
       .selectAll("text")
       .style("text-anchor", "end")
