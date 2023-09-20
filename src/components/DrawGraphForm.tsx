@@ -35,7 +35,7 @@ export interface MultiStepFormProps {
 export const DrawGraphForm = ({}) => {
   const [currentStep, setCurrentStep] = useState(1);
   return (
-    <div className="rounded-sm border border-stroke p-10 bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div className="rounded-sm  p-10 bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
       <Stepper steps={steps} currentStep={currentStep} />
       {currentStep === 1 && (
         <ImportFileForm
