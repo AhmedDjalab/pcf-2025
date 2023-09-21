@@ -10,6 +10,7 @@ import moment from "moment";
 import { zoom } from "d3-zoom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import domtoimage from "dom-to-image";
 
 import {
   LineStyle,
@@ -519,29 +520,40 @@ function DrawGraphStep() {
     const svgContainer = document.getElementById("graph-container");
 
     // Calculate the scale factors for width and height
-    const scaleWidth = (A4_WIDTH_MM * DPI) / (svgContainer.offsetWidth * 25.4);
+    const scaleWidth = (A4_WIDTH_MM * DPI) / (svgContainer.offsetWidth * 45.4);
     const scaleHeight =
-      (A4_HEIGHT_MM * DPI) / (svgContainer.offsetHeight * 25.4);
+      (A4_HEIGHT_MM * DPI) / (svgContainer.offsetHeight * 45.4);
 
     // Use the minimum of the two scale factors to ensure the entire graph fits
-    const scale = Math.min(scaleWidth, scaleHeight);
+    const scale = Math.max(scaleWidth, scaleHeight);
 
-    html2canvas(svgContainer, {
-      scale: scale,
-      dpi: DPI,
-    }).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
+    domtoimage
+      .toPng(svgContainer, {
+        width: svgContainer.offsetWidth * scale,
+        height: svgContainer.offsetHeight * scale,
+      })
+      .then((dataUrl) => {
+        if (format === "pdf") {
+          // Create a PDF document with A4 dimensions
+          const pdf = new jsPDF("landscape", "mm", [A4_WIDTH_MM, A4_HEIGHT_MM]);
+          const imgWidth = A4_WIDTH_MM;
+          const imgHeight =
+            (svgContainer.offsetHeight * imgWidth) / svgContainer.offsetWidth;
+          const xPosition = (A4_WIDTH_MM - imgWidth) / 2;
 
-      if (format === "pdf") {
-        // Create a PDF document with A4 dimensions
-        const pdf = new jsPDF("landscape", "mm", [A4_WIDTH_MM, A4_HEIGHT_MM]);
-        const imgWidth = A4_WIDTH_MM;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          pdf.addImage(dataUrl, "PNG", xPosition, 0, imgWidth, imgHeight);
+          pdf.save("graph.pdf");
+        } else if (format === "image") {
+          // Create an image by opening it in a new window/tab
+          const image = new Image();
+          image.src = dataUrl;
 
-        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-        pdf.save("graph.pdf");
-      }
-    });
+          const newWindow = window.open();
+          newWindow.document.open();
+          newWindow.document.write('<img src="' + dataUrl + '" alt="Graph" />');
+          newWindow.document.close();
+        }
+      });
   };
   return (
     <div className="flex flex-col">
