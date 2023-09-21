@@ -8,6 +8,9 @@ import texturesData from "../const/texturesArray";
 import textures from "textures";
 import moment from "moment";
 import { zoom } from "d3-zoom";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
 import {
   LineStyle,
   PatternAndMarkerMap,
@@ -32,8 +35,8 @@ function DrawGraphStep() {
   const graphSettings = useSelector((state: RootState) => state.graph);
   const shapesData = useSelector((state: RootState) => state.graph.shapes);
 
-  const svgRef = useRef();
-  const legendRef = useRef();
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const legendRef = useRef<HTMLDivElement | null>(null);
   const tableRef = useRef();
   // State to manage the selected date range
   const [startDate, setStartDate] = useState(graphSettings.settings.fromDate);
@@ -65,11 +68,11 @@ function DrawGraphStep() {
       <strong>Style:</strong> ${data.style}
     `;
   };
-  const handleDateChange = (dates) => {
-    const [start, end] = dates;
-    setStartDate(start);
-    setEndDate(end);
-  };
+  // const handleDateChange = (dates) => {
+  //   const [start, end] = dates;
+  //   setStartDate(start);
+  //   setEndDate(end);
+  // };
   const margin = { top: 40, right: 20, bottom: 100, left: 100 };
   const containerWidth = 1200;
   const containerHeight = 1000;
@@ -211,10 +214,14 @@ function DrawGraphStep() {
           }
 
           shapeInCanvas
-            .attr("x1", (d) => xScale(d.startChainage))
-            .attr("x2", (d) => xScale(d.finishChainage))
-            .attr("y1", (d) => yScale(new Date(d.startDate)))
-            .attr("y2", (d) => yScale(new Date(d.finishDate)))
+            .attr("x1", (d: unknown) =>
+              xScale((d as GraphDataType).startChainage)
+            )
+            .attr("x2", (d) => xScale((d as GraphDataType).finishChainage))
+            .attr("y1", (d) => yScale(new Date((d as GraphDataType).startDate)))
+            .attr("y2", (d) =>
+              yScale(new Date((d as GraphDataType).finishDate))
+            )
 
             .attr("marker-end", `url(#${lineStyleAttr.markerEndId}${shape.id})`)
             .attr(
@@ -225,33 +232,41 @@ function DrawGraphStep() {
             .attr("stroke-width", () =>
               lineStyleAttr.style ? lineStyleAttr.style["stroke-width"] : 2
             )
-            .attr("stroke-dasharray", () =>
+            .attr(
+              "stroke-dasharray",
               lineStyleAttr.style ? lineStyleAttr.style["stroke-dasharray"] : ""
             );
         } else if (shape.type === "rect") {
           shapeInCanvas
-            .attr("x", (d) => xScale(d.startChainage))
-            .attr("y", (d) => yScale(new Date(d.startDate)))
+            .attr("x", (d) => xScale((d as GraphDataType).startChainage))
+            .attr("y", (d) => yScale(new Date((d as GraphDataType).startDate)))
             .attr("stroke", shapeStroke)
             .attr(
               "width",
-              (d) => xScale(d.finishChainage) - xScale(d.startChainage)
+              (d) =>
+                xScale((d as GraphDataType).finishChainage) -
+                xScale((d as GraphDataType).startChainage)
             )
             .attr(
               "height",
               (d) =>
-                yScale(new Date(d.finishDate)) - yScale(new Date(d.startDate))
+                yScale(new Date((d as GraphDataType).finishDate)) -
+                yScale(new Date((d as GraphDataType).startDate))
             );
         } else if (shape.type === "triangle") {
           // Define the points for the triangle (adjust as needed)
-          const trianglePoints = `${xScale(d.startChainage)},${yScale(
-            new Date(d.startDate)
+          const trianglePoints = `${xScale(
+            (d as GraphDataType).startChainage
+          )},${yScale(new Date((d as GraphDataType).startDate))}
+                                  ${xScale(
+                                    (d as GraphDataType).finishChainage
+                                  )},${yScale(
+            new Date((d as GraphDataType).finishDate)
           )}
-                                  ${xScale(d.finishChainage)},${yScale(
-            new Date(d.finishDate)
-          )}
-                                  ${xScale(d.startChainage)},${yScale(
-            new Date(d.finishDate)
+                                  ${xScale(
+                                    (d as GraphDataType).startChainage
+                                  )},${yScale(
+            new Date((d as GraphDataType).finishDate)
           )}`;
 
           shapeInCanvas
@@ -259,8 +274,8 @@ function DrawGraphStep() {
             .attr("stroke", shapeStroke);
         } else {
           shapeInCanvas
-            .attr("cx", (d) => xScale(d.startChainage))
-            .attr("cy", (d) => yScale(new Date(d.startDate)))
+            .attr("cx", (d) => xScale((d as GraphDataType).startChainage))
+            .attr("cy", (d) => yScale(new Date((d as GraphDataType).startDate)))
             .attr("r", 5);
         }
 
@@ -270,10 +285,10 @@ function DrawGraphStep() {
           svg.call(textureConfig?.configuration.stroke(shape.color));
           shapeInCanvas.style("fill", textureConfig?.configuration.url());
         }
-        shapeInCanvas.attr("id", `shape-${d.id}`);
+        shapeInCanvas.attr("id", `shape-${(d as GraphDataType).id}`);
 
         shapeInCanvas
-          .on("mouseover", function (event, d) {
+          .on("mouseover", function (event: MouseEvent, d: unknown) {
             // Show the tooltip and position it
             tooltip.style("display", "block");
             tooltip.style("padding", "10px");
@@ -282,7 +297,7 @@ function DrawGraphStep() {
             tooltip.style("top", event.pageY + "px");
 
             // Display shape data in the tooltip
-            tooltip.html(generateTooltipContent(d));
+            tooltip.html(generateTooltipContent(d as GraphDataType));
           })
           .on("mouseout", function () {
             // Hide the tooltip on mouseout
@@ -346,7 +361,7 @@ function DrawGraphStep() {
       .text((d) => d.name)
       .each(function (d) {
         const label = d3.select(this);
-        const labelWidth = label.node().getBBox().width;
+        const labelWidth = label!.node()!.getBBox().width;
 
         if (labelWidth > xScale(d.end) - xScale(d.start)) {
           const label = d3.select(this);
@@ -364,23 +379,23 @@ function DrawGraphStep() {
     toDistance,
   ]);
 
-  const createTexture = async (shape, shapeElement) => {
-    // Check if there's a texture defined for the shape
-    const textureConfig = texturesData.find(
-      (x) => x.id === shape.backgroundTexture
-    );
+  // const createTexture = async (shape, shapeElement) => {
+  //   // Check if there's a texture defined for the shape
+  //   const textureConfig = texturesData.find(
+  //     (x) => x.id === shape.backgroundTexture
+  //   );
 
-    if (textureConfig) {
-      try {
-        shapeElement.call(textureConfig.configuration.url());
-        shapeElement
-          .select("rect")
-          .style("fill", `url(${textureConfig.configuration.url()})`);
-      } catch (error) {
-        console.error("Error loading texture:", error);
-      }
-    }
-  };
+  //   if (textureConfig) {
+  //     try {
+  //       shapeElement.call(textureConfig.configuration.url());
+  //       shapeElement
+  //         .select("rect")
+  //         .style("fill", `url(${textureConfig.configuration.url()})`);
+  //     } catch (error) {
+  //       console.error("Error loading texture:", error);
+  //     }
+  //   }
+  // };
 
   const patterns = useMemo(() => {
     const calculatedPatterns = [];
@@ -496,11 +511,45 @@ function DrawGraphStep() {
       );
     });
   };
+  const A4_WIDTH_MM = 270; // A4 width in millimeters
+  const A4_HEIGHT_MM = 297; // A4 height in millimeters
+  const DPI = 300; // Set the desired DPI (e.g., 300 for high quality)
 
+  const saveAsPdfOrImage = (format) => {
+    const svgContainer = document.getElementById("graph-container");
+
+    // Calculate the scale factors for width and height
+    const scaleWidth = (A4_WIDTH_MM * DPI) / (svgContainer.offsetWidth * 25.4);
+    const scaleHeight =
+      (A4_HEIGHT_MM * DPI) / (svgContainer.offsetHeight * 25.4);
+
+    // Use the minimum of the two scale factors to ensure the entire graph fits
+    const scale = Math.min(scaleWidth, scaleHeight);
+
+    html2canvas(svgContainer, {
+      scale: scale,
+      dpi: DPI,
+    }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+
+      if (format === "pdf") {
+        // Create a PDF document with A4 dimensions
+        const pdf = new jsPDF("landscape", "mm", [A4_WIDTH_MM, A4_HEIGHT_MM]);
+        const imgWidth = A4_WIDTH_MM;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+        pdf.save("graph.pdf");
+      }
+    });
+  };
   return (
     <div className="flex flex-col">
-      <div></div>
-      <div className="flex">
+      <div>
+        <button onClick={() => saveAsPdfOrImage("pdf")}>Save as PDF</button>
+        <button onClick={() => saveAsPdfOrImage("image")}>Save as Image</button>
+      </div>
+      <div className="flex flex-col" id="graph-container">
         <div className="graph-container">
           <div id="tooltip" className="absolute  text-white"></div>
           <svg width={containerWidth} height={containerHeight}>
@@ -516,53 +565,54 @@ function DrawGraphStep() {
             <g ref={svgRef}></g>
           </svg>
         </div>
-      </div>
-
-      <div className="mb-10 w-[70%] mx-auto grid grid-cols-4 gap-2 ">
-        <div className="border border-gray-700 p-2 bg-slate-500">
-          Activity Name
-        </div>
-        <div className="border border-gray-700 p-2">
-          {selectedShapeData?.activityName}
-        </div>
-
-        <div className="border border-gray-700 p-2 bg-slate-500">Style</div>
-        <div className="border border-gray-700 p-2">
-          {selectedShapeData?.style}
-        </div>
-
-        <div className="border border-gray-700 p-2 bg-slate-500">
-          Start Date
-        </div>
-        <div className="border border-gray-700 p-2">
-          {moment(selectedShapeData?.startDate).format("MM/DD/YYYY")}
-        </div>
-
-        <div className="border border-gray-700 p-2 bg-slate-500">
-          Finish Date
-        </div>
-        <div className="border border-gray-700 p-2">
-          {moment(selectedShapeData?.finishDate).format("MM/DD/YYYY")}
-        </div>
-
-        <div className="border border-gray-700 p-2 bg-slate-500">
-          Start Chainage
-        </div>
-        <div className="border border-gray-700 p-2">
-          {selectedShapeData?.startChainage}
-        </div>
-
-        <div className="border border-gray-700 p-2 bg-slate-500">
-          Finish Chainage
-        </div>
-        <div className="border border-gray-700 p-2">
-          {selectedShapeData?.finishChainage}
+        <div className="flex justify-center items-center mb-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 max-w-[500px]">
+            {createLegend()}
+          </div>
         </div>
       </div>
 
-      <div className="flex justify-center items-center">
-        <div className="grid grid-cols-2 gap-4 max-w-[500px]">
-          {createLegend()}
+      <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="border border-gray-700 p-2 bg-slate-500">
+            Activity Name
+          </div>
+          <div className="border border-gray-700 p-2">
+            {selectedShapeData?.activityName}
+          </div>
+
+          <div className="border border-gray-700 p-2 bg-slate-500">Style</div>
+          <div className="border border-gray-700 p-2">
+            {selectedShapeData?.style}
+          </div>
+
+          <div className="border border-gray-700 p-2 bg-slate-500">
+            Start Date
+          </div>
+          <div className="border border-gray-700 p-2">
+            {moment(selectedShapeData?.startDate).format("MM/DD/YYYY")}
+          </div>
+
+          <div className="border border-gray-700 p-2 bg-slate-500">
+            Finish Date
+          </div>
+          <div className="border border-gray-700 p-2">
+            {moment(selectedShapeData?.finishDate).format("MM/DD/YYYY")}
+          </div>
+
+          <div className="border border-gray-700 p-2 bg-slate-500">
+            Start Chainage
+          </div>
+          <div className="border border-gray-700 p-2">
+            {selectedShapeData?.startChainage}
+          </div>
+
+          <div className="border border-gray-700 p-2 bg-slate-500">
+            Finish Chainage
+          </div>
+          <div className="border border-gray-700 p-2">
+            {selectedShapeData?.finishChainage}
+          </div>
         </div>
       </div>
     </div>
