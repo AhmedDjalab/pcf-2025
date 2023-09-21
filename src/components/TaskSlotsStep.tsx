@@ -110,7 +110,12 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   };
   return (
     <div>
-      <button onClick={handleAddClick}>Add</button>
+      <button
+        onClick={handleAddClick}
+        className="mt-10 text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
+      >
+        Add
+      </button>
       <table className="min-w-full divide-y divide-gray-200">
         <thead>
           <tr>
@@ -135,8 +140,16 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
               <td className="whitespace-nowrap px-6 py-4">{row.start}</td>
               <td className="whitespace-nowrap px-6 py-4">{row.end}</td>
               <td className="whitespace-nowrap px-6 py-4">
-                <button onClick={() => handleEditClick(row)}>Edit</button>
-                <button onClick={() => handleDeleteClick(row.id)}>
+                <button
+                  className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                  onClick={() => handleEditClick(row)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="focus:outline-none text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                  onClick={() => handleDeleteClick(row.id)}
+                >
                   Delete
                 </button>
               </td>
