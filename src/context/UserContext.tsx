@@ -56,8 +56,8 @@ export const UserProvider = ({ children }: any) => {
       })
       .catch((error) => {
         // Handle login error
-        console.error(error);
-        return false;
+
+        throw error;
       });
     return value;
   };

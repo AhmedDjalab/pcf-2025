@@ -10,6 +10,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../Helpers/firebase";
 import { useUserContext } from "../context/UserContext";
+import { FirebaseError } from "firebase/app";
 
 function Login() {
   const navigate = useNavigate();
@@ -48,15 +49,11 @@ function Login() {
     }
     try {
       const loginStatus = await loginUser(email, password);
-      console.log(
-        "🚀 ~ file: Login.tsx:51 ~ handleLogin ~ loginStatus:",
-        loginStatus
-      );
 
       if (loginStatus) navigate("/");
       setLoader(false);
     } catch (err: any) {
-      CommonError(error);
+      handleFirebaseError(err);
     }
   };
 
@@ -89,6 +86,32 @@ function Login() {
     return re.test(password);
   };
 
+  const handleFirebaseError = (error: FirebaseError) => {
+    switch (error.code) {
+      case "auth/invalid-email":
+        setError("Invalid email address.");
+        break;
+      case "auth/user-not-found":
+        setError("User not found. Please check your email.");
+        break;
+      case "auth/wrong-password":
+        setError("Incorrect password. Please try again.");
+        break;
+      case "auth/user-disabled":
+        setError("Your account has been disabled.");
+        break;
+      case "auth/invalid-login-credentials":
+        setError(
+          "Invalid login credentials. Please check your email and password."
+        );
+        break;
+      // Add more cases for other Firebase error codes as needed
+      default:
+        setError("An error occurred. Please try again later.");
+        break;
+    }
+    setLoader(false);
+  };
   return (
     <>
       <section className="bg-gray-50 dark:bg-gray-900">

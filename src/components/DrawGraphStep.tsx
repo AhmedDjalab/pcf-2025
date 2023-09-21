@@ -544,14 +544,29 @@ function DrawGraphStep() {
           pdf.addImage(dataUrl, "PNG", xPosition, 0, imgWidth, imgHeight);
           pdf.save("graph.pdf");
         } else if (format === "image") {
-          // Create an image by opening it in a new window/tab
-          const image = new Image();
-          image.src = dataUrl;
+          // Create a new SVG element with a white background
+          const svgWithWhiteBackground = document.createElement("div");
+          svgWithWhiteBackground.style.backgroundColor = "white";
+          svgWithWhiteBackground.appendChild(svgContainer.cloneNode(true));
 
-          const newWindow = window.open();
-          newWindow.document.open();
-          newWindow.document.write('<img src="' + dataUrl + '" alt="Graph" />');
-          newWindow.document.close();
+          // Convert the modified SVG to an image
+          domtoimage
+            .toPng(svgWithWhiteBackground, {
+              width: svgContainer.offsetWidth * scale,
+              height: svgContainer.offsetHeight * scale,
+            })
+            .then((whiteBgDataUrl) => {
+              const image = new Image();
+              image.src = whiteBgDataUrl;
+
+              // Create a link element for downloading the image
+              const downloadLink = document.createElement("a");
+              downloadLink.href = whiteBgDataUrl;
+              downloadLink.download = "graph.png"; // Specify the file name here
+
+              // Trigger a click event on the link to initiate the download
+              downloadLink.click();
+            });
         }
       });
   };
@@ -564,6 +579,12 @@ function DrawGraphStep() {
         >
           Save as PDF
         </button>
+        {/* <button
+          className="focus:outline-none mt-5 text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+          onClick={() => saveAsPdfOrImage("image")}
+        >
+          Save as image
+        </button> */}
       </div>
       <div className="flex flex-col" id="graph-container">
         <div className="graph-container">
