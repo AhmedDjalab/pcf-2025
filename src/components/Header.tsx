@@ -16,8 +16,9 @@ const Header = () => {
   return (
     <header className=" text-black py-4 text-center">
       <div className="flex items-center justify-between">
-        <p className="text-2xl  px-5">
-          This is beta version. Don't hesitate to send your feedback.
+        <p className="text-xl  px-5">
+          Don't hesitate to send your feedback. our e-mail :
+          <span className="text-2xl text-blue-600">admin@ientreprize.com</span>
         </p>
         {user && (
           <div className="relative inline-block">
