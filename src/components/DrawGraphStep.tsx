@@ -294,6 +294,21 @@ function DrawGraphStep() {
           });
       });
 
+    // Create horizontal guidelines from y-axis ticks
+    const yAxisTicks = g.selectAll(".y-axis text").nodes();
+    const yGuidelines = g
+      .selectAll(".y-guideline")
+      .data(yAxisTicks.map((node) => d3.select(node).text()))
+      .enter()
+      .append("line")
+      .attr("class", "y-guideline")
+      .attr("x1", 0)
+      .attr("x2", width + margin.left)
+      .attr("y1", (d) => yScale(moment(d, "ddd MM/DD/YYYY")))
+      .attr("y2", (d) => yScale(moment(d, "ddd MM/DD/YYYY")))
+      .attr("stroke", "#dbd9d9")
+      .attr("stroke-dasharray", "2,2");
+
     // Draw vertical lines at the start and end positions
     g.selectAll(".start-line")
       .data(graphSettings.taskSlots)
