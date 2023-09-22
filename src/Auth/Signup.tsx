@@ -7,6 +7,8 @@ import {
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../Helpers/firebase";
+import { useUserContext } from "../context/UserContext";
+import { FirebaseError } from "firebase/app";
 
 function Signup() {
   const navigate = useNavigate();
@@ -15,6 +17,7 @@ function Signup() {
   const [loader, setLoader] = useState(false);
   const [password, setPassword] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const { loginUser } = useUserContext();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -43,14 +46,41 @@ function Signup() {
     }
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      navigate("/login");
+      const loginStatus = await loginUser(email, password);
+
+      if (loginStatus) navigate("/");
       setLoader(false);
     } catch (err: any) {
-      setError(err.message);
+      handleFirebaseError(err);
       setLoader(false);
     }
   };
-
+  const handleFirebaseError = (error: FirebaseError) => {
+    switch (error.code) {
+      case "auth/invalid-email":
+        setError("Invalid email address.");
+        break;
+      case "auth/user-not-found":
+        setError("User not found. Please check your email.");
+        break;
+      case "auth/wrong-password":
+        setError("Incorrect password. Please try again.");
+        break;
+      case "auth/user-disabled":
+        setError("Your account has been disabled.");
+        break;
+      case "auth/invalid-login-credentials":
+        setError(
+          "Invalid login credentials. Please check your email and password."
+        );
+        break;
+      // Add more cases for other Firebase error codes as needed
+      default:
+        setError("An error occurred. Please try again later.");
+        break;
+    }
+    setLoader(false);
+  };
   const validateEmail = (email: string) => {
     const re = /\S+@\S+\.\S+/;
     return re.test(email);

@@ -14,10 +14,10 @@ const Header = () => {
   };
 
   return (
-    <header className=" text-black py-4 text-center">
-      <div className="flex items-center justify-between">
-        <p className="text-xl  px-5">
-          Don't hesitate to send your feedback. our e-mail :
+    <header className="text-black py-4 text-center flex flex-col items-center">
+      <div className="flex justify-end self-end items-center">
+        <p className="text-xl px-5 mb-2">
+          Contact Us:
           <span className="text-2xl text-blue-600">admin@ientreprize.com</span>
         </p>
         {user && (
@@ -31,7 +31,7 @@ const Header = () => {
               </span>
             </div>
             {popupVisible && (
-              <div className="absolute right-5 mt-4 bg-white text-black-500 text-sm px-4 py-2 rounded-lg shadow-lg">
+              <div className="absolute right-0 mt-2 bg-white text-black-500 text-sm px-4 py-2 rounded-lg shadow-lg">
                 <p className="mb-2 font-semibold">{user.email}</p>
                 <button
                   onClick={() => {
