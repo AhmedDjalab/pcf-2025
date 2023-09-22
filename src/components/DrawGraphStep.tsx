@@ -79,29 +79,32 @@ function DrawGraphStep() {
   const [containerWidth, setContainerWidth] = useState(window.innerWidth);
 
   useEffect(() => {
-    // Update containerWidth when the window is resized
+    // Function to handle window resize
     const handleResize = () => {
       setContainerWidth(window.innerWidth);
     };
 
+    // Add a window resize event listener
     window.addEventListener("resize", handleResize);
 
+    drawD3Chart();
+    // Remove the event listener when the component unmounts
     return () => {
-      // Remove the event listener when the component unmounts
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
   const margin = { top: 40, right: 20, bottom: 100, left: 100 };
 
   const containerHeight = 1000;
   const width = containerWidth - margin.left - margin.right;
   const height = containerHeight - margin.top - margin.bottom;
 
-  useEffect(() => {
+  const drawD3Chart = () => {
     const legendContainer = d3.select(legendRef.current!);
     const svg = d3.select(svgRef.current!);
+    svg.selectAll("*").remove();
     const tooltip = d3.select("#tooltip");
-
     // zoom
     // Define your initial scale and translation
     const initialScale = 1;
@@ -110,7 +113,7 @@ function DrawGraphStep() {
     // Create a zoom behavior
     const zoom = d3
       .zoom()
-      .scaleExtent([0.5, 5]) // Set the minimum and maximum scale levels
+      .scaleExtent([1, 5]) // Set the minimum and maximum scale levels
       .on("zoom", zoomed);
 
     // Add the zoom behavior to the SVG
@@ -137,20 +140,29 @@ function DrawGraphStep() {
       if (event.shiftKey) {
         event.preventDefault(); // Prevent the default scrolling behavior
         const scale = event.deltaY > 0 ? 1.2 : 1 / 1.2; // Adjust the scaling factor
-        const point = d3.pointer(event);
-        const svgPoint = svg.node().createSVGPoint();
-        svgPoint.x = point[0];
-        svgPoint.y = point[1];
-        const matrix = svg.node().getScreenCTM().inverse();
-        const zoomPoint = svgPoint.matrixTransform(matrix);
+        const svgPoint = d3.pointer(event)[0];
+        const zoomPoint = transformPoint(svgPoint, svg, zoom);
+
         // Apply the zoom transformation
         svg.call(
           zoom.transform,
-          d3.zoomIdentity.translate(zoomPoint.x, zoomPoint.y).scale(scale)
+          d3.zoomIdentity.translate(zoomPoint[0], zoomPoint[1]).scale(scale)
         );
       }
     });
-    console.error("this is data ", toDistance);
+
+    // Function to transform a point from screen coordinates to SVG coordinates
+    function transformPoint(point, svg, zoom) {
+      const matrix = svg.node().getScreenCTM().inverse();
+      const svgPoint = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg:point"
+      );
+      svgPoint.x = point[0];
+      svgPoint.y = point[1];
+      return svgPoint.matrixTransform(matrix);
+    }
+
     const xScale = d3
       .scaleLinear()
       .domain([fromDistance, toDistance])
@@ -163,6 +175,8 @@ function DrawGraphStep() {
 
     const g = svg
       .append("g")
+      .attr("width", "100%") // Set the width to 100% of the container
+      .attr("height", "100%")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
     //?? x axis
@@ -471,7 +485,9 @@ function DrawGraphStep() {
 
         tooltip.style("display", "none");
       });
-
+  };
+  useEffect(() => {
+    drawD3Chart();
     // Gray border
   }, [
     endDate,

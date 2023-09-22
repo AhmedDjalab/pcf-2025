@@ -62,8 +62,8 @@ const initialState: GraphCreateType = {
     graphData: [],
     fromDate: new Date().toISOString(),
     toDate: new Date().toISOString(),
-    fromDistance: 0,
-    toDistance: 0,
+    fromDistance: 10000,
+    toDistance: 20000,
     timeRange: "Yearly",
   },
   shapes: {
