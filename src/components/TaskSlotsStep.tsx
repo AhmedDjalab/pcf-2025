@@ -5,21 +5,23 @@ import { RootState } from "../state";
 import { TaskSlot, updateTaskSlotsValue } from "../state/slices/graphSlice";
 import { MultiStepFormProps } from "./DrawGraphForm";
 import { v4 as uuidv4 } from "uuid";
+import { useNavigate } from "react-router-dom";
 
 const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editRow, setEditRow] = useState<TaskSlot | null>(null);
   const [isNew, setIsNew] = useState(false);
+  const navigate = useNavigate();
   const taskSlots: TaskSlot[] = useSelector(
-    (state: RootState) => state.graph.taskSlots
+    (state: RootState) => state.taskSlots
   );
   const [formFieldValues, setFormFieldValues] = useState(taskSlots);
 
   const minDistance: number = useSelector(
-    (state: RootState) => state.graph.settings.fromDistance
+    (state: RootState) => state.settings.fromDistance
   );
   const maxDistance: number = useSelector(
-    (state: RootState) => state.graph.settings.toDistance
+    (state: RootState) => state.settings.toDistance
   );
   const dispatch = useDispatch();
 
@@ -106,7 +108,8 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
         taskSlots: formFieldValues,
       })
     );
-    setCurrentStep(currentStep + 1);
+    navigate("/graph");
+    // setCurrentStep(currentStep + 1);
   };
   return (
     <div>
@@ -177,7 +180,7 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
                   focus:ring-blue-300
                    disabled:bg-gray-600"
         >
-          Next
+          Draw
         </button>
       </div>
     </div>

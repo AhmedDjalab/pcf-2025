@@ -1,30 +1,43 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ShapesForm from "./ShapesForm";
 import { ImportFileForm } from "./ImportFileForm";
 import Stepper from "./Stepper";
 import DrawGraphStep from "./DrawGraphStep";
 import TaskSlotsStep from "./TaskSlotsStep";
+import ProjectSettingForm from "./ProjectSettingForm";
+
+import {
+  UNSAFE_NavigationContext,
+  useLocation,
+  useNavigate,
+  useRoutes,
+} from "react-router-dom";
 const steps = [
   {
     stepNumber: 1,
+    title: "Project Settings",
+    description: "Add your project settings",
+  },
+  {
+    stepNumber: 2,
     title: "Import File",
     description: "Import File and add settings",
   },
   {
-    stepNumber: 2,
-    title: "Shapes",
-    description: "Add Shapes to your graph",
-  },
-  {
     stepNumber: 3,
-    title: "Task Slots",
-    description: "divide your project to Task Slots",
+    title: "Shapes Style",
+    description: "Add Shapes style to your graph",
   },
   {
     stepNumber: 4,
-    title: "Chart",
-    description: "Draw your chart",
+    title: "Slices (Tranches)",
+    description: "divide your project to Slices ",
   },
+  // {
+  //   stepNumber: 4,
+  //   title: "Chart",
+  //   description: "Draw your chart",
+  // },
 ];
 export interface MultiStepFormProps {
   currentStep: number;
@@ -34,31 +47,40 @@ export interface MultiStepFormProps {
 
 export const DrawGraphForm = ({}) => {
   const [currentStep, setCurrentStep] = useState(1);
+
   return (
     <div className="rounded-sm  p-10 bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
       <Stepper steps={steps} currentStep={currentStep} />
+
       {currentStep === 1 && (
-        <ImportFileForm
+        <ProjectSettingForm
           currentStep={currentStep}
           stepsLength={steps.length}
           setCurrentStep={setCurrentStep}
         />
       )}
       {currentStep === 2 && (
-        <ShapesForm
+        <ImportFileForm
           currentStep={currentStep}
           stepsLength={steps.length}
           setCurrentStep={setCurrentStep}
         />
       )}
       {currentStep === 3 && (
+        <ShapesForm
+          currentStep={currentStep}
+          stepsLength={steps.length}
+          setCurrentStep={setCurrentStep}
+        />
+      )}
+      {currentStep === 4 && (
         <TaskSlotsStep
           currentStep={currentStep}
           stepsLength={steps.length}
           setCurrentStep={setCurrentStep}
         />
       )}
-      {currentStep === 4 && <DrawGraphStep />}
+      {/* {currentStep === 4 && <DrawGraphStep />} */}
     </div>
   );
 };

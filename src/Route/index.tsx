@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "../Auth/Login";
 import Signup from "../Auth/Signup";
 import DefaultLayout from "../components/DefaultLayout";
+import DrawGraphStep from "../components/DrawGraphStep";
 
 const AppRoutes = () => {
   return (
@@ -16,6 +17,7 @@ const AppRoutes = () => {
 
         {/* Private Routes */}
         <Route path="/" element={<DefaultLayout />} />
+        <Route path="/graph" element={<DrawGraphStep />} />
       </Routes>
     </Router>
   );

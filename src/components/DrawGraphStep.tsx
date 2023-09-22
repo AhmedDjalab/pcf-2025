@@ -22,6 +22,7 @@ import {
   PatternConfig,
   markersConfig,
 } from "../const/markerAndPatternsConfig";
+import { settings } from "firebase/analytics";
 
 export interface ActivityData {
   id: string;
@@ -33,8 +34,8 @@ export interface ActivityData {
   style: string; // Shape type (line, rectangle, circle, triangle, etc.)
 }
 function DrawGraphStep() {
-  const graphSettings = useSelector((state: RootState) => state.graph);
-  const shapesData = useSelector((state: RootState) => state.graph.shapes);
+  const graphSettings = useSelector((state: RootState) => state);
+  const shapesData = useSelector((state: RootState) => state.shapes);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const legendRef = useRef<HTMLDivElement | null>(null);
@@ -74,8 +75,24 @@ function DrawGraphStep() {
   //   setStartDate(start);
   //   setEndDate(end);
   // };
+
+  const [containerWidth, setContainerWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    // Update containerWidth when the window is resized
+    const handleResize = () => {
+      setContainerWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      // Remove the event listener when the component unmounts
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
   const margin = { top: 40, right: 20, bottom: 100, left: 100 };
-  const containerWidth = 1200;
+
   const containerHeight = 1000;
   const width = containerWidth - margin.left - margin.right;
   const height = containerHeight - margin.top - margin.bottom;
@@ -89,7 +106,7 @@ function DrawGraphStep() {
     const xScale = d3
       .scaleLinear()
       .domain([fromDistance, toDistance])
-      .range([margin.left, width]);
+      .range([10, width]);
 
     const yScale = d3
       .scaleTime()
@@ -124,7 +141,7 @@ function DrawGraphStep() {
 
     g.append("g")
       .attr("class", "y-axis")
-      .attr("transform", "translate(30,0)")
+      .attr("transform", "translate(5,0)")
       .call(yAxis)
       .selectAll("text")
       .style("text-anchor", "end")
@@ -140,11 +157,11 @@ function DrawGraphStep() {
         let shape = shapesData.shapesData.find((x) =>
           x.activityId?.includes(d.id)
         )!;
-        if (shape.type === "line") {
+        if (shape && shape.type === "line") {
           return document.createElementNS("http://www.w3.org/2000/svg", "line");
-        } else if (shape.type === "rect") {
+        } else if (shape && shape.type === "rect") {
           return document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        } else if (shape.type === "triangle") {
+        } else if (shape && shape.type === "triangle") {
           return document.createElementNS(
             "http://www.w3.org/2000/svg",
             "polygon"
@@ -161,7 +178,10 @@ function DrawGraphStep() {
         let shape = shapesData.shapesData.find((x) =>
           x.activityId?.includes(d.id)
         )!;
-
+        if (!shape) {
+          console.log("🚀 ~ file: DrawGraphStep.tsx:181 ~ shape:", shape, d.id);
+          return;
+        }
         const textureConfig = texturesData.find(
           (x) => x.id == shape.backgroundTexture
         );
@@ -325,7 +345,10 @@ function DrawGraphStep() {
       .attr("stroke", "#dbd9d9")
       .attr("stroke-dasharray", "2,2");
 
-    // Draw vertical lines at the start and end positions
+    // Create a div for the slots and select it
+    const slotsContainer = d3.select("#slots-container"); // Replace with the appropriate selector or use a ref
+
+    // Append slots to the selected div
     g.selectAll(".start-line")
       .data(graphSettings.taskSlots)
       .enter()
@@ -334,8 +357,8 @@ function DrawGraphStep() {
       .attr("x1", (d) => xScale(d.start))
       .attr("y1", height)
       .attr("x2", (d) => xScale(d.start))
-      .attr("y2", (d) => margin.top - 10)
-      .attr("stroke", "#7f7a7a")
+      .attr("y2", (d) => margin.top)
+      .attr("stroke", "#857676")
       .attr("stroke-dasharray", "2,2");
 
     g.selectAll(".end-line")
@@ -346,38 +369,74 @@ function DrawGraphStep() {
       .attr("x1", (d) => xScale(d.end))
       .attr("y1", height)
       .attr("x2", (d) => xScale(d.end))
-      .attr("y2", (d) => margin.top - 10)
+      .attr("y2", (d) => margin.top)
       .attr("stroke", "#7f7a7a")
       .attr("stroke-dasharray", "2,2");
 
+    // Create rectangles for each task slot
+    g.selectAll(".slot-rect")
+      .data(graphSettings.taskSlots)
+      .enter()
+      .append("rect")
+      .attr("class", "slot-rect")
+      .attr("x", (d) => xScale(d.start))
+
+      .attr("width", (d) => xScale(d.end) - xScale(d.start))
+      .attr("height", 20) // Adjust the height as needed
+      .style("fill", "none")
+      .style("stroke", "gray"); // Gray border
+
+    // Create labels for task slots using foreignObject
     g.selectAll(".slot-label")
       .data(graphSettings.taskSlots)
       .enter()
-      .append("text")
+      .append("foreignObject")
       .attr("class", "slot-label")
-      .attr("x", (d) => (xScale(d.start) + xScale(d.end)) / 2) // X-coordinate is the midpoint between start and end
-      .attr("y", margin.top - 10)
-      .attr("dy", "-0.5em") // Adjust vertical alignment as needed
-      .style("text-anchor", "middle")
-      .text((d) => d.name)
-      .each(function (d) {
-        const label = d3.select(this);
-        const labelWidth = label!.node()!.getBBox().width;
+      .attr("x", (d) => xScale(d.start))
 
-        if (labelWidth > xScale(d.end) - xScale(d.start)) {
-          const label = d3.select(this);
-          label
-            .attr("glyph-orientation-vertical", `90`)
-            .style("writing-mode", "tb");
-        }
+      .attr("width", (d) => xScale(d.end) - xScale(d.start))
+      .attr("height", 20) // Adjust the height as needed
+      .append("xhtml:div")
+      .style("display", "flex") // Use flexbox for vertical centering
+      .style("justify-content", "center") // Center horizontally
+      .style("align-items", "center") // Center vertically
+      .style("overflow", "hidden")
+      .style("white-space", "nowrap")
+      .style("text-overflow", "ellipsis")
+
+      .style("padding-bottom", "5px") // Adjust the padding-bottom as needed
+      .html((d) => d.name)
+      .on("mouseover", function (event: MouseEvent, d: unknown) {
+        // Show tooltip on hover
+        const slotName = d.name;
+
+        tooltip
+          .html(slotName)
+          .style("display", "block")
+          .style("padding", "10px")
+          .style("background-color", "#fa5bd2")
+          .style("left", event.pageX + "px")
+          .style("top", event.pageY - 28 + "px");
+      })
+      .on("mouseout", function () {
+        // Hide tooltip on mouseout
+
+        tooltip.style("display", "none");
       });
+
+    // Gray border
   }, [
     endDate,
     fromDistance,
     graphSettings,
+    height,
+    margin.left,
+    margin.top,
     shapesData.shapesData,
     startDate,
+    timeRange,
     toDistance,
+    width,
   ]);
 
   // const createTexture = async (shape, shapeElement) => {
@@ -586,8 +645,24 @@ function DrawGraphStep() {
           Save as image
         </button> */}
       </div>
+      <div id="slots-container">
+        {" "}
+        {/* Use the id or className you prefer */}
+        {/* This is the container for the slots */}
+      </div>
       <div className="flex flex-col" id="graph-container">
         <div className="graph-container">
+          <div className="flex items-center border m-4">
+            <div className="flex-grow text-center">
+              <p className="text-2xl">{graphSettings.projectSettings.title}</p>
+            </div>
+            <img
+              src={graphSettings.projectSettings.logoImg}
+              className="h-20 w-20 mr-4"
+              alt={graphSettings.projectSettings.title}
+            />
+          </div>
+
           <div id="tooltip" className="absolute  text-white"></div>
           <svg width={containerWidth} height={containerHeight}>
             <defs>
@@ -602,8 +677,8 @@ function DrawGraphStep() {
             <g ref={svgRef}></g>
           </svg>
         </div>
-        <div className="flex justify-center items-center mb-2">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 max-w-[500px]">
+        <div className="flex w-full justify-center items-center mb-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full px-5">
             {createLegend()}
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import { MultiStepFormProps } from "./DrawGraphForm";
-//@ts-ignore
+
 import * as XLSX from "xlsx";
 import {
   GraphDataType,
@@ -8,27 +8,26 @@ import {
   updateGraphSettingsValue,
 } from "../state/slices/graphSlice";
 import * as Yup from "yup";
-import { useFormik, useFormikContext } from "formik";
+import { setIn, useFormik, useFormikContext } from "formik";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../state";
-export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
-  const [graphData, setGraphData] = useState<GraphDataType[]>([]);
-  const [filteredData, setFilteredData] = useState<GraphDataType[]>([]);
-  const dispatch = useDispatch();
-  const graphSettings = useSelector((state: RootState) => state.graph.settings);
-  type FormValues = {
-    fromDate: Date;
-    toDate: Date;
-    graphData: any[]; // Adjust the type for graphData as needed
-    fromDistance: string;
-    toDistance: string;
-    timeRange: "Yearly" | "Monthly" | "Weekly" | "Daily"; // Define the specific values for timeRange
-  };
+import { animateScroll as scroll } from "react-scroll";
+import { ArrowUpCircleIcon } from "@heroicons/react/24/solid";
+import { BackToTopHeightSize } from "../const/vars";
 
-  const initialValues: FormValues = {
+export type FormValues = {
+  fromDate: Date;
+  toDate: Date;
+  graphData: any[]; // Adjust the type for graphData as needed
+  fromDistance: string;
+  toDistance: string;
+  timeRange: "Yearly" | "Monthly" | "Weekly" | "Daily"; // Define the specific values for timeRange
+};
+export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
+  const initForm: FormValues = {
     fromDate: new Date(),
     toDate: new Date(),
     graphData: [],
@@ -36,6 +35,16 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     toDistance: "20000",
     timeRange: "Yearly",
   };
+
+  const dispatch = useDispatch();
+  const graphSettings = useSelector((state: RootState) => state.settings);
+
+  const [initialValues, setInitialValues] = useState<FormValues>(initForm);
+  const [graphData, setGraphData] = useState<GraphDataType[]>(
+    graphSettings.rawExcelData ?? []
+  );
+  const [filteredData, setFilteredData] = useState<GraphDataType[]>([]);
+  const [showBackToTopButton, setShowBackToTopButton] = useState(false);
   const validationSchema = Yup.object().shape({
     fromDate: Yup.date().required("From Date is required"),
     toDate: Yup.date()
@@ -46,8 +55,16 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   });
 
   const formik = useFormik({
-    initialValues,
+    initialValues: {
+      fromDate: new Date(graphSettings.fromDate) ?? new Date(),
+      toDate: new Date(graphSettings.toDate) ?? new Date(),
+      graphData: graphSettings.graphData,
+      fromDistance: graphSettings.fromDistance.toString() ?? "10000",
+      toDistance: graphSettings.toDistance.toString() ?? "20000",
+      timeRange: graphSettings.timeRange ?? "Yearly",
+    },
     validationSchema,
+    enableReinitialize: true,
 
     onSubmit: (values) => {
       if (values.graphData.length === 0) return;
@@ -62,23 +79,45 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             fromDistance: parseInt(values.fromDistance),
             toDistance: parseInt(values.toDistance),
             timeRange: values.timeRange,
+            rawExcelData: graphData,
           },
         })
       );
       setCurrentStep((prevStep) => prevStep + 1);
     },
   });
-
+  function arraysEqual(arr1: string[], arr2: string[]) {
+    if (arr1.length !== arr2.length) return false;
+    // for (let i = 0; i < arr1.length; i++) {
+    //   if (arr1[i] !== arr2[i]) return false;
+    // }
+    return true;
+  }
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     event.stopPropagation();
     const fileInput = event.target!;
 
-    if (!fileInput) {
-      // Handle the case where event.target is null
+    if (!fileInput || !fileInput.files) {
+      // Handle the case where event.target is null or files are not available
       return;
     }
-    const file = fileInput.files?.[0];
+
+    const file = fileInput.files[0];
+
+    if (!file) {
+      // No file selected, do nothing
+      return;
+    }
+
+    const fileName = file.name;
+    const fileExtension = fileName.split(".").pop()?.toLowerCase();
+
+    if (fileExtension !== "xlsx") {
+      // Show an alert for invalid file format
+      alert("Please select a valid XLSX or Excel file.");
+      return;
+    }
 
     if (file) {
       const reader = new FileReader();
@@ -87,8 +126,27 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         const data = e.target?.result;
         if (data) {
           const workbook = XLSX.read(data, { type: "binary", cellDates: true });
-          const sheetName = workbook.SheetNames[0]; // Assuming data is in the first sheet
+          const sheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[sheetName];
+
+          const expectedSchema = [
+            "ID",
+            "Activity Name",
+            "Start Date",
+            "Finish Date",
+            "Start Chainage",
+            "Finish Chainage",
+            "Style",
+          ];
+
+          const headerRow: string[] = XLSX.utils.sheet_to_json(worksheet, {
+            header: 1,
+          })[0] as string[];
+
+          if (!headerRow || !arraysEqual(headerRow, expectedSchema)) {
+            alert("The Excel file does not have the expected schema.");
+            return;
+          }
           const parsedData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
           // Assuming your data structure matches the XLSX columns order
@@ -195,6 +253,25 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     />
   ));
 
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check the scroll position, e.g., if the user scrolls down by 100 pixels, show the button
+      if (window.scrollY > BackToTopHeightSize) {
+        setShowBackToTopButton(true);
+      } else {
+        setShowBackToTopButton(false);
+      }
+    };
+
+    // Add the scroll event listener when the component mounts
+    window.addEventListener("scroll", handleScroll);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const applyFilter = () => {
     const filteredGraphData = graphData.filter((data) => {
       const dataStartDate = moment(data.startDate);
@@ -220,14 +297,26 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     setFilteredData(filteredGraphData);
   };
 
-  // Effect to apply the filter whenever form fields change
   useEffect(() => {
     applyFilter();
-  }, [formik.values]);
+  }, [
+    formik.values.fromDate,
+    formik.values.toDate,
+    formik.values.fromDistance,
+    formik.values.toDistance,
+    formik.values.graphData,
+  ]);
+
+  useEffect(() => {
+    console.log(
+      "🚀 ~ file: ImportFileForm.tsx:342 ~ ImportFileForm ~ filteredGraphData:",
+      filteredData
+    );
+  }, [filteredData]);
 
   return (
     <div
-      className="w-full mt-10"
+      className="w-full mt-10 relative"
       onDragOver={preventDefault}
       onDrop={handleDrop}
     >
@@ -263,7 +352,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         </label>
 
         <div className="relative   w-full mt-10">
-          {graphData.length > 0 && (
+          {formik.values.graphData.length > 0 && (
             <div className="flex gap-2">
               <div className="mb-4 flex gap-2  items-center">
                 <label
@@ -381,8 +470,22 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               </div>
             </div>
           )}
-
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+          <div className="my-4 flex justify-end ">
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500
+             text-white rounded-lg
+              hover:bg-blue-600
+               focus:outline-none focus:ring
+                focus:ring-blue-300
+                 disabled:bg-gray-600
+                "
+              disabled={graphData.length === 0}
+            >
+              Next
+            </button>
+          </div>
+          <table className="   w-full  text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" className="px-6 py-3">
@@ -435,22 +538,19 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             </tbody>
           </table>
         </div>
-        <div className="my-4 flex justify-end ">
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500
-             text-white rounded-lg
-              hover:bg-blue-600
-               focus:outline-none focus:ring
-                focus:ring-blue-300
-                 disabled:bg-gray-600
-                "
-            disabled={graphData.length === 0}
-          >
-            Next
-          </button>
-        </div>
       </form>
+      {showBackToTopButton && (
+        <button
+          type="button"
+          className="back-to-top-button flex justify-end items-end self-end w-full"
+          onClick={() => {
+            scroll.scrollToTop(); // Scroll to the top when the button is clicked
+          }}
+        >
+          <ArrowUpCircleIcon className=" h-20 w-20  text-blue-500 opacity-40" />{" "}
+          {/* Use the Heroicon here */}
+        </button>
+      )}
     </div>
   );
 };

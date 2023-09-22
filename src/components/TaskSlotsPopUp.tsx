@@ -25,10 +25,10 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
   handleEditTaskSlot,
 }) => {
   const minDistance: number = useSelector(
-    (state: RootState) => state.graph.settings.fromDistance
+    (state: RootState) => state.settings.fromDistance
   );
   const maxDistance: number = useSelector(
-    (state: RootState) => state.graph.settings.toDistance
+    (state: RootState) => state.settings.toDistance
   );
 
   const initialValues = {

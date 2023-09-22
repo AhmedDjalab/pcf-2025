@@ -20,17 +20,37 @@ import TextureDrawing from "./TexturePicker";
 import texturesData from "../const/texturesArray";
 import { lineStyles } from "../const/linesArray";
 import LineStylePicker from "./LineStylePicker";
-
+import { animateScroll as scroll } from "react-scroll";
+import { ArrowUpCircleIcon } from "@heroicons/react/24/solid";
+import { BackToTopHeightSize } from "../const/vars";
 // Import the ShapeType interface
 const shapeTypes = ["line", "rect", "triangle"];
 type LineType = "line" | "rect" | "triangle";
 function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
-  const graphSettings = useSelector((state: RootState) => state.graph.shapes);
+  const graphSettings = useSelector((state: RootState) => state.shapes);
   const dispatch = useDispatch();
   const [rowColors, setRowColors] = useState<{ [key: string]: string }>({});
+  const [showBackToTopButton, setShowBackToTopButton] = useState(false);
 
   // Define the table columns based on ShapeType
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check the scroll position, e.g., if the user scrolls down by 100 pixels, show the button
+      if (window.scrollY > BackToTopHeightSize) {
+        setShowBackToTopButton(true);
+      } else {
+        setShowBackToTopButton(false);
+      }
+    };
 
+    // Add the scroll event listener when the component mounts
+    window.addEventListener("scroll", handleScroll);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   const [shapesList, setShapesList] = useState<ShapeType[]>(
     graphSettings.shapesData
   );
@@ -210,6 +230,21 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
 
   return (
     <div>
+      <div className="my-4 flex justify-end ">
+        <button
+          type="button"
+          onClick={handleGoToDraw}
+          className="px-4 py-2 bg-blue-500
+             text-white rounded-lg
+              hover:bg-blue-600
+               focus:outline-none focus:ring
+                focus:ring-blue-300
+                 disabled:bg-gray-600
+                "
+        >
+          Next
+        </button>
+      </div>
       <table
         {...getTableProps()}
         className="min-w-full divide-y divide-gray-200"
@@ -252,7 +287,19 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
           })}
         </tbody>
       </table>
-      <div className="my-4 flex justify-end ">
+      {showBackToTopButton && (
+        <button
+          type="button"
+          className="back-to-top-button flex justify-end items-end self-end w-full"
+          onClick={() => {
+            scroll.scrollToTop(); // Scroll to the top when the button is clicked
+          }}
+        >
+          <ArrowUpCircleIcon className=" h-20 w-20  text-blue-500 opacity-40" />{" "}
+          {/* Use the Heroicon here */}
+        </button>
+      )}
+      {/* <div className="my-4 flex justify-end ">
         <button
           type="button"
           onClick={handleGoToDraw}
@@ -264,9 +311,9 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
                  disabled:bg-gray-600
                 "
         >
-          Draw
+          Next
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

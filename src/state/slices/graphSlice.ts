@@ -28,12 +28,17 @@ export interface TaskSlot {
   id: string;
 }
 
+export interface ProjectSettings {
+  title: string;
+  logoImg: string;
+}
 export interface GraphSetting {
   graphData: GraphDataType[];
   fromDate: string;
   toDate: string;
   fromDistance: number;
   toDistance: number;
+  rawExcelData?: GraphDataType[];
   timeRange: "Yearly" | "Monthly" | "Weekly" | "Daily";
 }
 export interface ShapesSettings {
@@ -41,6 +46,7 @@ export interface ShapesSettings {
 }
 
 interface GraphCreateType {
+  projectSettings: ProjectSettings;
   settings: GraphSetting;
   shapes: ShapesSettings;
   taskSlots: TaskSlot[];
@@ -48,6 +54,10 @@ interface GraphCreateType {
 }
 
 const initialState: GraphCreateType = {
+  projectSettings: {
+    title: "",
+    logoImg: "",
+  },
   settings: {
     graphData: [],
     fromDate: new Date().toISOString(),
@@ -67,6 +77,13 @@ const GraphSlice = createSlice({
   name: "Graphform",
   initialState,
   reducers: {
+    updateProjectSettingsValue(
+      state,
+      action: PayloadAction<{ projectSettings: ProjectSettings }>
+    ) {
+      const projectSettings = action.payload.projectSettings;
+      state.projectSettings = projectSettings;
+    },
     updateGraphSettingsValue(
       state,
       action: PayloadAction<{ graphSettingsForm: GraphSetting }>
@@ -118,6 +135,7 @@ const GraphSlice = createSlice({
     },
     resetForm(state) {
       state.settings = { ...initialState.settings };
+      state.projectSettings = { ...initialState.projectSettings };
       state.shapes = { ...initialState.shapes };
       state.taskSlots = { ...initialState.taskSlots };
 
@@ -128,6 +146,7 @@ const GraphSlice = createSlice({
 });
 
 export const {
+  updateProjectSettingsValue,
   updateGraphSettingsValue,
   updateShapesValue,
   updateTaskSlotsValue,
