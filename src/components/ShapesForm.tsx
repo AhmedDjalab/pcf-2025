@@ -230,17 +230,18 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
 
   return (
     <div>
-      <div className="my-4 flex justify-end ">
+      <div className="my-4 flex justify-between">
+        <button
+          type="button"
+          onClick={() => setCurrentStep(currentStep - 1)} // Handle going back to the previous step
+          className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600"
+        >
+          Back
+        </button>
         <button
           type="button"
           onClick={handleGoToDraw}
-          className="px-4 py-2 bg-blue-500
-             text-white rounded-lg
-              hover:bg-blue-600
-               focus:outline-none focus:ring
-                focus:ring-blue-300
-                 disabled:bg-gray-600
-                "
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
         >
           Next
         </button>

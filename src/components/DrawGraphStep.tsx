@@ -102,6 +102,54 @@ function DrawGraphStep() {
     const svg = d3.select(svgRef.current!);
     const tooltip = d3.select("#tooltip");
 
+    // zoom
+    // Define your initial scale and translation
+    const initialScale = 1;
+    const initialTranslate = [0, 0];
+
+    // Create a zoom behavior
+    const zoom = d3
+      .zoom()
+      .scaleExtent([0.5, 5]) // Set the minimum and maximum scale levels
+      .on("zoom", zoomed);
+
+    // Add the zoom behavior to the SVG
+    svg.call(zoom);
+
+    // Define the zoom function
+    function zoomed(event) {
+      const { transform } = event;
+
+      // Update the xScale and yScale domains
+      xScale.domain(transform.rescaleX(xScale).domain());
+      yScale.domain(transform.rescaleY(yScale).domain());
+
+      // Update the axis elements
+      svg.select(".x-axis").call(xAxis);
+      svg.select(".y-axis").call(yAxis);
+
+      // Apply the transform to the SVG group containing your graph elements
+      g.attr("transform", transform);
+    }
+
+    // Attach a listener for the mousewheel event
+    svg.on("wheel", (event) => {
+      if (event.shiftKey) {
+        event.preventDefault(); // Prevent the default scrolling behavior
+        const scale = event.deltaY > 0 ? 1.2 : 1 / 1.2; // Adjust the scaling factor
+        const point = d3.pointer(event);
+        const svgPoint = svg.node().createSVGPoint();
+        svgPoint.x = point[0];
+        svgPoint.y = point[1];
+        const matrix = svg.node().getScreenCTM().inverse();
+        const zoomPoint = svgPoint.matrixTransform(matrix);
+        // Apply the zoom transformation
+        svg.call(
+          zoom.transform,
+          d3.zoomIdentity.translate(zoomPoint.x, zoomPoint.y).scale(scale)
+        );
+      }
+    });
     console.error("this is data ", toDistance);
     const xScale = d3
       .scaleLinear()

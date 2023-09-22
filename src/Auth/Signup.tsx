@@ -48,7 +48,10 @@ function Signup() {
       await createUserWithEmailAndPassword(auth, email, password);
       const loginStatus = await loginUser(email, password);
 
-      if (loginStatus) navigate("/");
+      if (loginStatus) {
+        localStorage.removeItem("persist:root");
+        navigate("/");
+      }
       setLoader(false);
     } catch (err: any) {
       handleFirebaseError(err);

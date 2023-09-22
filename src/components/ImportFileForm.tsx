@@ -252,6 +252,11 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       className="w-full px-3 py-2 border rounded-lg outline-none focus:ring focus:ring-blue-300"
     />
   ));
+  const handleBack = () => {
+    // Define what should happen when the "Back" button is clicked.
+    // For example, you can go back to the previous step.
+    setCurrentStep((prevStep) => prevStep - 1);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -470,16 +475,18 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               </div>
             </div>
           )}
-          <div className="my-4 flex justify-end ">
+          <div className="my-4 flex justify-between">
+            {/* Add the "Back" button */}
+            <button
+              type="button"
+              className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600"
+              onClick={handleBack}
+            >
+              Back
+            </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500
-             text-white rounded-lg
-              hover:bg-blue-600
-               focus:outline-none focus:ring
-                focus:ring-blue-300
-                 disabled:bg-gray-600
-                "
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
               disabled={graphData.length === 0}
             >
               Next

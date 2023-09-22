@@ -113,12 +113,14 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   };
   return (
     <div>
-      <button
-        onClick={handleAddClick}
-        className="mt-10 text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
-      >
-        Add
-      </button>
+      <div className="my-4 flex justify-between">
+        <button
+          onClick={handleAddClick}
+          className=" text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
+        >
+          Add
+        </button>
+      </div>
       <table className="min-w-full divide-y divide-gray-200">
         <thead>
           <tr>
@@ -169,11 +171,17 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
           handleEditTaskSlot={handleEditTaskSlot}
         />
       )}
-      <div className="my-4 flex justify-end">
+      <div className="my-4 flex justify-between">
+        <button
+          onClick={() => setCurrentStep(currentStep - 1)} // Handle going back to the previous step
+          className=" text-white bg-gray-400 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
+        >
+          Back
+        </button>
         <button
           type="button"
           onClick={handleGoToDraw}
-          className="px-4 py-2 bg-blue-500
+          className=" px-5 py-2.5 mr-2 mb-2 bg-blue-500
                text-white rounded-lg
                 hover:bg-blue-600
                  focus:outline-none focus:ring
