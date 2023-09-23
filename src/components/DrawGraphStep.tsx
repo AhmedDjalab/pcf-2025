@@ -36,8 +36,11 @@ export interface ActivityData {
 function DrawGraphStep() {
   const graphSettings = useSelector((state: RootState) => state);
   const shapesData = useSelector((state: RootState) => state.shapes);
+  const [transform, setTransform] = useState({ k: 1, x: 0, y: 0 });
+  const svgContainerRef = useRef<SVGSVGElement | null>(null);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const containerSVGRef = useRef<SVGSVGElement | null>(null);
   const legendRef = useRef<HTMLDivElement | null>(null);
   const tableRef = useRef();
   // State to manage the selected date range
@@ -55,6 +58,7 @@ function DrawGraphStep() {
 
   const [selectedShapeData, setSelectedShapeData] = useState<ActivityData>();
   const [patternsData, setPatternsData] = useState<any[]>([]);
+
   const generateTooltipContent = (data: GraphDataType) => {
     return `
       <strong>ID:</strong> ${data.id}<br>
@@ -82,12 +86,14 @@ function DrawGraphStep() {
     // Function to handle window resize
     const handleResize = () => {
       setContainerWidth(window.innerWidth);
+
+      // Redraw your chart here with the updated dimensions
+      drawD3Chart();
     };
 
     // Add a window resize event listener
     window.addEventListener("resize", handleResize);
 
-    drawD3Chart();
     // Remove the event listener when the component unmounts
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -95,73 +101,17 @@ function DrawGraphStep() {
   }, []);
 
   const margin = { top: 40, right: 20, bottom: 100, left: 100 };
-
   const containerHeight = 1000;
-  const width = containerWidth - margin.left - margin.right;
-  const height = containerHeight - margin.top - margin.bottom;
-
+  let width = containerWidth - margin.left - margin.right;
+  let height = containerHeight - margin.top - margin.bottom;
   const drawD3Chart = () => {
     const legendContainer = d3.select(legendRef.current!);
     const svg = d3.select(svgRef.current!);
+    const containerSVG = d3.select(containerSVGRef.current!);
     svg.selectAll("*").remove();
     const tooltip = d3.select("#tooltip");
-    // zoom
-    // Define your initial scale and translation
-    const initialScale = 1;
-    const initialTranslate = [0, 0];
 
-    // Create a zoom behavior
-    const zoom = d3
-      .zoom()
-      .scaleExtent([1, 5]) // Set the minimum and maximum scale levels
-      .on("zoom", zoomed);
-
-    // Add the zoom behavior to the SVG
-    svg.call(zoom);
-
-    // Define the zoom function
-    function zoomed(event) {
-      const { transform } = event;
-
-      // Update the xScale and yScale domains
-      xScale.domain(transform.rescaleX(xScale).domain());
-      yScale.domain(transform.rescaleY(yScale).domain());
-
-      // Update the axis elements
-      svg.select(".x-axis").call(xAxis);
-      svg.select(".y-axis").call(yAxis);
-
-      // Apply the transform to the SVG group containing your graph elements
-      g.attr("transform", transform);
-    }
-
-    // Attach a listener for the mousewheel event
-    svg.on("wheel", (event) => {
-      if (event.shiftKey) {
-        event.preventDefault(); // Prevent the default scrolling behavior
-        const scale = event.deltaY > 0 ? 1.2 : 1 / 1.2; // Adjust the scaling factor
-        const svgPoint = d3.pointer(event)[0];
-        const zoomPoint = transformPoint(svgPoint, svg, zoom);
-
-        // Apply the zoom transformation
-        svg.call(
-          zoom.transform,
-          d3.zoomIdentity.translate(zoomPoint[0], zoomPoint[1]).scale(scale)
-        );
-      }
-    });
-
-    // Function to transform a point from screen coordinates to SVG coordinates
-    function transformPoint(point, svg, zoom) {
-      const matrix = svg.node().getScreenCTM().inverse();
-      const svgPoint = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "svg:point"
-      );
-      svgPoint.x = point[0];
-      svgPoint.y = point[1];
-      return svgPoint.matrixTransform(matrix);
-    }
+    // Set the height attribute of the parent SVG to fit its children
 
     const xScale = d3
       .scaleLinear()
@@ -485,6 +435,94 @@ function DrawGraphStep() {
 
         tooltip.style("display", "none");
       });
+
+    // Create a zoom behavior
+    const zoom = d3
+      .zoom()
+      .scaleExtent([1, 5]) // Set the minimum and maximum scale levels
+      .extent([
+        [0, 0],
+        [containerWidth, containerHeight],
+      ])
+
+      .on("zoom", zoomed);
+
+    // Add the zoom behavior to the SVG
+    d3.select("#wrapper").on("scroll", scrolled).call(zoom);
+
+    // Define the zoom function
+    function zoomed(event) {
+      const { transform } = event;
+
+      // Update the xScale and yScale domains
+      xScale.domain(transform.rescaleX(xScale).domain());
+      yScale.domain(transform.rescaleY(yScale).domain());
+
+      // // Update the axis elements
+      // svg.select(".x-axis").call(xAxis);
+      // svg.select(".y-axis").call(yAxis);
+      // Move scrollbars.
+      const wrapper = d3.select("#wrapper").node();
+      if (event) {
+        wrapper.scrollLeft = -event.transform.x;
+        wrapper.scrollTop = -event.transform.y;
+      }
+      // Apply the transform to the SVG group containing your graph elements
+      g.attr("transform", transform);
+    }
+
+    svg.on("wheel", (event) => {
+      setIzoom(true);
+      if (event.shiftKey) {
+        event.preventDefault();
+
+        // Calculate the zoom scale based on the mousewheel direction
+        const scale = event.deltaY > 0 ? 1.2 : 1 / 1.2;
+
+        // Get the current mouse position
+        const svgPoint = d3.pointer(event)[0];
+
+        // Calculate the new zoom point
+        const zoomPoint = transformPoint(svgPoint, svg);
+
+        // Apply the zoom transformation
+        svg.call(
+          zoom.transform,
+          d3.zoomIdentity.translate(zoomPoint[0], zoomPoint[1]).scale(scale)
+        );
+      }
+    });
+    function scrolled() {
+      const wrapper = d3.select("#wrapper");
+      const x = wrapper.node().scrollLeft + wrapper.node().clientWidth / 2;
+      const y = wrapper.node().scrollTop + wrapper.node().clientHeight / 2;
+      const scale = d3.zoomTransform(wrapper.node()).k;
+      // Update zoom parameters based on scrollbar positions.
+      wrapper.call(d3.zoom().translateTo, x / scale, y / scale);
+    }
+    // Function to transform a point from screen coordinates to SVG coordinates
+    function transformPoint(point, svg, zoom) {
+      console.log(
+        "🚀 ~ file: DrawGraphStep.tsx:172 ~ transformPoint ~ point, svg, zoom:",
+        point,
+        svg,
+        zoom
+      );
+      const matrix = containerSVG.node().getScreenCTM().inverse();
+      const svgPoint = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg:point"
+      );
+      svgPoint.x = point[0];
+      svgPoint.y = point[1];
+      return svgPoint.matrixTransform(matrix);
+    }
+
+    // Allow horizontal scrolling by adjusting the viewBox
+    containerSVG.call(
+      zoom.transform,
+      d3.zoomIdentity.translate(0, 0).scale(1).translate(margin.left, 0) // Adjust based on your margin
+    );
   };
   useEffect(() => {
     drawD3Chart();
@@ -709,11 +747,7 @@ function DrawGraphStep() {
           Save as image
         </button> */}
       </div>
-      <div id="slots-container">
-        {" "}
-        {/* Use the id or className you prefer */}
-        {/* This is the container for the slots */}
-      </div>
+
       <div className="flex flex-col" id="graph-container">
         <div className="graph-container">
           <div className="flex items-center border m-4">
@@ -728,18 +762,26 @@ function DrawGraphStep() {
           </div>
 
           <div id="tooltip" className="absolute  text-white"></div>
-          <svg width={containerWidth} height={containerHeight}>
-            <defs>
-              {/* {patterns.map((pattern) => {
+          <div id="wrapper">
+            <svg
+              ref={containerSVGRef}
+              style={{
+                minHeight: containerHeight,
+                minWidth: containerWidth,
+              }}
+            >
+              <defs>
+                {/* {patterns.map((pattern) => {
                 return pattern.content(
                   pattern.width,
                   pattern.height,
                   pattern.id
                 );
               })} */}
-            </defs>
-            <g ref={svgRef}></g>
-          </svg>
+              </defs>
+              <g ref={svgRef}></g>
+            </svg>
+          </div>
         </div>
         <div className="flex w-full justify-center items-center mb-2">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full px-5">
