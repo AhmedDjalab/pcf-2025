@@ -472,7 +472,6 @@ function DrawGraphStep() {
     }
 
     svg.on("wheel", (event) => {
-      setIzoom(true);
       if (event.shiftKey) {
         event.preventDefault();
 
@@ -502,20 +501,20 @@ function DrawGraphStep() {
     }
     // Function to transform a point from screen coordinates to SVG coordinates
     function transformPoint(point, svg, zoom) {
-      console.log(
-        "🚀 ~ file: DrawGraphStep.tsx:172 ~ transformPoint ~ point, svg, zoom:",
-        point,
-        svg,
-        zoom
-      );
-      const matrix = containerSVG.node().getScreenCTM().inverse();
-      const svgPoint = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "svg:point"
-      );
-      svgPoint.x = point[0];
-      svgPoint.y = point[1];
-      return svgPoint.matrixTransform(matrix);
+      const containerSVG = d3.select<SVGSVGElement, unknown>(svgSelector);
+      if (!containerSVG.empty()) {
+        const matrix = containerSVG.node()?.getScreenCTM()?.inverse();
+        if (matrix) {
+          const svgPoint = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "svg:point"
+          );
+          svgPoint.x = point[0];
+          svgPoint.y = point[1];
+          return svgPoint.matrixTransform(matrix);
+        }
+      }
+      return null;
     }
 
     // Allow horizontal scrolling by adjusting the viewBox
