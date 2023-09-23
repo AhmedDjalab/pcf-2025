@@ -11,6 +11,7 @@ import { zoom } from "d3-zoom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import domtoimage from "dom-to-image";
+import logo from "../assets/Logo/logo.png";
 
 import {
   LineStyle,
@@ -38,6 +39,8 @@ function DrawGraphStep() {
   const shapesData = useSelector((state: RootState) => state.shapes);
   const [transform, setTransform] = useState({ k: 1, x: 0, y: 0 });
   const svgContainerRef = useRef<SVGSVGElement | null>(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [zoomAttr, setZoomAttr] = useState({});
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const containerSVGRef = useRef<SVGSVGElement | null>(null);
@@ -99,7 +102,7 @@ function DrawGraphStep() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
+  let zoom = d3.zoom().scaleExtent([1, 5]);
   const margin = { top: 40, right: 20, bottom: 100, left: 100 };
   const containerHeight = 1000;
   let width = containerWidth - margin.left - margin.right;
@@ -437,9 +440,8 @@ function DrawGraphStep() {
       });
 
     // Create a zoom behavior
-    const zoom = d3
-      .zoom()
-      .scaleExtent([1, 5]) // Set the minimum and maximum scale levels
+    // Set the minimum and maximum scale levels
+    zoom
       .extent([
         [0, 0],
         [containerWidth, containerHeight],
@@ -454,21 +456,38 @@ function DrawGraphStep() {
     function zoomed(event) {
       const { transform } = event;
 
+      setZoomLevel(transform.k);
+
       // Update the xScale and yScale domains
       xScale.domain(transform.rescaleX(xScale).domain());
       yScale.domain(transform.rescaleY(yScale).domain());
 
-      // // Update the axis elements
-      // svg.select(".x-axis").call(xAxis);
-      // svg.select(".y-axis").call(yAxis);
-      // Move scrollbars.
-      const wrapper = d3.select("#wrapper").node();
-      if (event) {
-        wrapper.scrollLeft = -event.transform.x;
-        wrapper.scrollTop = -event.transform.y;
-      }
       // Apply the transform to the SVG group containing your graph elements
       g.attr("transform", transform);
+
+      // Get the current zoom scale
+      const currentScale = transform.k;
+
+      // Define your minimum scale (you can adjust this)
+      const minScale = 1;
+
+      // Restrict zooming out beyond the minimum scale
+      if (currentScale < minScale) {
+        svg.call(
+          zoom.transform,
+          d3.zoomIdentity.translate(transform.x, transform.y).scale(minScale)
+        );
+      }
+
+      // Move scrollbars
+      const wrapper = d3
+        .select("#wrapper")
+
+        .node();
+      if (event && currentScale > minScale) {
+        wrapper.scrollLeft = -transform.x;
+        wrapper.scrollTop = -transform.y;
+      }
     }
 
     svg.on("wheel", (event) => {
@@ -491,6 +510,7 @@ function DrawGraphStep() {
         );
       }
     });
+
     function scrolled() {
       const wrapper = d3.select("#wrapper");
       const x = wrapper.node().scrollLeft + wrapper.node().clientWidth / 2;
@@ -520,7 +540,7 @@ function DrawGraphStep() {
     // Allow horizontal scrolling by adjusting the viewBox
     containerSVG.call(
       zoom.transform,
-      d3.zoomIdentity.translate(0, 0).scale(1).translate(margin.left, 0) // Adjust based on your margin
+      d3.zoomIdentity.translate(0, 0).scale(1).translate(margin.left, 0) // Adjust based on your margin: ;
     );
   };
   useEffect(() => {
@@ -557,6 +577,9 @@ function DrawGraphStep() {
   //     }
   //   }
   // };
+  const resetZoom = () => {
+    drawD3Chart();
+  };
 
   const patterns = useMemo(() => {
     const calculatedPatterns = [];
@@ -678,30 +701,38 @@ function DrawGraphStep() {
 
   const saveAsPdfOrImage = (format) => {
     const svgContainer = document.getElementById("graph-container");
-
-    // Calculate the scale factors for width and height
-    const scaleWidth = (A4_WIDTH_MM * DPI) / (svgContainer.offsetWidth * 45.4);
-    const scaleHeight =
-      (A4_HEIGHT_MM * DPI) / (svgContainer.offsetHeight * 45.4);
-
-    // Use the minimum of the two scale factors to ensure the entire graph fits
-    const scale = Math.max(scaleWidth, scaleHeight);
+    const myStyle = svgContainer;
+    // Calculate the dimensions in pixels, converting mm to pixels using a standard DPI value (e.g., 96 DPI)
+    const pageWidthPx = Math.floor(((A4_WIDTH_MM - 40) * 96) / 15.4); // Subtract 4 cm from the width
+    const pageHeightPx = Math.floor(((A4_HEIGHT_MM - 40) * 96) / 15.4); // Subtract 4 cm from the height
 
     domtoimage
       .toPng(svgContainer, {
-        width: svgContainer.offsetWidth * scale,
-        height: svgContainer.offsetHeight * scale,
+        width: pageWidthPx,
+        height: pageHeightPx,
       })
       .then((dataUrl) => {
         if (format === "pdf") {
-          // Create a PDF document with A4 dimensions
-          const pdf = new jsPDF("landscape", "mm", [A4_WIDTH_MM, A4_HEIGHT_MM]);
-          const imgWidth = A4_WIDTH_MM;
-          const imgHeight =
-            (svgContainer.offsetHeight * imgWidth) / svgContainer.offsetWidth;
-          const xPosition = (A4_WIDTH_MM - imgWidth) / 2;
+          // Create a PDF document with A4 dimensions minus margins
+          const pdf = new jsPDF("landscape", "mm", [
+            A4_WIDTH_MM - 40,
+            A4_HEIGHT_MM - 40,
+          ]); // Subtract 4 cm from both width and height
 
-          pdf.addImage(dataUrl, "PNG", xPosition, 0, imgWidth, imgHeight);
+          // Calculate the dimensions and position for the SVG in the PDF
+          const imgWidth = A4_WIDTH_MM - 40; // Subtract 4 cm from the width
+          const imgHeight = A4_HEIGHT_MM - 40; // Subtract 4 cm from the height
+          const xPosition = 20; // 2 cm left margin
+          const yPosition = 20; // 2 cm top margin
+
+          pdf.addImage(
+            dataUrl,
+            "PNG",
+            xPosition,
+            yPosition,
+            imgWidth,
+            imgHeight
+          );
           pdf.save("graph.pdf");
         } else if (format === "image") {
           // Create a new SVG element with a white background
@@ -712,8 +743,8 @@ function DrawGraphStep() {
           // Convert the modified SVG to an image
           domtoimage
             .toPng(svgWithWhiteBackground, {
-              width: svgContainer.offsetWidth * scale,
-              height: svgContainer.offsetHeight * scale,
+              width: pageWidthPx,
+              height: pageHeightPx,
             })
             .then((whiteBgDataUrl) => {
               const image = new Image();
@@ -730,6 +761,7 @@ function DrawGraphStep() {
         }
       });
   };
+
   return (
     <div className="flex flex-col">
       <div>
@@ -748,14 +780,27 @@ function DrawGraphStep() {
       </div>
 
       <div className="flex flex-col" id="graph-container">
+        {zoomLevel > 1 && (
+          <button
+            className="focus:outline-none mt-2 text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
+            onClick={resetZoom}
+          >
+            Reset Zoom
+          </button>
+        )}
         <div className="graph-container">
           <div className="flex items-center border m-4">
+            <img
+              src={logo}
+              className="h-20 w-40 mr-4"
+              alt={graphSettings.projectSettings.title}
+            />
             <div className="flex-grow text-center">
               <p className="text-2xl">{graphSettings.projectSettings.title}</p>
             </div>
             <img
               src={graphSettings.projectSettings.logoImg}
-              className="h-20 w-20 mr-4"
+              className="h-20 w-40 "
               alt={graphSettings.projectSettings.title}
             />
           </div>
