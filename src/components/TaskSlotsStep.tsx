@@ -118,20 +118,20 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
           onClick={handleAddClick}
           className=" text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
         >
-          Add
+          Ajouter
         </button>
       </div>
       <table className="min-w-full divide-y divide-gray-200">
         <thead>
           <tr>
             <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Name
+              Nom de l’ouvrage / tronçon
             </th>
             <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Start
+              Pk de début
             </th>
             <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              End
+              Pk de fin
             </th>
             <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               Actions
@@ -149,13 +149,13 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
                   className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                   onClick={() => handleEditClick(row)}
                 >
-                  Edit
+                  Modifier
                 </button>
                 <button
                   className="focus:outline-none text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                   onClick={() => handleDeleteClick(row.id)}
                 >
-                  Delete
+                  Supprimé
                 </button>
               </td>
             </tr>
@@ -176,7 +176,7 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
           onClick={() => setCurrentStep(currentStep - 1)} // Handle going back to the previous step
           className=" text-white bg-gray-400 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
         >
-          Back
+          Retour
         </button>
         <button
           type="button"
@@ -188,7 +188,7 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
                   focus:ring-blue-300
                    disabled:bg-gray-600"
         >
-          Draw
+          Afficher le planning
         </button>
       </div>
     </div>

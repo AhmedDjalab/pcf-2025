@@ -26,7 +26,10 @@ const ImagePicker: React.FC<ImagePickerProps> = ({ onChange, imageValue }) => {
         };
         reader.readAsDataURL(file);
       } else {
-        alert("Please select a valid image file (e.g., JPG, PNG).");
+        alert(
+          "Veuillez sélectionner un fichier image valide (par exemple, JPG, PNG)."
+        );
+
         setSelectedImage(null);
         onChange(null);
       }
@@ -53,7 +56,7 @@ const ImagePicker: React.FC<ImagePickerProps> = ({ onChange, imageValue }) => {
             className="mx-auto mb-2 w-40 h-40"
           />
         ) : (
-          <span className="text-gray-400">Click to select an image</span>
+          <span className="text-gray-400">Importer le Logo</span>
         )}
       </label>
     </div>

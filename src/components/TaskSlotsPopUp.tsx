@@ -38,15 +38,21 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
   };
 
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required("Name is required"),
+    name: Yup.string().required("Le nom est requis"),
     start: Yup.number()
-      .required("Start is required")
-      .min(minDistance, `Start must be greater than or equal to ${minDistance}`)
-      .max(maxDistance, `Start must be less than or equal to ${maxDistance}`),
+      .required("Le début est requis")
+      .min(minDistance, `Le début doit être supérieur ou égal à ${minDistance}`)
+      .max(
+        maxDistance,
+        `Le début doit être inférieur ou égal à ${maxDistance}`
+      ),
     end: Yup.number()
-      .required("End is required")
-      .min(minDistance, `End must be greater than or equal to ${minDistance}`)
-      .max(maxDistance, `End must be less than or equal to ${maxDistance}`),
+      .required("La fin est requise")
+      .min(minDistance, `La fin doit être supérieure ou égale à ${minDistance}`)
+      .max(
+        maxDistance,
+        `La fin doit être inférieure ou égale à ${maxDistance}`
+      ),
   });
 
   const onSubmit = (values: any) => {
@@ -64,7 +70,9 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-white bg-opacity-80">
       <div className="bg-white p-6 rounded shadow-md w-96">
         <div className="text-2xl font-semibold mb-4">
-          {isNew ? "Add Task Slot" : "Edit Task Slot"}
+          {isNew
+            ? "Définissez les limites du tronçon ou de l’ouvrage"
+            : " Modifier les limites du tronçon ou de l’ouvrage"}
         </div>
         <Formik
           initialValues={initialValues}
@@ -82,7 +90,7 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
             <Form>
               <div className="mb-4">
                 <label className="block text-gray-700 font-bold mb-2">
-                  Name:
+                  Nom:
                 </label>
                 <Field
                   type="text"
@@ -99,7 +107,7 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 font-bold mb-2">
-                  Start:
+                  Pk de début:
                 </label>
                 <Field
                   type="number"
@@ -116,7 +124,7 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 font-bold mb-2">
-                  End:
+                  Pk de fin:
                 </label>
                 <Field
                   type="number"
@@ -137,14 +145,14 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
                   disabled={!isValid}
                   className="bg-blue-500 text-white rounded px-4 py-2 mr-2 hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
                 >
-                  {isNew ? "Add" : "Save"}
+                  {isNew ? "Ajouter" : "Sauvegarder"}
                 </button>
                 <button
                   type="button"
                   onClick={closeModal}
                   className="bg-gray-300 text-gray-600 rounded px-4 py-2 hover:bg-gray-400 focus:outline-none focus:ring focus:ring-gray-300"
                 >
-                  Cancel
+                  Quitter
                 </button>
               </div>
             </Form>

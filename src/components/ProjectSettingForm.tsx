@@ -52,7 +52,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
             htmlFor="projectTitle"
             className="block text-gray-700 text-sm font-bold mb-2"
           >
-            Project Title
+            Titre du Projet
           </label>
           <input
             type="text"
@@ -70,7 +70,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
             htmlFor="projectImage"
             className="block text-gray-700 text-sm font-bold mb-2"
           >
-            Project Image
+            Logo
           </label>
           <ImagePicker
             onChange={handleImageChange}

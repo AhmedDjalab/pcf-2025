@@ -15,23 +15,23 @@ import {
 const steps = [
   {
     stepNumber: 1,
-    title: "Project Settings",
-    description: "Add your project settings",
+    title: "Entête du planning",
+    description: "Entrez le titre du projet & Logo",
   },
   {
     stepNumber: 2,
-    title: "Import File",
-    description: "Import File and add settings",
+    title: "Importer le fichier Excel",
+    description: "Faites Glissez ou importez votre fichier",
   },
   {
     stepNumber: 3,
-    title: "Shapes Style",
-    description: "Add Shapes style to your graph",
+    title: "Définition des Styles",
+    description: "Définissez le style des activités",
   },
   {
     stepNumber: 4,
-    title: "Slices (Tranches)",
-    description: "divide your project to Slices ",
+    title: "Définition des tronçons",
+    description: "Définissez le début et fin de chaque tronçon",
   },
   // {
   //   stepNumber: 4,

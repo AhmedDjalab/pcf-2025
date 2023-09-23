@@ -17,8 +17,8 @@ const Header = () => {
     <header className="text-black py-4 text-center flex flex-col items-center">
       <div className="flex justify-end self-end items-center">
         <p className="text-xl px-5 mb-2">
-          Contact Us:
-          <span className="text-2xl text-blue-600">admin@ientreprize.com</span>
+          Contact:{" "}
+          <span className="text-xl text-blue-600">admin@ientreprize.com</span>
         </p>
         {user && (
           <div className="relative inline-block">

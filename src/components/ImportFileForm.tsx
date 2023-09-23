@@ -46,12 +46,15 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const [filteredData, setFilteredData] = useState<GraphDataType[]>([]);
   const [showBackToTopButton, setShowBackToTopButton] = useState(false);
   const validationSchema = Yup.object().shape({
-    fromDate: Yup.date().required("From Date is required"),
+    fromDate: Yup.date().required("La date de début est requise"),
     toDate: Yup.date()
-      .required("To Date is required")
-      .min(Yup.ref("fromDate"), "To Date should be after From Date"),
-    fromDistance: Yup.number().required("From Distance is required"),
-    toDistance: Yup.number().required("To Distance is required"),
+      .required("La date de fin est requise")
+      .min(
+        Yup.ref("fromDate"),
+        "La date de fin doit être après la date de début"
+      ),
+    fromDistance: Yup.number().required("La distance de départ est requise"),
+    toDistance: Yup.number().required("La distance de fin est requise"),
   });
 
   const formik = useFormik({
@@ -115,7 +118,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
     if (fileExtension !== "xlsx") {
       // Show an alert for invalid file format
-      alert("Please select a valid XLSX or Excel file.");
+      alert("Veuillez sélectionner un fichier XLSX ou Excel valide.");
       return;
     }
 
@@ -144,7 +147,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           })[0] as string[];
 
           if (!headerRow || !arraysEqual(headerRow, expectedSchema)) {
-            alert("The Excel file does not have the expected schema.");
+            alert("Le fichier Excel n'a pas le schéma attendu.");
             return;
           }
           const parsedData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
@@ -154,8 +157,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             .slice(1)
             .filter((row: any) => row[0] !== null && row[0] !== undefined)
             .map((row: any) => {
-              const startDate = moment(row[2], "MM/DD/YYYY"); // Parse Start Date
-              const finishDate = moment(row[3], "MM/DD/YYYY"); // Parse Finish Date
+              const startDate = moment(row[2], "DD/MM/YYYY"); // Parse Start Date
+              const finishDate = moment(row[3], "DD/MM/YYYY"); // Parse Finish Date
 
               if (!startDate.isValid() || !finishDate.isValid()) {
                 // Handle invalid date format here
@@ -237,10 +240,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     }
   };
 
-  const renderMonthContent = (month: any, shortMonth: any, longMonth: any) => {
-    const tooltipText = `Tooltip for month: ${longMonth}`;
-    return <span title={tooltipText}>{shortMonth}</span>;
-  };
+  // const renderMonthContent = (month: any, shortMonth: any, longMonth: any) => {
+  //   const tooltipText = `Tooltip for month: ${longMonth}`;
+  //   return <span title={tooltipText}>{shortMonth}</span>;
+  // };
 
   const CustomInput = forwardRef(({ value, onClick }: any, ref) => (
     //@ts-ignore
@@ -312,13 +315,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     formik.values.graphData,
   ]);
 
-  useEffect(() => {
-    console.log(
-      "🚀 ~ file: ImportFileForm.tsx:342 ~ ImportFileForm ~ filteredGraphData:",
-      filteredData
-    );
-  }, [filteredData]);
-
   return (
     <div
       className="w-full mt-10 relative"
@@ -343,8 +339,11 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               />
             </svg>
             <span className="font-medium text-gray-600">
-              Drop files to Attach, or
-              <span className="text-blue-600 underline"> browse</span>
+              Faites Glissez ou
+              <span className="text-blue-600 underline">
+                {" "}
+                importez votre fichier
+              </span>
             </span>
           </span>
           <input
@@ -364,7 +363,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   htmlFor="fromDate"
                   className="block font-medium text-gray-700"
                 >
-                  From Date
+                  Début
                 </label>
                 <DatePicker
                   id="fromDate"
@@ -389,7 +388,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   htmlFor="toDate"
                   className="block font-medium text-gray-700"
                 >
-                  To Date
+                  Fin
                 </label>
                 <DatePicker
                   id="toDate"
@@ -413,7 +412,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   htmlFor="fromDistance"
                   className="block font-medium text-gray-700"
                 >
-                  From Distance
+                  Pk de début
                 </label>
                 <input
                   id="fromDistance"
@@ -436,7 +435,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   htmlFor="toDistance"
                   className="block font-medium text-gray-700"
                 >
-                  To Distance
+                  Pk de fin
                 </label>
                 <input
                   id="toDistance"
@@ -457,7 +456,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   htmlFor="timeRange"
                   className="block font-medium text-gray-700"
                 >
-                  Time Range
+                  Echelle de temps
                 </label>
                 <select
                   value={formik.values.timeRange}
@@ -467,10 +466,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   name="timeRange"
                   className="w-full px-3 py-2 border rounded-lg outline-none focus:ring focus:ring-blue-300"
                 >
-                  <option value="Yearly">Yearly</option>
-                  <option value="Monthly">Monthly</option>
-                  <option value="Weekly">Weekly</option>
-                  <option value="Daily">Daily</option>
+                  <option value="Yearly">Annuel</option>
+                  <option value="Monthly">Mensuel</option>
+                  <option value="Weekly">Hebdomadaire</option>
+                  <option value="Daily">Quotidien</option>
                 </select>
               </div>
             </div>
@@ -482,14 +481,14 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600"
               onClick={handleBack}
             >
-              Back
+              Retour
             </button>
             <button
               type="submit"
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
               disabled={graphData.length === 0}
             >
-              Next
+              Suivant
             </button>
           </div>
           <table className="   w-full  text-sm text-left text-gray-500 dark:text-gray-400">
@@ -499,22 +498,22 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   ID
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Activity Name
+                  Nom de l’activité
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Start Date
+                  Date de début
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Finish Date
+                  Date de fin
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Start Chainage
+                  Date de fin
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Finish Chainage
+                  Pk de fin
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Style
+                  Style de l’activité
                 </th>
               </tr>
             </thead>
