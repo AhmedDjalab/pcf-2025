@@ -40,9 +40,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const graphSettings = useSelector((state: RootState) => state.settings);
 
   const [initialValues, setInitialValues] = useState<FormValues>(initForm);
-  const [graphData, setGraphData] = useState<GraphDataType[]>(
-    graphSettings.rawExcelData ?? []
-  );
+  const [graphData, setGraphData] = useState<GraphDataType[]>([]);
   const [filteredData, setFilteredData] = useState<GraphDataType[]>([]);
   const [showBackToTopButton, setShowBackToTopButton] = useState(false);
   const validationSchema = Yup.object().shape({
@@ -96,6 +94,13 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     // }
     return true;
   }
+
+  function adjustTimeZone(dateString: string) {
+    const [day, month, year] = dateString.split("/");
+    const parsedDate = new Date(`${year}-${month}-${day}T00:00:00Z`);
+    return parsedDate.toISOString().split("T")[0]; // Output as YYYY-MM-DD
+  }
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     event.stopPropagation();
@@ -150,15 +155,22 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             alert("Le fichier Excel n'a pas le schéma attendu.");
             return;
           }
-          const parsedData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          //@ts-nocheck
+          const parsedData = XLSX.utils.sheet_to_json(worksheet, {
+            dateNF: "dd/mm/yyyy",
+            raw: false,
+            header: 1,
+          });
+          console.log(
+            "🚀 ~ file: ImportFileForm.tsx:154 ~ handleFileUpload ~ parsedData:",
+            parsedData
+          );
 
           // Assuming your data structure matches the XLSX columns order
           const graphData = parsedData
-            .slice(1)
-            .filter((row: any) => row[0] !== null && row[0] !== undefined)
             .map((row: any) => {
-              const startDate = moment(row[2], "DD/MM/YYYY"); // Parse Start Date
-              const finishDate = moment(row[3], "DD/MM/YYYY"); // Parse Finish Date
+              const startDate = moment.utc(row[2], "DD/MM/YYYY", true); // Parse Start Date
+              const finishDate = moment.utc(row[3], "DD/MM/YYYY", true); // Parse Finish Date
 
               if (!startDate.isValid() || !finishDate.isValid()) {
                 // Handle invalid date format here
@@ -176,7 +188,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               };
             })
             .filter((item: any) => item !== null) as GraphDataType[];
-
+          console.log(
+            "🚀 ~ file: ImportFileForm.tsx:154 ~ handleFileUpload ~ parsedData:",
+            graphData
+          );
           setGraphData(graphData);
           formik.setFieldValue("graphData", graphData);
         }
@@ -282,25 +297,20 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
   const applyFilter = () => {
     const filteredGraphData = graphData.filter((data) => {
-      const dataStartDate = moment(data.startDate);
-      const dataFinishDate = moment(data.finishDate);
+      const dataStartDate = new Date(data.startDate);
+      const dataFinishDate = new Date(data.finishDate);
 
       const zeroDistance =
         formik.values.fromDistance == "0" && formik.values.toDistance == "0";
+      const fromDate = new Date(formik.values.fromDate);
+      const toDate = new Date(formik.values.toDate);
 
-      if (zeroDistance) {
-        return (
-          dataStartDate.isSameOrAfter(formik.values.fromDate, "day") &&
-          dataFinishDate.isSameOrBefore(formik.values.toDate, "day")
-        );
-      } else {
-        return (
-          dataStartDate.isSameOrAfter(formik.values.fromDate, "day") &&
-          dataFinishDate.isSameOrBefore(formik.values.toDate, "day") &&
-          data.startChainage >= parseFloat(formik.values.fromDistance) &&
-          data.finishChainage <= parseFloat(formik.values.toDistance)
-        );
-      }
+      return (
+        dataFinishDate >= fromDate &&
+        dataStartDate <= toDate &&
+        data.startChainage >= parseFloat(formik.values.fromDistance) &&
+        data.finishChainage <= parseFloat(formik.values.toDistance)
+      );
     });
     setFilteredData(filteredGraphData);
   };

@@ -20,7 +20,7 @@ const steps = [
   },
   {
     stepNumber: 2,
-    title: "Importer le fichier Excel",
+    title: "Importation du fichier Excel",
     description: "Faites glisser ou importez votre fichier",
   },
   {
