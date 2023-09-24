@@ -704,12 +704,12 @@ function DrawGraphStep() {
   const saveAsPdfOrImage = (format) => {
     const svgContainer = document.getElementById("graph-container");
     const myStyle = svgContainer;
-
-    svgContainer.setAttribute("transform", "none");
+    // Save the current zoom transform
+    drawD3Chart();
 
     // Calculate the dimensions in pixels, converting mm to pixels using a standard DPI value (e.g., 96 DPI)
-    const pageWidthPx = Math.floor((A4_WIDTH_MM * 96) / 25.4); // Subtract 4 cm from the width
-    const pageHeightPx = Math.floor((A4_HEIGHT_MM * 96) / 25.4); // Subtract 4 cm from the height
+    const pageWidthPx = Math.floor((A4_WIDTH_MM * 96) / 18.4); // Subtract 4 cm from the width
+    const pageHeightPx = Math.floor((A4_HEIGHT_MM * 96) / 15.4); // Subtract 4 cm from the height
 
     domtoimage
       .toPng(svgContainer, {
