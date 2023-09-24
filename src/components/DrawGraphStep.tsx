@@ -857,7 +857,7 @@ function DrawGraphStep() {
           className="focus:outline-none mt-2 text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
           onClick={resetZoom}
         >
-          Reset Zoom
+          Annuler le Zoom
         </button>
       )}
       <div className="flex flex-col" id="graph-container">
@@ -916,7 +916,7 @@ function DrawGraphStep() {
             {selectedShapeData?.activityName}
           </div>
 
-          <div className="border border-gray-700 p-2 bg-slate-500">Style</div>
+          <div className="border border-gray-700 p-2 bg-slate-500">STYLE</div>
           <div className="border border-gray-700 p-2">
             {selectedShapeData?.style}
           </div>
