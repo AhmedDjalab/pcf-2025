@@ -195,7 +195,7 @@ function Login() {
                         ></path>
                       </svg>
                     ) : (
-                      "Entrez"
+                      "Entrer"
                     )}
                   </button>
                 </div>
