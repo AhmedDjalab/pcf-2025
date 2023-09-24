@@ -92,10 +92,7 @@ const GraphSlice = createSlice({
       action: PayloadAction<{ graphSettingsForm: GraphSetting }>
     ) {
       const graphSettingsForm = action.payload.graphSettingsForm;
-      console.log(
-        "🚀 ~ file: graphSlice.ts:96 ~ graphSettingsForm:",
-        graphSettingsForm
-      );
+
       type ShapeSet = {
         style: string;
         activityId: string;
@@ -105,11 +102,6 @@ const GraphSlice = createSlice({
         styles.add(data.style);
       });
 
-      console.error(
-        "🚀 ~ file: graphSlice.ts:99 ~ styles:",
-        styles,
-        state.shapes.shapesData
-      );
       let shapes: ShapeType[] = [];
 
       const uniqueStyles = Array.from(styles);
@@ -126,7 +118,6 @@ const GraphSlice = createSlice({
           .map((data) => data.id),
       }));
 
-      console.log("thsis is hapes ", shapes);
       return {
         ...state,
         settings: graphSettingsForm,
@@ -137,11 +128,6 @@ const GraphSlice = createSlice({
       state,
       action: PayloadAction<{ shapesForm: ShapesSettings }>
     ) {
-      console.log(
-        "🚀 ~ file: graphSlice.ts:133 ~  state.shapes:",
-        state.shapes
-      );
-
       state.shapes = action.payload.shapesForm;
     },
     updateTaskSlotsValue(

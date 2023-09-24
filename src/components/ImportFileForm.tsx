@@ -112,10 +112,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     const parsedData: any[][] = XLSX.utils.sheet_to_json(worksheet, {
       header: 1,
     });
-    console.log(
-      "🚀 ~ file: ImportFileForm.tsx:115 ~ handleFileData ~ parsedData:",
-      parsedData
-    );
 
     // Assuming your data structure matches the XLSX columns order
     const graphData = parsedData
@@ -218,16 +214,16 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   //   return <span title={tooltipText}>{shortMonth}</span>;
   // };
 
-  const CustomInput = forwardRef(({ value, onClick }: any, ref) => (
-    //@ts-ignore
-    //@ts-ignore
+  const CustomInput = forwardRef(({ value, onClick, onChange }: any, ref) => (
     <input
       type="text"
       value={value}
       onClick={onClick}
+      onChange={onChange}
       className="w-full px-3 py-2 border rounded-lg outline-none focus:ring focus:ring-blue-300"
     />
   ));
+
   const handleBack = () => {
     // Define what should happen when the "Back" button is clicked.
     // For example, you can go back to the previous step.

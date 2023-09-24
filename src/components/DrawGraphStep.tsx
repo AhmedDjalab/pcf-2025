@@ -156,7 +156,6 @@ function DrawGraphStep() {
     } else if (timeRange.includes("Daily")) {
       yAxis.ticks(d3.timeDay.every(1)); // Show daily ticks
     }
-    console.error(new Date(startDate));
     g.append("g")
       .attr("class", "y-axis")
       .attr("transform", "translate(5,0)")
@@ -197,7 +196,6 @@ function DrawGraphStep() {
           x.activityId?.includes(d.id)
         )!;
         if (!shape) {
-          console.log("🚀 ~ file: DrawGraphStep.tsx:181 ~ shape:", shape, d.id);
           return;
         }
         // Define boundaries
@@ -625,10 +623,6 @@ function DrawGraphStep() {
 
     return calculatedPatterns;
   }, [shapesData]);
-
-  useEffect(() => {
-    console.log("patters", patterns);
-  }, [patterns]);
 
   useEffect(() => {
     // Check if any shape name is clicked

@@ -65,7 +65,6 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
         Header: "Format du style",
         accessor: "type",
         Cell: ({ row }) => {
-          console.log("🚀 ~ file: ShapesForm.tsx:44 ~ ShapesForm ~ row:", row);
           const handleTypeChange = (newType: LineType) => {
             // Update the underlying data (shapesList) with the new type
             let clonedShapes = [...shapesList];
@@ -141,7 +140,6 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
           let rowTexture = texturesData.find(
             (x) => x.id === row.values["backgroundTexture"]
           )!;
-          console.error("this is coors ", row.values["color"], row.id);
           return (
             <TexturePicker
               key={row.values["id"]}
@@ -159,10 +157,6 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
           const [isOpen, toggle] = useState(false);
           const [currentColor, setCurrentColor] = useState(row.values["color"]);
           const handleColorChange = (newColor: string) => {
-            console.log(
-              "🚀 ~ file: ShapesForm.tsx:96 ~ handleColorChange ~ newColor:",
-              newColor
-            );
             setCurrentColor(newColor);
             setShapesList((prevShapesList) => {
               return prevShapesList.map((shape) => {
