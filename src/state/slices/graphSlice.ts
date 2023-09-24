@@ -105,23 +105,27 @@ const GraphSlice = createSlice({
         styles.add(data.style);
       });
 
-      console.error("🚀 ~ file: graphSlice.ts:99 ~ styles:", styles);
+      console.error(
+        "🚀 ~ file: graphSlice.ts:99 ~ styles:",
+        styles,
+        state.shapes.shapesData
+      );
       let shapes: ShapeType[] = [];
-      if (state.shapes.shapesData.length === 0) {
-        const uniqueStyles = Array.from(styles);
 
-        shapes = uniqueStyles.map((style, index) => ({
-          type: "line",
-          backgroundTexture: texturesData[0].id,
-          color: "#24303F",
-          name: style,
-          lineType: lineStyles[0].id,
-          id: index.toString(),
-          activityId: graphSettingsForm.graphData
-            .filter((x) => x.style === style)
-            .map((data) => data.id),
-        }));
-      }
+      const uniqueStyles = Array.from(styles);
+
+      shapes = uniqueStyles.map((style, index) => ({
+        type: "line",
+        backgroundTexture: texturesData[0].id,
+        color: "#24303F",
+        name: style,
+        lineType: lineStyles[0].id,
+        id: index.toString(),
+        activityId: graphSettingsForm.graphData
+          .filter((x) => x.style === style)
+          .map((data) => data.id),
+      }));
+
       console.log("thsis is hapes ", shapes);
       return {
         ...state,

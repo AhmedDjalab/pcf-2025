@@ -197,6 +197,23 @@ function DrawGraphStep() {
           console.log("🚀 ~ file: DrawGraphStep.tsx:181 ~ shape:", shape, d.id);
           return;
         }
+        // Define boundaries
+        const minStartDate = new Date(startDate);
+        const maxEndDate = new Date(endDate);
+        const minStartChainage = fromDistance;
+        const maxFinishChainage = toDistance;
+
+        // Calculate the adjusted coordinates
+        let x1 = xScale(d.startChainage);
+        let x2 = xScale(d.finishChainage);
+        let y1 = yScale(new Date(d.startDate));
+        let y2 = yScale(new Date(d.finishDate));
+
+        // Adjust the coordinates to stay within the boundaries
+        x1 = Math.max(x1, xScale(minStartChainage));
+        x2 = Math.min(x2, xScale(maxFinishChainage));
+        y1 = Math.max(y1, yScale(minStartDate));
+        y2 = Math.min(y2, yScale(maxEndDate));
         const textureConfig = texturesData.find(
           (x) => x.id == shape.backgroundTexture
         );
@@ -250,14 +267,10 @@ function DrawGraphStep() {
           }
 
           shapeInCanvas
-            .attr("x1", (d: unknown) =>
-              xScale((d as GraphDataType).startChainage)
-            )
-            .attr("x2", (d) => xScale((d as GraphDataType).finishChainage))
-            .attr("y1", (d) => yScale(new Date((d as GraphDataType).startDate)))
-            .attr("y2", (d) =>
-              yScale(new Date((d as GraphDataType).finishDate))
-            )
+            .attr("x1", x1)
+            .attr("x2", x2)
+            .attr("y1", y1)
+            .attr("y2", y2)
 
             .attr("marker-end", `url(#${lineStyleAttr.markerEndId}${shape.id})`)
             .attr(
@@ -273,45 +286,27 @@ function DrawGraphStep() {
               lineStyleAttr.style ? lineStyleAttr.style["stroke-dasharray"] : ""
             );
         } else if (shape.type === "rect") {
+          x1 = Math.min(x1, x2); // Adjust x1 if it's greater than x2
+          y1 = Math.min(y1, y2); // Adjust y1 if it's greater than y2
+          x2 = Math.max(x1, x2);
+          y2 = Math.max(y1, y2);
           shapeInCanvas
-            .attr("x", (d) => xScale((d as GraphDataType).startChainage))
-            .attr("y", (d) => yScale(new Date((d as GraphDataType).startDate)))
+            .attr("x", x1)
+            .attr("y", y1)
             .attr("stroke", shapeStroke)
-            .attr(
-              "width",
-              (d) =>
-                xScale((d as GraphDataType).finishChainage) -
-                xScale((d as GraphDataType).startChainage)
-            )
-            .attr(
-              "height",
-              (d) =>
-                yScale(new Date((d as GraphDataType).finishDate)) -
-                yScale(new Date((d as GraphDataType).startDate))
-            );
+            .attr("width", x2 - x1)
+            .attr("height", y2 - y1);
         } else if (shape.type === "triangle") {
           // Define the points for the triangle (adjust as needed)
-          const trianglePoints = `${xScale(
-            (d as GraphDataType).startChainage
-          )},${yScale(new Date((d as GraphDataType).startDate))}
-                                  ${xScale(
-                                    (d as GraphDataType).finishChainage
-                                  )},${yScale(
-            new Date((d as GraphDataType).finishDate)
-          )}
-                                  ${xScale(
-                                    (d as GraphDataType).startChainage
-                                  )},${yScale(
-            new Date((d as GraphDataType).finishDate)
-          )}`;
+          const trianglePoints = `${x1},${y1} ${x2},${y2} ${x1},${y2}`;
 
           shapeInCanvas
             .attr("points", trianglePoints)
             .attr("stroke", shapeStroke);
         } else {
           shapeInCanvas
-            .attr("cx", (d) => xScale((d as GraphDataType).startChainage))
-            .attr("cy", (d) => yScale(new Date((d as GraphDataType).startDate)))
+            .attr("cx", (x1 + x2) / 2) // Center the circle within the adjusted boundaries
+            .attr("cy", (y1 + y2) / 2) // Center the circle within the adjusted boundaries
             .attr("r", 5);
         }
 

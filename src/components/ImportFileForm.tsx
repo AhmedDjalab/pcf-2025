@@ -168,6 +168,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
           // Assuming your data structure matches the XLSX columns order
           const graphData = parsedData
+            .slice(1)
             .map((row: any) => {
               const startDate = moment.utc(row[2], "DD/MM/YYYY", true); // Parse Start Date
               const finishDate = moment.utc(row[3], "DD/MM/YYYY", true); // Parse Finish Date
@@ -192,7 +193,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             "🚀 ~ file: ImportFileForm.tsx:154 ~ handleFileUpload ~ parsedData:",
             graphData
           );
-          setGraphData(graphData);
+          setGraphData((per) => graphData);
           formik.setFieldValue("graphData", graphData);
         }
       };
@@ -246,7 +247,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             })
             .filter((item: any) => item !== null) as GraphDataType[];
 
-          setGraphData(graphData);
+          setGraphData((prev) => graphData);
           formik.setFieldValue("graphData", graphData);
         }
       };
