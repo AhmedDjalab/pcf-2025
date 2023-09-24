@@ -357,8 +357,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
         <div className="relative   w-full mt-10">
           {formik.values.graphData.length > 0 && (
-            <div className="flex gap-2">
-              <div className="mb-4 flex gap-2  items-center">
+            <div className="grid grid-cols-3 gap-2 justify-center">
+              <div className="mb-4">
                 <label
                   htmlFor="fromDate"
                   className="block font-medium text-gray-700"
@@ -379,11 +379,11 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   showMonthYearPicker
                 />
                 {/* {formik.touched.fromDate && formik.errors.fromDate ? (
-            <div className="text-red-600">{formik.errors.fromDate}</div>
-          ) : null} */}
+                   <div className="text-red-600">{formik.errors.fromDate}</div>
+                 ) : null} */}
               </div>
 
-              <div className="mb-4 flex gap-2  items-center">
+              <div className="mb-4">
                 <label
                   htmlFor="toDate"
                   className="block font-medium text-gray-700"
@@ -404,10 +404,11 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   showMonthYearPicker
                 />
                 {/* {formik.touched.toDate && formik.errors.toDate ? (
-            <div className="text-red-600">{formik.errors.toDate}</div>
-          ) : null} */}
+                   <div className="text-red-600">{formik.errors.toDate}</div>
+                 ) : null} */}
               </div>
-              <div className="mb-4 flex gap-2  items-center">
+
+              <div className="mb-4">
                 <label
                   htmlFor="fromDistance"
                   className="block font-medium text-gray-700"
@@ -430,7 +431,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                 )}
               </div>
 
-              <div className="mb-4 flex gap-2  items-center">
+              <div className="mb-4">
                 <label
                   htmlFor="toDistance"
                   className="block font-medium text-gray-700"
@@ -451,7 +452,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                 )}
               </div>
 
-              <div className="mb-4 flex gap-2 items-center">
+              <div className="mb-4">
                 <label
                   htmlFor="timeRange"
                   className="block font-medium text-gray-700"

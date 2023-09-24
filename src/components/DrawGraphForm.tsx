@@ -16,12 +16,12 @@ const steps = [
   {
     stepNumber: 1,
     title: "Entête du planning",
-    description: "Entrez le titre du projet & Logo",
+    description: "Entrez le titre  & Logo",
   },
   {
     stepNumber: 2,
     title: "Importer le fichier Excel",
-    description: "Faites Glissez ou importez votre fichier",
+    description: "Faites glisser ou importez votre fichier",
   },
   {
     stepNumber: 3,

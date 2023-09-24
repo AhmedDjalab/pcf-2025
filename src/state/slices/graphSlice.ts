@@ -104,6 +104,7 @@ const GraphSlice = createSlice({
       graphSettingsForm.graphData.forEach((data) => {
         styles.add(data.style);
       });
+
       console.error("🚀 ~ file: graphSlice.ts:99 ~ styles:", styles);
       let shapes: ShapeType[] = [];
       if (state.shapes.shapesData.length === 0) {

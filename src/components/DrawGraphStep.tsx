@@ -713,8 +713,8 @@ function DrawGraphStep() {
     svgContainer.setAttribute("transform", "none");
 
     // Calculate the dimensions in pixels, converting mm to pixels using a standard DPI value (e.g., 96 DPI)
-    const pageWidthPx = Math.floor(((A4_WIDTH_MM - 40) * 96) / 15.4); // Subtract 4 cm from the width
-    const pageHeightPx = Math.floor(((A4_HEIGHT_MM - 40) * 96) / 15.4); // Subtract 4 cm from the height
+    const pageWidthPx = Math.floor((A4_WIDTH_MM * 96) / 25.4); // Subtract 4 cm from the width
+    const pageHeightPx = Math.floor((A4_HEIGHT_MM * 96) / 25.4); // Subtract 4 cm from the height
 
     domtoimage
       .toPng(svgContainer, {
@@ -724,16 +724,12 @@ function DrawGraphStep() {
       .then((dataUrl) => {
         if (format === "pdf") {
           // Create a PDF document with A4 dimensions minus margins
-          const pdf = new jsPDF("landscape", "mm", [
-            A4_WIDTH_MM - 40,
-            A4_HEIGHT_MM - 40,
-          ]); // Subtract 4 cm from both width and height
+          const pdf = new jsPDF("portrait", "mm", [A4_WIDTH_MM, A4_HEIGHT_MM]); // Subtract 4 cm from both width and height
 
-          // Calculate the dimensions and position for the SVG in the PDF
-          const imgWidth = A4_WIDTH_MM - 40; // Subtract 4 cm from the width
-          const imgHeight = A4_HEIGHT_MM - 40; // Subtract 4 cm from the height
-          const xPosition = 20; // 2 cm left margin
-          const yPosition = 20; // 2 cm top margin
+          const imgWidth = A4_WIDTH_MM; // Width without margins
+          const imgHeight = A4_HEIGHT_MM; // Height without margins
+          const xPosition = 10; // 1 cm left margin
+          const yPosition = 10; // 1 cm top margin
 
           pdf.addImage(
             dataUrl,
