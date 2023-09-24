@@ -31,7 +31,7 @@ const steps = [
   {
     stepNumber: 4,
     title: "Définition des tronçons",
-    description: "Définissez le début et fin de chaque tronçon",
+    description: "Définissez le début et la fin de chaque tronçon",
   },
   // {
   //   stepNumber: 4,

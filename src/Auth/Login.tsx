@@ -125,12 +125,12 @@ function Login() {
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
               {error && <span className="mt-10 text-red-600">{error}</span>}
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                Connectez-vous à votre compte
+                Se connecter
               </h1>
               <form className="space-y-4 md:space-y-6" action="#">
                 <div>
                   <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Votre adresse email
+                    E-mail
                   </label>
                   <input
                     type="email"
@@ -141,7 +141,7 @@ function Login() {
                 </div>
                 <div>
                   <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Votre mot de passe
+                    Mot de passe
                   </label>
                   <input
                     type="password"

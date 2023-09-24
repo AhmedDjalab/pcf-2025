@@ -67,10 +67,10 @@ function DrawGraphStep() {
       <strong>ID:</strong> ${data.id}<br>
       <strong>Activity Name:</strong> ${data.activityName}<br>
       <strong>Start Date:</strong> ${moment(data.startDate).format(
-        "MM/DD/YYYY"
+        "DD/MM/YYYY"
       )}<br>
       <strong>Finish Date:</strong> ${moment(data.finishDate).format(
-        "MM/DD/YYYY"
+        "DD/MM/YYYY"
       )}<br>
       <strong>Start Chainage:</strong> ${data.startChainage}<br>
       <strong>Finish Chainage:</strong> ${data.finishChainage}<br>
@@ -153,7 +153,7 @@ function DrawGraphStep() {
     } else if (timeRange.includes("Daily")) {
       yAxis.ticks(d3.timeDay.every(1)); // Show daily ticks
     }
-
+    console.error(new Date(startDate));
     g.append("g")
       .attr("class", "y-axis")
       .attr("transform", "translate(5,0)")
@@ -161,7 +161,7 @@ function DrawGraphStep() {
       .selectAll("text")
       .style("text-anchor", "end")
       .attr("dx", "-0.5em")
-      .text((d) => d3.timeFormat("%a %m/%d/%Y")(d));
+      .text((d) => d3.timeFormat("%a %d/%m/%Y")(d));
 
     const defs = svg.select("defs");
 
@@ -355,8 +355,8 @@ function DrawGraphStep() {
       .attr("class", "y-guideline")
       .attr("x1", 0)
       .attr("x2", width + margin.left)
-      .attr("y1", (d) => yScale(moment(d, "ddd MM/DD/YYYY")))
-      .attr("y2", (d) => yScale(moment(d, "ddd MM/DD/YYYY")))
+      .attr("y1", (d) => yScale(moment(d, "ddd DD/MM/YYYY")))
+      .attr("y2", (d) => yScale(moment(d, "ddd DD/MM/YYYY")))
       .attr("stroke", "#dbd9d9")
       .attr("stroke-dasharray", "2,2");
 
@@ -578,6 +578,13 @@ function DrawGraphStep() {
   //   }
   // };
   const resetZoom = () => {
+    // const svg = d3.select(svgRef.current); // Ensure svgRef.current is defined
+    // const g = svg.select("g"); // Adjust the selector to match your chart structure
+
+    // if (g) {
+    //   // Reset the zoom transform to its initial state
+    //   g.transition().duration(500).call(zoom().transform, zoomIdentity);
+    // }
     drawD3Chart();
   };
 
@@ -702,6 +709,9 @@ function DrawGraphStep() {
   const saveAsPdfOrImage = (format) => {
     const svgContainer = document.getElementById("graph-container");
     const myStyle = svgContainer;
+
+    svgContainer.setAttribute("transform", "none");
+
     // Calculate the dimensions in pixels, converting mm to pixels using a standard DPI value (e.g., 96 DPI)
     const pageWidthPx = Math.floor(((A4_WIDTH_MM - 40) * 96) / 15.4); // Subtract 4 cm from the width
     const pageHeightPx = Math.floor(((A4_HEIGHT_MM - 40) * 96) / 15.4); // Subtract 4 cm from the height
@@ -778,16 +788,15 @@ function DrawGraphStep() {
           Save as image
         </button> */}
       </div>
-
+      {zoomLevel > 1 && (
+        <button
+          className="focus:outline-none mt-2 text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
+          onClick={resetZoom}
+        >
+          Reset Zoom
+        </button>
+      )}
       <div className="flex flex-col" id="graph-container">
-        {zoomLevel > 1 && (
-          <button
-            className="focus:outline-none mt-2 text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
-            onClick={resetZoom}
-          >
-            Reset Zoom
-          </button>
-        )}
         <div className="graph-container">
           <div className="flex items-center border m-4">
             <img
@@ -800,7 +809,7 @@ function DrawGraphStep() {
             </div>
             <img
               src={graphSettings.projectSettings.logoImg}
-              className="h-20 w-40 "
+              className="h-20 w-40 object-fill "
               alt={graphSettings.projectSettings.title}
             />
           </div>
@@ -852,14 +861,14 @@ function DrawGraphStep() {
             Start Date
           </div>
           <div className="border border-gray-700 p-2">
-            {moment(selectedShapeData?.startDate).format("MM/DD/YYYY")}
+            {moment(selectedShapeData?.startDate).format("DD/MM/YYYY")}
           </div>
 
           <div className="border border-gray-700 p-2 bg-slate-500">
             Finish Date
           </div>
           <div className="border border-gray-700 p-2">
-            {moment(selectedShapeData?.finishDate).format("MM/DD/YYYY")}
+            {moment(selectedShapeData?.finishDate).format("DD/MM/YYYY")}
           </div>
 
           <div className="border border-gray-700 p-2 bg-slate-500">

@@ -78,12 +78,12 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
           />
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 flex justify-end w-full">
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 self-end"
           >
-            Next
+            Suivant
           </button>
         </div>
       </form>

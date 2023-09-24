@@ -1,6 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import texturesData from "../../const/texturesArray";
 import { lineStyles } from "../../const/linesArray";
+import { REHYDRATE } from "redux-persist";
+import { store } from "../store";
+import ShapesForm from "../../components/ShapesForm";
 
 export interface GraphDataType {
   id: string;
@@ -45,7 +48,7 @@ export interface ShapesSettings {
   shapesData: ShapeType[];
 }
 
-interface GraphCreateType {
+export interface GraphCreateType {
   projectSettings: ProjectSettings;
   settings: GraphSetting;
   shapes: ShapesSettings;
@@ -82,26 +85,31 @@ const GraphSlice = createSlice({
       action: PayloadAction<{ projectSettings: ProjectSettings }>
     ) {
       const projectSettings = action.payload.projectSettings;
-      state.projectSettings = projectSettings;
+      state.projectSettings = { ...projectSettings };
     },
     updateGraphSettingsValue(
       state,
       action: PayloadAction<{ graphSettingsForm: GraphSetting }>
     ) {
       const graphSettingsForm = action.payload.graphSettingsForm;
+      console.log(
+        "🚀 ~ file: graphSlice.ts:96 ~ graphSettingsForm:",
+        graphSettingsForm
+      );
       type ShapeSet = {
         style: string;
         activityId: string;
       };
-      const styles = new Set<string>();
+      let styles = new Set<string>();
       graphSettingsForm.graphData.forEach((data) => {
         styles.add(data.style);
       });
-
+      console.error("🚀 ~ file: graphSlice.ts:99 ~ styles:", styles);
+      let shapes: ShapeType[] = [];
       if (state.shapes.shapesData.length === 0) {
         const uniqueStyles = Array.from(styles);
 
-        const shapes: ShapeType[] = uniqueStyles.map((style, index) => ({
+        shapes = uniqueStyles.map((style, index) => ({
           type: "line",
           backgroundTexture: texturesData[0].id,
           color: "#24303F",
@@ -112,15 +120,23 @@ const GraphSlice = createSlice({
             .filter((x) => x.style === style)
             .map((data) => data.id),
         }));
-        state.shapes.shapesData = shapes;
       }
-
-      state.settings = graphSettingsForm;
+      console.log("thsis is hapes ", shapes);
+      return {
+        ...state,
+        settings: graphSettingsForm,
+        shapes: { shapesData: shapes },
+      };
     },
     updateShapesValue(
       state,
       action: PayloadAction<{ shapesForm: ShapesSettings }>
     ) {
+      console.log(
+        "🚀 ~ file: graphSlice.ts:133 ~  state.shapes:",
+        state.shapes
+      );
+
       state.shapes = action.payload.shapesForm;
     },
     updateTaskSlotsValue(

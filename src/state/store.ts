@@ -1,11 +1,13 @@
-import { configureStore } from "@reduxjs/toolkit";
-import graphSlice from "./slices/graphSlice";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import graphSlice, { GraphCreateType } from "./slices/graphSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import autoMergeLevel1 from "redux-persist/es/stateReconciler/autoMergeLevel1";
 // ...
 const persistConfig = {
   key: "root", // Key under which your store will be saved in storage
   storage,
+  stateReconciler: autoMergeLevel1<GraphCreateType>,
 };
 
 const persistedReducer = persistReducer(persistConfig, graphSlice);

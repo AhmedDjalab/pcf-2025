@@ -70,9 +70,7 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-white bg-opacity-80">
       <div className="bg-white p-6 rounded shadow-md w-96">
         <div className="text-2xl font-semibold mb-4">
-          {isNew
-            ? "Définissez les limites du tronçon ou de l’ouvrage"
-            : " Modifier les limites du tronçon ou de l’ouvrage"}
+          {isNew ? "Définition des limites" : " Modifier les limites"}
         </div>
         <Formik
           initialValues={initialValues}

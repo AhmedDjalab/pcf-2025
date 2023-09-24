@@ -211,8 +211,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             .slice(1)
             .filter((row: any) => row[0] !== null && row[0] !== undefined)
             .map((row: any) => {
-              const startDate = moment(row[2], "MM/DD/YYYY"); // Parse Start Date
-              const finishDate = moment(row[3], "MM/DD/YYYY"); // Parse Finish Date
+              const startDate = moment(row[2], "DD/MM/YYYY"); // Parse Start Date
+              const finishDate = moment(row[3], "DD/MM/YYYY"); // Parse Finish Date
 
               if (!startDate.isValid() || !finishDate.isValid()) {
                 // Handle invalid date format here
@@ -339,7 +339,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               />
             </svg>
             <span className="font-medium text-gray-600">
-              Faites Glissez ou
+              Faites glisser ou
               <span className="text-blue-600 underline">
                 {" "}
                 importez votre fichier
@@ -507,7 +507,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   Date de fin
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Date de fin
+                  Pk de début
                 </th>
                 <th scope="col" className="px-6 py-3">
                   Pk de fin
@@ -531,10 +531,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   </th>
                   <td className="px-6 py-4">{data.activityName}</td>
                   <td className="px-6 py-4">
-                    {new Date(data.startDate).toLocaleDateString()}
+                    {moment(data.startDate).format("DD/MM/YYYY")}
                   </td>
                   <td className="px-6 py-4">
-                    {new Date(data.finishDate).toLocaleDateString()}
+                    {moment(data.finishDate).format("DD/MM/YYYY")}
                   </td>
                   <td className="px-6 py-4">{data.startChainage}</td>
                   <td className="px-6 py-4">{data.finishChainage}</td>
