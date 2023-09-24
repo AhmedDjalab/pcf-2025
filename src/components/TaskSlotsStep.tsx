@@ -125,7 +125,7 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
         <thead>
           <tr>
             <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Nom de l’ouvrage / tronçon
+              Nom de tronçon
             </th>
             <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               Pk de début

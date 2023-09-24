@@ -12,6 +12,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import domtoimage from "dom-to-image";
 import logo from "../assets/Logo/logo.png";
+import { LockClosedIcon } from "@heroicons/react/24/solid";
 
 import {
   LineStyle,
@@ -41,6 +42,8 @@ function DrawGraphStep() {
   const svgContainerRef = useRef<SVGSVGElement | null>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [zoomAttr, setZoomAttr] = useState({});
+  const [selectedShapeType, setSelectedShapeType] = useState(null);
+  const [selectedShapes, setSelectedShapes] = useState([]);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const containerSVGRef = useRef<SVGSVGElement | null>(null);
@@ -627,6 +630,24 @@ function DrawGraphStep() {
     console.log("patters", patterns);
   }, [patterns]);
 
+  useEffect(() => {
+    // Check if any shape name is clicked
+    const isShapeNameClicked = selectedShapes.length > 0;
+
+    d3.selectAll(".activity-rectangle")
+      .transition()
+      .duration(200)
+      .attr("opacity", (d: GraphDataType) => {
+        if (isShapeNameClicked) {
+          // If a shape name is clicked, set opacity to 0.2 for all shapes except the selected one
+          return selectedShapes.includes(d.style) ? 1 : 0.2;
+        } else {
+          // If no shape name is clicked, set opacity to 1 for all shapes
+          return 1;
+        }
+      });
+  }, [selectedShapes]);
+
   const createLegend = () => {
     let lineStyleAttr: LineStyle = {};
 
@@ -637,8 +658,49 @@ function DrawGraphStep() {
       const textureConfig = texturesData.find(
         (x) => x.id == shape.backgroundTexture
       );
+
+      // const handleMouseOver = () => {
+      //   // Select all shapes and fade them out except the one being hovered over
+      //   d3.selectAll(".activity-rectangle")
+      //     .transition()
+      //     .duration(200)
+      //     .attr("opacity", (d: GraphDataType) => {
+      //       console.log("this is ", d.style, shape.name);
+      //       if (d.style) {
+      //         return d.style.trim() === shape.name.trim() ? 1 : 0.2;
+      //       } else {
+      //         return 1;
+      //       }
+      //     });
+      // };
+
+      // const handleMouseOut = () => {
+      //   // Restore opacity for all shapes
+      //   d3.selectAll(".activity-rectangle")
+      //     .transition()
+      //     .duration(200)
+      //     .attr("opacity", 1);
+      // };
+      const isSelected = selectedShapes.includes(shape.name);
+      const handleLegendItemClick = (shape) => {
+        // Toggle the selected shape
+        if (selectedShapes.includes(shape.name)) {
+          setSelectedShapes(
+            selectedShapes.filter((selected) => selected !== shape.name)
+          );
+        } else {
+          setSelectedShapes([...selectedShapes, shape.name]);
+        }
+      };
+
       return (
-        <div key={index} className="legend-item">
+        <div
+          key={index}
+          className="legend-item"
+          // onMouseOver={handleMouseOver}
+          // onMouseOut={handleMouseOut}
+          onClick={() => handleLegendItemClick(shape)}
+        >
           <div className="shape-container">
             {shape.type === "line" && (
               <svg width="40" height="20">
@@ -691,7 +753,14 @@ function DrawGraphStep() {
             )}
           </div>
           <div className="text-container">
-            <span>{shape.name}</span>
+            <span
+              style={{
+                color: isSelected ? "blue" : "black",
+                cursor: "pointer",
+              }}
+            >
+              {shape.name}
+            </span>
           </div>
         </div>
       );
@@ -767,10 +836,14 @@ function DrawGraphStep() {
     <div className="flex flex-col">
       <div>
         <button
-          className="focus:outline-none mt-5 text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
-          onClick={() => saveAsPdfOrImage("pdf")}
+          disabled
+          className="focus:outline-none mt-5  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
+          // onClick={() => saveAsPdfOrImage("pdf")}
         >
-          Save as PDF
+          <span className="mr-2">
+            <LockClosedIcon className="w-4 h-4" /> {/* Lock icon */}
+          </span>
+          PDF
         </button>
         {/* <button
           className="focus:outline-none mt-5 text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
@@ -837,7 +910,7 @@ function DrawGraphStep() {
       <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <div className="border border-gray-700 p-2 bg-slate-500">
-            Activity Name
+            NOM DE L’ACTIVITÉ
           </div>
           <div className="border border-gray-700 p-2">
             {selectedShapeData?.activityName}
@@ -849,28 +922,28 @@ function DrawGraphStep() {
           </div>
 
           <div className="border border-gray-700 p-2 bg-slate-500">
-            Start Date
+            DATE DE DÉBUT
           </div>
           <div className="border border-gray-700 p-2">
             {moment(selectedShapeData?.startDate).format("DD/MM/YYYY")}
           </div>
 
           <div className="border border-gray-700 p-2 bg-slate-500">
-            Finish Date
+            DATE DE FIN
           </div>
           <div className="border border-gray-700 p-2">
             {moment(selectedShapeData?.finishDate).format("DD/MM/YYYY")}
           </div>
 
           <div className="border border-gray-700 p-2 bg-slate-500">
-            Start Chainage
+            PK DE DÉBUT
           </div>
           <div className="border border-gray-700 p-2">
             {selectedShapeData?.startChainage}
           </div>
 
           <div className="border border-gray-700 p-2 bg-slate-500">
-            Finish Chainage
+            PK DE FIN
           </div>
           <div className="border border-gray-700 p-2">
             {selectedShapeData?.finishChainage}

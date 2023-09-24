@@ -101,10 +101,56 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     return parsedDate.toISOString().split("T")[0]; // Output as YYYY-MM-DD
   }
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileData = (data: ArrayBuffer | null): GraphDataType[] => {
+    if (!data) {
+      return [];
+    }
+
+    const workbook = XLSX.read(data, { type: "binary", cellDates: true });
+    const sheetName = workbook.SheetNames[0]; // Assuming data is in the first sheet
+    const worksheet = workbook.Sheets[sheetName];
+    const parsedData: any[][] = XLSX.utils.sheet_to_json(worksheet, {
+      header: 1,
+    });
+    console.log(
+      "🚀 ~ file: ImportFileForm.tsx:115 ~ handleFileData ~ parsedData:",
+      parsedData
+    );
+
+    // Assuming your data structure matches the XLSX columns order
+    const graphData = parsedData
+      .slice(1)
+      .filter((row) => row[0] !== null && row[0] !== undefined)
+      .map((row) => {
+        const startDate = moment.utc(row[2], "DD/MM/YYYY", true); // Parse Start Date
+        const finishDate = moment.utc(row[3], "DD/MM/YYYY", true);
+        if (!startDate.isValid() || !finishDate.isValid()) {
+          // Handle invalid date format here
+          return null;
+        }
+        startDate.add(1, "day");
+        finishDate.add(1, "day");
+        return {
+          id: row[0],
+          activityName: row[1],
+          startDate: startDate.toISOString(), // Assign parsed Start Date
+          finishDate: finishDate.toISOString(), // Assign parsed Finish Date
+          startChainage: parseFloat(row[4]),
+          finishChainage: parseFloat(row[5]),
+          style: row[6],
+        } as GraphDataType;
+      })
+      .filter((item) => item !== null) as GraphDataType[];
+
+    return graphData;
+  };
+
+  const handleFileUpload = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
     event.preventDefault();
     event.stopPropagation();
-    const fileInput = event.target!;
+    const fileInput = event.target as HTMLInputElement;
 
     if (!fileInput || !fileInput.files) {
       // Handle the case where event.target is null or files are not available
@@ -122,7 +168,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     const fileExtension = fileName.split(".").pop()?.toLowerCase();
 
     if (fileExtension !== "xlsx") {
-      // Show an alert for invalid file format
+      // Show an alert for an invalid file format
       alert("Veuillez sélectionner un fichier XLSX ou Excel valide.");
       return;
     }
@@ -131,69 +177,30 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        const data = e.target?.result;
+        const data = e.target?.result as ArrayBuffer | null;
         if (data) {
-          const workbook = XLSX.read(data, { type: "binary", cellDates: true });
-          const sheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[sheetName];
+          const graphData = handleFileData(data);
+          setGraphData((prev) => graphData);
+          formik.setFieldValue("graphData", graphData);
+        }
+      };
 
-          const expectedSchema = [
-            "ID",
-            "Activity Name",
-            "Start Date",
-            "Finish Date",
-            "Start Chainage",
-            "Finish Chainage",
-            "Style",
-          ];
+      reader.readAsBinaryString(file);
+    }
+  };
 
-          const headerRow: string[] = XLSX.utils.sheet_to_json(worksheet, {
-            header: 1,
-          })[0] as string[];
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      const reader = new FileReader();
 
-          if (!headerRow || !arraysEqual(headerRow, expectedSchema)) {
-            alert("Le fichier Excel n'a pas le schéma attendu.");
-            return;
-          }
-          //@ts-nocheck
-          const parsedData = XLSX.utils.sheet_to_json(worksheet, {
-            dateNF: "dd/mm/yyyy",
-            raw: false,
-            header: 1,
-          });
-          console.log(
-            "🚀 ~ file: ImportFileForm.tsx:154 ~ handleFileUpload ~ parsedData:",
-            parsedData
-          );
-
-          // Assuming your data structure matches the XLSX columns order
-          const graphData = parsedData
-            .slice(1)
-            .map((row: any) => {
-              const startDate = moment.utc(row[2], "DD/MM/YYYY", true); // Parse Start Date
-              const finishDate = moment.utc(row[3], "DD/MM/YYYY", true); // Parse Finish Date
-
-              if (!startDate.isValid() || !finishDate.isValid()) {
-                // Handle invalid date format here
-                return null;
-              }
-
-              return {
-                id: row[0],
-                activityName: row[1],
-                startDate: startDate.toISOString(), // Assign parsed Start Date
-                finishDate: finishDate.toISOString(), // Assign parsed Finish Date
-                startChainage: parseFloat(row[4]),
-                finishChainage: parseFloat(row[5]),
-                style: row[6],
-              };
-            })
-            .filter((item: any) => item !== null) as GraphDataType[];
-          console.log(
-            "🚀 ~ file: ImportFileForm.tsx:154 ~ handleFileUpload ~ parsedData:",
-            graphData
-          );
-          setGraphData((per) => graphData);
+      reader.onload = (e) => {
+        const data = e.target?.result as ArrayBuffer | null;
+        if (data) {
+          const graphData = handleFileData(data);
+          setGraphData((prev) => graphData);
           formik.setFieldValue("graphData", graphData);
         }
       };
@@ -206,56 +213,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     e.preventDefault();
     e.stopPropagation();
   };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        const data = e.target?.result;
-        if (data) {
-          const workbook = XLSX.read(data, { type: "binary", cellDates: true });
-          const sheetName = workbook.SheetNames[0]; // Assuming data is in the first sheet
-          const worksheet = workbook.Sheets[sheetName];
-          const parsedData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-          // Assuming your data structure matches the XLSX columns order
-          const graphData = parsedData
-            .slice(1)
-            .filter((row: any) => row[0] !== null && row[0] !== undefined)
-            .map((row: any) => {
-              const startDate = moment(row[2], "DD/MM/YYYY"); // Parse Start Date
-              const finishDate = moment(row[3], "DD/MM/YYYY"); // Parse Finish Date
-
-              if (!startDate.isValid() || !finishDate.isValid()) {
-                // Handle invalid date format here
-                return null;
-              }
-
-              return {
-                id: row[0],
-                activityName: row[1],
-                startDate: startDate.toISOString(), // Assign parsed Start Date
-                finishDate: finishDate.toISOString(), // Assign parsed Finish Date
-                startChainage: parseFloat(row[4]),
-                finishChainage: parseFloat(row[5]),
-                style: row[6],
-              };
-            })
-            .filter((item: any) => item !== null) as GraphDataType[];
-
-          setGraphData((prev) => graphData);
-          formik.setFieldValue("graphData", graphData);
-        }
-      };
-
-      reader.readAsBinaryString(file);
-    }
-  };
-
   // const renderMonthContent = (month: any, shortMonth: any, longMonth: any) => {
   //   const tooltipText = `Tooltip for month: ${longMonth}`;
   //   return <span title={tooltipText}>{shortMonth}</span>;
@@ -381,9 +338,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   selected={formik.values.fromDate}
                   onChange={(date) => formik.setFieldValue("fromDate", date)}
                   dateFormat="MM/yyyy"
-                  className="w-full px-3 py-2 border rounded-lg"
+                  wrapperClassName="w-full px-3 py-2 border rounded-lg"
                   customInput={
                     <CustomInput
+                      className="w-full px-3 py-2 border rounded-lg"
                       value={moment(formik.values.fromDate).format("MMMM")}
                     />
                   }
@@ -406,7 +364,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   selected={formik.values.toDate}
                   onChange={(date) => formik.setFieldValue("toDate", date)}
                   dateFormat="MM/yyyy"
-                  className="w-full px-3 py-2 border rounded-lg"
+                  wrapperClassName="w-full px-3 py-2 border rounded-lg"
                   customInput={
                     <CustomInput
                       value={moment(formik.values.toDate).format("MMMM")}
@@ -419,6 +377,27 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                  ) : null} */}
               </div>
 
+              <div className="mb-4">
+                <label
+                  htmlFor="timeRange"
+                  className="block font-medium text-gray-700"
+                >
+                  Echelle de temps
+                </label>
+                <select
+                  value={formik.values.timeRange}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  id="timeRange"
+                  name="timeRange"
+                  className="w-full px-3 py-2 border rounded-lg outline-none focus:ring focus:ring-blue-300"
+                >
+                  <option value="Yearly">Annuel</option>
+                  <option value="Monthly">Mensuel</option>
+                  <option value="Weekly">Hebdomadaire</option>
+                  <option value="Daily">Quotidien</option>
+                </select>
+              </div>
               <div className="mb-4">
                 <label
                   htmlFor="fromDistance"
@@ -461,28 +440,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                 {formik.touched.toDistance && formik.errors.toDistance && (
                   <div className="text-red-600">{formik.errors.toDistance}</div>
                 )}
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="timeRange"
-                  className="block font-medium text-gray-700"
-                >
-                  Echelle de temps
-                </label>
-                <select
-                  value={formik.values.timeRange}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  id="timeRange"
-                  name="timeRange"
-                  className="w-full px-3 py-2 border rounded-lg outline-none focus:ring focus:ring-blue-300"
-                >
-                  <option value="Yearly">Annuel</option>
-                  <option value="Monthly">Mensuel</option>
-                  <option value="Weekly">Hebdomadaire</option>
-                  <option value="Daily">Quotidien</option>
-                </select>
               </div>
             </div>
           )}
