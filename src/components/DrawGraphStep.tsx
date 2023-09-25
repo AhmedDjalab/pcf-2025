@@ -68,16 +68,16 @@ function DrawGraphStep() {
   const generateTooltipContent = (data: GraphDataType) => {
     return `
       <strong>ID:</strong> ${data.id}<br>
-      <strong>Activity Name:</strong> ${data.activityName}<br>
-      <strong>Start Date:</strong> ${moment(data.startDate).format(
+      <strong> NOM DE L’ACTIVITÉ:</strong> ${data.activityName}<br>
+      <strong>DATE DE DÉBUT:</strong> ${moment(data.startDate).format(
         "DD/MM/YYYY"
       )}<br>
-      <strong>Finish Date:</strong> ${moment(data.finishDate).format(
+      <strong>DATE DE FIN:</strong> ${moment(data.finishDate).format(
         "DD/MM/YYYY"
       )}<br>
-      <strong>Start Chainage:</strong> ${data.startChainage}<br>
-      <strong>Finish Chainage:</strong> ${data.finishChainage}<br>
-      <strong>Style:</strong> ${data.style}
+      <strong>PK DE DÉBUT:</strong> ${data.startChainage}<br>
+      <strong>PK DE FIN:</strong> ${data.finishChainage}<br>
+      <strong>STYLE:</strong> ${data.style}
     `;
   };
   // const handleDateChange = (dates) => {
@@ -768,11 +768,20 @@ function DrawGraphStep() {
     const svgContainer = document.getElementById("graph-container");
     const myStyle = svgContainer;
     // Save the current zoom transform
-    drawD3Chart();
+    //drawD3Chart();
 
-    // Calculate the dimensions in pixels, converting mm to pixels using a standard DPI value (e.g., 96 DPI)
-    const pageWidthPx = Math.floor((A4_WIDTH_MM * 96) / 18.4); // Subtract 4 cm from the width
-    const pageHeightPx = Math.floor((A4_HEIGHT_MM * 96) / 15.4); // Subtract 4 cm from the height
+    // Calculate the dimensions in pixels based on the user's device DPI
+    const dpi = window.devicePixelRatio || 1; // Get the device DPI
+    console.log(
+      "🚀 ~ file: DrawGraphStep.tsx:775 ~ saveAsPdfOrImage ~ dpi:",
+      dpi
+    );
+    const pageWidthPx = Math.floor((A4_WIDTH_MM * dpi) / 25.4); // Convert mm to pixels
+    const pageHeightPx = Math.floor((A4_HEIGHT_MM * dpi) / 25.4);
+
+    // // Adjust the chart container's dimensions using CSS
+    // svgContainer.style.width = `${pageWidthPx}px`;
+    // svgContainer.style.height = `${pageHeightPx}px`;
 
     domtoimage
       .toPng(svgContainer, {
@@ -830,9 +839,9 @@ function DrawGraphStep() {
     <div className="flex flex-col">
       <div>
         <button
-          disabled
+          // disabled
           className="focus:outline-none mt-5  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
-          // onClick={() => saveAsPdfOrImage("pdf")}
+          onClick={() => saveAsPdfOrImage("pdf")}
         >
           <span className="mr-2">
             <LockClosedIcon className="w-4 h-4" /> {/* Lock icon */}
