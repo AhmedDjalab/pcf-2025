@@ -40,18 +40,34 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Le nom est requis"),
     start: Yup.number()
-      .required("Le début est requis")
-      .min(minDistance, `Le début doit être supérieur ou égal à ${minDistance}`)
+      .required("Le Pk de début est requis")
+      .min(
+        minDistance,
+        `Le Pk de début doit être supérieur ou égal à ${minDistance}`
+      )
       .max(
         maxDistance,
-        `Le début doit être inférieur ou égal à ${maxDistance}`
+        `Le Pk de début doit être inférieur ou égal à ${maxDistance}`
       ),
     end: Yup.number()
-      .required("La fin est requise")
-      .min(minDistance, `La fin doit être supérieure ou égale à ${minDistance}`)
+      .required("Le Pk de fin est requise")
+      .min(
+        minDistance,
+        `Le Pk de fin doit être supérieure ou égale à ${minDistance}`
+      )
       .max(
         maxDistance,
-        `La fin doit être inférieure ou égale à ${maxDistance}`
+        `Le Pk de fin doit être inférieure ou égale à ${maxDistance}`
+      )
+      .test(
+        "is-greater-than-start",
+        "Le Pk de fin doit être supérieur au Pk de début",
+        function (end) {
+          const start = this.parent.start; // Get the value of 'start' from the form data
+
+          // Check if 'end' is greater than 'start'
+          return end > start;
+        }
       ),
   });
 
