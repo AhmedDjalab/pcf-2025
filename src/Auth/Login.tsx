@@ -200,13 +200,14 @@ function Login() {
                   </button>
                 </div>
               </form>
-              {/* <div className="flex items-center justify-between space-x-2">
+              <div className="flex items-center justify-between space-x-2">
                 <span className="w-1/5 h-px bg-gray-300 dark:bg-gray-700"></span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Ou connectez-vous avec
-                </span>
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                  Vous n’avez pas de compte ? contactez-nous:{" "}
+                  <span className="text-blue-700">admin@ientreprize.com</span>
+                </p>
                 <span className="w-1/5 h-px bg-gray-300 dark:bg-gray-700"></span>
-              </div> */}
+              </div>
               {/* <div className="flex justify-center space-x-2">
                 <button
                   onClick={handleGoogleLogin}
