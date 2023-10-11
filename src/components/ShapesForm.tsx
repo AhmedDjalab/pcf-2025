@@ -23,6 +23,7 @@ import LineStylePicker from "./LineStylePicker";
 import { animateScroll as scroll } from "react-scroll";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/solid";
 import { BackToTopHeightSize } from "../const/vars";
+import { useTranslation } from "react-i18next";
 // Import the ShapeType interface
 const shapeTypes = [
   { value: "line", text: "Ligne" },
@@ -35,6 +36,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
   const dispatch = useDispatch();
   const [rowColors, setRowColors] = useState<{ [key: string]: string }>({});
   const [showBackToTopButton, setShowBackToTopButton] = useState(false);
+  const { t } = useTranslation();
 
   // Define the table columns based on ShapeType
   useEffect(() => {
@@ -62,7 +64,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
   const columns: Column[] = React.useMemo(
     () => [
       {
-        Header: "Format du style",
+        Header: t("shapesForm.headers.formatStyle"),
         accessor: "type",
         Cell: ({ row }) => {
           const handleTypeChange = (newType: LineType) => {
@@ -84,7 +86,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
             >
               {shapeTypes.map(({ value, text }) => (
                 <option key={value} value={value}>
-                  {text}
+                  {t(`shapesForm.${text}`)}
                 </option>
               ))}
             </select>
@@ -93,7 +95,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
       },
 
       {
-        Header: "Type de la ligne",
+        Header: t("shapesForm.headers.lineType"),
         accessor: "lineType",
         Cell: ({ row }) => {
           const handleTypeChange = (newType: string) => {
@@ -122,7 +124,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
         },
       },
       {
-        Header: "Type de rectangle / Triangle",
+        Header: t("shapesForm.headers.rectangleTriangleType"),
         accessor: "backgroundTexture",
         Cell: ({ row }) => {
           const handleTextureChange = (newTexture: string) => {
@@ -151,7 +153,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
         },
       },
       {
-        Header: "Couleur",
+        Header: t("shapesForm.headers.color"),
         accessor: "color",
         Cell: ({ row }) => {
           const [isOpen, toggle] = useState(false);
@@ -178,7 +180,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
         },
       },
       {
-        Header: "Nom du style",
+        Header: t("shapesForm.headers.styleName"),
         accessor: "name",
         Cell: ({ row }) => (
           <input
@@ -189,7 +191,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
         ),
       },
     ],
-    [shapesList]
+    [shapesList, t]
   );
 
   // Create a table instance
@@ -234,14 +236,14 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
           onClick={() => setCurrentStep(currentStep - 1)} // Handle going back to the previous step
           className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600"
         >
-          Retour
+          {t("shapesForm.backButton")}
         </button>
         <button
           type="button"
           onClick={handleGoToDraw}
           className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
         >
-          Suivant
+          {t("shapesForm.nextButton")}
         </button>
       </div>
       <table

@@ -1,4 +1,5 @@
 import React, { useState, ChangeEvent, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ImagePickerProps {
   onChange: (image: string | null) => void;
@@ -9,6 +10,7 @@ const ImagePicker: React.FC<ImagePickerProps> = ({ onChange, imageValue }) => {
   const [selectedImage, setSelectedImage] = useState<string | null | undefined>(
     imageValue
   );
+  const { t } = useTranslation();
 
   useEffect(() => {
     setSelectedImage(imageValue);
@@ -26,9 +28,7 @@ const ImagePicker: React.FC<ImagePickerProps> = ({ onChange, imageValue }) => {
         };
         reader.readAsDataURL(file);
       } else {
-        alert(
-          "Veuillez sélectionner un fichier image valide (par exemple, JPG, PNG)."
-        );
+        alert(t("imagePicker.selectValidImage"));
 
         setSelectedImage(null);
         onChange(null);
@@ -56,7 +56,7 @@ const ImagePicker: React.FC<ImagePickerProps> = ({ onChange, imageValue }) => {
             className="mx-auto mb-2 w-40 h-40"
           />
         ) : (
-          <span className="text-gray-400">Importer le Logo</span>
+          <span className="text-gray-400">{t("imagePicker.importLogo")}</span>
         )}
       </label>
     </div>

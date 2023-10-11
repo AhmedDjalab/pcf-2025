@@ -17,6 +17,7 @@ import { RootState } from "../state";
 import { animateScroll as scroll } from "react-scroll";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/solid";
 import { BackToTopHeightSize } from "../const/vars";
+import { useTranslation } from "react-i18next";
 
 export type FormValues = {
   fromDate: Date;
@@ -38,6 +39,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
   const dispatch = useDispatch();
   const graphSettings = useSelector((state: RootState) => state.settings);
+  const { t } = useTranslation();
 
   const [initialValues, setInitialValues] = useState<FormValues>(initForm);
   const [graphData, setGraphData] = useState<GraphDataType[]>([]);
@@ -303,11 +305,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               />
             </svg>
             <span className="font-medium text-gray-600">
-              Faites glisser ou
-              <span className="text-blue-600 underline">
-                {" "}
-                importez votre fichier
-              </span>
+              {t("importFileForm.dragOrImport")}
             </span>
           </span>
           <input
@@ -327,7 +325,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   htmlFor="fromDate"
                   className="block font-medium text-gray-700"
                 >
-                  Début
+                  {t("importFileForm.startDate")}
                 </label>
                 <DatePicker
                   id="fromDate"
@@ -353,7 +351,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   htmlFor="toDate"
                   className="block font-medium text-gray-700"
                 >
-                  Fin
+                  {t("importFileForm.endDate")}
                 </label>
                 <DatePicker
                   id="toDate"
@@ -378,7 +376,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   htmlFor="timeRange"
                   className="block font-medium text-gray-700"
                 >
-                  Echelle de temps
+                  {t("importFileForm.timeScale")}
                 </label>
                 <select
                   value={formik.values.timeRange}
@@ -388,10 +386,18 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   name="timeRange"
                   className="w-full px-3 py-2 border rounded-lg outline-none focus:ring focus:ring-blue-300"
                 >
-                  <option value="Yearly">Annuel</option>
-                  <option value="Monthly">Mensuel</option>
-                  <option value="Weekly">Hebdomadaire</option>
-                  <option value="Daily">Quotidien</option>
+                  <option value="Yearly">
+                    {t("importFileForm.yearlyOption")}
+                  </option>
+                  <option value="Monthly">
+                    {t("importFileForm.monthlyOption")}
+                  </option>
+                  <option value="Weekly">
+                    {t("importFileForm.weeklyOption")}
+                  </option>
+                  <option value="Daily">
+                    {t("importFileForm.dailyOption")}
+                  </option>
                 </select>
               </div>
               <div className="mb-4">
@@ -399,7 +405,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   htmlFor="fromDistance"
                   className="block font-medium text-gray-700"
                 >
-                  Pk de début
+                  {t("importFileForm.startPk")}
                 </label>
                 <input
                   id="fromDistance"
@@ -422,7 +428,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   htmlFor="toDistance"
                   className="block font-medium text-gray-700"
                 >
-                  Pk de fin
+                  {t("importFileForm.endPk")}
                 </label>
                 <input
                   id="toDistance"
@@ -446,14 +452,14 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600"
               onClick={handleBack}
             >
-              Retour
+              {t("importFileForm.back")}
             </button>
             <button
               type="submit"
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
               disabled={graphData.length === 0}
             >
-              Suivant
+              {t("importFileForm.next")}
             </button>
           </div>
           <table className="   w-full  text-sm text-left text-gray-500 dark:text-gray-400">
@@ -463,22 +469,22 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   ID
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Nom de l’activité
+                  {t("importFileForm.activityName")}
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Date de début
+                  {t("importFileForm.startDate")}
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Date de fin
+                  {t("importFileForm.endDate")}
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Pk de début
+                  {t("importFileForm.startPk")}
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Pk de fin
+                  {t("importFileForm.endPk")}
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Style de l’activité
+                  {t("importFileForm.activityStyle")}
                 </th>
               </tr>
             </thead>

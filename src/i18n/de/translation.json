@@ -1,0 +1,167 @@
+{
+  "language.English": "Englisch",
+  "language.French": "Französisch",
+  "language.Spanish": "Spanisch",
+  "language.Arabic": "Arabisch",
+  "language.German": "Deutsch",
+
+  "stepper.next": "Weiter",
+  "stepper.back": "Zurück",
+  "stepper.save": "Speichern",
+
+  "login": {
+    "title": "Anmelden",
+    "emailLabel": "E-Mail",
+    "passwordLabel": "Passwort",
+    "loginButton": "Anmelden",
+    "googleLoginButton": "Mit Google anmelden",
+    "errorMessages": {
+      "invalidEmail": "Ungültige E-Mail-Adresse.",
+      "userNotFound": "Benutzer nicht gefunden. Bitte überprüfen Sie Ihre E-Mail-Adresse.",
+      "wrongPassword": "Falsches Passwort. Bitte versuchen Sie es erneut.",
+      "userDisabled": "Ihr Konto wurde deaktiviert.",
+      "invalidLoginCredentials": "Ungültige Anmeldedaten. Bitte überprüfen Sie Ihre E-Mail und Ihr Passwort.",
+      "defaultError": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut."
+    },
+    "noAccount": "Sie haben noch kein Konto?",
+    "contactUs": "Kontaktieren Sie uns:",
+    "adminEmail": "admin@ientreprize.com",
+    "signInHeader": "Anmelden"
+  },
+  "common": {
+    "invalidEmail": "Ungültige E-Mail-Adresse.",
+    "passwordRequirements": "Das Passwort muss mindestens 8 Zeichen lang sein und mindestens 1 Kleinbuchstaben, 1 Großbuchstaben, 1 Zahl und 1 Sonderzeichen enthalten."
+  },
+  "header.contact": "Kontakt:",
+  "header.contactEmail": "admin@ientreprize.com",
+  "header.logout": "Abmelden",
+  "projectForm.title": "Projekttitel",
+  "projectForm.logo": "Logo",
+  "projectForm.next": "Weiter",
+  "imagePicker.importLogo": "Logo importieren",
+  "imagePicker.selectValidImage": "Bitte wählen Sie eine gültige Bilddatei (z. B. JPG, PNG).",
+  "importFileForm.dragOrImport": "Ziehen Sie Ihre Datei hierhin oder importieren Sie sie",
+  "importFileForm.title": "Excel-Datei importieren",
+  "importFileForm.back": "Zurück",
+  "importFileForm.next": "Weiter",
+  "importFileForm.fileInputLabel": "Ziehen Sie Ihre Datei hierhin oder importieren Sie sie",
+  "importFileForm.startDate": "Start",
+  "importFileForm.endDate": "Ende",
+  "importFileForm.timeScale": "Zeitskala",
+  "importFileForm.startPk": "Start-PK",
+  "importFileForm.endPk": "End-PK",
+  "importFileForm.dateRequired": "Datum ist erforderlich",
+  "importFileForm.startDateError": "Das Startdatum ist erforderlich",
+  "importFileForm.endDateError": "Das Enddatum muss nach dem Startdatum liegen",
+  "importFileForm.startDistanceRequired": "Der Startabstand ist erforderlich",
+  "importFileForm.endDistanceRequired": "Der Endabstand ist erforderlich",
+  "importFileForm.selectValidFile": "Bitte wählen Sie eine gültige XLSX- oder Excel-Datei aus.",
+
+  "importFileForm.activityStyle": "AKTIVITÄTSSTIL",
+  "importFileForm.activityName": "AKTIVITÄTSNAME",
+  "importFileForm.yearlyOption": "Jährlich",
+  "importFileForm.monthlyOption": "Monatlich",
+  "importFileForm.weeklyOption": "Wöchentlich",
+  "importFileForm.dailyOption": "Täglich",
+
+  "shapesForm": {
+    "backButton": "Zurück",
+    "nextButton": "Weiter",
+    "formatStyle": "FORMATSTIL",
+    "lineType": "LINIENTYP",
+    "rectangleTriangleType": "RECHTECK- / DREIECKSTYP",
+    "color": "Farbe",
+    "styleName": "Stilname",
+    "headers": {
+      "formatStyle": "FORMATSTIL",
+      "lineType": "LINIENTYP",
+      "rectangleTriangleType": "RECHTECK- / DREIECKSTYP",
+      "color": "Farbe",
+      "styleName": "Stilname"
+    },
+    "Triangle": "Dreieck",
+    "Rectangle": "Rechteck",
+    "Ligne": "Linie"
+  },
+  "taskSlotsList": {
+    "addButton": "Hinzufügen",
+    "sectionHeaders": {
+      "section1": "Liste der Zeitfenster",
+      "section2": "Aktionen"
+    },
+    "tableHeaders": {
+      "name": "NAME DES SEGMENTS",
+      "start": "START-PK",
+      "end": "ENDE-PK",
+      "actions": "Aktionen"
+    },
+    "buttons": {
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "back": "Zurück",
+      "showPlanning": "Planung anzeigen"
+    },
+    "popUp": {
+      "addTitle": "Zeitfenster hinzufügen",
+      "editTitle": "Zeitfenster bearbeiten",
+      "saveButton": "Speichern",
+      "cancelButton": "Abbrechen"
+    }
+  },
+  "taskSlotsPopUp": {
+    "titles": {
+      "add": "Grenzen festlegen",
+      "edit": "Grenzen bearbeiten"
+    },
+    "labels": {
+      "name": "Name:",
+      "start": "Start-PK:",
+      "end": "End-PK:"
+    },
+    "placeholders": {
+      "name": "Segmentnamen eingeben",
+      "start": "Start-PK eingeben",
+      "end": "End-PK eingeben"
+    },
+    "errors": {
+      "required": "Dieses Feld ist erforderlich",
+      "minDistance": "Wert muss größer oder gleich Mindestabstand sein",
+      "maxDistance": "Wert muss kleiner oder gleich Höchstabstand sein",
+      "greaterThanStart": "End-PK muss größer als Start-PK sein"
+    },
+    "buttons": {
+      "add": "Hinzufügen",
+      "save": "Speichern",
+      "cancel": "Abbrechen"
+    }
+  },
+  "drawGraph": {
+    "activityDetails": {
+      "activityNameLabel": "NAME DER AKTIVITÄT",
+      "styleLabel": "STIL",
+      "startDateLabel": "STARTDATUM",
+      "finishDateLabel": "ENDDATUM",
+      "startChainageLabel": " START-PK",
+      "finishChainageLabel": "ENDE-PK"
+    },
+    "cancelZoomButtonLabel": "Zoom abbrechen"
+  },
+  "DrwMultiStepForm": {
+    "step1": {
+      "title": "Kopfzeile der Planung",
+      "description": "Geben Sie den Titel und das Logo ein"
+    },
+    "step2": {
+      "title": "Importieren Sie die Excel-Datei",
+      "description": "Ziehen Sie Ihre Datei hierhin oder importieren Sie sie"
+    },
+    "step3": {
+      "title": "Stildefinition",
+      "description": "Definieren Sie den Stil der Aktivitäten"
+    },
+    "step4": {
+      "title": "Definition der Segmente",
+      "description": "Definieren Sie den Start und das Ende jedes Segments"
+    }
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "language.English": "Inglés",
+  "language.French": "Francés",
+  "language.Spanish": "Español",
+  "language.Arabic": "Árabe",
+  "language.German": "Alemán",
+
+  "stepper.next": "Siguiente",
+  "stepper.back": "Atrás",
+  "stepper.save": "Guardar",
+
+  "login": {
+    "title": "Iniciar sesión",
+    "emailLabel": "Correo electrónico",
+    "passwordLabel": "Contraseña",
+    "loginButton": "Iniciar sesión",
+    "googleLoginButton": "Iniciar sesión con Google",
+    "errorMessages": {
+      "invalidEmail": "Dirección de correo electrónico no válida.",
+      "userNotFound": "Usuario no encontrado. Por favor, verifique su dirección de correo electrónico.",
+      "wrongPassword": "Contraseña incorrecta. Por favor, inténtelo de nuevo.",
+      "userDisabled": "Su cuenta ha sido desactivada.",
+      "invalidLoginCredentials": "Credenciales de inicio de sesión inválidas. Por favor, verifique su correo electrónico y contraseña.",
+      "defaultError": "Se produjo un error. Por favor, inténtelo de nuevo más tarde."
+    },
+    "noAccount": "¿No tienes una cuenta?",
+    "contactUs": "Contáctenos:",
+    "adminEmail": "admin@ientreprize.com",
+    "signInHeader": "Iniciar sesión"
+  },
+  "common": {
+    "invalidEmail": "Dirección de correo electrónico no válida.",
+    "passwordRequirements": "La contraseña debe tener al menos 8 caracteres e incluir al menos 1 letra minúscula, 1 letra mayúscula, 1 dígito y 1 carácter especial."
+  },
+  "header.contact": "Contacto:",
+  "header.contactEmail": "admin@ientreprize.com",
+  "header.logout": "Cerrar sesión",
+  "projectForm.title": "Título del proyecto",
+  "projectForm.logo": "Logo",
+  "projectForm.next": "Siguiente",
+  "imagePicker.importLogo": "Importar logo",
+  "imagePicker.selectValidImage": "Por favor, seleccione un archivo de imagen válido (por ejemplo, JPG, PNG).",
+  "importFileForm.dragOrImport": "Arrastre o importe su archivo",
+  "importFileForm.title": "Importación de archivo",
+  "importFileForm.back": "Atrás",
+  "importFileForm.next": "Siguiente",
+  "importFileForm.fileInputLabel": "Arrastre o importe su archivo",
+  "importFileForm.startDate": "Inicio",
+  "importFileForm.endDate": "Fin",
+  "importFileForm.timeScale": "Escala de tiempo",
+  "importFileForm.startPk": "Inicio PK",
+  "importFileForm.endPk": "Fin PK",
+  "importFileForm.dateRequired": "Se requiere la fecha",
+  "importFileForm.startDateError": "Se requiere la fecha de inicio",
+  "importFileForm.endDateError": "La fecha de fin debe ser después de la fecha de inicio",
+  "importFileForm.startDistanceRequired": "Se requiere la distancia de inicio",
+  "importFileForm.endDistanceRequired": "Se requiere la distancia de fin",
+  "importFileForm.selectValidFile": "Por favor, seleccione un archivo XLSX o Excel válido.",
+
+  "importFileForm.activityStyle": "ESTILO DE LA ACTIVIDAD",
+  "importFileForm.activityName": "NOMBRE DE LA ACTIVIDAD",
+  "importFileForm.yearlyOption": "Anual",
+  "importFileForm.monthlyOption": "Mensual",
+  "importFileForm.weeklyOption": "Semanal",
+  "importFileForm.dailyOption": "Diario",
+
+  "shapesForm": {
+    "backButton": "Atrás",
+    "nextButton": "Siguiente",
+    "formatStyle": "FORMATO DEL ESTILO",
+    "lineType": "TIPO DE LÍNEA",
+    "rectangleTriangleType": "TIPO DE RECTÁNGULO / TRIÁNGULO",
+    "color": "Color",
+    "styleName": "Nombre del estilo",
+    "headers": {
+      "formatStyle": "FORMATO DEL ESTILO",
+      "lineType": "TIPO DE LÍNEA",
+      "rectangleTriangleType": "TIPO DE RECTÁNGULO / TRIÁNGULO",
+      "color": "Color",
+      "styleName": "Nombre del estilo"
+    },
+    "Triangle": "Triángulo",
+    "Rectangle": "Rectángulo",
+    "Ligne": "Línea"
+  },
+  "taskSlotsList": {
+    "addButton": "Agregar",
+    "sectionHeaders": {
+      "section1": "Lista de ranuras horarias",
+      "section2": "Acciones"
+    },
+    "tableHeaders": {
+      "name": "NOMBRE DEL SEGMENTO",
+      "start": "INICIO PK",
+      "end": "FIN PK",
+      "actions": "Acciones"
+    },
+    "buttons": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "back": "Atrás",
+      "showPlanning": "Mostrar planificación"
+    },
+    "popUp": {
+      "addTitle": "Agregar ranura horaria",
+      "editTitle": "Editar ranura horaria",
+      "saveButton": "Guardar",
+      "cancelButton": "Cancelar"
+    }
+  },
+  "taskSlotsPopUp": {
+    "titles": {
+      "add": "Definir límites",
+      "edit": "Editar límites"
+    },
+    "labels": {
+      "name": "Nombre:",
+      "start": "Inicio PK:",
+      "end": "Fin PK:"
+    },
+    "placeholders": {
+      "name": "Ingrese el nombre del segmento",
+      "start": "Ingrese el inicio PK",
+      "end": "Ingrese el fin PK"
+    },
+    "errors": {
+      "required": "Este campo es obligatorio",
+      "minDistance": "El valor debe ser mayor o igual a {minDistance}",
+      "maxDistance": "El valor debe ser menor o igual a {maxDistance}",
+      "greaterThanStart": "El fin PK debe ser mayor que el inicio PK"
+    },
+    "buttons": {
+      "add": "Agregar",
+      "save": "Guardar",
+      "cancel": "Cancelar"
+    }
+  },
+  "drawGraph": {
+    "activityDetails": {
+      "activityNameLabel": "NOMBRE DE LA ACTIVIDAD",
+      "styleLabel": "ESTILO",
+      "startDateLabel": "FECHA DE INICIO",
+      "finishDateLabel": "FECHA DE FIN",
+      "startChainageLabel": " INICIO PK",
+      "finishChainageLabel": "FIN PK"
+    },
+    "cancelZoomButtonLabel": "Cancelar zoom"
+  },
+  "DrwMultiStepForm": {
+    "step1": {
+      "title": "Encabezado de planificación",
+      "description": "Ingrese el título y el logo"
+    },
+    "step2": {
+      "title": "Importación de archivo Excel",
+      "description": "Arrastre y suelte o importe su archivo"
+    },
+    "step3": {
+      "title": "Definición de estilos",
+      "description": "Defina el estilo de las actividades"
+    },
+    "step4": {
+      "title": "Definición de segmentos",
+      "description": "Defina el inicio y fin de cada segmento"
+    }
+  }
+}

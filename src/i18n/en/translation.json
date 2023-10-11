@@ -1,0 +1,167 @@
+{
+  "language.English": "English",
+  "language.French": "French",
+  "language.Spanish": "Spanish",
+  "language.Arabic": "Arabic",
+  "language.German": "German",
+
+  "stepper.next": "Next",
+  "stepper.back": "Back",
+  "stepper.save": "Save",
+
+  "login": {
+    "title": "Log In",
+    "emailLabel": "E-mail",
+    "passwordLabel": "Password",
+    "loginButton": "Log In",
+    "googleLoginButton": "Log In with Google",
+    "errorMessages": {
+      "invalidEmail": "Invalid email address.",
+      "userNotFound": "User not found. Please check your email address.",
+      "wrongPassword": "Incorrect password. Please try again.",
+      "userDisabled": "Your account has been disabled.",
+      "invalidLoginCredentials": "Invalid login credentials. Please check your email and password.",
+      "defaultError": "An error occurred. Please try again later."
+    },
+    "noAccount": "Don't have an account?",
+    "contactUs": "Contact us:",
+    "adminEmail": "admin@ientreprize.com",
+    "signInHeader": "Sign In"
+  },
+  "common": {
+    "invalidEmail": "Invalid email address.",
+    "passwordRequirements": "Password must be at least 8 characters and contain at least 1 lowercase letter, 1 uppercase letter, 1 digit, and 1 special character."
+  },
+  "header.contact": "Contact:",
+  "header.contactEmail": "admin@ientreprize.com",
+  "header.logout": "Logout",
+  "projectForm.title": "Project Title",
+  "projectForm.logo": "Logo",
+  "projectForm.next": "Next",
+  "imagePicker.importLogo": "Import Logo",
+  "imagePicker.selectValidImage": "Please select a valid image file (e.g., JPG, PNG).",
+  "importFileForm.dragOrImport": "Drag or import your file",
+  "importFileForm.title": "File Import",
+  "importFileForm.back": "Back",
+  "importFileForm.next": "Next",
+  "importFileForm.fileInputLabel": "Drag or import your file",
+  "importFileForm.startDate": "Start",
+  "importFileForm.endDate": "End",
+  "importFileForm.timeScale": "Time Scale",
+  "importFileForm.startPk": "Start PK",
+  "importFileForm.endPk": "End PK",
+  "importFileForm.dateRequired": "Date is required",
+  "importFileForm.startDateError": "Start date is required",
+  "importFileForm.endDateError": "End date must be after the start date",
+  "importFileForm.startDistanceRequired": "Start distance is required",
+  "importFileForm.endDistanceRequired": "End distance is required",
+  "importFileForm.selectValidFile": "Please select a valid XLSX or Excel file.",
+
+  "importFileForm.activityStyle": "ACTIVITY STYLE",
+  "importFileForm.activityName": "ACTIVITY NAME",
+  "importFileForm.yearlyOption": "Yearly",
+  "importFileForm.monthlyOption": "Monthly",
+  "importFileForm.weeklyOption": "Weekly",
+  "importFileForm.dailyOption": "Daily",
+
+  "shapesForm": {
+    "backButton": "Back",
+    "nextButton": "Next",
+    "formatStyle": "FORMAT STYLE",
+    "lineType": "LINE TYPE",
+    "rectangleTriangleType": "RECTANGLE / TRIANGLE TYPE",
+    "color": "Color",
+    "styleName": "Style Name",
+    "headers": {
+      "formatStyle": "FORMAT STYLE",
+      "lineType": "LINE TYPE",
+      "rectangleTriangleType": "RECTANGLE / TRIANGLE TYPE",
+      "color": "Color",
+      "styleName": "Style Name"
+    },
+    "Triangle": "Triangle",
+    "Rectangle": "Rectangle",
+    "Ligne": "Line"
+  },
+  "taskSlotsList": {
+    "addButton": "Add",
+    "sectionHeaders": {
+      "section1": "Task Slots List",
+      "section2": "Actions"
+    },
+    "tableHeaders": {
+      "name": "SEGMENT NAME",
+      "start": "START PK",
+      "end": "END PK",
+      "actions": "Actions"
+    },
+    "buttons": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "back": "Back",
+      "showPlanning": "Show Planning"
+    },
+    "popUp": {
+      "addTitle": "Add Task Slot",
+      "editTitle": "Edit Task Slot",
+      "saveButton": "Save",
+      "cancelButton": "Cancel"
+    }
+  },
+  "taskSlotsPopUp": {
+    "titles": {
+      "add": "Define Limits",
+      "edit": "Edit Limits"
+    },
+    "labels": {
+      "name": "Name:",
+      "start": "Start PK:",
+      "end": "End PK:"
+    },
+    "placeholders": {
+      "name": "Enter segment name",
+      "start": "Enter start PK",
+      "end": "Enter end PK"
+    },
+    "errors": {
+      "required": "This field is required",
+      "minDistance": "Value must be greater than or equal to {minDistance}",
+      "maxDistance": "Value must be less than or equal to {maxDistance}",
+      "greaterThanStart": "End PK must be greater than start PK"
+    },
+    "buttons": {
+      "add": "Add",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
+  },
+  "drawGraph": {
+    "activityDetails": {
+      "activityNameLabel": "ACTIVITY NAME",
+      "styleLabel": "STYLE",
+      "startDateLabel": "START DATE",
+      "finishDateLabel": "FINISH DATE",
+      "startChainageLabel": " START PK",
+      "finishChainageLabel": "END PK"
+    },
+    "cancelZoomButtonLabel": "Cancel Zoom"
+  },
+  "DrwMultiStepForm": {
+    "step1": {
+      "title": "Planning Header",
+      "description": "Enter the title & Logo"
+    },
+    "step2": {
+      "title": "Excel File Import",
+      "description": "Drag and drop or import your file"
+    },
+    "step3": {
+      "title": "Style Definition",
+      "description": "Define the style of activities"
+    },
+    "step4": {
+      "title": "Segments Definition",
+      "description": "Define the start and end of each segment"
+    }
+  }
+}

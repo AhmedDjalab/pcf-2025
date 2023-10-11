@@ -6,11 +6,13 @@ import { TaskSlot, updateTaskSlotsValue } from "../state/slices/graphSlice";
 import { MultiStepFormProps } from "./DrawGraphForm";
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editRow, setEditRow] = useState<TaskSlot | null>(null);
   const [isNew, setIsNew] = useState(false);
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const taskSlots: TaskSlot[] = useSelector(
     (state: RootState) => state.taskSlots
@@ -114,23 +116,23 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
           onClick={handleAddClick}
           className=" text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
         >
-          Ajouter
+          {t("taskSlotsList.addButton")}
         </button>
       </div>
       <table className="min-w-full divide-y divide-gray-200">
         <thead>
           <tr>
             <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Nom de tronçon
+              {t("taskSlotsList.tableHeaders.name")}
             </th>
             <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Pk de début
+              {t("taskSlotsList.tableHeaders.start")}
             </th>
             <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Pk de fin
+              {t("taskSlotsList.tableHeaders.end")}
             </th>
             <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Actions
+              {t("taskSlotsList.tableHeaders.actions")}
             </th>
           </tr>
         </thead>
@@ -145,13 +147,13 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
                   className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                   onClick={() => handleEditClick(row)}
                 >
-                  Modifier
+                  {t("taskSlotsList.buttons.edit")}
                 </button>
                 <button
                   className="focus:outline-none text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                   onClick={() => handleDeleteClick(row.id)}
                 >
-                  Supprimer
+                  {t("taskSlotsList.buttons.delete")}
                 </button>
               </td>
             </tr>
@@ -172,7 +174,7 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
           onClick={() => setCurrentStep(currentStep - 1)} // Handle going back to the previous step
           className=" text-white bg-gray-400 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
         >
-          Retour
+          {t("taskSlotsList.buttons.delete")}
         </button>
         <button
           type="button"
@@ -184,7 +186,7 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
                   focus:ring-blue-300
                    disabled:bg-gray-600"
         >
-          Afficher le planning
+          {t("taskSlotsList.buttons.showPlanning")}
         </button>
       </div>
     </div>

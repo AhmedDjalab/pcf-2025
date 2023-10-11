@@ -7,11 +7,14 @@ import {
   ProjectSettings,
   updateProjectSettingsValue,
 } from "../state/slices/graphSlice";
+import { useTranslation } from "react-i18next";
 
 const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const [projectTitle, setProjectTitle] = useState("");
   const [selectedImage, setSelectedImage] = useState("");
   const dispatch = useDispatch();
+  const { t } = useTranslation();
+
   const projectSettings = useSelector(
     (state: RootState) => state.projectSettings
   );
@@ -52,7 +55,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
             htmlFor="projectTitle"
             className="block text-gray-700 text-sm font-bold mb-2"
           >
-            Titre du Projet
+            {t("projectForm.title")}
           </label>
           <input
             type="text"
@@ -70,7 +73,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
             htmlFor="projectImage"
             className="block text-gray-700 text-sm font-bold mb-2"
           >
-            Logo
+            {t("projectForm.logo")}
           </label>
           <ImagePicker
             onChange={handleImageChange}
@@ -83,7 +86,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
             type="submit"
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 self-end"
           >
-            Suivant
+            {t("projectForm.next")}
           </button>
         </div>
       </form>

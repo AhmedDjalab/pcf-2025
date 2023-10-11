@@ -25,6 +25,7 @@ import {
   markersConfig,
 } from "../const/markerAndPatternsConfig";
 import { settings } from "firebase/analytics";
+import { useTranslation } from "react-i18next";
 
 export interface ActivityData {
   id: string;
@@ -49,6 +50,8 @@ function DrawGraphStep() {
   const containerSVGRef = useRef<SVGSVGElement | null>(null);
   const legendRef = useRef<HTMLDivElement | null>(null);
   const tableRef = useRef();
+  const { t } = useTranslation();
+
   // State to manage the selected date range
   const [startDate, setStartDate] = useState(graphSettings.settings.fromDate);
   const [endDate, setEndDate] = useState(graphSettings.settings.toDate);
@@ -67,18 +70,24 @@ function DrawGraphStep() {
 
   const generateTooltipContent = (data: GraphDataType) => {
     return `
-      <strong>ID:</strong> ${data.id}<br>
-      <strong> NOM DE L’ACTIVITÉ:</strong> ${data.activityName}<br>
-      <strong>DATE DE DÉBUT:</strong> ${moment(data.startDate).format(
-        "DD/MM/YYYY"
-      )}<br>
-      <strong>DATE DE FIN:</strong> ${moment(data.finishDate).format(
-        "DD/MM/YYYY"
-      )}<br>
-      <strong>PK DE DÉBUT:</strong> ${data.startChainage}<br>
-      <strong>PK DE FIN:</strong> ${data.finishChainage}<br>
-      <strong>STYLE:</strong> ${data.style}
-    `;
+    <strong>ID:</strong> ${data.id}<br>
+    <strong>${t("drawGraph.activityDetails.activityNameLabel")}:</strong> ${
+      data.activityName
+    }<br>
+    <strong>${t("drawGraph.activityDetails.startDateLabel")}:</strong> ${moment(
+      data.startDate
+    ).format("DD/MM/YYYY")}<br>
+    <strong>${t(
+      "drawGraph.activityDetails.finishDateLabel"
+    )}:</strong> ${moment(data.finishDate).format("DD/MM/YYYY")}<br>
+    <strong>${t("drawGraph.activityDetails.startChainageLabel")}:</strong> ${
+      data.startChainage
+    }<br>
+    <strong>${t("drawGraph.activityDetails.finishChainageLabel")}:</strong> ${
+      data.finishChainage
+    }<br>
+    <strong>${t("drawGraph.activityDetails.styleLabel")}:</strong> ${data.style}
+  `;
   };
   // const handleDateChange = (dates) => {
   //   const [start, end] = dates;
@@ -860,7 +869,7 @@ function DrawGraphStep() {
           className="focus:outline-none mt-2 text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
           onClick={resetZoom}
         >
-          Annuler le Zoom
+          {t("drawGraph.cancelZoomButtonLabel")}
         </button>
       )}
       <div className="flex flex-col" id="graph-container">
@@ -913,40 +922,42 @@ function DrawGraphStep() {
       <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <div className="border border-gray-700 p-2 bg-slate-500">
-            NOM DE L’ACTIVITÉ
+            {t("drawGraph.activityDetails.activityNameLabel")}
           </div>
           <div className="border border-gray-700 p-2">
             {selectedShapeData?.activityName}
           </div>
 
-          <div className="border border-gray-700 p-2 bg-slate-500">STYLE</div>
+          <div className="border border-gray-700 p-2 bg-slate-500">
+            {t("drawGraph.activityDetails.styleLabel")}
+          </div>
           <div className="border border-gray-700 p-2">
             {selectedShapeData?.style}
           </div>
 
           <div className="border border-gray-700 p-2 bg-slate-500">
-            DATE DE DÉBUT
+            {t("drawGraph.activityDetails.startDateLabel")}
           </div>
           <div className="border border-gray-700 p-2">
             {moment(selectedShapeData?.startDate).format("DD/MM/YYYY")}
           </div>
 
           <div className="border border-gray-700 p-2 bg-slate-500">
-            DATE DE FIN
+            {t("drawGraph.activityDetails.finishDateLabel")}
           </div>
           <div className="border border-gray-700 p-2">
             {moment(selectedShapeData?.finishDate).format("DD/MM/YYYY")}
           </div>
 
           <div className="border border-gray-700 p-2 bg-slate-500">
-            PK DE DÉBUT
+            {t("drawGraph.activityDetails.startChainageLabel")}
           </div>
           <div className="border border-gray-700 p-2">
             {selectedShapeData?.startChainage}
           </div>
 
           <div className="border border-gray-700 p-2 bg-slate-500">
-            PK DE FIN
+            {t("drawGraph.activityDetails.finishChainageLabel")}
           </div>
           <div className="border border-gray-700 p-2">
             {selectedShapeData?.finishChainage}

@@ -12,6 +12,7 @@ import { auth } from "../Helpers/firebase";
 import { useUserContext } from "../context/UserContext";
 import { FirebaseError } from "firebase/app";
 import logo from "../assets/Logo/logo.png";
+import { useTranslation } from "react-i18next";
 
 function Login() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const { loginUser } = useUserContext();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -37,14 +39,12 @@ function Login() {
     setLoader(true);
     e.preventDefault();
     if (!validateEmail(email)) {
-      setError("Adresse email invalide");
+      setError(t("common.invalidEmail"));
       setLoader(false);
       return;
     }
     if (!validatePassword(password)) {
-      setError(
-        "Le mot de passe doit comporter au moins 8 caractères et contenir au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 caractère spécial"
-      );
+      setError(t("common.passwordRequirements"));
       setLoader(false);
       return;
     }
@@ -90,27 +90,22 @@ function Login() {
   const handleFirebaseError = (error: FirebaseError) => {
     switch (error.code) {
       case "auth/invalid-email":
-        setError("Adresse email invalide.");
+        setError(t("login.errorMessages.invalidEmail"));
         break;
       case "auth/user-not-found":
-        setError(
-          "Utilisateur introuvable. Veuillez vérifier votre adresse email."
-        );
+        setError(t("login.errorMessages.userNotFound"));
         break;
       case "auth/wrong-password":
-        setError("Mot de passe incorrect. Veuillez réessayer.");
+        setError(t("login.errorMessages.wrongPassword"));
         break;
       case "auth/user-disabled":
-        setError("Votre compte a été désactivé.");
+        setError(t("login.errorMessages.userDisabled"));
         break;
       case "auth/invalid-login-credentials":
-        setError(
-          "Informations de connexion invalides. Veuillez vérifier votre adresse email et votre mot de passe."
-        );
+        setError(t("login.errorMessages.invalidLoginCredentials"));
         break;
-      // Ajoutez d'autres cas pour d'autres codes d'erreur Firebase si nécessaire
       default:
-        setError("Une erreur s'est produite. Veuillez réessayer plus tard.");
+        setError(t("login.errorMessages.defaultError"));
         break;
     }
     setLoader(false);
@@ -125,7 +120,7 @@ function Login() {
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
               {error && <span className="mt-10 text-red-600">{error}</span>}
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                Se connecter
+                {t("login.signInHeader")}{" "}
               </h1>
               <form className="space-y-4 md:space-y-6" action="#">
                 <div>
@@ -201,15 +196,15 @@ function Login() {
                 </div>
               </form>
               <div className="flex items-center justify-center space-x-2 text-center">
-                {/* <span className="w-[2px] h-px bg-gray-300 dark:bg-gray-700"></span> */}
-                <div className="text-sm text-gray-500 dark:text-gray-400  ">
-                  <p>Vous n’avez pas de compte ?</p>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  <p>{t("login.noAccount")}</p>
                   <p>
-                    contactez-nous:{" "}
-                    <span className="text-blue-700">admin@ientreprize.com</span>
+                    {t("login.contactUs")}:{" "}
+                    <span className="text-blue-700">
+                      {t("login.adminEmail")}
+                    </span>
                   </p>
                 </div>
-                {/* <span className="w-[2px] h-px bg-gray-300 dark:bg-gray-700"></span> */}
               </div>
 
               {/* <div className="flex justify-center space-x-2">

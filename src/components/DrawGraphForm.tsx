@@ -12,33 +12,8 @@ import {
   useNavigate,
   useRoutes,
 } from "react-router-dom";
-const steps = [
-  {
-    stepNumber: 1,
-    title: "Entête du planning",
-    description: "Entrez le titre  & Logo",
-  },
-  {
-    stepNumber: 2,
-    title: "Importation du fichier Excel",
-    description: "Faites glisser ou importez votre fichier",
-  },
-  {
-    stepNumber: 3,
-    title: "Définition des Styles",
-    description: "Définissez le style des activités",
-  },
-  {
-    stepNumber: 4,
-    title: "Définition des tronçons",
-    description: "Définissez le début et la fin de chaque tronçon",
-  },
-  // {
-  //   stepNumber: 4,
-  //   title: "Chart",
-  //   description: "Draw your chart",
-  // },
-];
+import { useTranslation } from "react-i18next";
+
 export interface MultiStepFormProps {
   currentStep: number;
   stepsLength: number;
@@ -46,8 +21,30 @@ export interface MultiStepFormProps {
 }
 
 export const DrawGraphForm = ({}) => {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
-
+  const steps = [
+    {
+      stepNumber: 1,
+      title: t("DrwMultiStepForm.step1.title"),
+      description: t("DrwMultiStepForm.step1.description"),
+    },
+    {
+      stepNumber: 2,
+      title: t("DrwMultiStepForm.step2.title"),
+      description: t("DrwMultiStepForm.step2.description"),
+    },
+    {
+      stepNumber: 3,
+      title: t("DrwMultiStepForm.step3.title"),
+      description: t("DrwMultiStepForm.step3.description"),
+    },
+    {
+      stepNumber: 4,
+      title: t("DrwMultiStepForm.step4.title"),
+      description: t("DrwMultiStepForm.step4.description"),
+    },
+  ];
   return (
     <div className="rounded-sm  p-10 bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
       <Stepper steps={steps} currentStep={currentStep} />

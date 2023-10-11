@@ -3,6 +3,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup"; // Import Yup for validation
 import { RootState } from "../state"; // Import RootState type
 import { useSelector } from "react-redux"; // Import useSelector
+import { useTranslation } from "react-i18next";
 
 interface TaskSlotsPopUpProps {
   isNew: boolean;
@@ -24,6 +25,7 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
   handleAddTaskSlot,
   handleEditTaskSlot,
 }) => {
+  const { t } = useTranslation();
   const minDistance: number = useSelector(
     (state: RootState) => state.settings.fromDistance
   );
@@ -37,35 +39,58 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
     end: isNew ? "" : editRow!.end,
   };
 
-  const validationSchema = Yup.object().shape({
-    name: Yup.string().required("Le nom est requis"),
+  // const validationSchema = Yup.object().shape({
+  //   name: Yup.string().required("Le nom est requis"),
+  //   start: Yup.number()
+  //     .required("Le Pk de début est requis")
+  //     .min(
+  //       minDistance,
+  //       `Le Pk de début doit être supérieur ou égal à ${minDistance}`
+  //     )
+  //     .max(
+  //       maxDistance,
+  //       `Le Pk de début doit être inférieur ou égal à ${maxDistance}`
+  //     ),
+  //   end: Yup.number()
+  //     .required("Le Pk de fin est requise")
+  //     .min(
+  //       minDistance,
+  //       `Le Pk de fin doit être supérieure ou égale à ${minDistance}`
+  //     )
+  //     .max(
+  //       maxDistance,
+  //       `Le Pk de fin doit être inférieure ou égale à ${maxDistance}`
+  //     )
+  //     .test(
+  //       "is-greater-than-start",
+  //       "Le Pk de fin doit être supérieur au Pk de début",
+  //       function (end) {
+  //         const start = this.parent.start; // Get the value of 'start' from the form data
+
+  //         // Check if 'end' is greater than 'start'
+  //         return end > start;
+  //       }
+  //     ),
+  // });
+
+  let validationSchema = Yup.object().shape({
+    name: Yup.string().required(t("taskSlotsPopUp.errors.required")),
     start: Yup.number()
-      .required("Le Pk de début est requis")
-      .min(
-        minDistance,
-        `Le Pk de début doit être supérieur ou égal à ${minDistance}`
-      )
+      .required(t("taskSlotsPopUp.errors.required"))
+      .min(minDistance, t("taskSlotsPopUp.errors.minDistance", { minDistance }))
       .max(
         maxDistance,
-        `Le Pk de début doit être inférieur ou égal à ${maxDistance}`
+        t("taskSlotsPopUp.errors.maxDistance", { maxDistance })
       ),
     end: Yup.number()
-      .required("Le Pk de fin est requise")
-      .min(
-        minDistance,
-        `Le Pk de fin doit être supérieure ou égale à ${minDistance}`
-      )
-      .max(
-        maxDistance,
-        `Le Pk de fin doit être inférieure ou égale à ${maxDistance}`
-      )
+      .required(t("taskSlotsPopUp.errors.required"))
+      .min(minDistance, t("taskSlotsPopUp.errors.minDistance", { minDistance }))
+      .max(maxDistance, t("taskSlotsPopUp.errors.maxDistance", { maxDistance }))
       .test(
         "is-greater-than-start",
-        "Le Pk de fin doit être supérieur au Pk de début",
+        t("taskSlotsPopUp.errors.greaterThanStart"),
         function (end) {
-          const start = this.parent.start; // Get the value of 'start' from the form data
-
-          // Check if 'end' is greater than 'start'
+          const start = this.parent.start;
           return end > start;
         }
       ),
@@ -86,7 +111,9 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-white bg-opacity-80">
       <div className="bg-white p-6 rounded shadow-md w-96">
         <div className="text-2xl font-semibold mb-4">
-          {isNew ? "Définition des limites" : " Modifier les limites"}
+          {isNew
+            ? t("taskSlotsPopUp.titles.add")
+            : t("taskSlotsPopUp.titles.edit")}
         </div>
         <Formik
           initialValues={initialValues}
@@ -104,11 +131,12 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
             <Form>
               <div className="mb-4">
                 <label className="block text-gray-700 font-bold mb-2">
-                  Nom:
+                  {t("taskSlotsPopUp.labels.name")}
                 </label>
                 <Field
                   type="text"
                   name="name"
+                  placeholder={t("taskSlotsPopUp.placeholders.name")}
                   className={`border ${
                     errors.name ? "border-red-500" : "border-gray-300"
                   } rounded p-2 w-full`}
@@ -121,11 +149,12 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 font-bold mb-2">
-                  Pk de début:
+                  {t("taskSlotsPopUp.labels.start")}
                 </label>
                 <Field
                   type="number"
                   name="start"
+                  placeholder={t("taskSlotsPopUp.placeholders.start")}
                   className={`border ${
                     errors.start ? "border-red-500" : "border-gray-300"
                   } rounded p-2 w-full`}
@@ -138,11 +167,12 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 font-bold mb-2">
-                  Pk de fin:
+                  {t("taskSlotsPopUp.labels.end")}
                 </label>
                 <Field
                   type="number"
                   name="end"
+                  placeholder={t("taskSlotsPopUp.placeholders.end")}
                   className={`border ${
                     errors.end ? "border-red-500" : "border-gray-300"
                   } rounded p-2 w-full`}
@@ -159,14 +189,16 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
                   disabled={!isValid}
                   className="bg-blue-500 text-white rounded px-4 py-2 mr-2 hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
                 >
-                  {isNew ? "Ajouter" : "Sauvegarder"}
+                  {isNew
+                    ? t("taskSlotsPopUp.buttons.add")
+                    : t("taskSlotsPopUp.buttons.save")}
                 </button>
                 <button
                   type="button"
                   onClick={closeModal}
                   className="bg-gray-300 text-gray-600 rounded px-4 py-2 hover:bg-gray-400 focus:outline-none focus:ring focus:ring-gray-300"
                 >
-                  Quitter
+                  {t("taskSlotsPopUp.buttons.cancel")}
                 </button>
               </div>
             </Form>
