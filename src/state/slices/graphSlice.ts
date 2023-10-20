@@ -1,9 +1,6 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import texturesData from "../../const/texturesArray";
 import { lineStyles } from "../../const/linesArray";
-import { REHYDRATE } from "redux-persist";
-import { store } from "../store";
-import ShapesForm from "../../components/ShapesForm";
 import { uniqueId } from "lodash";
 
 export interface GraphDataType {

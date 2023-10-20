@@ -1,7 +1,6 @@
 {
   "name": "shedular-demo",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "@heroicons/react": "^2.0.18",
     "@mobiscroll/react": "https://npm.mobiscroll.com/@mobiscroll/react-trial/-/react-trial-5.25.1.tgz",
