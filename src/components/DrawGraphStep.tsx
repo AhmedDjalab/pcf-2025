@@ -223,7 +223,7 @@ function DrawGraphStep() {
       );
       const tickSpacing = 50; // Adjust the spacing between ticks as needed
       yAxis.ticks(d3.timeWeek.every(1));
-
+      // this is only for test
       // Calculate the total height required for the ticks
       var ticksHeight = ticksCount * tickSpacing;
       totalHeight =
