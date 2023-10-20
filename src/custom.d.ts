@@ -25,3 +25,4 @@ declare module "chart.js" {
 declare module "uuid";
 declare module "textures";
 declare module "react-scroll";
+declare module "tailwind-datepicker-react";

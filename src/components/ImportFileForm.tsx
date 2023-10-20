@@ -5,6 +5,9 @@ import * as XLSX from "xlsx";
 import {
   GraphDataType,
   GraphSetting,
+  addGraphDataList,
+  applyFilter,
+  removeActivity,
   updateGraphSettingsValue,
 } from "../state/slices/graphSlice";
 import * as Yup from "yup";
@@ -18,14 +21,16 @@ import { animateScroll as scroll } from "react-scroll";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/solid";
 import { BackToTopHeightSize } from "../const/vars";
 import { useTranslation } from "react-i18next";
+import ActivityTableForm from "./ActivityTableForm";
 
 export type FormValues = {
   fromDate: Date;
   toDate: Date;
-  graphData: any[]; // Adjust the type for graphData as needed
+  graphData: any[];
   fromDistance: string;
   toDistance: string;
-  timeRange: "Yearly" | "Monthly" | "Weekly" | "Daily"; // Define the specific values for timeRange
+  timeRange: "Yearly" | "Monthly" | "Weekly" | "Daily";
+  distanceRange?: number;
 };
 export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const initForm: FormValues = {
@@ -35,12 +40,14 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     fromDistance: "10000",
     toDistance: "20000",
     timeRange: "Yearly",
+    distanceRange: 200,
   };
 
   const dispatch = useDispatch();
   const graphSettings = useSelector((state: RootState) => state.settings);
   const { t } = useTranslation();
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [edit, setEdit] = useState<GraphDataType | null>(null);
   const [initialValues, setInitialValues] = useState<FormValues>(initForm);
   const [graphData, setGraphData] = useState<GraphDataType[]>([]);
   const [filteredData, setFilteredData] = useState<GraphDataType[]>([]);
@@ -57,6 +64,28 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     toDistance: Yup.number().required("La distance de fin est requise"),
   });
 
+  const handleAddClick = () => {
+    setEdit(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = (grT: GraphDataType) => {
+    setEdit(grT);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteClick = (gtId: string) => {
+    dispatch(removeActivity({ activityId: gtId }));
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEdit(null);
+  };
+  const handleSaveActivity = (degree: GraphDataType) => {
+    // Handle save logic
+    // Call the API or dispatch an action to save the degree
+    closeModal();
+  };
   const formik = useFormik({
     initialValues: {
       fromDate: new Date(graphSettings.fromDate) ?? new Date(),
@@ -65,6 +94,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       fromDistance: graphSettings.fromDistance.toString() ?? "10000",
       toDistance: graphSettings.toDistance.toString() ?? "20000",
       timeRange: graphSettings.timeRange ?? "Yearly",
+      distanceRange: graphSettings.distanceRange ?? 200,
     },
     validationSchema,
     enableReinitialize: true,
@@ -78,11 +108,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             ...values,
             fromDate: values.fromDate.toISOString(),
             toDate: values.toDate.toISOString(),
-            graphData: filteredData,
+            graphData: graphSettings.graphData,
             fromDistance: parseInt(values.fromDistance),
             toDistance: parseInt(values.toDistance),
             timeRange: values.timeRange,
-            rawExcelData: graphData,
           },
         })
       );
@@ -178,7 +207,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         const data = e.target?.result as ArrayBuffer | null;
         if (data) {
           const graphData = handleFileData(data);
-          setGraphData((prev) => graphData);
+          //setGraphData((prev) => graphData);
+          dispatch(addGraphDataList({ graphData: graphData }));
           formik.setFieldValue("graphData", graphData);
         }
       };
@@ -198,7 +228,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         const data = e.target?.result as ArrayBuffer | null;
         if (data) {
           const graphData = handleFileData(data);
-          setGraphData((prev) => graphData);
+          //setGraphData((prev) => graphData);
+
+          // dispatch
+          dispatch(addGraphDataList({ graphData: graphData }));
           formik.setFieldValue("graphData", graphData);
         }
       };
@@ -251,35 +284,59 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     };
   }, []);
 
-  const applyFilter = () => {
-    const filteredGraphData = graphData.filter((data) => {
-      const dataStartDate = new Date(data.startDate);
-      const dataFinishDate = new Date(data.finishDate);
+  // const applyFilter = () => {
+  //   const filteredGraphData = graphSettings.graphData.filter((data) => {
+  //     const dataStartDate = new Date(data.startDate);
+  //     console.log(
+  //       "🚀 ~ file: ImportFileForm.tsx:290 ~ filteredGraphData ~ dataStartDate:",
+  //       dataStartDate
+  //     );
+  //     const dataFinishDate = new Date(data.finishDate);
+  //     console.log(
+  //       "🚀 ~ file: ImportFileForm.tsx:292 ~ filteredGraphData ~ dataFinishDate:",
+  //       dataFinishDate
+  //     );
 
-      const zeroDistance =
-        formik.values.fromDistance == "0" && formik.values.toDistance == "0";
-      const fromDate = new Date(formik.values.fromDate);
-      const toDate = new Date(formik.values.toDate);
+  //     const zeroDistance =
+  //       formik.values.fromDistance == "0" && formik.values.toDistance == "0";
+  //     const fromDate = new Date(formik.values.fromDate);
+  //     console.log(
+  //       "🚀 ~ file: ImportFileForm.tsx:303 ~ filteredGraphData ~ fromDate:",
+  //       fromDate
+  //     );
+  //     const toDate = new Date(formik.values.toDate);
+  //     console.log(
+  //       "🚀 ~ file: ImportFileForm.tsx:305 ~ filteredGraphData ~ toDate:",
+  //       toDate
+  //     );
 
-      return (
-        dataFinishDate >= fromDate &&
-        dataStartDate <= toDate &&
-        data.startChainage >= parseFloat(formik.values.fromDistance) &&
-        data.finishChainage <= parseFloat(formik.values.toDistance)
-      );
-    });
-    setFilteredData(filteredGraphData);
-  };
+  //     return (
+  //       dataFinishDate >= fromDate &&
+  //       dataStartDate <= toDate &&
+  //       data.startChainage >= parseFloat(formik.values.fromDistance) &&
+  //       data.finishChainage <= parseFloat(formik.values.toDistance)
+  //     );
+  //   });
+  //   console.log(
+  //     "🚀 ~ file: ImportFileForm.tsx:304 ~ filteredGraphData ~ filteredGraphData:",
+  //     filteredGraphData,
+  //     graphSettings.graphData
+  //   );
+  //   setFilteredData(filteredGraphData);
+  // };
 
   useEffect(() => {
-    applyFilter();
-  }, [
-    formik.values.fromDate,
-    formik.values.toDate,
-    formik.values.fromDistance,
-    formik.values.toDistance,
-    formik.values.graphData,
-  ]);
+    dispatch(
+      applyFilter({
+        fromDate: formik.values.fromDate.toISOString(),
+        toDate: formik.values.toDate.toISOString(),
+        fromDistance: parseFloat(formik.values.fromDistance),
+        toDistance: parseFloat(formik.values.toDistance),
+        timeRange: formik.values.timeRange,
+        distanceRange: formik.values.distanceRange,
+      })
+    );
+  }, []);
 
   return (
     <div
@@ -318,7 +375,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         </label>
 
         <div className="relative   w-full mt-10">
-          {formik.values.graphData.length > 0 && (
+          {graphSettings.graphData.length > 0 && (
             <div className="grid grid-cols-3 gap-2 justify-center">
               <div className="mb-4">
                 <label
@@ -443,6 +500,30 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   <div className="text-red-600">{formik.errors.toDistance}</div>
                 )}
               </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="distanceRange"
+                  className="block font-medium text-gray-700"
+                >
+                  {t("importFileForm.distanceRange")}
+                </label>
+                <input
+                  id="distanceRange"
+                  name="distanceRange"
+                  type="number"
+                  value={formik.values.distanceRange}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="w-full px-3 py-2 border rounded-lg outline-none focus:ring focus:ring-blue-300"
+                />
+                {formik.touched.distanceRange &&
+                  formik.errors.distanceRange && (
+                    <div className="text-red-600">
+                      {formik.errors.distanceRange}
+                    </div>
+                  )}
+              </div>
             </div>
           )}
           <div className="my-4 flex justify-between">
@@ -457,11 +538,22 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             <button
               type="submit"
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
-              disabled={graphData.length === 0}
+              disabled={graphSettings.graphData.length === 0}
             >
               {t("importFileForm.next")}
             </button>
           </div>
+          {
+            <div className="my-4 flex justify-start">
+              <button
+                type="button"
+                onClick={handleAddClick}
+                className="mb-2 mr-2 rounded-lg bg-green-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+              >
+                {t("importFileForm.add")}
+              </button>
+            </div>
+          }
           <table className="   w-full  text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
@@ -486,12 +578,15 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                 <th scope="col" className="px-6 py-3">
                   {t("importFileForm.activityStyle")}
                 </th>
+                <th scope="col" className="px-6 py-3">
+                  {t("importFileForm.actions")}
+                </th>
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((data) => (
+              {graphSettings.graphData.map((data, index) => (
                 <tr
-                  key={data.id}
+                  key={data.id + index}
                   className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                 >
                   <th
@@ -510,6 +605,22 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   <td className="px-6 py-4">{data.startChainage}</td>
                   <td className="px-6 py-4">{data.finishChainage}</td>
                   <td className="px-6 py-4">{data.style}</td>
+                  <td className="flex px-6 py-3">
+                    <button
+                      type="button"
+                      onClick={() => handleEditClick(data)}
+                      className="text-blue-500 hover:text-blue-700"
+                    >
+                      {t("importFileForm.edit")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteClick(data.id)}
+                      className="ml-2 text-red-500 hover:text-red-700"
+                    >
+                      {t("importFileForm.delete")}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -527,6 +638,16 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           <ArrowUpCircleIcon className=" h-20 w-20  text-blue-500 opacity-40" />{" "}
           {/* Use the Heroicon here */}
         </button>
+      )}
+
+      {isModalOpen && (
+        <ActivityTableForm
+          initialValues={edit || undefined}
+          onSubmit={closeModal}
+          handleClose={() => setIsModalOpen(false)}
+          minDistance={parseFloat(formik.values.fromDistance)}
+          maxDistance={parseFloat(formik.values.toDistance)}
+        />
       )}
     </div>
   );

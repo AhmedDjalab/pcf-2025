@@ -2,20 +2,27 @@ import React, { useState } from "react";
 import TaskSlotsPopUp from "./TaskSlotsPopUp";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../state";
-import { TaskSlot, updateTaskSlotsValue } from "../state/slices/graphSlice";
+import {
+  TaskSlot,
+  updateTaskSlotsLevelTwoValue,
+  updateTaskSlotsValue,
+} from "../state/slices/graphSlice";
 import { MultiStepFormProps } from "./DrawGraphForm";
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
+const TaskSlotsLevelTwoList = ({
+  setCurrentStep,
+  currentStep,
+}: MultiStepFormProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editRow, setEditRow] = useState<TaskSlot | null>(null);
   const [isNew, setIsNew] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const taskSlots: TaskSlot[] = useSelector(
-    (state: RootState) => state.taskSlots
+    (state: RootState) => state.taskSlotsLevelTwo
   );
   const [formFieldValues, setFormFieldValues] = useState(taskSlots);
 
@@ -102,12 +109,12 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   const handleGoToDraw = () => {
     // update the store
     dispatch(
-      updateTaskSlotsValue({
-        taskSlots: formFieldValues,
+      updateTaskSlotsLevelTwoValue({
+        taskSlotsLevelTwo: formFieldValues,
       })
     );
-    // navigate("/graph");
-    setCurrentStep(currentStep + 1);
+    navigate("/graph");
+    // setCurrentStep(currentStep + 1);
   };
   return (
     <div>
@@ -186,11 +193,11 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
                   focus:ring-blue-300
                    disabled:bg-gray-600"
         >
-          {t("stepper.next")}
+          {t("taskSlotsList.buttons.showPlanning")}
         </button>
       </div>
     </div>
   );
 };
 
-export default TaskSlotsList;
+export default TaskSlotsLevelTwoList;

@@ -63,7 +63,11 @@
   "importFileForm.monthlyOption": "Monatlich",
   "importFileForm.weeklyOption": "Wöchentlich",
   "importFileForm.dailyOption": "Täglich",
-
+  "importFileForm.distanceRange": "Entfernungsbereich",
+  "importFileForm.edit": "Bearbeiten",
+  "importFileForm.delete": "Löschen",
+  "importFileForm.actions": "Aktionen",
+  "importFileForm.add": "Hinzufügen",
   "shapesForm": {
     "backButton": "Zurück",
     "nextButton": "Weiter",
@@ -162,6 +166,31 @@
     "step4": {
       "title": "Definition der Segmente",
       "description": "Definieren Sie den Start und das Ende jedes Segments"
+    },
+    "step5": {
+      "title": "Definition von Level-2-Segmenten",
+      "description": "Definieren Sie den Anfang und das Ende jedes Segments"
+    }
+  },
+  "activityForm": {
+    "addActivity": "Aktivität hinzufügen",
+    "editActivity": "Aktivität bearbeiten",
+    "activityName": "Aktivitätsname",
+    "startDate": "Startdatum",
+    "endDate": "Enddatum",
+    "startPk": "Start-PK",
+    "endPk": "End-PK",
+    "activityStyle": "Aktivitätsstil",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "errors": {
+      "activityName": "Der Aktivitätsname ist erforderlich",
+      "startDate": "Das Startdatum ist erforderlich",
+      "endDate": "Das Enddatum ist erforderlich",
+      "startPk": "Der Start-PK ist erforderlich",
+      "endPk": "Der End-PK ist erforderlich",
+      "activityStyle": "Der Aktivitätsstil ist erforderlich",
+      "endDateMin": "Das Enddatum muss größer oder gleich dem Startdatum sein"
     }
   }
 }

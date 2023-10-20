@@ -6,3 +6,7 @@ export var languages = [
   { code: "fr", name: "French", countryCode: "FR" },
   { code: "de", name: "German", countryCode: "DE" },
 ];
+
+export function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(" ");
+}

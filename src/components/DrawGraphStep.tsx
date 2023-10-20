@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useSelector } from "react-redux";
 import { RootState } from "../state";
-import { GraphDataType, ShapeType } from "../state/slices/graphSlice";
+import { GraphDataType, ShapeType, TaskSlot } from "../state/slices/graphSlice";
 import texturesData from "../const/texturesArray";
 import textures from "textures";
 import moment from "moment";
@@ -51,6 +51,15 @@ function DrawGraphStep() {
   const legendRef = useRef<HTMLDivElement | null>(null);
   const tableRef = useRef();
   const { t } = useTranslation();
+  let zoom = d3.zoom().scaleExtent([1, 5]);
+  const margin = { top: 100, right: 20, bottom: 100, left: 100 };
+  const rawcontainerHeight = 1000;
+  const rawcontainerWidth = window.innerWidth;
+  let width = rawcontainerHeight - margin.left - margin.right;
+  let height = rawcontainerWidth - margin.top - margin.bottom;
+
+  const [containerWidth, setContainerWidth] = useState(rawcontainerWidth);
+  const [containerHeight, setContainerHeight] = useState(height);
 
   // State to manage the selected date range
   const [startDate, setStartDate] = useState(graphSettings.settings.fromDate);
@@ -64,6 +73,9 @@ function DrawGraphStep() {
   const [timeRange, setTimeRange] = useState<
     "Yearly" | "Monthly" | "Weekly" | "Daily"
   >(graphSettings.settings.timeRange);
+  const [distanceRange, setDistanceRange] = useState<number>(
+    graphSettings.settings.distanceRange
+  );
 
   const [selectedShapeData, setSelectedShapeData] = useState<ActivityData>();
   const [patternsData, setPatternsData] = useState<any[]>([]);
@@ -95,12 +107,10 @@ function DrawGraphStep() {
   //   setEndDate(end);
   // };
 
-  const [containerWidth, setContainerWidth] = useState(window.innerWidth);
-
   useEffect(() => {
     // Function to handle window resize
     const handleResize = () => {
-      setContainerWidth(window.innerWidth);
+      // setContainerWidth(window.innerWidth);
 
       // Redraw your chart here with the updated dimensions
       drawD3Chart();
@@ -114,29 +124,37 @@ function DrawGraphStep() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  let zoom = d3.zoom().scaleExtent([1, 5]);
-  const margin = { top: 40, right: 20, bottom: 100, left: 100 };
-  const containerHeight = 1000;
-  let width = containerWidth - margin.left - margin.right;
-  let height = containerHeight - margin.top - margin.bottom;
+
   const drawD3Chart = () => {
     const legendContainer = d3.select(legendRef.current!);
     const svg = d3.select(svgRef.current!);
     const containerSVG = d3.select(containerSVGRef.current!);
     svg.selectAll("*").remove();
     const tooltip = d3.select("#tooltip");
-
+    const startDateObject = new Date(startDate);
+    const endDateObject = new Date(endDate);
+    startDateObject.setDate(1);
+    endDateObject.setDate(1);
+    if (timeRange === "Yearly") {
+      startDateObject.setMonth(0);
+      endDateObject.setMonth(0);
+      if (startDateObject.getFullYear() === endDateObject.getFullYear()) {
+        endDateObject.setFullYear(startDateObject.getFullYear() + 1);
+      }
+    }
     // Set the height attribute of the parent SVG to fit its children
+    const distanceAxisWidth =
+      50 * ((toDistance - fromDistance) / distanceRange) < window.innerWidth
+        ? window.innerWidth
+        : 50 * ((toDistance - fromDistance) / distanceRange);
 
+    setContainerWidth(distanceAxisWidth);
     const xScale = d3
       .scaleLinear()
       .domain([fromDistance, toDistance])
-      .range([10, width]);
+      .range([10, distanceAxisWidth]);
 
-    const yScale = d3
-      .scaleTime()
-      .domain([new Date(startDate), new Date(endDate)])
-      .range([margin.top, height]);
+    const yScale = d3.scaleTime().domain([startDateObject, endDateObject]);
 
     const g = svg
       .append("g")
@@ -145,26 +163,91 @@ function DrawGraphStep() {
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
     //?? x axis
-    const xAxis = d3.axisBottom(xScale);
+    const xAxis = d3
+      .axisBottom(xScale)
+      .ticks((toDistance - fromDistance) / distanceRange);
+
+    let yAxis = d3.axisLeft(yScale);
+    let tickSpacing = 20;
+    let totalHeight = 1 * tickSpacing;
+
+    if (timeRange === "Yearly") {
+      const tickSpacing = 50; // Adjust the spacing between ticks as needed
+
+      // Generate an array of tick values for yearly intervals
+      const ticks = d3.timeYear.every(1).range(startDateObject, endDateObject);
+
+      // Ensure there's at least one tick for the start date
+      if (ticks[0] > startDateObject) {
+        ticks.unshift(startDateObject);
+      }
+
+      // Set the tick values
+      yAxis.tickValues(ticks);
+
+      // Calculate the total height based on the number of ticks and tickSpacing
+      const ticksCount = ticks.length;
+      const adjustedTicksCount = Math.max(2, ticksCount); // Ensure a minimum of 2 ticks
+
+      totalHeight =
+        ticksCount * tickSpacing < 200
+          ? ticksCount * 100
+          : ticksCount * tickSpacing;
+      //yScale.range([margin.top, margin.top + totalHeight]);
+    } else if (timeRange === "Monthly") {
+      const tickSpacing = 50; // Adjust the spacing between ticks as needed
+
+      // Generate an array of tick values for monthly intervals
+      const ticks = d3.timeMonth.every(1).range(startDateObject, endDateObject);
+
+      // Ensure there's at least one tick for the start date
+      if (ticks[0] > startDateObject) {
+        ticks.unshift(startDateObject);
+      }
+
+      // Set the tick values
+      yAxis.tickValues(ticks);
+
+      // Calculate the total height based on the number of ticks and tickSpacing
+      const ticksCount = ticks.length;
+      const adjustedTicksCount = Math.max(2, ticksCount); // Ensure a minimum of 2 ticks
+
+      totalHeight =
+        adjustedTicksCount * tickSpacing < 200
+          ? adjustedTicksCount * 100
+          : adjustedTicksCount * tickSpacing;
+    } else if (timeRange === "Weekly") {
+      const ticksCount = d3.timeWeek.count(
+        new Date(startDate),
+        new Date(endDate)
+      );
+      const tickSpacing = 50; // Adjust the spacing between ticks as needed
+      yAxis.ticks(d3.timeWeek.every(1));
+
+      // Calculate the total height required for the ticks
+      var ticksHeight = ticksCount * tickSpacing;
+      totalHeight =
+        ticksHeight < rawcontainerHeight ? rawcontainerHeight : ticksHeight;
+    } else if (timeRange.includes("Daily")) {
+      const ticksCount = d3.timeDay.count(startDateObject, endDateObject);
+
+      const tickSpacing = 50; // Adjust the spacing between ticks as needed
+      yAxis.ticks(d3.timeDay.every(1));
+
+      // Calculate the total height required for the ticks
+      totalHeight = ticksCount * tickSpacing;
+    }
+
+    yScale.range([margin.top, totalHeight]);
+    setContainerHeight(totalHeight + margin.top);
     g.append("g")
       .attr("class", "x-axis")
-      .attr("transform", `translate(0, ${height})`)
+      .attr("transform", `translate(0, ${totalHeight})`)
       .call(xAxis)
       .selectAll("text")
       .style("text-anchor", "middle")
       .attr("dy", "1em");
 
-    let yAxis = d3.axisLeft(yScale);
-
-    if (timeRange === "Yearly") {
-      yAxis.ticks(d3.timeYear.every([new Date(startDate)])); // Show yearly ticks
-    } else if (timeRange === "Monthly") {
-      yAxis.ticks(d3.timeMonth.every(1)); // Show monthly ticks
-    } else if (timeRange === "Weekly") {
-      yAxis.ticks(d3.timeWeek.every(1)); // Show weekly ticks
-    } else if (timeRange.includes("Daily")) {
-      yAxis.ticks(d3.timeDay.every(1)); // Show daily ticks
-    }
     g.append("g")
       .attr("class", "y-axis")
       .attr("transform", "translate(5,0)")
@@ -208,8 +291,8 @@ function DrawGraphStep() {
           return;
         }
         // Define boundaries
-        const minStartDate = new Date(startDate);
-        const maxEndDate = new Date(endDate);
+        const minStartDate = startDateObject;
+        const maxEndDate = endDateObject;
         const minStartChainage = fromDistance;
         const maxFinishChainage = toDistance;
 
@@ -359,7 +442,7 @@ function DrawGraphStep() {
       .append("line")
       .attr("class", "y-guideline")
       .attr("x1", 0)
-      .attr("x2", width + margin.left)
+      .attr("x2", containerWidth)
       .attr("y1", (d) => yScale(moment(d, "ddd DD/MM/YYYY")))
       .attr("y2", (d) => yScale(moment(d, "ddd DD/MM/YYYY")))
       .attr("stroke", "#dbd9d9")
@@ -368,81 +451,9 @@ function DrawGraphStep() {
     // Create a div for the slots and select it
     const slotsContainer = d3.select("#slots-container"); // Replace with the appropriate selector or use a ref
 
+    drawTaskSlot(g, xScale, tooltip, graphSettings.taskSlotsLevelTwo, "Task2");
     // Append slots to the selected div
-    g.selectAll(".start-line")
-      .data(graphSettings.taskSlots)
-      .enter()
-      .append("line")
-      .attr("class", "start-line")
-      .attr("x1", (d) => xScale(d.start))
-      .attr("y1", height)
-      .attr("x2", (d) => xScale(d.start))
-      .attr("y2", (d) => margin.top)
-      .attr("stroke", "#857676")
-      .attr("stroke-dasharray", "2,2");
-
-    g.selectAll(".end-line")
-      .data(graphSettings.taskSlots)
-      .enter()
-      .append("line")
-      .attr("class", "end-line")
-      .attr("x1", (d) => xScale(d.end))
-      .attr("y1", height)
-      .attr("x2", (d) => xScale(d.end))
-      .attr("y2", (d) => margin.top)
-      .attr("stroke", "#7f7a7a")
-      .attr("stroke-dasharray", "2,2");
-
-    // Create rectangles for each task slot
-    g.selectAll(".slot-rect")
-      .data(graphSettings.taskSlots)
-      .enter()
-      .append("rect")
-      .attr("class", "slot-rect")
-      .attr("x", (d) => xScale(d.start))
-
-      .attr("width", (d) => xScale(d.end) - xScale(d.start))
-      .attr("height", 20) // Adjust the height as needed
-      .style("fill", "none")
-      .style("stroke", "gray"); // Gray border
-
-    // Create labels for task slots using foreignObject
-    g.selectAll(".slot-label")
-      .data(graphSettings.taskSlots)
-      .enter()
-      .append("foreignObject")
-      .attr("class", "slot-label")
-      .attr("x", (d) => xScale(d.start))
-
-      .attr("width", (d) => xScale(d.end) - xScale(d.start))
-      .attr("height", 20) // Adjust the height as needed
-      .append("xhtml:div")
-      .style("display", "flex") // Use flexbox for vertical centering
-      .style("justify-content", "center") // Center horizontally
-      .style("align-items", "center") // Center vertically
-      .style("overflow", "hidden")
-      .style("white-space", "nowrap")
-      .style("text-overflow", "ellipsis")
-
-      .style("padding-bottom", "5px") // Adjust the padding-bottom as needed
-      .html((d) => d.name)
-      .on("mouseover", function (event: MouseEvent, d: unknown) {
-        // Show tooltip on hover
-        const slotName = d.name;
-
-        tooltip
-          .html(slotName)
-          .style("display", "block")
-          .style("padding", "10px")
-          .style("background-color", "#fa5bd2")
-          .style("left", event.pageX + "px")
-          .style("top", event.pageY - 28 + "px");
-      })
-      .on("mouseout", function () {
-        // Hide tooltip on mouseout
-
-        tooltip.style("display", "none");
-      });
+    drawTaskSlot(g, xScale, tooltip, graphSettings.taskSlots, "Task1");
 
     // Create a zoom behavior
     // Set the minimum and maximum scale levels
@@ -563,6 +574,8 @@ function DrawGraphStep() {
     timeRange,
     toDistance,
     width,
+    containerHeight,
+    containerWidth,
   ]);
 
   // const createTexture = async (shape, shapeElement) => {
@@ -966,6 +979,93 @@ function DrawGraphStep() {
       </div>
     </div>
   );
+
+  function drawTaskSlot(
+    g: d3.Selection<SVGGElement, unknown, null, undefined>,
+    xScale: d3.ScaleLinear<number, number, never>,
+    tooltip: d3.Selection<d3.BaseType, unknown, HTMLElement, any>,
+    taskSlots: TaskSlot[],
+    slotClassName: "Task1" | "Task2"
+  ) {
+    g.selectAll(".start-" + slotClassName)
+      .data(taskSlots)
+      .enter()
+      .append("line")
+      .attr("class", "start-" + slotClassName)
+      .attr("x1", (d) => xScale(d.start))
+      .attr("y1", containerHeight - margin.top)
+      .attr("x2", (d) => xScale(d.start))
+      .attr("y2", (d) => (slotClassName === "Task1" ? 45 : 0))
+      .attr("stroke", slotClassName === "Task1" ? "#ed9b9b" : "#6c9ae8")
+      .attr("stroke-dasharray", "2,2");
+
+    g.selectAll(".end-" + slotClassName)
+      .data(taskSlots)
+      .enter()
+      .append("line")
+      .attr("class", "end-" + slotClassName)
+      .attr("x1", (d) => xScale(d.end))
+      .attr("y1", containerHeight - margin.top)
+      .attr("x2", (d) => xScale(d.end))
+      .attr("y2", (d) => (slotClassName === "Task1" ? 45 : 0))
+      .attr("stroke", slotClassName === "Task1" ? "#ed9b9b" : "#6c9ae8")
+      .attr("stroke-dasharray", "2,2");
+
+    // Create rectangles for each task slot
+    g.selectAll(".slot-rect-" + slotClassName)
+      .data(taskSlots)
+      .enter()
+      .append("rect")
+      .attr("class", "slot-rect-" + slotClassName)
+      .attr("x", (d) => xScale(d.start))
+      .attr("y", (d) => (slotClassName === "Task1" ? 45 : 0))
+
+      .attr("width", (d) => xScale(d.end) - xScale(d.start))
+      .attr("height", 35)
+
+      .style("fill", "none")
+      .style("stroke", slotClassName === "Task1" ? "#ed9b9b" : "#6c9ae8");
+
+    // Create labels for task slots using foreignObject
+    g.selectAll(".slot-label-" + slotClassName)
+      .data(taskSlots)
+      .enter()
+      .append("foreignObject")
+      .attr("class", "slot-label-" + slotClassName)
+      .attr("x", (d) => xScale(d.start))
+      .attr("y", (d) => (slotClassName === "Task1" ? 45 : 0))
+      .attr("width", (d) => xScale(d.end) - xScale(d.start))
+      .attr("height", 20) // Adjust the height as needed
+      .append("xhtml:div")
+      .style("display", "flex") // Use flexbox for vertical centering
+      .style("justify-content", "center") // Center horizontally
+      .style("align-items", "center") // Center vertically
+      .style("overflow", "hidden")
+      .style("white-space", "nowrap")
+      .style("text-overflow", "ellipsis")
+
+      .style("padding-bottom", "5px") // Adjust the padding-bottom as needed
+      .html((d) => d.name)
+      .on("mouseover", function (event: MouseEvent, d: unknown) {
+        // Show tooltip on hover
+        const slotName = d.name;
+
+        tooltip
+          .html(slotName)
+          .style("display", "block")
+          .style("padding", "10px")
+          .style(
+            "background-color",
+            slotClassName === "Task1" ? "#ed9b9b" : "#6c9ae8"
+          )
+          .style("left", event.pageX + "px")
+          .style("top", event.pageY - 28 + "px");
+      })
+      .on("mouseout", function () {
+        // Hide tooltip on mouseout
+        tooltip.style("display", "none");
+      });
+  }
 }
 
 export default DrawGraphStep;

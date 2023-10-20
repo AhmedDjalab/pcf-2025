@@ -13,6 +13,7 @@ import {
   useRoutes,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import TaskSlotsLevelTwoList from "./TaskSlotStepLevelTwo";
 
 export interface MultiStepFormProps {
   currentStep: number;
@@ -44,6 +45,11 @@ export const DrawGraphForm = ({}) => {
       title: t("DrwMultiStepForm.step4.title"),
       description: t("DrwMultiStepForm.step4.description"),
     },
+    {
+      stepNumber: 5,
+      title: t("DrwMultiStepForm.step5.title"),
+      description: t("DrwMultiStepForm.step5.description"),
+    },
   ];
   return (
     <div className="rounded-sm  p-10 bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -72,6 +78,13 @@ export const DrawGraphForm = ({}) => {
       )}
       {currentStep === 4 && (
         <TaskSlotsStep
+          currentStep={currentStep}
+          stepsLength={steps.length}
+          setCurrentStep={setCurrentStep}
+        />
+      )}
+      {currentStep === 5 && (
+        <TaskSlotsLevelTwoList
           currentStep={currentStep}
           stepsLength={steps.length}
           setCurrentStep={setCurrentStep}

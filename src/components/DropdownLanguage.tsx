@@ -57,7 +57,7 @@ const DropdownLanguage = () => {
                   backgroundPosition: "center",
                 }}
               ></div>
-              <span>{t(language.name)}</span>
+              <span>{t(`language.${language.name}`)}</span>
             </button>
           ))}
         </div>

@@ -11,7 +11,7 @@
 
   "login": {
     "title": "Log In",
-    "emailLabel": "E-mail",
+    "emailLabel": "Email",
     "passwordLabel": "Password",
     "loginButton": "Log In",
     "googleLoginButton": "Log In with Google",
@@ -63,6 +63,11 @@
   "importFileForm.monthlyOption": "Monthly",
   "importFileForm.weeklyOption": "Weekly",
   "importFileForm.dailyOption": "Daily",
+  "importFileForm.distanceRange": "Distance Range",
+  "importFileForm.edit": "Edit",
+  "importFileForm.delete": "delete",
+  "importFileForm.actions": "Actions",
+  "importFileForm.add": "Add",
 
   "shapesForm": {
     "backButton": "Back",
@@ -91,8 +96,8 @@
     },
     "tableHeaders": {
       "name": "SEGMENT NAME",
-      "start": "START PK",
-      "end": "END PK",
+      "start": "START CHINAGE",
+      "end": "END CHINAGE",
       "actions": "Actions"
     },
     "buttons": {
@@ -115,19 +120,19 @@
     },
     "labels": {
       "name": "Name:",
-      "start": "Start PK:",
-      "end": "End PK:"
+      "start": "Start  Chinage:",
+      "end": "End  Chinage:"
     },
     "placeholders": {
       "name": "Enter segment name",
-      "start": "Enter start PK",
-      "end": "Enter end PK"
+      "start": "Enter start  Chinage",
+      "end": "Enter end  Chinage"
     },
     "errors": {
       "required": "This field is required",
-      "minDistance": "Value must be greater than or equal to {minDistance}",
-      "maxDistance": "Value must be less than or equal to {maxDistance}",
-      "greaterThanStart": "End PK must be greater than start PK"
+      "minDistance": "Value must be greater than or equal to {{minDistance}}",
+      "maxDistance": "Value must be less than or equal to {{maxDistance}}",
+      "greaterThanStart": "End  Chinage must be greater than start  Chinage"
     },
     "buttons": {
       "add": "Add",
@@ -141,8 +146,8 @@
       "styleLabel": "STYLE",
       "startDateLabel": "START DATE",
       "finishDateLabel": "FINISH DATE",
-      "startChainageLabel": " START PK",
-      "finishChainageLabel": "END PK"
+      "startChainageLabel": " START  CHINAGE",
+      "finishChainageLabel": "END  CHINAGE"
     },
     "cancelZoomButtonLabel": "Cancel Zoom"
   },
@@ -162,6 +167,31 @@
     "step4": {
       "title": "Segments Definition",
       "description": "Define the start and end of each segment"
+    },
+    "step5": {
+      "title": "Level 2 Segments Definition",
+      "description": "Define the start and end of each segment"
+    }
+  },
+  "activityForm": {
+    "addActivity": "Add Activity",
+    "editActivity": "Edit Activity",
+    "activityName": "Activity Name",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "startPk": "Start  Chinage",
+    "endPk": "End  Chinage",
+    "activityStyle": "Activity Style",
+    "save": "Save",
+    "cancel": "Cancel",
+    "errors": {
+      "activityName": "Activity Name is required",
+      "startDate": "Start Date is required",
+      "endDate": "End Date is required",
+      "startPk": "Start Chinage is required",
+      "endPk": "End  Chinage is required",
+      "activityStyle": "Activity Style is required",
+      "endDateMin": "the finish date must be greater or equal to start date"
     }
   }
 }
