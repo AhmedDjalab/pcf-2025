@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import texturesData from "../../const/texturesArray";
 import { lineStyles } from "../../const/linesArray";
 import { uniqueId } from "lodash";
+import { uuidv4 } from "@firebase/util";
 
 export interface GraphDataType {
   id: string;
@@ -159,11 +160,14 @@ const GraphSlice = createSlice({
     addActivity(state, action: PayloadAction<{ activity: GraphDataType }>) {
       var newActivity: GraphDataType = {
         ...action.payload.activity,
-        id: uniqueId("pcf_"),
+
+        id: "pcf_" + uuidv4().split("-")[0],
       };
 
       state.settings.graphData.unshift(newActivity);
       state.rawGraphDataFromFile!.unshift(newActivity);
+
+      return state;
     },
 
     addGraphDataList(

@@ -63,25 +63,19 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
   });
 
   const handleSubmitData = (
-    values: any,
-    validateForm?: FormikHelpers<
-      | GraphDataType
-      | {
-          activityName: string;
-          startDate: Date;
-          finishDate: Date;
-          startChainage: number;
-          finishChainage: number;
-          style: string;
-        }
-    >
+    values: GraphDataType,
+    validateForm?: FormikHelpers<GraphDataType>
   ) => {
     if (!!initialValues) {
-      dispatch(updateActivity({ activity: values }));
+      dispatch(
+        updateActivity({
+          activity: values,
+        })
+      );
     } else {
       dispatch(addActivity({ activity: values }));
     }
-    onSubmit(values);
+    handleClose();
   };
 
   return (
@@ -92,16 +86,17 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
             ? t("activityForm.editActivity")
             : t("activityForm.addActivity")}
         </div>
-
+        {/* @ts-ignore */}
         <Formik
           initialValues={
             initialValues || {
               activityName: "",
-              startDate: new Date(),
-              finishDate: new Date(),
+              startDate: new Date().toISOString(),
+              finishDate: new Date().toISOString(),
               startChainage: 0,
               finishChainage: 0,
               style: "",
+              id: "",
             }
           }
           onSubmit={handleSubmitData}
@@ -136,11 +131,11 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
                   label={t("activityForm.startDate")}
                   value={new Date(values.startDate)}
                   defaultDate={new Date(values.startDate)}
-                  onChange={(date: any) => {
+                  onChange={(date: Date) => {
                     handleChange({
                       target: {
                         name: "startDate",
-                        value: date,
+                        value: date.toISOString(),
                       },
                     });
                   }}
@@ -163,11 +158,11 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
                   label={t("activityForm.endDate")}
                   value={new Date(values.finishDate)}
                   defaultDate={new Date(values.finishDate)}
-                  onChange={(date: any) => {
+                  onChange={(date: Date) => {
                     handleChange({
                       target: {
                         name: "finishDate",
-                        value: date,
+                        value: date.toISOString(),
                       },
                     });
                   }}

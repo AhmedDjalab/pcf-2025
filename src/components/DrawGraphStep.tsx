@@ -1,9 +1,13 @@
 //@ts-nocheck
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useSelector } from "react-redux";
 import { RootState } from "../state";
-import { GraphDataType, TaskSlot } from "../state/slices/graphSlice";
+import {
+  GraphDataType,
+  TaskSlot,
+  updateGraphSettingsValue,
+} from "../state/slices/graphSlice";
 import texturesData from "../const/texturesArray";
 import moment from "moment";
 import jsPDF from "jspdf";
@@ -18,6 +22,7 @@ import {
   markersConfig,
 } from "../const/markerAndPatternsConfig";
 import { useTranslation } from "react-i18next";
+import ActivityTableForm from "./ActivityTableForm";
 
 export interface ActivityData {
   id: string;
@@ -29,13 +34,18 @@ export interface ActivityData {
   style: string; // Shape type (line, rectangle, circle, triangle, etc.)
 }
 function DrawGraphStep() {
-  const graphSettings = useSelector((state: RootState) => state);
+  let graphSettings = useSelector((state: RootState) => state);
+  console.log(
+    "🚀 ~ file: DrawGraphStep.tsx:38 ~ DrawGraphStep ~ graphSettings:",
+    graphSettings
+  );
   const shapesData = useSelector((state: RootState) => state.shapes);
   const [transform, setTransform] = useState({ k: 1, x: 0, y: 0 });
   const [zoomLevel, setZoomLevel] = useState(1);
   const [zoomAttr, setZoomAttr] = useState({});
   const [selectedShapeType, setSelectedShapeType] = useState(null);
   const [selectedShapes, setSelectedShapes] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const containerSVGRef = useRef<SVGSVGElement | null>(null);
@@ -72,7 +82,7 @@ function DrawGraphStep() {
   startDateObject.setDate(1);
   endDateObject.setDate(1);
 
-  const [selectedShapeData, setSelectedShapeData] = useState<ActivityData>();
+  const [selectedShapeData, setSelectedShapeData] = useState<GraphDataType>();
   const [patternsData, setPatternsData] = useState<any[]>([]);
 
   const generateTooltipContent = (data: GraphDataType) => {
@@ -120,7 +130,7 @@ function DrawGraphStep() {
     };
   }, [startDate, endDate]);
 
-  const drawD3Chart = () => {
+  const drawD3Chart = useCallback(() => {
     const svg = d3.select(svgRef.current!);
     const containerSVG = d3.select(containerSVGRef.current!);
     svg.selectAll("*").remove();
@@ -533,25 +543,31 @@ function DrawGraphStep() {
       zoom.transform,
       d3.zoomIdentity.translate(0, 0).scale(1).translate(margin.left, 0) // Adjust based on your margin: ;
     );
-  };
-  useEffect(() => {
-    drawD3Chart();
-    // Gray border
   }, [
+    containerHeight,
+    containerWidth,
+    distanceRange,
+    drawTaskSlot,
     endDate,
+    endDateObject,
     fromDistance,
-    graphSettings,
-    height,
+    generateTooltipContent,
+    graphSettings.settings.graphData,
+    graphSettings.taskSlots,
+    graphSettings.taskSlotsLevelTwo,
     margin.left,
     margin.top,
     shapesData.shapesData,
     startDate,
+    startDateObject,
     timeRange,
     toDistance,
-    width,
-    containerHeight,
-    containerWidth,
+    zoom,
   ]);
+  useEffect(() => {
+    drawD3Chart();
+    // Gray border
+  }, [graphSettings.settings.graphData]);
 
   // const createTexture = async (shape, shapeElement) => {
   //   // Check if there's a texture defined for the shape
@@ -805,6 +821,21 @@ function DrawGraphStep() {
       document.removeEventListener("keydown", handleEscapeKey);
     };
   }, [zoomLevel, resetZoom]);
+
+  //! hadle add and edit
+  const handleAddClick = () => {
+    setSelectedShapeData(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = () => {
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    drawD3Chart();
+    setIsModalOpen(false);
+    setSelectedShapeData(null);
+  };
   return (
     <div className="flex flex-col">
       <div>
@@ -880,6 +911,33 @@ function DrawGraphStep() {
         </div>
       </div>
 
+      <div className="my-4 flex justify-center gap-2 ">
+        {/* Add the "Back" button */}
+        {/* <button
+          type="button"
+          disabled={!selectedShapeData}
+          className="px-10 py-2 bg-red-400 text-white rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+          onClick={handleEditClick}
+        >
+          {t("importFileForm.delete")}
+        </button> */}
+        <button
+          type="button"
+          disabled={!selectedShapeData}
+          className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
+          onClick={handleEditClick}
+        >
+          {t("importFileForm.edit")}
+        </button>
+        <button
+          type="button"
+          className="px-10 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
+          onClick={handleAddClick}
+        >
+          {t("importFileForm.add")}
+        </button>
+      </div>
+
       <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <div className="border border-gray-700 p-2 bg-slate-500">
@@ -925,6 +983,15 @@ function DrawGraphStep() {
           </div>
         </div>
       </div>
+      {isModalOpen && (
+        <ActivityTableForm
+          initialValues={selectedShapeData || undefined}
+          onSubmit={closeModal}
+          handleClose={closeModal}
+          minDistance={parseFloat(fromDistance)}
+          maxDistance={parseFloat(toDistance)}
+        />
+      )}
     </div>
   );
 
