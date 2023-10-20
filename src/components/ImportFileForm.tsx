@@ -4,14 +4,13 @@ import { MultiStepFormProps } from "./DrawGraphForm";
 import * as XLSX from "xlsx";
 import {
   GraphDataType,
-  GraphSetting,
   addGraphDataList,
   applyFilter,
   removeActivity,
   updateGraphSettingsValue,
 } from "../state/slices/graphSlice";
 import * as Yup from "yup";
-import { setIn, useFormik, useFormikContext } from "formik";
+import { useFormik } from "formik";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";

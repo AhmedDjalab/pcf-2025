@@ -41,7 +41,7 @@ function Input({
     <div
       className={classNames(
         containerClass ?? "",
-        labelDir == "Above" ? "relative" : "inline-flex items-baseline  gap-4 "
+        labelDir === "Above" ? "relative" : "inline-flex items-baseline  gap-4 "
       )}
     >
       {/*!! w-[30%] */}

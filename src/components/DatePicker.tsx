@@ -134,6 +134,7 @@ const DatePickerDefault = ({
 
       {errors && (
         <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+          {/* @ts-ignore */}
           {t(errors)}
         </p>
       )}

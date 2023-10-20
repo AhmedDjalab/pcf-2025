@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Formik,
-  Form,
-  FormikErrors,
-  FormikHelpers,
-  Field,
-  ErrorMessage,
-} from "formik";
+import { Formik, Form, FormikHelpers } from "formik";
 import * as Yup from "yup";
 
 import { useTranslation } from "react-i18next";
@@ -14,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import { updateActivity, addActivity } from "src/state/slices/graphSlice"; // Replace with your actual slice
-import { GraphCreateType, GraphDataType } from "src/state/slices/graphSlice";
+import { GraphDataType } from "src/state/slices/graphSlice";
 import { RootState } from "src/state";
 import Input from "./Input";
 import DatePickerDefault from "./DatePicker";

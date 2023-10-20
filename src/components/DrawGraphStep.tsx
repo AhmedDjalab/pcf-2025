@@ -1,30 +1,22 @@
 //@ts-nocheck
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useSelector } from "react-redux";
 import { RootState } from "../state";
-import { GraphDataType, ShapeType, TaskSlot } from "../state/slices/graphSlice";
+import { GraphDataType, TaskSlot } from "../state/slices/graphSlice";
 import texturesData from "../const/texturesArray";
-import textures from "textures";
 import moment from "moment";
-import { zoom } from "d3-zoom";
-import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import domtoimage from "dom-to-image";
 import logo from "../assets/Logo/logo.png";
 import { LockClosedIcon } from "@heroicons/react/24/solid";
 
-import {
-  LineStyle,
-  PatternAndMarkerMap,
-  lineStyles,
-} from "../const/linesArray";
+import { LineStyle, lineStyles } from "../const/linesArray";
 import {
   MarkerConfig,
   PatternConfig,
   markersConfig,
 } from "../const/markerAndPatternsConfig";
-import { settings } from "firebase/analytics";
 import { useTranslation } from "react-i18next";
 
 export interface ActivityData {
@@ -40,7 +32,6 @@ function DrawGraphStep() {
   const graphSettings = useSelector((state: RootState) => state);
   const shapesData = useSelector((state: RootState) => state.shapes);
   const [transform, setTransform] = useState({ k: 1, x: 0, y: 0 });
-  const svgContainerRef = useRef<SVGSVGElement | null>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [zoomAttr, setZoomAttr] = useState({});
   const [selectedShapeType, setSelectedShapeType] = useState(null);
@@ -49,7 +40,6 @@ function DrawGraphStep() {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const containerSVGRef = useRef<SVGSVGElement | null>(null);
   const legendRef = useRef<HTMLDivElement | null>(null);
-  const tableRef = useRef();
   const { t } = useTranslation();
   let zoom = d3.zoom().scaleExtent([1, 5]);
   const margin = { top: 100, right: 20, bottom: 100, left: 100 };
@@ -126,7 +116,6 @@ function DrawGraphStep() {
   }, []);
 
   const drawD3Chart = () => {
-    const legendContainer = d3.select(legendRef.current!);
     const svg = d3.select(svgRef.current!);
     const containerSVG = d3.select(containerSVGRef.current!);
     svg.selectAll("*").remove();
@@ -187,7 +176,6 @@ function DrawGraphStep() {
 
       // Calculate the total height based on the number of ticks and tickSpacing
       const ticksCount = ticks.length;
-      const adjustedTicksCount = Math.max(2, ticksCount); // Ensure a minimum of 2 ticks
 
       totalHeight =
         ticksCount * tickSpacing < 200
@@ -256,8 +244,6 @@ function DrawGraphStep() {
       .style("text-anchor", "end")
       .attr("dx", "-0.5em")
       .text((d) => d3.timeFormat("%a %d/%m/%Y")(d));
-
-    const defs = svg.select("defs");
 
     g.selectAll(".activity-rectangle")
       .data(graphSettings.settings.graphData)
@@ -435,21 +421,8 @@ function DrawGraphStep() {
 
     // Create horizontal guidelines from y-axis ticks
     const yAxisTicks = g.selectAll(".y-axis text").nodes();
-    const yGuidelines = g
-      .selectAll(".y-guideline")
-      .data(yAxisTicks.map((node) => d3.select(node).text()))
-      .enter()
-      .append("line")
-      .attr("class", "y-guideline")
-      .attr("x1", 0)
-      .attr("x2", containerWidth)
-      .attr("y1", (d) => yScale(moment(d, "ddd DD/MM/YYYY")))
-      .attr("y2", (d) => yScale(moment(d, "ddd DD/MM/YYYY")))
-      .attr("stroke", "#dbd9d9")
-      .attr("stroke-dasharray", "2,2");
 
     // Create a div for the slots and select it
-    const slotsContainer = d3.select("#slots-container"); // Replace with the appropriate selector or use a ref
 
     drawTaskSlot(g, xScale, tooltip, graphSettings.taskSlotsLevelTwo, "Task2");
     // Append slots to the selected div
@@ -536,7 +509,7 @@ function DrawGraphStep() {
       wrapper.call(d3.zoom().translateTo, x / scale, y / scale);
     }
     // Function to transform a point from screen coordinates to SVG coordinates
-    function transformPoint(point, svg, zoom) {
+    function transformPoint(point, svg) {
       const containerSVG = d3.select<SVGSVGElement, unknown>(svgSelector);
       if (!containerSVG.empty()) {
         const matrix = containerSVG.node()?.getScreenCTM()?.inverse();
@@ -605,46 +578,6 @@ function DrawGraphStep() {
     // }
     drawD3Chart();
   };
-
-  const patterns = useMemo(() => {
-    const calculatedPatterns = [];
-
-    for (let index = 0; index < shapesData.shapesData.length; index++) {
-      const shape = shapesData.shapesData[index];
-      const linetype = lineStyles.find((l) => l.id === shape.lineType);
-      if (shape.lineType !== "" && linetype) {
-        const markerStartName = markersConfig[linetype.markerStartName] ?? null;
-        const markerEndName = markersConfig[linetype.markerEndName] ?? null;
-
-        if (markerStartName) {
-          const markerStartId = `marker-start-${shape.lineType}-${shape.id}`;
-
-          const pattern: PatternConfig = {
-            ...markerStartName,
-            id: markerStartId,
-            width: shape.markerWidth || 10, // Customize width as needed
-            height: shape.markerHeight || 10,
-          };
-
-          calculatedPatterns.push(pattern);
-        }
-        if (markerEndName) {
-          const markerEndId = `marker-end-${shape.lineType}-${shape.id}`;
-
-          const pattern: PatternConfig = {
-            ...markerEndName,
-            id: markerEndId,
-            width: shape.markerWidth || 10, // Customize width as needed
-            height: shape.markerHeight || 10,
-          };
-
-          calculatedPatterns.push(pattern);
-        }
-      }
-    }
-
-    return calculatedPatterns;
-  }, [shapesData]);
 
   useEffect(() => {
     // Check if any shape name is clicked
@@ -784,11 +717,9 @@ function DrawGraphStep() {
   };
   const A4_WIDTH_MM = 270; // A4 width in millimeters
   const A4_HEIGHT_MM = 297; // A4 height in millimeters
-  const DPI = 300; // Set the desired DPI (e.g., 300 for high quality)
 
   const saveAsPdfOrImage = (format) => {
     const svgContainer = document.getElementById("graph-container");
-    const myStyle = svgContainer;
     // Save the current zoom transform
     //drawD3Chart();
 
@@ -995,7 +926,7 @@ function DrawGraphStep() {
       .attr("x1", (d) => xScale(d.start))
       .attr("y1", containerHeight - margin.top)
       .attr("x2", (d) => xScale(d.start))
-      .attr("y2", (d) => (slotClassName === "Task1" ? 45 : 0))
+      .attr("y2", () => (slotClassName === "Task1" ? 45 : 0))
       .attr("stroke", slotClassName === "Task1" ? "#ed9b9b" : "#6c9ae8")
       .attr("stroke-dasharray", "2,2");
 
@@ -1007,7 +938,7 @@ function DrawGraphStep() {
       .attr("x1", (d) => xScale(d.end))
       .attr("y1", containerHeight - margin.top)
       .attr("x2", (d) => xScale(d.end))
-      .attr("y2", (d) => (slotClassName === "Task1" ? 45 : 0))
+      .attr("y2", () => (slotClassName === "Task1" ? 45 : 0))
       .attr("stroke", slotClassName === "Task1" ? "#ed9b9b" : "#6c9ae8")
       .attr("stroke-dasharray", "2,2");
 
@@ -1018,7 +949,7 @@ function DrawGraphStep() {
       .append("rect")
       .attr("class", "slot-rect-" + slotClassName)
       .attr("x", (d) => xScale(d.start))
-      .attr("y", (d) => (slotClassName === "Task1" ? 45 : 0))
+      .attr("y", () => (slotClassName === "Task1" ? 45 : 0))
 
       .attr("width", (d) => xScale(d.end) - xScale(d.start))
       .attr("height", 35)
@@ -1033,7 +964,7 @@ function DrawGraphStep() {
       .append("foreignObject")
       .attr("class", "slot-label-" + slotClassName)
       .attr("x", (d) => xScale(d.start))
-      .attr("y", (d) => (slotClassName === "Task1" ? 45 : 0))
+      .attr("y", () => (slotClassName === "Task1" ? 45 : 0))
       .attr("width", (d) => xScale(d.end) - xScale(d.start))
       .attr("height", 20) // Adjust the height as needed
       .append("xhtml:div")

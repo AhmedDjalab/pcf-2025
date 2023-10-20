@@ -100,10 +100,6 @@ const GraphSlice = createSlice({
     ) {
       const graphSettingsForm = action.payload.graphSettingsForm;
 
-      type ShapeSet = {
-        style: string;
-        activityId: string;
-      };
       let styles = new Set<string>();
       graphSettingsForm.graphData.forEach((data) => {
         styles.add(data.style);
@@ -192,10 +188,6 @@ const GraphSlice = createSlice({
         ...state.settings.graphData,
         ...newGraphData,
       ];
-      type ShapeSet = {
-        style: string;
-        activityId: string;
-      };
       let styles = new Set<string>();
       action.payload.graphData.forEach((data) => {
         styles.add(data.style);
@@ -278,7 +270,7 @@ const GraphSlice = createSlice({
       state.loading = false;
     },
   },
-  extraReducers: (builder) => {},
+  extraReducers: () => {},
 });
 
 export const {

@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  getAuth,
-  signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
   onAuthStateChanged,
-  sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth } from "../Helpers/firebase";
 import { useUserContext } from "../context/UserContext";
