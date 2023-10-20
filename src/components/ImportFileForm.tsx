@@ -335,7 +335,15 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         distanceRange: formik.values.distanceRange,
       })
     );
-  }, []);
+  }, [
+    dispatch,
+    formik.values.distanceRange,
+    formik.values.fromDate,
+    formik.values.fromDistance,
+    formik.values.timeRange,
+    formik.values.toDate,
+    formik.values.toDistance,
+  ]);
 
   return (
     <div

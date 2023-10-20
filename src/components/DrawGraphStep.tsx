@@ -67,6 +67,11 @@ function DrawGraphStep() {
     graphSettings.settings.distanceRange
   );
 
+  let startDateObject = new Date(startDate);
+  let endDateObject = new Date(endDate);
+  startDateObject.setDate(1);
+  endDateObject.setDate(1);
+
   const [selectedShapeData, setSelectedShapeData] = useState<ActivityData>();
   const [patternsData, setPatternsData] = useState<any[]>([]);
 
@@ -113,17 +118,14 @@ function DrawGraphStep() {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [startDate, endDate]);
 
   const drawD3Chart = () => {
     const svg = d3.select(svgRef.current!);
     const containerSVG = d3.select(containerSVGRef.current!);
     svg.selectAll("*").remove();
     const tooltip = d3.select("#tooltip");
-    const startDateObject = new Date(startDate);
-    const endDateObject = new Date(endDate);
-    startDateObject.setDate(1);
-    endDateObject.setDate(1);
+
     if (timeRange === "Yearly") {
       startDateObject.setMonth(0);
       endDateObject.setMonth(0);
@@ -788,6 +790,21 @@ function DrawGraphStep() {
       });
   };
 
+  useEffect(() => {
+    const handleEscapeKey = (event) => {
+      if (event.key === "Escape" && zoomLevel > 1) {
+        resetZoom();
+      }
+    };
+
+    // Add event listener when the component mounts
+    document.addEventListener("keydown", handleEscapeKey);
+
+    // Remove the event listener when the component unmounts
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [zoomLevel, resetZoom]);
   return (
     <div className="flex flex-col">
       <div>
