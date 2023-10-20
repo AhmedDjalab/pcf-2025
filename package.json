@@ -4,7 +4,6 @@
   "private": false,
   "dependencies": {
     "@heroicons/react": "^2.0.18",
-    "@mobiscroll/react": "https://npm.mobiscroll.com/@mobiscroll/react-trial/-/react-trial-5.25.1.tgz",
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

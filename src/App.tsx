@@ -1,4 +1,3 @@
-import "@mobiscroll/react/dist/css/mobiscroll.min.css";
 import AppRoutes from "./Route";
 import { Provider } from "react-redux";
 import { store } from "./state";
