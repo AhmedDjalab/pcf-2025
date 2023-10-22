@@ -158,7 +158,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         finishDate.add(1, "day");
         return {
           id: row[0],
-          activityName: row[1],
+          activityName: row[1].toString().trim(),
           startDate: startDate.toISOString(), // Assign parsed Start Date
           finishDate: finishDate.toISOString(), // Assign parsed Finish Date
           startChainage: parseFloat(row[4]),
@@ -545,7 +545,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             <button
               type="submit"
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
-              disabled={graphSettings.graphData.length === 0}
+              disabled={
+                graphSettings.graphData.length === 0 ||
+                graphSettings.fromDate > graphSettings.toDate
+              }
             >
               {t("importFileForm.next")}
             </button>

@@ -139,7 +139,11 @@ export const markersConfig: MarkersConfig = {
       d: "M 0 0 L 10 5 L 0 10 z",
     },
     content: (id?: string) => (
-      <marker id={id || "arrow-end-marker"} {...markersConfig.arrowEnd.config}>
+      <marker
+        key={id}
+        id={id || "arrow-end-marker"}
+        {...markersConfig.arrowEnd.config}
+      >
         <path d="M 0 0 L 10 5 L 0 10 z" />
       </marker>
     ),
@@ -159,6 +163,7 @@ export const markersConfig: MarkersConfig = {
     },
     content: (id?: string) => (
       <marker
+        key={id}
         id={id || "arrow-start-marker"}
         {...markersConfig.arrowStart.config}
       >

@@ -1,8 +1,170 @@
+// import { FormikErrors } from 'formik';
+// import React, { ChangeEvent, useEffect, useState } from 'react';
+// import Datepicker from 'tailwind-datepicker-react';
+
+// import moment from 'moment';
+
+// export interface IDatePickerProps
+//   extends React.InputHTMLAttributes<HTMLInputElement> {
+//   label?: string;
+//   errors?: FormikErrors<Date>;
+//   name: string;
+//   onChange: any;
+//   options: DatePickerOptions;
+//   touched?: any;
+//   value: any;
+//   defaultDate?: Date;
+// }
+
+// interface DatePickerOptions {
+//   title?: string;
+//   autoHide?: boolean;
+//   todayBtn?: boolean;
+//   clearBtn?: boolean;
+//   maxDate?: Date;
+//   minDate?: Date;
+//   theme?: {
+//     background?: string;
+//     todayBtn?: string;
+//     clearBtn?: string;
+//     icons?: string;
+//     text?: string;
+//     disabledText?: string;
+//     input?: string;
+//     inputIcon?: string;
+//     selected?: string;
+//   };
+//   icons?: {
+//     prev?: () => React.ReactElement;
+//     next?: () => React.ReactElement;
+//   };
+//   datepickerClassNames?: string;
+//   defaultDate?: string | Date;
+//   language?: string;
+// }
+
+// const DatePickerDefault = ({
+//   id,
+//   name,
+//   placeholder,
+//   label,
+//   errors,
+//   options,
+//   onChange,
+//   touched,
+//   defaultDate,
+//   ...rest
+// }: IDatePickerProps) => {
+//   const [showDate, setShow] = React.useState<boolean>(false);
+
+//   const handleIssuedClose = (state: boolean) => {
+//     setShow(state);
+//   };
+
+//   return (
+//     <div className="relative">
+//       <label
+//         htmlFor={id}
+//         className={`
+//     mb-2 block text-sm font-medium text-gray-900 dark:text-white
+//      ${errors ? 'text-red-700 dark:text-red-500' : ''}
+//     `}
+//       >
+//         {label}
+//       </label>
+//       <Datepicker
+//         id={id}
+//         name={name}
+//         options={options}
+//         onChange={onChange}
+//         show={showDate}
+//         setShow={handleIssuedClose}
+//       />
+//       <>
+//         {errors && (
+//           <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+//             {errors ? <>{errors}</> : null}
+//           </p>
+//         )}
+//       </>
+//     </div>
+//   );
+// };
+
+// export default DatePickerDefault;
+// // theme: {
+// //   input: ` ${
+// //     errors.issueDate
+// //       ? 'text-red-700 dark:text-red-500 bg-red-300 dark:bg-red-300'
+// //       : undefined
+// //   }`,
+// // },
+// // const DatePicker = ({
+// //   id,
+// //   name,
+// //   placeholder,
+// //   label,
+// //   errors,
+// //   options,
+// //   onChange,
+// //   touched,
+// //   ...rest
+// // }: IDatePickerProps) => {
+// //   const [showDate, setShow] = React.useState<boolean>(false);
+// //   const handleIssuedClose = (state: boolean) => {
+// //     setShow(state);
+// //   };
+
+// //   useEffect(() => {
+// //     const datepickerEl = document.getElementById('datepickerId');
+// //     new Datepicker(datepickerEl, {
+// //       // options
+// //     });
+// //   }, []);
+
+// //   console.log('this is defaitl ', options.defaultDate);
+// //   return (
+// //     <div className="relative">
+// //       <label
+// //         htmlFor={id}
+// //         className={`
+// //     mb-2 block text-sm font-medium text-gray-900 dark:text-white
+// //      ${errors ? 'text-red-700 dark:text-red-500' : ''}
+// //     `}
+// //       >
+// //         {label}
+// //       </label>
+// //       <Datepicker
+// //         id={id}
+// //         name={name}
+// //         // options={options}
+// //         // onChange={onChange}
+// //         show={showDate}
+// //         setShow={handleIssuedClose}
+// //         options={{
+// //           ...options,
+// //           defaultDate: options.defaultDate || null, // Set the default value if it exists
+// //         }}
+// //         value={options.defaultDate || null} // Pass the default value to the Datepicker
+// //         onChange={onChange} // Use
+// //       />
+// //       <>
+// //         {errors && (
+// //           <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+// //             {errors ? <>{errors}</> : null}
+// //           </p>
+// //         )}
+// //       </>
+// //     </div>
+// //   );
+// // };
+
+// // export default DatePicker;
 import React, { useEffect, useRef, useState } from "react";
 import Datepicker from "tailwind-datepicker-react";
 import moment from "moment";
-import { useTranslation } from "react-i18next";
 import classNames from "classnames";
+import { useTranslation } from "react-i18next";
 
 export interface IDatePickerProps {
   label?: string;
@@ -51,17 +213,20 @@ const DatePickerDefault = ({
   name,
   label,
   errors,
-  options,
   onChange,
   value,
   disabled,
   labelDir = "Above",
+  defaultDate,
   containerClass,
 }: IDatePickerProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showDate, setShowDate] = useState<boolean>(false);
   const datePickerRef = useRef<HTMLDivElement>(null);
-
+  const options = {
+    defaultDate: defaultDate,
+    language: i18n.language,
+  };
   const handleDateChange = (selectedDate: Date) => {
     onChange(selectedDate);
   };
@@ -98,7 +263,7 @@ const DatePickerDefault = ({
       className={classNames(
         containerClass ?? "",
         labelDir == "Above"
-          ? "relative w-full"
+          ? "relative"
           : " relative inline-flex w-full items-baseline  gap-4 "
       )}
       ref={datePickerRef}
@@ -134,7 +299,6 @@ const DatePickerDefault = ({
 
       {errors && (
         <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-          {/* @ts-ignore */}
           {t(errors)}
         </p>
       )}

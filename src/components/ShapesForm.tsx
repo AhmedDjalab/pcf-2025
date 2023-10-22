@@ -61,7 +61,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
     graphSettings.shapesData
   );
 
-  const columns: Column[] = React.useMemo(
+  const columns: Column<ShapeType>[] = React.useMemo(
     () => [
       {
         Header: t("shapesForm.headers.formatStyle"),
@@ -69,9 +69,10 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
         Cell: ({ row }) => {
           const handleTypeChange = (newType: LineType) => {
             // Update the underlying data (shapesList) with the new type
+            console.log("this is row id ", row.id);
             let clonedShapes = [...shapesList];
             const updatedShapesList = clonedShapes.map((shape) => {
-              if (shape.id === row.id) {
+              if (shape.id === row.original["id"]) {
                 return { ...shape, type: newType };
               }
               return shape;
@@ -102,7 +103,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
             // Update the underlying data (shapesList) with the new type
             let clonedShapes = [...shapesList];
             const updatedShapesList = clonedShapes.map((shape) => {
-              if (shape.id === row.id) {
+              if (shape.id === row.original["id"]) {
                 return { ...shape, lineType: newType };
               }
               return shape;
@@ -115,7 +116,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
 
           return (
             <LineStylePicker
-              color={"black"}
+              color={row.original["color"]}
               lineStyles={lineStyles}
               onSelectLineStyle={handleTypeChange}
               selectedLineStyle={lineType ?? lineStyles[0]}
@@ -127,11 +128,16 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
         Header: t("shapesForm.headers.rectangleTriangleType"),
         accessor: "backgroundTexture",
         Cell: ({ row }) => {
+          console.error(
+            "🚀 ~ file: ShapesForm.tsx:131 ~ ShapesForm ~ row:",
+            row
+          );
           const handleTextureChange = (newTexture: string) => {
             // Update the underlying data (shapesList) with the new color
+            console.log("this is row id ", row);
             let clonesShapes = [...shapesList];
             const updatedShapesList = clonesShapes.map((shape) => {
-              if (shape.id === row.id) {
+              if (shape.id === row.original["id"]) {
                 return { ...shape, backgroundTexture: newTexture };
               }
               return shape;
@@ -144,8 +150,8 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
           )!;
           return (
             <TexturePicker
-              key={row.values["id"]}
-              color={"black"}
+              rowId={row.original["id"]}
+              color={row.values["color"]}
               texturetype={rowTexture}
               onSelectTexture={handleTextureChange}
             />
@@ -162,7 +168,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
             setCurrentColor(newColor);
             setShapesList((prevShapesList) => {
               return prevShapesList.map((shape) => {
-                if (shape.id === row.id) {
+                if (shape.id === row.original["id"]) {
                   return { ...shape, color: newColor };
                 }
                 return shape;
@@ -224,7 +230,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
   };
 
   // Handle changes for name input
-  const handleNameChange = (row: Row, value: string) => {
+  const handleNameChange = (row: Row<ShapeType>, value: string) => {
     // Implement your logic to update the selected row's name
   };
 

@@ -24,7 +24,6 @@ function Input({
   ...rest
 }: IInputProps) {
   const { t } = useTranslation();
-  console.error("input", errors, name, errors && errors[name]);
   const [, setIsFocused] = React.useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const handleFocus = () => {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, FormikHelpers } from "formik";
 import * as Yup from "yup";
 
@@ -32,6 +32,8 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
   const { t } = useTranslation();
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   const shapesData = useSelector((state: RootState) => state.shapes.shapesData);
+  const [selectedShapeId, setSelectedShapeId] = useState("");
+
   let validationSchema = Yup.object().shape({
     activityName: Yup.string().required("activityForm.errors.activityName"),
     startDate: Yup.date().required("activityForm.errors.startDate"),
@@ -66,14 +68,19 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
     values: GraphDataType,
     validateForm?: FormikHelpers<GraphDataType>
   ) => {
+    const selectedShapeId =
+      shapesData.find((x) => x.name === values.style)?.id ?? "0";
+
+    console.log(values);
     if (!!initialValues) {
       dispatch(
         updateActivity({
           activity: values,
+          shapeId: selectedShapeId,
         })
       );
     } else {
-      dispatch(addActivity({ activity: values }));
+      dispatch(addActivity({ activity: values, shapeId: selectedShapeId }));
     }
     handleClose();
   };
@@ -97,6 +104,7 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
               finishChainage: 0,
               style: "",
               id: "",
+              styleId: "",
             }
           }
           onSubmit={handleSubmitData}
@@ -180,26 +188,6 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
                   errors={errors}
                 />
               </div>
-              {/* <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    {t("activityForm.startPk")}
-                  </label>
-                  <Field
-                    type="number"
-                    name="startChainage"
-                    placeholder={t("activityForm.startPk")}
-                    className={`border ${
-                      errors.startChainage
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    } rounded p-2 w-full`}
-                  />
-                  <ErrorMessage
-                    name="startChainage"
-                    component="div"
-                    className="text-red-500 mt-2"
-                  />
-                </div> */}
 
               <div className="mb-4">
                 <Input
@@ -218,7 +206,14 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
                     id="style"
                     name="style"
                     label={t("activityForm.activityStyle")}
-                    onChange={handleChange}
+                    onChange={(data) => {
+                      handleChange({
+                        target: {
+                          name: "style",
+                          value: data.target.value,
+                        },
+                      });
+                    }}
                     value={values.style}
                     error={errors.style as string}
                     optionValue="name"

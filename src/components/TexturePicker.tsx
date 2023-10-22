@@ -4,22 +4,28 @@ import texturesData, { TextureData } from "../const/texturesArray";
 import * as d3 from "d3";
 
 export interface ITexturePickerProps {
-  key: string;
+  rowId: string;
   onSelectTexture: any;
   texturetype: TextureData;
   color?: string;
 }
 
 const TexturePicker = ({
-  key,
+  rowId: key,
   color,
   onSelectTexture,
   texturetype,
 }: ITexturePickerProps) => {
   const popover = useRef(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const svgRef = useRef<SVGSVGElement | null>(null); // Ref for the SVG element
 
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedTexture, setSelectedTexture] = useState(texturetype);
+
+  const sanitizeClassName = (key: string): string => {
+    // Replace any characters that are not letters, numbers, hyphens, or underscores with hyphens
+    return key.replace(/[^a-zA-Z0-9-_]/g, "-");
+  };
 
   const close = useCallback(() => setIsOpen(false), []);
 
@@ -30,60 +36,76 @@ const TexturePicker = ({
   };
 
   useEffect(() => {
-    const svg = d3.select("svg");
+    // Access the SVG element using the ref
+    const svg = d3.select(svgRef.current);
 
-    // Clear any previous textures
-    //svg.selectAll("*").remove();
-
-    // Apply the selected texture
-    const texture = selectedTexture.configuration;
+    // Continue with your D3 operations on 'svg'
+    const texture = selectedTexture.configuration.id(
+      selectedTexture.id + sanitizeClassName(key)
+    );
     svg.call(texture.stroke(color));
 
     // Apply textures to all texture options
     texturesData.forEach((textureOption) => {
-      const optionTexture = textureOption.configuration.stroke(color);
+      const optionTexture = textureOption.configuration
+        .id(textureOption.id + sanitizeClassName(key))
+        .stroke(color);
       svg.call(optionTexture);
     });
-
-    // // Notify the parent component of the selected texture
-    // onSelectTexture(selectedTexture.id);
-  }, [selectedTexture, color]);
+  }, [selectedTexture, color, key]);
 
   useClickOutside(popover, close);
 
   return (
     <div className="relative" ref={popover} key={key}>
-      {/* Assign ref to the wrapper div */}
+      {/* Assign ref to the SVG element */}
       <div
         className="cursor-pointer rounded-lg border-[3px] border-solid border-white"
         onClick={() => setIsOpen(true)}
       >
-        <svg width="40" height="40">
+        <svg
+          ref={svgRef} // Attach the ref to the SVG element
+          className={".svg-" + sanitizeClassName(key.trim())}
+          width="40"
+          height="40"
+        >
           <rect
             x="5"
             y="5"
             width="40"
             height="40"
-            style={{ fill: selectedTexture.configuration.url() }}
+            style={{
+              fill: selectedTexture.configuration
+                .id(selectedTexture.id + sanitizeClassName(key))
+                .url(),
+            }}
           />
         </svg>
       </div>
       {isOpen && (
-        <div className="absolute  z-20 shadow-[0_6px_12px_rgba(0,0,0,0.15)] rounded-[9px] left-0 top-[calc(100%_+_2px)]">
+        <div className="absolute z-20 shadow-[0_6px_12px_rgba(0,0,0,0.15)] rounded-[9px] left-0 top-[calc(100%_+_2px)]">
           <div className="grid grid-cols-3 gap-4 px-4 justify-start bg-white p-2 ">
             {texturesData.map((texture) => (
               <div
-                key={texture.id}
-                className=" cursor-pointer rounded-lg border-[3px] border-solid border-white "
+                key={texture.id + sanitizeClassName(key)}
+                className="cursor-pointer rounded-lg border-[3px] border-solid border-white"
                 onClick={() => handleTextureClick(texture)}
               >
-                <svg width="40" height="40">
+                <svg
+                  ref={svgRef} // Attach the ref to the SVG element
+                  width="40"
+                  height="40"
+                >
                   <rect
                     x="5"
                     y="5"
                     width="40"
                     height="40"
-                    style={{ fill: texture.configuration.url() }}
+                    style={{
+                      fill: texture.configuration
+                        .id(texture.id + sanitizeClassName(key))
+                        .url(),
+                    }}
                   />
                 </svg>
               </div>

@@ -14,11 +14,12 @@ interface DropdownProps extends React.InputHTMLAttributes<HTMLSelectElement> {
   optionLabel?: string;
   defaultValue?: any;
   value?: any;
-  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+  onChangeData?: (e: ChangeEvent<HTMLSelectElement>, id: string) => void;
   error?: string | undefined; // Add the 'error' prop for Formik/Yup error messages
 
   labelDir?: "inLine" | "Above";
   containerClass?: string;
+  setSelectedShapeId?: Function;
 }
 
 const Dropdown = ({
@@ -30,17 +31,22 @@ const Dropdown = ({
   optionLabel,
   defaultValue,
   labelDir = "Above",
+  onChangeData,
   containerClass,
+  setSelectedShapeId,
   error, // Add the 'error' prop here
   ...rest
 }: DropdownProps) => {
   const { t } = useTranslation();
-  let selectedOption;
+  let selectedOption: any;
   if (value && options) {
     selectedOption = options.find(
       (option) => option[optionValue ?? "id"] === value
     );
+  } else {
+    selectedOption = options[0];
   }
+  console.log("🚀 ~ file: DropDown.tsx:48 ~ selectedOption:", selectedOption);
 
   const selectedValue = selectedOption
     ? selectedOption[optionValue ?? "id"]
@@ -71,6 +77,7 @@ const Dropdown = ({
       </label>
       <select
         {...rest}
+        aria-label={selectedOption.id}
         onChange={onChange}
         className={`
         block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500

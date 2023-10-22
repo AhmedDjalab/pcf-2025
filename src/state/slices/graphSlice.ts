@@ -12,6 +12,7 @@ export interface GraphDataType {
   startChainage: number;
   finishChainage: number;
   style: string;
+  styleId?: string;
 }
 export interface ShapeType {
   type: "line" | "rect" | "triangle";
@@ -96,47 +97,47 @@ const GraphSlice = createSlice({
       state,
       action: PayloadAction<{ graphSettingsForm: GraphSetting }>
     ) {
+      let shapes: ShapeType[] = [];
       const graphSettingsForm = action.payload.graphSettingsForm;
 
       let styles = new Set<string>();
       graphSettingsForm.graphData.forEach((data) => {
         styles.add(data.style);
       });
-
-      let shapes: ShapeType[] = [];
-
       const uniqueStyles = Array.from(styles);
 
-      // var startDate = new Date(graphSettingsForm.fromDate);
-      // if (graphSettingsForm.timeRange === "Yearly") {
-      //   startDate.setFullYear(startDate.getFullYear() - 1);
-      // }
+      shapes = uniqueStyles.map((style, index) => {
+        const existingShape = state.shapes.shapesData.find(
+          (shape) => shape.id === style
+        );
 
-      // if (graphSettingsForm.timeRange === "Monthly") {
-      //   startDate.setMonth(startDate.getMonth() - 1);
-      //   if (startDate.getMonth() === 11) {
-      //     // If the month was December, adjust the year as well
-      //     startDate.setFullYear(startDate.getFullYear() - 1);
-      //   }
-      // }
+        if (existingShape) {
+          // If a shape with the same id already exists, don't update it.
+          return existingShape;
+        }
 
-      // graphSettingsForm.fromDate = startDate.toISOString();
-      shapes = uniqueStyles.map((style, index) => ({
-        type: "line",
-        backgroundTexture: texturesData[0].id,
-        color: "#24303F",
-        name: style,
-        lineType: lineStyles[0].id,
-        id: index.toString(),
-        activityId: graphSettingsForm.graphData
-          .filter((x) => x.style === style)
-          .map((data) => data.id),
-      }));
+        return {
+          type: "line",
+          backgroundTexture: texturesData[0].id,
+          color: "#24303F",
+          name: style,
+          lineType: lineStyles[0].id,
+          id: style,
+          activityId: graphSettingsForm.graphData
+            .filter((x) => x.style === style)
+            .map((data) => data.id),
+        };
+      });
+
+      console.log(
+        "🚀 ~ file: graphSlice.ts:131 ~ shapes=uniqueStyles.map ~ shapes:",
+        shapes
+      );
 
       return {
         ...state,
         settings: graphSettingsForm,
-        shapes: { shapesData: shapes },
+        shapes: { shapesData: [...state.shapes.shapesData, ...shapes] },
       };
     },
     updateShapesValue(
@@ -157,17 +158,24 @@ const GraphSlice = createSlice({
     ) {
       state.taskSlotsLevelTwo = [...action.payload.taskSlotsLevelTwo];
     },
-    addActivity(state, action: PayloadAction<{ activity: GraphDataType }>) {
+    addActivity(
+      state,
+      action: PayloadAction<{ activity: GraphDataType; shapeId: string }>
+    ) {
       var newActivity: GraphDataType = {
         ...action.payload.activity,
-
         id: "pcf_" + uuidv4().split("-")[0],
       };
 
-      state.settings.graphData.unshift(newActivity);
-      state.rawGraphDataFromFile!.unshift(newActivity);
-
-      return state;
+      //state.settings.graphData.unshift();
+      //state.rawGraphDataFromFile!.unshift(newActivity);
+      const graphData = [newActivity, ...state.settings.graphData];
+      const rawData = [newActivity, ...state.settings.graphData];
+      return {
+        ...state,
+        settings: { ...state.settings, graphData: graphData },
+        rawGraphDataFromFile: rawData,
+      };
     },
 
     addGraphDataList(
@@ -204,7 +212,7 @@ const GraphSlice = createSlice({
         color: "#24303F",
         name: style,
         lineType: lineStyles[0].id,
-        id: index.toString(),
+        id: style,
         activityId: action.payload.graphData
           .filter((x) => x.style === style)
           .map((data) => data.id),
@@ -212,14 +220,20 @@ const GraphSlice = createSlice({
 
       state.shapes.shapesData = shapes;
     },
-    updateActivity(state, action: PayloadAction<{ activity: GraphDataType }>) {
-      const index = state.settings.graphData.findIndex(
-        (ls) => ls.id === action.payload.activity.id
+    updateActivity(
+      state,
+      action: PayloadAction<{ activity: GraphDataType; shapeId: string }>
+    ) {
+      const { activity, shapeId } = action.payload;
+
+      const graphDataIndex = state.settings.graphData.findIndex(
+        (item) => item.id === activity.id
       );
-      if (index !== -1) {
-        state.settings.graphData[index] = action.payload.activity;
-        state.rawGraphDataFromFile![index] = action.payload.activity;
+      if (graphDataIndex !== -1) {
+        state.settings.graphData[graphDataIndex] = activity;
+        return state;
       }
+
       return state;
     },
 
@@ -231,6 +245,31 @@ const GraphSlice = createSlice({
       state.rawGraphDataFromFile = [...newgraphData];
       return state;
     },
+    // removeActivityFromShapeList(
+    //   state,
+    //   action: PayloadAction<{ activityId: string; shapeId: string }>
+    // ) {
+    //   // let newgraphData = state.settings.graphData.filter(
+    //   //   (x) => x.id !== action.payload.activityId
+    //   // );
+    //   const index = state.shapes.shapesData.findIndex(
+    //     (ls) => ls.id === action.payload.shapeId
+    //   );
+    //   const updatedShapesData = [...state.shapes.shapesData];
+
+    //   if (index !== -1) {
+    //     updatedShapesData[index].activityId?.filter(
+    //       (x) => x !== action.payload.activityId
+    //     );
+    //     updatedShapesData[index] = {
+    //       ...updatedShapesData[index],
+    //       activityId: [
+    //         ...(updatedShapesData[index].activityId || []),
+    //         newActivity.id,
+    //       ],
+    //     };
+    //   }
+    // },
     setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
     },
@@ -245,6 +284,9 @@ const GraphSlice = createSlice({
       state.settings.toDate = toDate;
       state.settings.fromDistance = fromDistance;
       state.settings.toDistance = toDistance;
+      if (fromDate > toDate) {
+        return state;
+      }
       const filteredGraphData = state.rawGraphDataFromFile!.filter((data) => {
         const dataStartDate = new Date(data.startDate);
         const dataFinishDate = new Date(data.finishDate);
