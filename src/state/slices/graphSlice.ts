@@ -141,7 +141,7 @@ const GraphSlice = createSlice({
       return {
         ...state,
         settings: graphSettingsForm,
-        shapes: { shapesData: [...state.shapes.shapesData, ...shapes] },
+        shapes: { shapesData: [...shapes] },
       };
     },
     updateShapesValue(
@@ -191,12 +191,12 @@ const GraphSlice = createSlice({
       );
 
       // Filter out duplicate graph data based on ID
-      // const newGraphData = action.payload.graphData.filter(
-      //   (data) => !existingIds.has(data.id)
-      // );
+      const newGraphData = action.payload.graphData.filter(
+        (data) => !existingIds.has(data.id)
+      );
 
       // Merge the new graph data with the existing data
-      state.settings.graphData = action.payload.graphData;
+      state.settings.graphData = newGraphData;
       state.rawGraphDataFromFile = action.payload.graphData;
       let styles = new Set<string>();
       action.payload.graphData.forEach((data) => {

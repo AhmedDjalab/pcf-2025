@@ -182,8 +182,8 @@ function DrawGraphStep() {
         const ticksCount = ticks.length;
 
         totalHeight =
-          ticksCount * tickSpacing < 200
-            ? ticksCount * 100
+          ticksCount * tickSpacing < window.innerHeight
+            ? ticksCount * 200
             : ticksCount * tickSpacing;
         //yScale.range([margin.top, margin.top + totalHeight]);
       } else if (timeRange === "Monthly") {
@@ -485,33 +485,42 @@ function DrawGraphStep() {
       // x1 = Math.max(x1, xScale(minStartDate));
       // x2 = Math.min(x2, xScale(maxEndDate));
 
-      g.selectAll(".start-" + slotClassName)
+      const startSlot = g
+        .selectAll(".start-" + slotClassName)
         .data(taskSlots)
-        .enter()
+        .enter();
+
+      startSlot
         .append("line")
         .attr("class", "start-" + slotClassName)
         .attr("x1", (d) => xScale(d.start))
-        .attr("y1", containerHeight)
+        .attr("y1", containerHeight - margin.top)
         .attr("x2", (d) => xScale(d.start))
         .attr("y2", () => (slotClassName === "Task1" ? 45 : 0))
         .attr("stroke", slotClassName === "Task1" ? "#ed9b9b" : "#6c9ae8")
         .attr("stroke-dasharray", "2,2");
 
-      g.selectAll(".end-" + slotClassName)
+      const endslot = g
+        .selectAll(".end-" + slotClassName)
         .data(taskSlots)
-        .enter()
+        .enter();
+
+      endslot
         .append("line")
         .attr("class", "end-" + slotClassName)
         .attr("x1", (d) => xScale(d.end))
-        .attr("y1", containerHeight)
+        .attr("y1", containerHeight - margin.top)
         .attr("x2", (d) => xScale(d.end))
         .attr("y2", () => (slotClassName === "Task1" ? 45 : 0))
         .attr("stroke", slotClassName === "Task1" ? "#ed9b9b" : "#6c9ae8")
         .attr("stroke-dasharray", "2,2");
 
       // Create rectangles for each task slot
-      g.selectAll(".slot-rect-" + slotClassName)
-        .data(taskSlots)
+      const slotsvg = g
+        .selectAll(".slot-rect-" + slotClassName)
+        .data(taskSlots);
+
+      slotsvg
         .enter()
         .append("rect")
         .attr("class", "slot-rect-" + slotClassName)
@@ -525,9 +534,12 @@ function DrawGraphStep() {
         .style("stroke", slotClassName === "Task1" ? "#ed9b9b" : "#6c9ae8");
 
       // Create labels for task slots using foreignObject
-      g.selectAll(".slot-label-" + slotClassName)
+      const labels = g
+        .selectAll(".slot-label-" + slotClassName)
         .data(taskSlots)
-        .enter()
+        .enter();
+
+      labels
         .append("foreignObject")
         .attr("class", "slot-label-" + slotClassName)
         .attr("x", (d) => xScale(d.start))
@@ -563,6 +575,11 @@ function DrawGraphStep() {
           // Hide tooltip on mouseout
           tooltip.style("display", "none");
         });
+
+      startSlot.exit().remove();
+      endslot.exit().remove();
+      slotsvg.exit().remove();
+      labels.exit().remove();
     },
     [containerHeight, endDateObject, margin.top, startDateObject]
   );
