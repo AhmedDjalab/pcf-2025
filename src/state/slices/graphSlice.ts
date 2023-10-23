@@ -187,16 +187,13 @@ const GraphSlice = createSlice({
       );
 
       // Filter out duplicate graph data based on ID
-      const newGraphData = action.payload.graphData.filter(
-        (data) => !existingIds.has(data.id)
-      );
+      // const newGraphData = action.payload.graphData.filter(
+      //   (data) => !existingIds.has(data.id)
+      // );
 
       // Merge the new graph data with the existing data
-      state.settings.graphData = [...state.settings.graphData, ...newGraphData];
-      state.rawGraphDataFromFile = [
-        ...state.settings.graphData,
-        ...newGraphData,
-      ];
+      state.settings.graphData = action.payload.graphData;
+      state.rawGraphDataFromFile = action.payload.graphData;
       let styles = new Set<string>();
       action.payload.graphData.forEach((data) => {
         styles.add(data.style);

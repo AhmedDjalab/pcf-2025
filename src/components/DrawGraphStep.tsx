@@ -303,11 +303,7 @@ function DrawGraphStep() {
           }
           // Define boundaries
           const minStartDate = startDateObject;
-          console.log(
-            "🚀 ~ file: DrawGraphStep.tsx:296 ~ minStartDate:",
-            minStartDate,
-            endDateObject
-          );
+
           const maxEndDate = endDateObject;
 
           const minStartChainage = fromDistance;
@@ -480,6 +476,15 @@ function DrawGraphStep() {
       taskSlots: TaskSlot[],
       slotClassName: "Task1" | "Task2"
     ) => {
+      const minStartDate = startDateObject;
+
+      const maxEndDate = endDateObject;
+
+      // let x1 = xScale(new Date(d.startDate));
+      // let x2 = xScale(new Date(d.finishDate));
+      // x1 = Math.max(x1, xScale(minStartDate));
+      // x2 = Math.min(x2, xScale(maxEndDate));
+
       g.selectAll(".start-" + slotClassName)
         .data(taskSlots)
         .enter()
@@ -559,7 +564,7 @@ function DrawGraphStep() {
           tooltip.style("display", "none");
         });
     },
-    []
+    [containerHeight, endDateObject, margin.top, startDateObject]
   );
 
   const drawD3Chart = useCallback(() => {

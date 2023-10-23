@@ -167,6 +167,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         } as GraphDataType;
       })
       .filter((item) => item !== null) as GraphDataType[];
+    console.error(
+      "🚀 ~ file: ImportFileForm.tsx:170 ~ handleFileData ~ graphData:",
+      graphData
+    );
 
     return graphData;
   };
