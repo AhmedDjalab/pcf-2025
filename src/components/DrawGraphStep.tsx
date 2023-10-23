@@ -251,7 +251,17 @@ function DrawGraphStep() {
         .attr("dx", "-0.5em")
         .text((d) => d3.timeFormat("%a %d/%m/%Y")(d));
     },
-    [timeRange]
+    [
+      distanceRange,
+      endDate,
+      endDateObject,
+      fromDistance,
+      margin.top,
+      startDate,
+      startDateObject,
+      timeRange,
+      toDistance,
+    ]
   );
 
   const drawShapes = useCallback(
@@ -423,11 +433,6 @@ function DrawGraphStep() {
           }
 
           if (textureConfig) {
-            console.log(
-              "🚀 ~ file: DrawGraphStep.tsx:405 ~ textureConfig:",
-              textureConfig
-            );
-
             svg.call(textureConfig?.configuration.stroke(shapeStroke));
             shapeInCanvas.style("fill", textureConfig?.configuration.url());
           }
@@ -472,6 +477,7 @@ function DrawGraphStep() {
     (
       g: d3.Selection<SVGGElement, unknown, null, undefined>,
       xScale: d3.ScaleLinear<number, number, never>,
+      yScale: d3.ScaleLinear<number, number, never>,
       tooltip: d3.Selection<d3.BaseType, unknown, HTMLElement, any>,
       taskSlots: TaskSlot[],
       slotClassName: "Task1" | "Task2"
@@ -494,7 +500,7 @@ function DrawGraphStep() {
         .append("line")
         .attr("class", "start-" + slotClassName)
         .attr("x1", (d) => xScale(d.start))
-        .attr("y1", containerHeight - margin.top)
+        .attr("y1", (d) => yScale(endDateObject))
         .attr("x2", (d) => xScale(d.start))
         .attr("y2", () => (slotClassName === "Task1" ? 45 : 0))
         .attr("stroke", slotClassName === "Task1" ? "#ed9b9b" : "#6c9ae8")
@@ -509,7 +515,7 @@ function DrawGraphStep() {
         .append("line")
         .attr("class", "end-" + slotClassName)
         .attr("x1", (d) => xScale(d.end))
-        .attr("y1", containerHeight - margin.top)
+        .attr("y1", (d) => yScale(endDateObject))
         .attr("x2", (d) => xScale(d.end))
         .attr("y2", () => (slotClassName === "Task1" ? 45 : 0))
         .attr("stroke", slotClassName === "Task1" ? "#ed9b9b" : "#6c9ae8")
@@ -620,9 +626,16 @@ function DrawGraphStep() {
 
     // Create a div for the slots and select it
 
-    drawTaskSlot(g, xScale, tooltip, graphSettings.taskSlotsLevelTwo, "Task2");
+    drawTaskSlot(
+      g,
+      xScale,
+      yScale,
+      tooltip,
+      graphSettings.taskSlotsLevelTwo,
+      "Task2"
+    );
     // Append slots to the selected div
-    drawTaskSlot(g, xScale, tooltip, graphSettings.taskSlots, "Task1");
+    drawTaskSlot(g, xScale, yScale, tooltip, graphSettings.taskSlots, "Task1");
 
     // Create a zoom behavior
     // Set the minimum and maximum scale levels
