@@ -300,10 +300,7 @@ const GraphSlice = createSlice({
         );
       });
 
-      state.settings.graphData =
-        filteredGraphData.length === 0
-          ? state.rawGraphDataFromFile!
-          : filteredGraphData;
+      state.settings.graphData = filteredGraphData;
       return state;
     },
 

@@ -47,6 +47,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
   const dispatch = useDispatch();
   const graphSettings = useSelector((state: RootState) => state.settings);
+  const rawData = useSelector((state: RootState) => state.rawGraphDataFromFile);
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [edit, setEdit] = useState<GraphDataType | null>(null);
@@ -390,7 +391,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         </label>
 
         <div className="relative   w-full mt-10">
-          {graphSettings.graphData.length > 0 && (
+          {rawData && rawData.length > 0 && (
             <div className="grid grid-cols-3 gap-2 justify-center">
               <div className="mb-4">
                 <label
