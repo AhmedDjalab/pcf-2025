@@ -59,6 +59,10 @@ export interface GraphCreateType {
   rawGraphDataFromFile?: GraphDataType[];
 }
 
+const currentYear = new Date().getFullYear();
+const nextYear = currentYear + 1;
+const startDate = new Date(currentYear, 0, 1); // Month 0 is January
+const endDate = new Date(nextYear, 11, 31);
 const initialState: GraphCreateType = {
   projectSettings: {
     title: "",
@@ -66,8 +70,8 @@ const initialState: GraphCreateType = {
   },
   settings: {
     graphData: [],
-    fromDate: new Date().toISOString(),
-    toDate: new Date().toISOString(),
+    fromDate: startDate.toISOString(),
+    toDate: endDate.toISOString(),
     fromDistance: 10000,
     toDistance: 20000,
     timeRange: "Yearly",
@@ -296,7 +300,10 @@ const GraphSlice = createSlice({
         );
       });
 
-      state.settings.graphData = filteredGraphData;
+      state.settings.graphData =
+        filteredGraphData.length === 0
+          ? state.rawGraphDataFromFile!
+          : filteredGraphData;
       return state;
     },
 

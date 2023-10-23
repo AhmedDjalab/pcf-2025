@@ -32,9 +32,12 @@ export type FormValues = {
   distanceRange?: number;
 };
 export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
+  const currentYear = new Date().getFullYear();
+  const nextYear = currentYear + 1;
+
   const initForm: FormValues = {
-    fromDate: new Date(),
-    toDate: new Date(),
+    fromDate: new Date(currentYear, 0, 1), // Month 0 is January
+    toDate: new Date(nextYear, 11, 31),
     graphData: [],
     fromDistance: "10000",
     toDistance: "20000",
@@ -87,8 +90,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   };
   const formik = useFormik({
     initialValues: {
-      fromDate: new Date(graphSettings.fromDate) ?? new Date(),
-      toDate: new Date(graphSettings.toDate) ?? new Date(),
+      fromDate: new Date(graphSettings.fromDate) ?? initForm.fromDate,
+      toDate: new Date(graphSettings.toDate) ?? initForm.toDate,
       graphData: graphSettings.graphData,
       fromDistance: graphSettings.fromDistance.toString() ?? "10000",
       toDistance: graphSettings.toDistance.toString() ?? "20000",
@@ -347,6 +350,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     formik.values.timeRange,
     formik.values.toDate,
     formik.values.toDistance,
+    graphSettings.graphData.length,
   ]);
 
   return (
