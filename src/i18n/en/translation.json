@@ -38,6 +38,7 @@
   "projectForm.title": "Project Title",
   "projectForm.logo": "Logo",
   "projectForm.next": "Next",
+
   "imagePicker.importLogo": "Import Logo",
   "imagePicker.selectValidImage": "Please select a valid image file (e.g., JPG, PNG).",
   "importFileForm.dragOrImport": "Drag or import your file",
@@ -193,5 +194,7 @@
       "activityStyle": "Activity Style is required",
       "endDateMin": "the finish date must be greater or equal to start date"
     }
-  }
+  },
+
+  "projectForm.fileType": "File Type"
 }

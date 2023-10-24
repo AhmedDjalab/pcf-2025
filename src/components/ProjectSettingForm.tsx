@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from "react";
-import ImagePicker from "./ImagePicker";
-import { MultiStepFormProps } from "./DrawGraphForm";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../state";
+import { useTranslation } from "react-i18next";
 import {
   ProjectSettings,
   updateProjectSettingsValue,
-} from "../state/slices/graphSlice";
-import { useTranslation } from "react-i18next";
+} from "src/state/slices/graphSlice";
+import { RootState } from "src/state";
+import { MultiStepFormProps } from "./DrawGraphForm";
+import ImagePicker from "./ImagePicker";
+import { ProjectFileType, ProjectFiletypeOptions } from "src/const/vars";
 
 const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const [projectTitle, setProjectTitle] = useState("");
   const [selectedImage, setSelectedImage] = useState("");
+  const [projectFileType, setProjectFileType] = useState(ProjectFileType.XLSX); // Set a default value
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
@@ -21,10 +23,11 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
   useEffect(() => {
     if (projectSettings) {
-      setProjectTitle(projectSettings.title || ""); // Set to an empty string if undefined
-      setSelectedImage(projectSettings.logoImg || ""); // Set to an empty string if undefined
+      setProjectTitle(projectSettings.title || "");
+      setSelectedImage(projectSettings.logoImg || "");
     }
   }, [projectSettings]);
+
   const handleImageChange = (img: string | null) => {
     if (img) {
       setSelectedImage(img);
@@ -35,15 +38,20 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
     setProjectTitle(e.target.value);
   };
 
+  const handleFileTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setProjectFileType(Number(e.target.value));
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const projectSetting: ProjectSettings = {
       title: projectTitle,
       logoImg: selectedImage,
+      fileType: ProjectFiletypeOptions.find(
+        (option) => option.id === projectFileType
+      )?.id!,
     };
-    // Dispatch the action to update project settings
     dispatch(updateProjectSettingsValue({ projectSettings: projectSetting }));
-
     setCurrentStep((step) => step + 1);
   };
 
@@ -79,6 +87,28 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
             onChange={handleImageChange}
             imageValue={selectedImage}
           />
+        </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="projectFileType"
+            className="block text-gray-700 text-sm font-bold mb-2"
+          >
+            {t("projectForm.fileType")}
+          </label>
+          <select
+            id="projectFileType"
+            name="projectFileType"
+            value={projectFileType}
+            onChange={handleFileTypeChange}
+            className="w-full px-3 py-2 border rounded-lg"
+          >
+            {ProjectFiletypeOptions.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="mt-4 flex justify-end w-full">

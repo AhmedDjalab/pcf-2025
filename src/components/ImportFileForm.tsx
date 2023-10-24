@@ -18,9 +18,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../state";
 import { animateScroll as scroll } from "react-scroll";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/solid";
-import { BackToTopHeightSize } from "../const/vars";
+import { BackToTopHeightSize, ProjectFileType } from "../const/vars";
 import { useTranslation } from "react-i18next";
 import ActivityTableForm from "./ActivityTableForm";
+import Spinner from "./Spinner";
 
 export type FormValues = {
   fromDate: Date;
@@ -47,9 +48,18 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
   const dispatch = useDispatch();
   const graphSettings = useSelector((state: RootState) => state.settings);
+  const fileType = useSelector(
+    (state: RootState) => state.projectSettings.fileType
+  );
+  console.log(
+    "🚀 ~ file: ImportFileForm.tsx:53 ~ ImportFileForm ~ fileType:",
+    fileType
+  );
   const rawData = useSelector((state: RootState) => state.rawGraphDataFromFile);
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+
   const [edit, setEdit] = useState<GraphDataType | null>(null);
   const [initialValues, setInitialValues] = useState<FormValues>(initForm);
   const [graphData, setGraphData] = useState<GraphDataType[]>([]);
@@ -184,6 +194,14 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   ): void => {
     event.preventDefault();
     event.stopPropagation();
+
+    if (fileType === ProjectFileType.MicrosoftProject) {
+      return handleMsProjectXMLFile(event);
+    }
+    if (fileType === ProjectFileType.PrimaveraXML) {
+      return handlePrimaveraXMLFile(event);
+    }
+
     const fileInput = event.target as HTMLInputElement;
 
     if (!fileInput || !fileInput.files) {
@@ -224,15 +242,354 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     }
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
-    e.preventDefault();
-    e.stopPropagation();
-    const file = e.dataTransfer.files[0];
+  const handlePrimaveraXMLFile = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    event.preventDefault();
+    event.stopPropagation();
+    const fileInput = event.target as HTMLInputElement;
+
+    if (!fileInput || !fileInput.files) {
+      // Handle the case where event.target is null or files are not available
+      return;
+    }
+
+    const file = fileInput.files[0];
+
+    if (!file) {
+      // No file selected, do nothing
+      return;
+    }
+
+    const fileName = file.name;
+    const fileExtension = fileName.split(".").pop()?.toLowerCase();
+
+    if (fileExtension !== "xml") {
+      // Show an alert for an invalid file format
+      alert("Veuillez sélectionner un fichier XML de Primavera P6 valide.");
+      return;
+    }
+
     if (file) {
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        const data = e.target?.result as ArrayBuffer | null;
+        const xmlData = e.target?.result as string;
+        console.error(
+          "🚀 ~ file: ImportFileForm.tsx:260 ~ ImportFileForm ~ xmlData:",
+          xmlData
+        );
+        if (xmlData) {
+          const graphData = handlePrimaveraXMLData(xmlData);
+
+          // Set the graph data in your application state or dispatch it
+          dispatch(addGraphDataList({ graphData }));
+          formik.setFieldValue("graphData", graphData);
+        }
+      };
+
+      reader.readAsText(file);
+    }
+  };
+
+  const handlePrimaveraXMLData = (xmlData: string) => {
+    // Parse the XML data and extract the required information
+    // Create the graph data based on the parsed XML data
+    // Return the graph data
+    setLoading(true);
+    const graphData = parsePrimaveraXML(xmlData);
+    setLoading(false);
+    return graphData;
+  };
+
+  const parsePrimaveraXML = (xmlData: string) => {
+    const graphData: any[] = [];
+
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlData, "text/xml");
+
+    // Get the <Project> element (assuming it's the root element)
+    const project = xmlDoc.getElementsByTagName("Project")[0];
+
+    if (project) {
+      const activities = project.getElementsByTagName("Activity");
+
+      for (let i = 0; i < activities.length; i++) {
+        const activity = activities[i];
+        const activityId = activity.getElementsByTagName("Id")[0].textContent;
+        const activityName =
+          activity.getElementsByTagName("Name")[0].textContent;
+
+        const startDate =
+          activity.getElementsByTagName("StartDate")[0].textContent;
+        const finishDate =
+          activity.getElementsByTagName("FinishDate")[0].textContent;
+
+        // Get UDF data based on specific Titles
+        const udfData = getUDFData(xmlDoc, activity);
+
+        graphData.push({
+          id: activityId,
+          activityName,
+          startDate,
+          finishDate,
+          ...udfData,
+        });
+      }
+    }
+
+    return graphData;
+  };
+
+  function getUDFData(xmlDoc: any, activity: any) {
+    const UDFTypes = xmlDoc.getElementsByTagName("UDFType");
+    const UDFElements = activity.getElementsByTagName("UDF");
+
+    const udfData: any = {};
+
+    for (let i = 0; i < UDFElements.length; i++) {
+      const UDF = UDFElements[i];
+      const typeObjectId =
+        UDF.getElementsByTagName("TypeObjectId")[0].textContent;
+
+      for (let j = 0; j < UDFTypes.length; j++) {
+        const UDFType = UDFTypes[j];
+        const typeObjectIdFromUDFType =
+          UDFType.getElementsByTagName("ObjectId")[0].textContent;
+        const title = UDFType.getElementsByTagName("Title")[0].textContent;
+        const textValue = UDF.getElementsByTagName("TextValue")[0].textContent;
+
+        if (typeObjectId === typeObjectIdFromUDFType) {
+          if (title === "TilosStart") {
+            udfData.startChainage = textValue;
+          } else if (title === "TilosEnd") {
+            udfData.finishChainage = textValue;
+          } else if (title === "TilosStyle") {
+            udfData.style = textValue;
+          }
+        }
+      }
+    }
+
+    return udfData;
+  }
+
+  //! this is case of MS
+  const handleMsProjectXMLFile = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    event.preventDefault();
+    event.stopPropagation();
+    const fileInput = event.target as HTMLInputElement;
+
+    if (!fileInput || !fileInput.files) {
+      // Handle the case where event.target is null or files are not available
+      return;
+    }
+
+    const file = fileInput.files[0];
+
+    if (!file) {
+      // No file selected, do nothing
+      return;
+    }
+
+    const fileName = file.name;
+    const fileExtension = fileName.split(".").pop()?.toLowerCase();
+
+    if (fileExtension !== "xml") {
+      // Show an alert for an invalid file format
+      alert(
+        "Veuillez sélectionner un fichier XML de Microsoft Project valide."
+      );
+      return;
+    }
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const xmlData = e.target?.result as string;
+
+        if (xmlData) {
+          const graphData = handleMSProjectXMLData(xmlData);
+
+          // Set the graph data in your application state or dispatch it
+          dispatch(addGraphDataList({ graphData }));
+          formik.setFieldValue("graphData", graphData);
+        }
+      };
+
+      reader.readAsText(file);
+    }
+  };
+
+  const handleMSProjectXMLData = (xmlData: string) => {
+    // Parse the XML data and extract the required information
+    // Create the graph data based on the parsed XML data
+    // Return the graph data
+    setLoading(true);
+    const graphData = parseMSProjectXML(xmlData);
+    setLoading(false);
+    return graphData;
+  };
+
+  const parseMSProjectXML = (xmlData: string) => {
+    const graphData: any[] = [];
+
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlData, "text/xml");
+    console.log(
+      "🚀 ~ file: ImportFileForm.tsx:431 ~ parseMSProjectXML ~ xmlDoc:",
+      xmlDoc
+    );
+
+    // Get the <Project> element (assuming it's the root element)
+    const project = xmlDoc.getElementsByTagName("Project")[0];
+    console.log(
+      "🚀 ~ file: ImportFileForm.tsx:434 ~ parseMSProjectXML ~ project:",
+      project
+    );
+
+    if (project) {
+      const activities = xmlDoc.getElementsByTagName("Tasks")[0].children;
+      console.log(
+        "🚀 ~ file: ImportFileForm.tsx:445 ~ parseMSProjectXML ~ activities:",
+        activities
+      );
+
+      for (let i = 0; i < activities.length; i++) {
+        const activity = activities[i];
+        console.log(
+          "🚀 ~ file: ImportFileForm.tsx:445 ~ parseMSProjectXML ~ activities:",
+          activity
+        );
+        const activityId = activity.getElementsByTagName("ID")[0].textContent;
+        const activityName =
+          activity.getElementsByTagName("Name")[0].textContent;
+
+        console.log(
+          "🚀 ~ file: ImportFileForm.tsx:300 ~ parsePrimaveraXML ~ activityName:",
+          activityName
+        );
+        const startDate = activity.getElementsByTagName("Start")[0].textContent;
+        const finishDate =
+          activity.getElementsByTagName("Finish")[0].textContent;
+
+        // Get UDF data based on specific Titles
+        const udfData = getExtendPropertyData(xmlDoc, activity);
+        console.log(
+          "🚀 ~ file: ImportFileForm.tsx:470 ~ parseMSProjectXML ~ udfData:",
+          udfData
+        );
+
+        graphData.push({
+          id: activityId,
+          activityName,
+          startDate,
+          finishDate,
+          ...udfData,
+        });
+      }
+    }
+
+    return graphData;
+  };
+
+  function getExtendPropertyData(xmlDoc: any, activity: any) {
+    const UDFTypes =
+      xmlDoc.getElementsByTagName("ExtendedAttributes")[0].children;
+    console.log(
+      "🚀 ~ file: ImportFileForm.tsx:486 ~ getExtendPropertyData ~ UDFTypes:",
+      UDFTypes
+    );
+    const UDFElements = activity.getElementsByTagName("ExtendedAttribute");
+
+    const udfData: any = {};
+    if (!UDFElements) {
+      return {
+        startChainage: 0,
+        finishChainage: 0,
+        style: activity.getElementsByTagName("Name")[0].textContent,
+      };
+    }
+    for (let i = 0; i < UDFElements.length; i++) {
+      const UDF = UDFElements[i];
+      console.log(
+        "🚀 ~ file: ImportFileForm.tsx:511 ~ getExtendPropertyData ~ UDF:",
+        UDF
+      );
+      const typeObjectId = UDF.getElementsByTagName("FieldID")[0].textContent;
+
+      for (let j = 0; j < UDFTypes.length; j++) {
+        const UDFType = UDFTypes[j];
+        const typeObjectIdFromUDFType =
+          UDFType.getElementsByTagName("FieldID")[0].textContent;
+        const title = UDFType.getElementsByTagName("Alias")[0].textContent;
+        const textValue = UDF.getElementsByTagName("Value")[0].textContent;
+        console.log(
+          "🚀 ~ file: ImportFileForm.tsx:523 ~ getExtendPropertyData ~ textValue:",
+          typeObjectIdFromUDFType,
+          title,
+          textValue
+        );
+
+        if (typeObjectId === typeObjectIdFromUDFType) {
+          if (title === "TilosStart") {
+            udfData.startChainage = parseFloat(textValue);
+          } else if (title === "TilosEnd") {
+            udfData.finishChainage = parseFloat(textValue);
+          } else if (title === "TilosStyle") {
+            udfData.style = textValue;
+          }
+        }
+      }
+    }
+
+    return udfData;
+  }
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const file = e.dataTransfer.files[0];
+
+    if (!file) {
+      // No file selected, do nothing
+      return;
+    }
+
+    const fileName = file.name;
+    const fileExtension = fileName.split(".").pop()?.toLowerCase();
+
+    if (fileExtension !== "xml" && fileType !== ProjectFileType.XLSX) {
+      // Show an alert for an invalid file format
+      alert("Veuillez sélectionner un fichier XML valide.");
+      return;
+    }
+    if (fileExtension !== "xlsx" && fileType === ProjectFileType.XLSX) {
+      // Show an alert for an invalid file format
+      alert("Veuillez sélectionner un fichier XLSX valide.");
+      return;
+    }
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        let data = e.target?.result;
+        if (fileType === ProjectFileType.MicrosoftProject) {
+          data = e.target?.result as string;
+          return handleMSProjectXMLData(data);
+        }
+
+        if (fileType === ProjectFileType.PrimaveraXML) {
+          data = e.target?.result as string;
+          return handlePrimaveraXMLData(data);
+        }
+
+        data = e.target?.result as ArrayBuffer | null;
         if (data) {
           const graphData = handleFileData(data);
           //setGraphData((prev) => graphData);
@@ -361,34 +718,38 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       onDrop={handleDrop}
     >
       <form onSubmit={formik.handleSubmit}>
-        <label className="flex justify-center items-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
-          <span className="flex items-center space-x-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-6 text-gray-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-              />
-            </svg>
-            <span className="font-medium text-gray-600">
-              {t("importFileForm.dragOrImport")}
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          <label className="flex justify-center items-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
+            <span className="flex items-center space-x-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6 text-gray-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
+              </svg>
+              <span className="font-medium text-gray-600">
+                {t("importFileForm.dragOrImport")}
+              </span>
             </span>
-          </span>
-          <input
-            onChange={handleFileUpload}
-            type="file"
-            name="file_upload"
-            className="hidden"
-            accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-          />
-        </label>
+            <input
+              onChange={handleFileUpload}
+              type="file"
+              name="file_upload"
+              className="hidden"
+              accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            />
+          </label>
+        )}
 
         <div className="relative   w-full mt-10">
           {rawData && rawData.length > 0 && (
@@ -646,28 +1007,31 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           </table>
         </div>
       </form>
-      {showBackToTopButton && (
-        <button
-          type="button"
-          className="back-to-top-button flex justify-end items-end self-end w-full"
-          onClick={() => {
-            scroll.scrollToTop(); // Scroll to the top when the button is clicked
-          }}
-        >
-          <ArrowUpCircleIcon className=" h-20 w-20  text-blue-500 opacity-40" />{" "}
-          {/* Use the Heroicon here */}
-        </button>
-      )}
-
-      {isModalOpen && (
-        <ActivityTableForm
-          initialValues={edit || undefined}
-          onSubmit={closeModal}
-          handleClose={() => setIsModalOpen(false)}
-          minDistance={parseFloat(formik.values.fromDistance)}
-          maxDistance={parseFloat(formik.values.toDistance)}
-        />
-      )}
+      {
+        <>
+          {showBackToTopButton && (
+            <button
+              type="button"
+              className="back-to-top-button flex justify-end items-end self-end w-full"
+              onClick={() => {
+                scroll.scrollToTop(); // Scroll to the top when the button is clicked
+              }}
+            >
+              <ArrowUpCircleIcon className=" h-20 w-20  text-blue-500 opacity-40" />{" "}
+              {/* Use the Heroicon here */}
+            </button>
+          )}
+          {isModalOpen && (
+            <ActivityTableForm
+              initialValues={edit || undefined}
+              onSubmit={closeModal}
+              handleClose={() => setIsModalOpen(false)}
+              minDistance={parseFloat(formik.values.fromDistance)}
+              maxDistance={parseFloat(formik.values.toDistance)}
+            />
+          )}
+        </>
+      }
     </div>
   );
 };

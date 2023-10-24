@@ -3,6 +3,7 @@ import texturesData from "../../const/texturesArray";
 import { lineStyles } from "../../const/linesArray";
 import { uniqueId } from "lodash";
 import { uuidv4 } from "@firebase/util";
+import { ProjectFileType } from "src/const/vars";
 
 export interface GraphDataType {
   id: string;
@@ -34,6 +35,7 @@ export interface TaskSlot {
 export interface ProjectSettings {
   title: string;
   logoImg: string;
+  fileType?: ProjectFileType;
 }
 export interface GraphSetting {
   graphData: GraphDataType[];
@@ -67,6 +69,7 @@ const initialState: GraphCreateType = {
   projectSettings: {
     title: "",
     logoImg: "",
+    fileType: ProjectFileType.XLSX,
   },
   settings: {
     graphData: [],
