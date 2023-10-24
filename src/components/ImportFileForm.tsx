@@ -8,7 +8,7 @@ import {
   applyFilter,
   removeActivity,
   updateGraphSettingsValue,
-} from "../state/slices/graphSlice";
+} from "src/state/slices/graphSlice";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import DatePicker from "react-datepicker";
@@ -22,6 +22,9 @@ import { BackToTopHeightSize, ProjectFileType } from "../const/vars";
 import { useTranslation } from "react-i18next";
 import ActivityTableForm from "./ActivityTableForm";
 import Spinner from "./Spinner";
+import ParameterSelector from "./ParmeterSelector";
+import { type } from "@testing-library/user-event/dist/type";
+import { uniqueId } from "lodash";
 
 export type FormValues = {
   fromDate: Date;
@@ -51,20 +54,24 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const fileType = useSelector(
     (state: RootState) => state.projectSettings.fileType
   );
-  console.log(
-    "🚀 ~ file: ImportFileForm.tsx:53 ~ ImportFileForm ~ fileType:",
-    fileType
-  );
+
   const rawData = useSelector((state: RootState) => state.rawGraphDataFromFile);
+  const udfSettingsData = useSelector(
+    (state: RootState) => state.userDefindSettings
+  );
+
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setLoading] = useState(false);
-
+  const [settingParsedModal, setSettingParsedModal] = useState(false);
+  const [userDefinedSettings, setUserDefinedSettings] = useState<any[]>([]);
   const [edit, setEdit] = useState<GraphDataType | null>(null);
   const [initialValues, setInitialValues] = useState<FormValues>(initForm);
   const [graphData, setGraphData] = useState<GraphDataType[]>([]);
   const [filteredData, setFilteredData] = useState<GraphDataType[]>([]);
   const [showBackToTopButton, setShowBackToTopButton] = useState(false);
+  const [parsedData, setParsedData] = useState<any>();
+
   const validationSchema = Yup.object().shape({
     fromDate: Yup.date().required("La date de début est requise"),
     toDate: Yup.date()
@@ -139,13 +146,29 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     return true;
   }
 
+  const submitData = () => {
+    setSettingParsedModal(false);
+    if (parsedData && fileType === ProjectFileType.XLSX) {
+      parseXLsxContent(parsedData);
+      return;
+    }
+    if (parsedData && fileType === ProjectFileType.MicrosoftProject) {
+      parseMSProjectXML(parsedData);
+      return;
+    }
+    if (parsedData && fileType === ProjectFileType.PrimaveraXML) {
+      parsePrimaveraXML(parsedData);
+      return;
+    }
+  };
+
   function adjustTimeZone(dateString: string) {
     const [day, month, year] = dateString.split("/");
     const parsedDate = new Date(`${year}-${month}-${day}T00:00:00Z`);
     return parsedDate.toISOString().split("T")[0]; // Output as YYYY-MM-DD
   }
 
-  const handleFileData = (data: ArrayBuffer | null): GraphDataType[] => {
+  const handleFileData = (data: ArrayBuffer | null) => {
     if (!data) {
       return [];
     }
@@ -156,51 +179,90 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     const parsedData: any[][] = XLSX.utils.sheet_to_json(worksheet, {
       header: 1,
     });
+    const headers = parsedData[0].map((header: any) => header.toString());
+    setUserDefinedSettings(headers);
 
     // Assuming your data structure matches the XLSX columns order
+    // const graphData = parsedData
+    //   .slice(1)
+    //   .filter((row) => row[0] !== null && row[0] !== undefined)
+    //   .map((row) => {
+    //     const startDate = moment.utc(row[2], "DD/MM/YYYY", true); // Parse Start Date
+    //     const finishDate = moment.utc(row[3], "DD/MM/YYYY", true);
+    //     if (!startDate.isValid() || !finishDate.isValid()) {
+    //       // Handle invalid date format here
+    //       return null;
+    //     }
+    //     startDate.add(1, "day");
+    //     finishDate.add(1, "day");
+    //     return {
+    //       id: row[0],
+    //       activityName: row[1].toString().trim(),
+    //       startDate: startDate.toISOString(), // Assign parsed Start Date
+    //       finishDate: finishDate.toISOString(), // Assign parsed Finish Date
+    //       startChainage: parseFloat(row[4]),
+    //       finishChainage: parseFloat(row[5]),
+    //       style: row[6],
+    //     } as GraphDataType;
+    //   })
+    //   .filter((item) => item !== null) as GraphDataType[];
+    return parsedData;
+  };
+
+  function parseXLsxContent(parsedData: any[][]) {
+    setLoading(true);
     const graphData = parsedData
       .slice(1)
       .filter((row) => row[0] !== null && row[0] !== undefined)
       .map((row) => {
-        const startDate = moment.utc(row[2], "DD/MM/YYYY", true); // Parse Start Date
-        const finishDate = moment.utc(row[3], "DD/MM/YYYY", true);
-        if (!startDate.isValid() || !finishDate.isValid()) {
-          // Handle invalid date format here
-          return null;
-        }
-        startDate.add(1, "day");
-        finishDate.add(1, "day");
-        return {
-          id: row[0],
-          activityName: row[1].toString().trim(),
-          startDate: startDate.toISOString(), // Assign parsed Start Date
-          finishDate: finishDate.toISOString(), // Assign parsed Finish Date
-          startChainage: parseFloat(row[4]),
-          finishChainage: parseFloat(row[5]),
-          style: row[6],
-        } as GraphDataType;
+        const dataObject: Partial<GraphDataType> = {}; // Create an empty object to store data
+
+        udfSettingsData?.forEach((setting) => {
+          const columnName = setting.udfSettingName; // Get the column name from udfSettings
+          const columnIndex = parsedData[0].indexOf(columnName); // Find the index of the column
+
+          if (columnIndex !== -1) {
+            const value = row[columnIndex]; // Get the value from the row
+            if (
+              setting.pcfField === "startDate" ||
+              setting.pcfField === "finishDate"
+            ) {
+              // Handle date values
+              const date = moment.utc(value, "DD/MM/YYYY", true);
+              if (date.isValid()) {
+                date.add(1, "day");
+                dataObject[setting.pcfField] = date.toISOString();
+              } else {
+                // Handle invalid date format
+              }
+            } else if (
+              setting.pcfField === "startChainage" ||
+              setting.pcfField === "finishChainage"
+            ) {
+              // Handle numeric values
+              dataObject[setting.pcfField] = parseFloat(value);
+            } else {
+              // Handle other fields
+              dataObject[setting.pcfField] = value;
+            }
+          }
+        });
+
+        return dataObject as GraphDataType;
       })
       .filter((item) => item !== null) as GraphDataType[];
-    console.error(
-      "🚀 ~ file: ImportFileForm.tsx:170 ~ handleFileData ~ graphData:",
-      graphData
-    );
 
-    return graphData;
-  };
-
-  const handleFileUpload = (
+    //setGraphData(graphData);
+    dispatch(addGraphDataList({ graphData: graphData }));
+    formik.setFieldValue("graphData", graphData);
+    setLoading(false);
+  }
+  const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
-  ): void => {
+  ): Promise<void> => {
     event.preventDefault();
     event.stopPropagation();
-
-    if (fileType === ProjectFileType.MicrosoftProject) {
-      return handleMsProjectXMLFile(event);
-    }
-    if (fileType === ProjectFileType.PrimaveraXML) {
-      return handlePrimaveraXMLFile(event);
-    }
+    console.log("this is new ", event);
 
     const fileInput = event.target as HTMLInputElement;
 
@@ -214,6 +276,13 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     if (!file) {
       // No file selected, do nothing
       return;
+    }
+    fileInput.value = "";
+    if (fileType === ProjectFileType.MicrosoftProject) {
+      return handleMsProjectXMLFile(file);
+    }
+    if (fileType === ProjectFileType.PrimaveraXML) {
+      return handlePrimaveraXMLFile(file);
     }
 
     const fileName = file.name;
@@ -231,10 +300,14 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       reader.onload = (e) => {
         const data = e.target?.result as ArrayBuffer | null;
         if (data) {
-          const graphData = handleFileData(data);
+          const parsedData = handleFileData(data);
+          setSettingParsedModal(true);
+
+          setParsedData(parsedData);
           //setGraphData((prev) => graphData);
-          dispatch(addGraphDataList({ graphData: graphData }));
-          formik.setFieldValue("graphData", graphData);
+          // parseXLsxContent(parsedData, udfSettings);
+          // dispatch(addGraphDataList({ graphData: graphData }));
+          // formik.setFieldValue("graphData", graphData);
         }
       };
 
@@ -242,28 +315,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     }
   };
 
-  const handlePrimaveraXMLFile = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    event.preventDefault();
-    event.stopPropagation();
-    const fileInput = event.target as HTMLInputElement;
-
-    if (!fileInput || !fileInput.files) {
-      // Handle the case where event.target is null or files are not available
-      return;
-    }
-
-    const file = fileInput.files[0];
-
-    if (!file) {
-      // No file selected, do nothing
-      return;
-    }
-
+  const handlePrimaveraXMLFile = async (file: File) => {
     const fileName = file.name;
     const fileExtension = fileName.split(".").pop()?.toLowerCase();
-
+    //setGraphData([]);
     if (fileExtension !== "xml") {
       // Show an alert for an invalid file format
       alert("Veuillez sélectionner un fichier XML de Primavera P6 valide.");
@@ -273,18 +328,22 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     if (file) {
       const reader = new FileReader();
 
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         const xmlData = e.target?.result as string;
         console.error(
           "🚀 ~ file: ImportFileForm.tsx:260 ~ ImportFileForm ~ xmlData:",
           xmlData
         );
         if (xmlData) {
-          const graphData = handlePrimaveraXMLData(xmlData);
+          const parsedData = await handlePrimaveraXMLData(xmlData);
+
+          setSettingParsedModal(true);
+
+          setParsedData(parsedData);
 
           // Set the graph data in your application state or dispatch it
-          dispatch(addGraphDataList({ graphData }));
-          formik.setFieldValue("graphData", graphData);
+          // dispatch(addGraphDataList({ graphData }));
+          // formik.setFieldValue("graphData", graphData);
         }
       };
 
@@ -292,22 +351,41 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     }
   };
 
-  const handlePrimaveraXMLData = (xmlData: string) => {
-    // Parse the XML data and extract the required information
-    // Create the graph data based on the parsed XML data
-    // Return the graph data
-    setLoading(true);
-    const graphData = parsePrimaveraXML(xmlData);
-    setLoading(false);
-    return graphData;
+  const handlePrimaveraXMLData = async (xmlData: string) => {
+    return new Promise((resolve, reject) => {
+      try {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlData, "text/xml");
+
+        const UDFTypes = xmlDoc.getElementsByTagName("UDFType");
+
+        const udfArray = [];
+        for (let j = 0; j < UDFTypes.length; j++) {
+          const UDFType = UDFTypes[j];
+          const udfId =
+            UDFType.getElementsByTagName("ObjectId")[0]?.textContent ?? "";
+          const alias =
+            UDFType.getElementsByTagName("Title")[0]?.textContent ?? "";
+
+          const userDefinedSetting = {
+            alias,
+            fieldName: alias,
+            udfId,
+          };
+          udfArray.push(userDefinedSetting);
+        }
+
+        setUserDefinedSettings(udfArray);
+        resolve(xmlDoc);
+      } catch (error) {
+        reject(error);
+      }
+    });
   };
 
-  const parsePrimaveraXML = (xmlData: string) => {
+  const parsePrimaveraXML = (xmlDoc: Document) => {
     const graphData: any[] = [];
-
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlData, "text/xml");
-
+    setLoading(true);
     // Get the <Project> element (assuming it's the root element)
     const project = xmlDoc.getElementsByTagName("Project")[0];
 
@@ -327,6 +405,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
         // Get UDF data based on specific Titles
         const udfData = getUDFData(xmlDoc, activity);
+        console.log(
+          "🚀 ~ file: ImportFileForm.tsx:422 ~ parsePrimaveraXML ~ udfData:",
+          udfData
+        );
 
         graphData.push({
           id: activityId,
@@ -338,62 +420,60 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       }
     }
 
-    return graphData;
+    // setGraphData(graphData);
+    dispatch(addGraphDataList({ graphData: graphData }));
+    formik.setFieldValue("graphData", graphData);
+    setLoading(false);
   };
 
   function getUDFData(xmlDoc: any, activity: any) {
-    const UDFTypes = xmlDoc.getElementsByTagName("UDFType");
     const UDFElements = activity.getElementsByTagName("UDF");
 
-    const udfData: any = {};
+    const dataObject: Partial<GraphDataType> = {};
 
     for (let i = 0; i < UDFElements.length; i++) {
       const UDF = UDFElements[i];
+
       const typeObjectId =
         UDF.getElementsByTagName("TypeObjectId")[0].textContent;
+      const textValue = UDF.getElementsByTagName("TextValue")[0].textContent;
 
-      for (let j = 0; j < UDFTypes.length; j++) {
-        const UDFType = UDFTypes[j];
-        const typeObjectIdFromUDFType =
-          UDFType.getElementsByTagName("ObjectId")[0].textContent;
-        const title = UDFType.getElementsByTagName("Title")[0].textContent;
-        const textValue = UDF.getElementsByTagName("TextValue")[0].textContent;
+      // Find the corresponding setting based on the typeObjectId
+      const setting = udfSettingsData!.find(
+        (x) => x.udfSettingId === typeObjectId
+      );
 
-        if (typeObjectId === typeObjectIdFromUDFType) {
-          if (title === "TilosStart") {
-            udfData.startChainage = textValue;
-          } else if (title === "TilosEnd") {
-            udfData.finishChainage = textValue;
-          } else if (title === "TilosStyle") {
-            udfData.style = textValue;
+      if (setting) {
+        if (
+          setting.pcfField === "startDate" ||
+          setting.pcfField === "finishDate"
+        ) {
+          // Handle date values
+          const date = moment.utc(textValue, "DD/MM/YYYY", true);
+          if (date.isValid()) {
+            date.add(1, "day");
+            dataObject[setting.pcfField] = date.toISOString();
+          } else {
+            // Handle invalid date format
           }
+        } else if (
+          setting.pcfField === "startChainage" ||
+          setting.pcfField === "finishChainage"
+        ) {
+          // Handle numeric values
+          dataObject[setting.pcfField] = parseFloat(textValue);
+        } else {
+          // Handle other fields
+          dataObject[setting.pcfField] = textValue;
         }
       }
     }
 
-    return udfData;
+    return dataObject;
   }
 
   //! this is case of MS
-  const handleMsProjectXMLFile = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    event.preventDefault();
-    event.stopPropagation();
-    const fileInput = event.target as HTMLInputElement;
-
-    if (!fileInput || !fileInput.files) {
-      // Handle the case where event.target is null or files are not available
-      return;
-    }
-
-    const file = fileInput.files[0];
-
-    if (!file) {
-      // No file selected, do nothing
-      return;
-    }
-
+  const handleMsProjectXMLFile = async (file: File) => {
     const fileName = file.name;
     const fileExtension = fileName.split(".").pop()?.toLowerCase();
 
@@ -408,15 +488,17 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     if (file) {
       const reader = new FileReader();
 
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         const xmlData = e.target?.result as string;
 
         if (xmlData) {
-          const graphData = handleMSProjectXMLData(xmlData);
+          const parsedData = await handleMSProjectXMLData(xmlData);
+          setSettingParsedModal(true);
 
+          setParsedData(parsedData);
           // Set the graph data in your application state or dispatch it
-          dispatch(addGraphDataList({ graphData }));
-          formik.setFieldValue("graphData", graphData);
+          // dispatch(addGraphDataList({ graphData }));
+          // formik.setFieldValue("graphData", graphData);
         }
       };
 
@@ -424,64 +506,65 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     }
   };
 
-  const handleMSProjectXMLData = (xmlData: string) => {
-    // Parse the XML data and extract the required information
-    // Create the graph data based on the parsed XML data
-    // Return the graph data
-    setLoading(true);
-    const graphData = parseMSProjectXML(xmlData);
-    setLoading(false);
-    return graphData;
+  const handleMSProjectXMLData = async (xmlData: string) => {
+    return new Promise((resolve, reject) => {
+      // Parse the XML data and extract the required information
+      // Create the graph data based on the parsed XML data
+      // Resolve the promise with the xmlDoc
+      try {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlData, "text/xml");
+        console.log(
+          "🚀 ~ file: ImportFileForm.tsx:517 ~ returnnewPromise ~ xmlDoc:",
+          xmlDoc
+        );
+
+        const UDFTypes =
+          xmlDoc.getElementsByTagName("ExtendedAttributes")[0].children;
+        const udfArray = [];
+        for (let j = 0; j < UDFTypes.length; j++) {
+          const UDFType = UDFTypes[j];
+          const udfId = UDFType.getElementsByTagName("FieldID")[0].textContent;
+          const alias = UDFType.getElementsByTagName("Alias")[0].textContent;
+          const fieldName =
+            UDFType.getElementsByTagName("FieldName")[0].textContent;
+          const userDefiendSetting = {
+            alias,
+            fieldName,
+            udfId,
+          };
+          udfArray.push(userDefiendSetting);
+        }
+        setUserDefinedSettings(udfArray);
+        resolve(xmlDoc);
+      } catch (error) {
+        reject(error);
+        console.error("error ", error);
+      }
+    });
   };
 
-  const parseMSProjectXML = (xmlData: string) => {
+  const parseMSProjectXML = (xmlDoc: Document) => {
     const graphData: any[] = [];
-
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlData, "text/xml");
-    console.log(
-      "🚀 ~ file: ImportFileForm.tsx:431 ~ parseMSProjectXML ~ xmlDoc:",
-      xmlDoc
-    );
-
+    setLoading(true);
     // Get the <Project> element (assuming it's the root element)
     const project = xmlDoc.getElementsByTagName("Project")[0];
-    console.log(
-      "🚀 ~ file: ImportFileForm.tsx:434 ~ parseMSProjectXML ~ project:",
-      project
-    );
 
     if (project) {
       const activities = xmlDoc.getElementsByTagName("Tasks")[0].children;
-      console.log(
-        "🚀 ~ file: ImportFileForm.tsx:445 ~ parseMSProjectXML ~ activities:",
-        activities
-      );
 
       for (let i = 0; i < activities.length; i++) {
         const activity = activities[i];
-        console.log(
-          "🚀 ~ file: ImportFileForm.tsx:445 ~ parseMSProjectXML ~ activities:",
-          activity
-        );
+
         const activityId = activity.getElementsByTagName("ID")[0].textContent;
         const activityName =
           activity.getElementsByTagName("Name")[0].textContent;
-
-        console.log(
-          "🚀 ~ file: ImportFileForm.tsx:300 ~ parsePrimaveraXML ~ activityName:",
-          activityName
-        );
         const startDate = activity.getElementsByTagName("Start")[0].textContent;
         const finishDate =
           activity.getElementsByTagName("Finish")[0].textContent;
 
         // Get UDF data based on specific Titles
         const udfData = getExtendPropertyData(xmlDoc, activity);
-        console.log(
-          "🚀 ~ file: ImportFileForm.tsx:470 ~ parseMSProjectXML ~ udfData:",
-          udfData
-        );
 
         graphData.push({
           id: activityId,
@@ -493,19 +576,19 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       }
     }
 
-    return graphData;
+    //setGraphData(graphData);
+    dispatch(addGraphDataList({ graphData: graphData }));
+    formik.setFieldValue("graphData", graphData);
+    setLoading(false);
   };
 
   function getExtendPropertyData(xmlDoc: any, activity: any) {
-    const UDFTypes =
-      xmlDoc.getElementsByTagName("ExtendedAttributes")[0].children;
-    console.log(
-      "🚀 ~ file: ImportFileForm.tsx:486 ~ getExtendPropertyData ~ UDFTypes:",
-      UDFTypes
-    );
+    // const UDFTypes =
+    //   xmlDoc.getElementsByTagName("ExtendedAttributes")[0].children;
+
     const UDFElements = activity.getElementsByTagName("ExtendedAttribute");
 
-    const udfData: any = {};
+    const dataObject: Partial<GraphDataType> = {};
     if (!UDFElements) {
       return {
         startChainage: 0,
@@ -515,40 +598,71 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     }
     for (let i = 0; i < UDFElements.length; i++) {
       const UDF = UDFElements[i];
-      console.log(
-        "🚀 ~ file: ImportFileForm.tsx:511 ~ getExtendPropertyData ~ UDF:",
-        UDF
-      );
+
       const typeObjectId = UDF.getElementsByTagName("FieldID")[0].textContent;
+      const value = UDF.getElementsByTagName("Value")[0].textContent;
 
-      for (let j = 0; j < UDFTypes.length; j++) {
-        const UDFType = UDFTypes[j];
-        const typeObjectIdFromUDFType =
-          UDFType.getElementsByTagName("FieldID")[0].textContent;
-        const title = UDFType.getElementsByTagName("Alias")[0].textContent;
-        const textValue = UDF.getElementsByTagName("Value")[0].textContent;
-        console.log(
-          "🚀 ~ file: ImportFileForm.tsx:523 ~ getExtendPropertyData ~ textValue:",
-          typeObjectIdFromUDFType,
-          title,
-          textValue
-        );
+      const setting = udfSettingsData?.find(
+        (x) => x.udfSettingId === typeObjectId
+      );
+      console.error(
+        "🚀 ~ file: ImportFileForm.tsx:582 ~ getExtendPropertyData ~ UDFType:",
+        setting,
+        udfSettingsData,
+        typeObjectId
+      );
 
-        if (typeObjectId === typeObjectIdFromUDFType) {
-          if (title === "TilosStart") {
-            udfData.startChainage = parseFloat(textValue);
-          } else if (title === "TilosEnd") {
-            udfData.finishChainage = parseFloat(textValue);
-          } else if (title === "TilosStyle") {
-            udfData.style = textValue;
-          }
+      if (!setting) return;
+      if (
+        setting.pcfField === "startDate" ||
+        setting.pcfField === "finishDate"
+      ) {
+        // Handle date values
+        const date = moment.utc(value, "DD/MM/YYYY", true);
+        if (date.isValid()) {
+          date.add(1, "day");
+          dataObject[setting.pcfField] = date.toISOString();
+        } else {
+          // Handle invalid date format
         }
+      } else if (
+        setting.pcfField === "startChainage" ||
+        setting.pcfField === "finishChainage"
+      ) {
+        // Handle numeric values
+        dataObject[setting.pcfField] = parseFloat(value);
+      } else {
+        // Handle other fields
+        dataObject[setting.pcfField] = value;
       }
+      // const typeObjectIdFromUDFType =
+      //   UDFType.getElementsByTagName("FieldID")[0].textContent;
+      // const title = UDFType.getElementsByTagName("Alias")[0].textContent;
+      // const textValue = UDF.getElementsByTagName("Value")[0].textContent;
+      // console.log(
+      //   "🚀 ~ file: ImportFileForm.tsx:523 ~ getExtendPropertyData ~ textValue:",
+      //   typeObjectIdFromUDFType,
+      //   title,
+      //   textValue
+      // );
+
+      // if (typeObjectId === typeObjectIdFromUDFType) {
+      //   if (title === "TilosStart") {
+      //     udfData.startChainage = parseFloat(textValue);
+      //   } else if (title === "TilosEnd") {
+      //     udfData.finishChainage = parseFloat(textValue);
+      //   } else if (title === "TilosStyle") {
+      //     udfData.style = textValue;
+      //   }
+      // }
     }
 
-    return udfData;
+    return dataObject;
   }
-
+  const handleClick = (event: any) => {
+    const { target = {} } = event || {};
+    target.value = "";
+  };
   const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     e.stopPropagation();
@@ -576,30 +690,30 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
     if (file) {
       const reader = new FileReader();
-
-      reader.onload = (e) => {
+      let parsedData;
+      reader.onload = async (e) => {
         let data = e.target?.result;
         if (fileType === ProjectFileType.MicrosoftProject) {
           data = e.target?.result as string;
-          return handleMSProjectXMLData(data);
+          parsedData = await handleMSProjectXMLData(data);
         }
 
         if (fileType === ProjectFileType.PrimaveraXML) {
           data = e.target?.result as string;
-          return handlePrimaveraXMLData(data);
+          parsedData = handlePrimaveraXMLData(data);
         }
 
         data = e.target?.result as ArrayBuffer | null;
         if (data) {
-          const graphData = handleFileData(data);
+          parsedData = handleFileData(data);
           //setGraphData((prev) => graphData);
 
           // dispatch
-          dispatch(addGraphDataList({ graphData: graphData }));
-          formik.setFieldValue("graphData", graphData);
+          // dispatch(addGraphDataList({ graphData: graphData }));
+          // formik.setFieldValue("graphData", graphData);
         }
       };
-
+      setParsedData(parsedData);
       reader.readAsBinaryString(file);
     }
   };
@@ -744,6 +858,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             <input
               onChange={handleFileUpload}
               type="file"
+              onClick={handleClick}
               name="file_upload"
               className="hidden"
               accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -934,7 +1049,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               </button>
             </div>
           }
-          <table className="   w-full  text-sm text-left text-gray-500 dark:text-gray-400">
+          <table
+            key={uniqueId()}
+            className="   w-full  text-sm text-left text-gray-500 dark:text-gray-400"
+          >
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" className="px-6 py-3">
@@ -963,7 +1081,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody key={uniqueId()}>
               {graphSettings.graphData.map((data, index) => (
                 <tr
                   key={data.id + index}
@@ -1028,6 +1146,13 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               handleClose={() => setIsModalOpen(false)}
               minDistance={parseFloat(formik.values.fromDistance)}
               maxDistance={parseFloat(formik.values.toDistance)}
+            />
+          )}
+          {settingParsedModal && (
+            <ParameterSelector
+              onSubmit={submitData}
+              udfSettingString={userDefinedSettings}
+              handleClose={() => setSettingParsedModal(false)}
             />
           )}
         </>

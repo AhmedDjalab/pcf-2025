@@ -150,17 +150,21 @@
       "startChainageLabel": " START  CHINAGE",
       "finishChainageLabel": "END  CHINAGE"
     },
-    "cancelZoomButtonLabel": "Cancel Zoom"
+    "cancelZoomButtonLabel": "Cancel Zoom",
+    "exportAllData": "Export All Data",
+    "exportGraphData": "Export Graph Data"
   },
   "DrwMultiStepForm": {
     "step1": {
       "title": "Planning Header",
       "description": "Enter the title & Logo"
     },
+
     "step2": {
       "title": "Excel File Import",
       "description": "Drag and drop or import your file"
     },
+
     "step3": {
       "title": "Style Definition",
       "description": "Define the style of activities"
@@ -196,5 +200,39 @@
     }
   },
 
-  "projectForm.fileType": "File Type"
+  "projectForm.fileType": "File Type",
+  "header": {
+    "createProject": "Create Project",
+    "projects": "Projects",
+    "employees": "Employees",
+    "pricing": "Pricing",
+    "aboutUs": "About Us",
+    "contact": "Contact:",
+    "logout": "Logout"
+  },
+  "employeeList": {
+    "fullName": "Full Name",
+    "jobTitle": "Job Title",
+    "canRead": "Can Read",
+    "canWrite": "Can Write",
+    "actions": "Actions"
+  },
+  "projectsList": {
+    "title": "Title",
+    "numEmployees": "Number of Employees",
+    "actions": "Actions",
+    "buttons": {
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
+  "graphSettings": {
+    "title": "Graph Settings",
+    "numEmployees": "Number of Employees",
+    "actions": "Actions",
+    "buttons": {
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  }
 }

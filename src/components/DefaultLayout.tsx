@@ -4,16 +4,16 @@ import { DrawGraphForm } from "./DrawGraphForm";
 import Header from "./Header";
 import DrawGraphStep from "./DrawGraphStep";
 
-function DefaultLayout() {
+function DefaultLayout({ children }: any) {
   const token: any = localStorage.getItem("token");
   return (
     <>
       {token ? (
         <>
-          <div className="p-4 " style={{ marginTop: "20px" }}>
+          <div>
             <Header />
             {/* Use the Routes and Route components to define your routes */}
-            <DrawGraphForm />
+            {children}
           </div>
         </>
       ) : (

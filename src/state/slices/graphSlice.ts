@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import texturesData from "../../const/texturesArray";
 import { lineStyles } from "../../const/linesArray";
-import { uniqueId } from "lodash";
 import { uuidv4 } from "@firebase/util";
 import { ProjectFileType } from "src/const/vars";
 
@@ -31,6 +30,12 @@ export interface TaskSlot {
   name: string;
   id: string;
 }
+export interface UdfSetting {
+  pcfSettingName: string;
+  udfSettingName: string;
+  udfSettingId: string;
+  pcfField: keyof GraphDataType;
+}
 
 export interface ProjectSettings {
   title: string;
@@ -59,6 +64,7 @@ export interface GraphCreateType {
   taskSlotsLevelTwo: TaskSlot[];
   loading: boolean;
   rawGraphDataFromFile?: GraphDataType[];
+  userDefindSettings?: UdfSetting[];
 }
 
 const currentYear = new Date().getFullYear();
@@ -87,6 +93,7 @@ const initialState: GraphCreateType = {
   taskSlotsLevelTwo: [],
   loading: false,
   rawGraphDataFromFile: [],
+  userDefindSettings: [],
 };
 
 const GraphSlice = createSlice({
@@ -185,6 +192,13 @@ const GraphSlice = createSlice({
       };
     },
 
+    updateUDFSettings(
+      state,
+      action: PayloadAction<{ udfSettings: UdfSetting[] }>
+    ) {
+      state.userDefindSettings = action.payload.udfSettings;
+    },
+
     addGraphDataList(
       state,
       action: PayloadAction<{ graphData: GraphDataType[] }>
@@ -233,8 +247,10 @@ const GraphSlice = createSlice({
       const graphDataIndex = state.settings.graphData.findIndex(
         (item) => item.id === activity.id
       );
+
       if (graphDataIndex !== -1) {
         state.settings.graphData[graphDataIndex] = activity;
+        state.rawGraphDataFromFile![graphDataIndex] = activity;
         return state;
       }
 
@@ -331,6 +347,7 @@ export const {
   addActivity,
   updateActivity,
   removeActivity,
+  updateUDFSettings,
   addGraphDataList,
   applyFilter,
 } = GraphSlice.actions;

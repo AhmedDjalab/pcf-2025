@@ -26,6 +26,7 @@ import {
 import { useTranslation } from "react-i18next";
 import ActivityTableForm from "./ActivityTableForm";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
+import DefaultLayout from "./DefaultLayout";
 
 export interface ActivityData {
   id: string;
@@ -1099,77 +1100,80 @@ function DrawGraphStep() {
   };
 
   return (
-    <div className="flex flex-col">
-      <div>
-        <button
-          // disabled
-          className="focus:outline-none mt-5  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
-          onClick={() => saveAsPdfOrImage("pdf")}
-        >
-          <span className="mr-2">
-            <LockClosedIcon className="w-4 h-4" /> {/* Lock icon */}
-          </span>
-          PDF
-        </button>
-        {/* <button
+    <DefaultLayout>
+      <div className="flex flex-col">
+        <div>
+          <button
+            // disabled
+            className="focus:outline-none mt-5  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
+            onClick={() => saveAsPdfOrImage("pdf")}
+          >
+            <span className="mr-2">
+              <LockClosedIcon className="w-4 h-4" /> {/* Lock icon */}
+            </span>
+            PDF
+          </button>
+          {/* <button
           className="focus:outline-none mt-5 text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
           onClick={() => saveAsPdfOrImage("image")}
         >
           Save as image
         </button> */}
-      </div>
-      {zoomLevel > 1 && (
-        <button
-          className="focus:outline-none mt-2 text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
-          onClick={resetZoom}
-        >
-          {t("drawGraph.cancelZoomButtonLabel")}
-        </button>
-      )}
-      <div className="flex flex-col" id="graph-container">
-        <div className="graph-container">
-          <div className="flex items-center border m-4">
-            <img
-              src={logo}
-              className="h-20 w-40 mr-4"
-              alt={graphSettings.projectSettings.title}
-            />
-            <div className="flex-grow text-center">
-              <p className="text-2xl">{graphSettings.projectSettings.title}</p>
+        </div>
+        {zoomLevel > 1 && (
+          <button
+            className="focus:outline-none mt-2 text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
+            onClick={resetZoom}
+          >
+            {t("drawGraph.cancelZoomButtonLabel")}
+          </button>
+        )}
+        <div className="flex flex-col" id="graph-container">
+          <div className="graph-container">
+            <div className="flex items-center border m-4">
+              <img
+                src={logo}
+                className="h-20 w-40 mr-4"
+                alt={graphSettings.projectSettings.title}
+              />
+              <div className="flex-grow text-center">
+                <p className="text-2xl">
+                  {graphSettings.projectSettings.title}
+                </p>
+              </div>
+              <img
+                src={graphSettings.projectSettings.logoImg}
+                className="h-20 w-40 object-fill "
+                alt={graphSettings.projectSettings.title}
+              />
             </div>
-            <img
-              src={graphSettings.projectSettings.logoImg}
-              className="h-20 w-40 object-fill "
-              alt={graphSettings.projectSettings.title}
-            />
-          </div>
 
-          <div id="tooltip" className="absolute  text-white"></div>
-          <div id="wrapper">
-            <svg
-              ref={containerSVGRef}
-              style={{
-                minHeight: containerHeight,
-                minWidth: containerWidth,
-              }}
-            >
-              <defs>
-                {/* {patterns.map((pattern) => {
+            <div id="tooltip" className="absolute  text-white"></div>
+            <div id="wrapper">
+              <svg
+                ref={containerSVGRef}
+                style={{
+                  minHeight: containerHeight,
+                  minWidth: containerWidth,
+                }}
+              >
+                <defs>
+                  {/* {patterns.map((pattern) => {
                 return pattern.content(
                   pattern.width,
                   pattern.height,
                   pattern.id
                 );
               })} */}
-              </defs>
-              <g ref={svgRef}></g>
-            </svg>
+                </defs>
+                <g ref={svgRef}></g>
+              </svg>
+            </div>
           </div>
-        </div>
 
-        <div className="my-4 flex justify-center gap-2 ">
-          {/* Add the "Back" button */}
-          {/* <button
+          <div className="my-4 flex justify-center gap-2 ">
+            {/* Add the "Back" button */}
+            {/* <button
           type="button"
           disabled={!selectedShapeData}
           className="px-10 py-2 bg-red-400 text-white rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
@@ -1177,108 +1181,111 @@ function DrawGraphStep() {
         >
           {t("importFileForm.delete")}
         </button> */}
-          <button
-            type="button"
-            disabled={!selectedShapeData}
-            className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
-            onClick={handleEditClick}
-          >
-            {t("importFileForm.edit")}
-          </button>
-          <button
-            type="button"
-            className="px-10 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
-            onClick={handleAddClick}
-          >
-            {t("importFileForm.add")}
-          </button>
-          <button
-            type="button"
-            className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
-            onClick={handleDeleteClick}
-            disabled={!selectedShapeData}
-          >
-            {t("importFileForm.delete")}
-          </button>
-          <button
-            type="button"
-            className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
-            onClick={handleExportAllClick}
-          >
-            {"Export All Data"}
-          </button>
+            <button
+              type="button"
+              disabled={!selectedShapeData}
+              className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
+              onClick={handleEditClick}
+            >
+              {t("importFileForm.edit")}
+            </button>
+            <button
+              type="button"
+              className="px-10 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
+              onClick={handleAddClick}
+            >
+              {t("importFileForm.add")}
+            </button>
+            <button
+              type="button"
+              className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+              onClick={handleDeleteClick}
+              disabled={!selectedShapeData}
+            >
+              {t("importFileForm.delete")}
+            </button>
+            <button
+              type="button"
+              className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
+              onClick={handleExportAllClick}
+            >
+              {/* {"Export All Data"} */}
+              {t("drawGraph.exportAllData")}
+            </button>
 
-          <button
-            type="button"
-            className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
-            onClick={handleExportGraphClick}
-          >
-            {"Export Graph Data"}
-          </button>
-        </div>
+            <button
+              type="button"
+              className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
+              onClick={handleExportGraphClick}
+            >
+              {/* {"Export Graph Data"} */}
+              {t("drawGraph.exportGraphData")}
+            </button>
+          </div>
 
-        <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div className="border border-gray-700 p-2 bg-slate-500">
-              {t("drawGraph.activityDetails.activityNameLabel")}
-            </div>
-            <div className="border border-gray-700 p-2">
-              {selectedShapeData?.activityName}
-            </div>
+          <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="border border-gray-700 p-2 bg-slate-500">
+                {t("drawGraph.activityDetails.activityNameLabel")}
+              </div>
+              <div className="border border-gray-700 p-2">
+                {selectedShapeData?.activityName}
+              </div>
 
-            <div className="border border-gray-700 p-2 bg-slate-500">
-              {t("drawGraph.activityDetails.styleLabel")}
-            </div>
-            <div className="border border-gray-700 p-2">
-              {selectedShapeData?.style}
-            </div>
+              <div className="border border-gray-700 p-2 bg-slate-500">
+                {t("drawGraph.activityDetails.styleLabel")}
+              </div>
+              <div className="border border-gray-700 p-2">
+                {selectedShapeData?.style}
+              </div>
 
-            <div className="border border-gray-700 p-2 bg-slate-500">
-              {t("drawGraph.activityDetails.startDateLabel")}
-            </div>
-            <div className="border border-gray-700 p-2">
-              {moment(selectedShapeData?.startDate).format("DD/MM/YYYY")}
-            </div>
+              <div className="border border-gray-700 p-2 bg-slate-500">
+                {t("drawGraph.activityDetails.startDateLabel")}
+              </div>
+              <div className="border border-gray-700 p-2">
+                {moment(selectedShapeData?.startDate).format("DD/MM/YYYY")}
+              </div>
 
-            <div className="border border-gray-700 p-2 bg-slate-500">
-              {t("drawGraph.activityDetails.finishDateLabel")}
-            </div>
-            <div className="border border-gray-700 p-2">
-              {moment(selectedShapeData?.finishDate).format("DD/MM/YYYY")}
-            </div>
+              <div className="border border-gray-700 p-2 bg-slate-500">
+                {t("drawGraph.activityDetails.finishDateLabel")}
+              </div>
+              <div className="border border-gray-700 p-2">
+                {moment(selectedShapeData?.finishDate).format("DD/MM/YYYY")}
+              </div>
 
-            <div className="border border-gray-700 p-2 bg-slate-500">
-              {t("drawGraph.activityDetails.startChainageLabel")}
-            </div>
-            <div className="border border-gray-700 p-2">
-              {selectedShapeData?.startChainage}
-            </div>
+              <div className="border border-gray-700 p-2 bg-slate-500">
+                {t("drawGraph.activityDetails.startChainageLabel")}
+              </div>
+              <div className="border border-gray-700 p-2">
+                {selectedShapeData?.startChainage}
+              </div>
 
-            <div className="border border-gray-700 p-2 bg-slate-500">
-              {t("drawGraph.activityDetails.finishChainageLabel")}
+              <div className="border border-gray-700 p-2 bg-slate-500">
+                {t("drawGraph.activityDetails.finishChainageLabel")}
+              </div>
+              <div className="border border-gray-700 p-2">
+                {selectedShapeData?.finishChainage}
+              </div>
             </div>
-            <div className="border border-gray-700 p-2">
-              {selectedShapeData?.finishChainage}
+          </div>
+          <div className="flex w-full justify-center items-center mb-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full px-5">
+              {createLegend()}
             </div>
           </div>
         </div>
-        <div className="flex w-full justify-center items-center mb-2">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full px-5">
-            {createLegend()}
-          </div>
-        </div>
+
+        {isModalOpen && (
+          <ActivityTableForm
+            initialValues={selectedShapeData || undefined}
+            onSubmit={closeModal}
+            handleClose={closeModal}
+            minDistance={parseFloat(fromDistance)}
+            maxDistance={parseFloat(toDistance)}
+          />
+        )}
       </div>
-
-      {isModalOpen && (
-        <ActivityTableForm
-          initialValues={selectedShapeData || undefined}
-          onSubmit={closeModal}
-          handleClose={closeModal}
-          minDistance={parseFloat(fromDistance)}
-          maxDistance={parseFloat(toDistance)}
-        />
-      )}
-    </div>
+    </DefaultLayout>
   );
 
   function DrawXScale(distanceAxisWidth: number) {

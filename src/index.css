@@ -1,8 +1,11 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
+@layer components {
+  
+}
 ::-webkit-scrollbar {
     width: 4px;
     height: 4px;
@@ -21,3 +24,7 @@
   border-radius:2px;
   
   }
+  body {
+ 
+    font-size: 16px;
+}

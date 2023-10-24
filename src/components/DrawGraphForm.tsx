@@ -14,6 +14,7 @@ import {
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import TaskSlotsLevelTwoList from "./TaskSlotStepLevelTwo";
+import DefaultLayout from "./DefaultLayout";
 
 export interface MultiStepFormProps {
   currentStep: number;
@@ -52,45 +53,47 @@ export const DrawGraphForm = ({}) => {
     },
   ];
   return (
-    <div className="rounded-sm  p-10 bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-      <Stepper steps={steps} currentStep={currentStep} />
+    <DefaultLayout>
+      <div className="rounded-sm  p-10 bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+        <Stepper steps={steps} currentStep={currentStep} />
 
-      {currentStep === 1 && (
-        <ProjectSettingForm
-          currentStep={currentStep}
-          stepsLength={steps.length}
-          setCurrentStep={setCurrentStep}
-        />
-      )}
-      {currentStep === 2 && (
-        <ImportFileForm
-          currentStep={currentStep}
-          stepsLength={steps.length}
-          setCurrentStep={setCurrentStep}
-        />
-      )}
-      {currentStep === 3 && (
-        <ShapesForm
-          currentStep={currentStep}
-          stepsLength={steps.length}
-          setCurrentStep={setCurrentStep}
-        />
-      )}
-      {currentStep === 4 && (
-        <TaskSlotsStep
-          currentStep={currentStep}
-          stepsLength={steps.length}
-          setCurrentStep={setCurrentStep}
-        />
-      )}
-      {currentStep === 5 && (
-        <TaskSlotsLevelTwoList
-          currentStep={currentStep}
-          stepsLength={steps.length}
-          setCurrentStep={setCurrentStep}
-        />
-      )}
-      {/* {currentStep === 4 && <DrawGraphStep />} */}
-    </div>
+        {currentStep === 1 && (
+          <ProjectSettingForm
+            currentStep={currentStep}
+            stepsLength={steps.length}
+            setCurrentStep={setCurrentStep}
+          />
+        )}
+        {currentStep === 2 && (
+          <ImportFileForm
+            currentStep={currentStep}
+            stepsLength={steps.length}
+            setCurrentStep={setCurrentStep}
+          />
+        )}
+        {currentStep === 3 && (
+          <ShapesForm
+            currentStep={currentStep}
+            stepsLength={steps.length}
+            setCurrentStep={setCurrentStep}
+          />
+        )}
+        {currentStep === 4 && (
+          <TaskSlotsStep
+            currentStep={currentStep}
+            stepsLength={steps.length}
+            setCurrentStep={setCurrentStep}
+          />
+        )}
+        {currentStep === 5 && (
+          <TaskSlotsLevelTwoList
+            currentStep={currentStep}
+            stepsLength={steps.length}
+            setCurrentStep={setCurrentStep}
+          />
+        )}
+        {/* {currentStep === 4 && <DrawGraphStep />} */}
+      </div>
+    </DefaultLayout>
   );
 };

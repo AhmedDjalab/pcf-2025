@@ -149,7 +149,9 @@
       "startChainageLabel": " INICIO PK",
       "finishChainageLabel": "FIN PK"
     },
-    "cancelZoomButtonLabel": "Cancelar zoom"
+    "cancelZoomButtonLabel": "Cancelar zoom",
+    "exportAllData": "Exportar todos los datos",
+    "exportGraphData": "Exportar datos del gráfico"
   },
   "DrwMultiStepForm": {
     "step1": {
@@ -192,6 +194,41 @@
       "endPk": "Se requiere el Final de PK",
       "activityStyle": "Se requiere el Estilo de la Actividad",
       "endDateMin": "La fecha de finalización debe ser mayor o igual a la fecha de inicio"
+    }
+  },
+  "projectForm.fileType": "Tipo de Archivo",
+  "header": {
+    "createProject": "Crear Proyecto",
+    "projects": "Proyectos",
+    "employees": "Empleados",
+    "pricing": "Precios",
+    "aboutUs": "Acerca de Nosotros",
+    "contact": "Contacto:",
+    "logout": "Cerrar Sesión"
+  },
+  "employeeList": {
+    "fullName": "Nombre Completo",
+    "jobTitle": "Cargo",
+    "canRead": "Puede Leer",
+    "canWrite": "Puede Escribir",
+    "actions": "Acciones"
+  },
+  "projectsList": {
+    "title": "Título",
+    "numEmployees": "Número de Empleados",
+    "actions": "Acciones",
+    "buttons": {
+      "edit": "Editar",
+      "delete": "Eliminar"
+    }
+  },
+  "graphSettings": {
+    "title": "Configuración de gráficos",
+    "numEmployees": "Number of Employees",
+    "actions": "Actions",
+    "buttons": {
+      "edit": "Edit",
+      "delete": "Delete"
     }
   }
 }

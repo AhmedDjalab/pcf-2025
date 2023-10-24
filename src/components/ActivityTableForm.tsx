@@ -71,7 +71,6 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
     const selectedShapeId =
       shapesData.find((x) => x.name === values.style)?.id ?? "0";
 
-    console.log(values);
     if (!!initialValues) {
       dispatch(
         updateActivity({
