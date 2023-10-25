@@ -172,27 +172,27 @@
     "step5": {
       "title": "Définition des tronçons de niveau 2",
       "description": "Définir le début et la fin de chaque tronçon"
-    },
-    "activityForm": {
-      "addActivity": "Ajouter une activité",
-      "editActivity": "Modifier l'activité",
-      "activityName": "Nom de l'activité",
-      "startDate": "Date de début",
-      "endDate": "Date de fin",
-      "startPk": "Début PK",
-      "endPk": "Fin PK",
-      "activityStyle": "Style de l'activité",
-      "save": "Enregistrer",
-      "cancel": "Annuler",
-      "errors": {
-        "activityName": "Le nom de l'activité est requis",
-        "startDate": "La date de début est requise",
-        "endDate": "La date de fin est requise",
-        "startPk": "Le début PK est requis",
-        "endPk": "La fin PK est requise",
-        "activityStyle": "Le style de l'activité est requis",
-        "endDateMin": "La date de fin doit être supérieure ou égale à la date de début"
-      }
+    }
+  },
+  "activityForm": {
+    "addActivity": "Ajouter une activité",
+    "editActivity": "Modifier l'activité",
+    "activityName": "Nom de l'activité",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "startPk": "Début PK",
+    "endPk": "Fin PK",
+    "activityStyle": "Style de l'activité",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "errors": {
+      "activityName": "Le nom de l'activité est requis",
+      "startDate": "La date de début est requise",
+      "endDate": "La date de fin est requise",
+      "startPk": "Le début PK est requis",
+      "endPk": "La fin PK est requise",
+      "activityStyle": "Le style de l'activité est requis",
+      "endDateMin": "La date de fin doit être supérieure ou égale à la date de début"
     }
   },
   "projectForm.fileType": "Type de Fichier",
