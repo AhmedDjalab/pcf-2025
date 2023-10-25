@@ -113,9 +113,10 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
           let lineType = lineStyles.find(
             (x) => x.id === row.values["lineType"]
           )!;
-
+          console.log("this is idata ", row);
           return (
             <LineStylePicker
+              rowId={row["id"]}
               color={row.original["color"]}
               lineStyles={lineStyles}
               onSelectLineStyle={handleTypeChange}

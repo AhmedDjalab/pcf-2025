@@ -120,7 +120,7 @@ export type MarkerConfig = {
     markerUnits: string;
     d?: string;
   };
-  content: (id?: string) => JSX.Element;
+  content: (color?: string, id?: string) => JSX.Element;
 };
 
 export type MarkersConfig = Record<string, MarkerConfig>;
@@ -138,11 +138,12 @@ export const markersConfig: MarkersConfig = {
       markerUnits: "userSpaceOnUse",
       d: "M 0 0 L 10 5 L 0 10 z",
     },
-    content: (id?: string) => (
+    content: (color?: string, id?: string) => (
       <marker
         key={id}
         id={id || "arrow-end-marker"}
         {...markersConfig.arrowEnd.config}
+        fill={color}
       >
         <path d="M 0 0 L 10 5 L 0 10 z" />
       </marker>
@@ -161,11 +162,12 @@ export const markersConfig: MarkersConfig = {
       markerUnits: "userSpaceOnUse",
       d: "M 0 10 L 10 5 L 0 0 z",
     },
-    content: (id?: string) => (
+    content: (color?: string, id?: string) => (
       <marker
         key={id}
         id={id || "arrow-start-marker"}
         {...markersConfig.arrowStart.config}
+        fill={color}
       >
         <path d="M 0 10 L 10 5 L 0 0 z" />
       </marker>

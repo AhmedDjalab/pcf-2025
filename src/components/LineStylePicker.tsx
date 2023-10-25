@@ -6,6 +6,7 @@ import { default as TypeList } from "./LineStyle";
 import { markersConfig } from "../const/markerAndPatternsConfig";
 
 export interface ILineStylePickerProps {
+  rowId: string;
   color: string;
   onSelectLineStyle: any;
   selectedLineStyle: LineStyle;
@@ -13,6 +14,7 @@ export interface ILineStylePickerProps {
 }
 
 const LineStylePicker = ({
+  rowId,
   color,
   onSelectLineStyle,
   selectedLineStyle,
@@ -22,6 +24,10 @@ const LineStylePicker = ({
   const [isOpen, setIsOpen] = useState(false);
 
   const close = useCallback(() => setIsOpen(false), []);
+  const sanitizeClassName = (key: string): string => {
+    // Replace any characters that are not letters, numbers, hyphens, or underscores with hyphens
+    return key.replace(/[^a-zA-Z0-9-_]/g, "-");
+  };
 
   const handleLineStyleClick = (lineStyle: LineStyle) => {
     onSelectLineStyle(lineStyle.id);
@@ -42,7 +48,11 @@ const LineStylePicker = ({
             {Object.keys(markersConfig).map((key: any) => {
               // @ts-ignore
               const marker = markersConfig[key];
-              return marker.content();
+
+              return marker.content(
+                color,
+                marker.id + sanitizeClassName(rowId)
+              );
             })}
           </defs>
 
@@ -68,12 +78,16 @@ const LineStylePicker = ({
             }
             markerEnd={
               selectedLineStyle.markerEndId
-                ? `url(#${selectedLineStyle.markerEndId})`
+                ? `url(#${
+                    selectedLineStyle.markerEndId + sanitizeClassName(rowId)
+                  })`
                 : undefined
             }
             markerStart={
               selectedLineStyle.markerStartId
-                ? `url(#${selectedLineStyle.markerStartId})`
+                ? `url(#${
+                    selectedLineStyle.markerStartId + sanitizeClassName(rowId)
+                  })`
                 : undefined
             }
           />
@@ -113,12 +127,16 @@ const LineStylePicker = ({
                     }
                     markerEnd={
                       lineStyle.markerEndId
-                        ? `url(#${lineStyle.markerEndId})`
+                        ? `url(#${
+                            lineStyle.markerEndId + sanitizeClassName(rowId)
+                          })`
                         : undefined
                     }
                     markerStart={
                       lineStyle.markerStartId
-                        ? `url(#${lineStyle.markerStartId})`
+                        ? `url(#${
+                            lineStyle.markerStartId + sanitizeClassName(rowId)
+                          })`
                         : undefined
                     }
                     //stroke={`url(#${lineStyle.patternUrl})`}

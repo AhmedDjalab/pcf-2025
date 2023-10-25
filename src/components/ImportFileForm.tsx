@@ -338,6 +338,11 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
     if (project) {
       const activities = xmlDoc.getElementsByTagName("Tasks")[0].children;
+      const sumary = xmlDoc.getElementsByTagName("Summary")[0];
+
+      if (sumary) {
+        return;
+      }
 
       for (let i = 0; i < activities.length; i++) {
         const activity = activities[i];
@@ -655,11 +660,23 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
         const UDFTypes =
           xmlDoc.getElementsByTagName("ExtendedAttributes")[0].children;
+        console.warn(
+          "🚀 ~ file: ImportFileForm.tsx:662 ~ returnnewPromise ~ UDFTypes:",
+          UDFTypes
+        );
+
         const udfArray: any[] = [];
         for (let j = 0; j < UDFTypes.length; j++) {
           const UDFType = UDFTypes[j];
           const udfId = UDFType.getElementsByTagName("FieldID")[0].textContent;
-          const alias = UDFType.getElementsByTagName("Alias")[0].textContent;
+
+          const aliasElement = UDFType.getElementsByTagName("Alias")[0];
+          const fieldNameElement = UDFType.getElementsByTagName("FieldName")[0];
+          const alias = aliasElement
+            ? aliasElement.textContent
+            : fieldNameElement
+            ? fieldNameElement.textContent
+            : "Alias not found";
           const fieldName =
             UDFType.getElementsByTagName("FieldName")[0].textContent;
           const userDefiendSetting = {
