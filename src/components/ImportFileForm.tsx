@@ -290,7 +290,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     userSelectionData: UdfSetting[]
   ) => {
     const graphData: any[] = [];
-    setLoading(true);
+
     // Get the <Project> element (assuming it's the root element)
     const project = xmlDoc.getElementsByTagName("Project")[0];
 
@@ -324,7 +324,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     // setGraphData(graphData);
     dispatch(addGraphDataList({ graphData: graphData }));
     formik.setFieldValue("graphData", graphData);
-    setLoading(false);
   };
 
   const parseMSProjectXML = (
@@ -332,7 +331,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     userSelectionData: UdfSetting[]
   ) => {
     const graphData: any[] = [];
-    setLoading(true);
+
     // Get the <Project> element (assuming it's the root element)
     const project = xmlDoc.getElementsByTagName("Project")[0];
 
@@ -374,14 +373,12 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     //setGraphData(graphData);
     dispatch(addGraphDataList({ graphData: graphData }));
     formik.setFieldValue("graphData", graphData);
-    setLoading(false);
   };
 
   const parseXLsxContent = (
     parsedData: any[][],
     userSelectionData: UdfSetting[]
   ) => {
-    setLoading(true);
     const graphData = parsedData
       .slice(1)
       .filter((row) => row[0] !== null && row[0] !== undefined)
@@ -427,7 +424,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     //setGraphData(graphData);
     dispatch(addGraphDataList({ graphData: graphData }));
     formik.setFieldValue("graphData", graphData);
-    setLoading(false);
   };
 
   const submitData = (userSelectionData: UdfSetting[]) => {
