@@ -1,3 +1,5 @@
+import { uniqueId } from "lodash";
+import { MsProjectOption } from "src/components/ParmeterSelector";
 import { GraphDataType } from "src/state/slices/graphSlice";
 
 export const BackToTopHeightSize = 900;
@@ -68,5 +70,74 @@ export const graphStringsSettings: GraphStringsSetting[] = [
     field: "style",
   },
 ];
+
+export const getOptions = (
+  udfSettingString: any[] | undefined,
+  filetype: ProjectFileType
+) => {
+  if (filetype === ProjectFileType.XLSX) {
+    return (udfSettingString as string[]).map((str, index) => ({
+      name: str,
+      id: (index + 1).toString(),
+    }));
+  }
+  if (filetype === ProjectFileType.MicrosoftProject) {
+    let udfs = (udfSettingString as MsProjectOption[]).map((ud, index) => ({
+      name: ud.alias,
+      id: ud.udfId,
+    }));
+
+    return [
+      ...udfs,
+      {
+        name: "ID",
+        id: uniqueId(),
+      },
+      {
+        name: "Name",
+        id: uniqueId(),
+      },
+      {
+        name: "Start",
+        id: uniqueId(),
+      },
+      {
+        name: "Finish",
+        id: uniqueId(),
+      },
+    ];
+  }
+  if (filetype === ProjectFileType.PrimaveraXML) {
+    console.error(
+      "🚀 ~ file: ParmeterSelector.tsx:172 ~ getOptions ~ filetype:",
+      udfSettingString
+    );
+
+    let udfs = (udfSettingString as MsProjectOption[]).map((ud, index) => ({
+      name: ud.alias,
+      id: ud.udfId,
+    }));
+
+    return [
+      ...udfs,
+      {
+        name: "ObjectId",
+        id: uniqueId(),
+      },
+      {
+        name: "Name",
+        id: uniqueId(),
+      },
+      {
+        name: "StartDate",
+        id: uniqueId(),
+      },
+      {
+        name: "FinishDate",
+        id: uniqueId(),
+      },
+    ];
+  }
+};
 
 export { ProjectFileType, ProjectFiletypeOptions };

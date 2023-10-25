@@ -106,6 +106,7 @@ const GraphSlice = createSlice({
     ) {
       const projectSettings = action.payload.projectSettings;
       state.projectSettings = { ...projectSettings };
+      state.userDefindSettings = [];
     },
     updateGraphSettingsValue(
       state,
@@ -196,7 +197,7 @@ const GraphSlice = createSlice({
       state,
       action: PayloadAction<{ udfSettings: UdfSetting[] }>
     ) {
-      state.userDefindSettings = action.payload.udfSettings;
+      state.userDefindSettings = [...action.payload.udfSettings];
     },
 
     addGraphDataList(

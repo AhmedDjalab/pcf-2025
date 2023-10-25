@@ -1,9 +1,10 @@
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef, useCallback, useEffect, useState } from "react";
 import { MultiStepFormProps } from "./DrawGraphForm";
 
 import * as XLSX from "xlsx";
 import {
   GraphDataType,
+  UdfSetting,
   addGraphDataList,
   applyFilter,
   removeActivity,
@@ -59,6 +60,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const udfSettingsData = useSelector(
     (state: RootState) => state.userDefindSettings
   );
+  console.error("MyComponent is rendering", udfSettingsData); // Add this line
 
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -146,83 +148,248 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     return true;
   }
 
-  const submitData = () => {
-    setSettingParsedModal(false);
-    if (parsedData && fileType === ProjectFileType.XLSX) {
-      parseXLsxContent(parsedData);
-      return;
+  //?  --------****--- parsers -------***---------------------
+
+  //? get Extra parser for attributes names
+  const getExtendPropertyData = (
+    xmlDoc: any,
+    activity: any,
+    userSelectionData: UdfSetting[]
+  ) => {
+    // const UDFTypes =
+    //   xmlDoc.getElementsByTagName("ExtendedAttributes")[0].children;
+
+    const UDFElements = activity.getElementsByTagName("ExtendedAttribute");
+
+    const dataObject: Partial<GraphDataType> = {};
+    if (!UDFElements) {
+      return {
+        startChainage: 0,
+        finishChainage: 0,
+        style: activity.getElementsByTagName("Name")[0].textContent,
+      };
     }
-    if (parsedData && fileType === ProjectFileType.MicrosoftProject) {
-      parseMSProjectXML(parsedData);
-      return;
+    for (let i = 0; i < UDFElements.length; i++) {
+      const UDF = UDFElements[i];
+
+      const typeObjectId = UDF.getElementsByTagName("FieldID")[0].textContent;
+      const value = UDF.getElementsByTagName("Value")[0].textContent;
+
+      const setting = userSelectionData?.find(
+        (x) => x.udfSettingId === typeObjectId.trim() // Remove leading/trailing whitespaces
+      );
+
+      // console.error(
+      //   "🚀 ~ file: ImportFileForm.tsx:582 ~ getExtendPropertyData ~ UDFType:",
+      //   setting,
+      //   udfSettingsData,
+      //   typeObjectId,
+      //   UDF
+      // );
+
+      if (!setting) return;
+      if (
+        setting.pcfField === "startDate" ||
+        setting.pcfField === "finishDate"
+      ) {
+        // Handle date values
+        const date = moment.utc(value, "DD/MM/YYYY", true);
+        if (date.isValid()) {
+          date.add(1, "day");
+          dataObject[setting.pcfField] = date.toISOString();
+        } else {
+          // Handle invalid date format
+        }
+      } else if (
+        setting.pcfField === "startChainage" ||
+        setting.pcfField === "finishChainage"
+      ) {
+        // Handle numeric values
+        dataObject[setting.pcfField] = parseFloat(value);
+      } else {
+        // Handle other fields
+        dataObject[setting.pcfField] = value;
+      }
+      // const typeObjectIdFromUDFType =
+      //   UDFType.getElementsByTagName("FieldID")[0].textContent;
+      // const title = UDFType.getElementsByTagName("Alias")[0].textContent;
+      // const textValue = UDF.getElementsByTagName("Value")[0].textContent;
+      // console.log(
+      //   "🚀 ~ file: ImportFileForm.tsx:523 ~ getExtendPropertyData ~ textValue:",
+      //   typeObjectIdFromUDFType,
+      //   title,
+      //   textValue
+      // );
+
+      // if (typeObjectId === typeObjectIdFromUDFType) {
+      //   if (title === "TilosStart") {
+      //     udfData.startChainage = parseFloat(textValue);
+      //   } else if (title === "TilosEnd") {
+      //     udfData.finishChainage = parseFloat(textValue);
+      //   } else if (title === "TilosStyle") {
+      //     udfData.style = textValue;
+      //   }
+      // }
     }
-    if (parsedData && fileType === ProjectFileType.PrimaveraXML) {
-      parsePrimaveraXML(parsedData);
-      return;
-    }
+
+    return dataObject;
   };
 
-  function adjustTimeZone(dateString: string) {
-    const [day, month, year] = dateString.split("/");
-    const parsedDate = new Date(`${year}-${month}-${day}T00:00:00Z`);
-    return parsedDate.toISOString().split("T")[0]; // Output as YYYY-MM-DD
-  }
+  const getUDFData = (
+    xmlDoc: any,
+    activity: any,
+    userSelectionData: UdfSetting[]
+  ) => {
+    const UDFElements = activity.getElementsByTagName("UDF");
 
-  const handleFileData = (data: ArrayBuffer | null) => {
-    if (!data) {
-      return [];
+    const dataObject: Partial<GraphDataType> = {};
+
+    for (let i = 0; i < UDFElements.length; i++) {
+      const UDF = UDFElements[i];
+
+      const typeObjectId =
+        UDF.getElementsByTagName("TypeObjectId")[0].textContent;
+      const textValue = UDF.getElementsByTagName("TextValue")[0].textContent;
+
+      // Find the corresponding setting based on the typeObjectId
+      const setting = userSelectionData!.find(
+        (x) => x.udfSettingId === typeObjectId.toString()
+      );
+
+      if (setting) {
+        if (
+          setting.pcfField === "startDate" ||
+          setting.pcfField === "finishDate"
+        ) {
+          // Handle date values
+          const date = moment.utc(textValue, "DD/MM/YYYY", true);
+          if (date.isValid()) {
+            date.add(1, "day");
+            dataObject[setting.pcfField] = date.toISOString();
+          } else {
+            // Handle invalid date format
+          }
+        } else if (
+          setting.pcfField === "startChainage" ||
+          setting.pcfField === "finishChainage"
+        ) {
+          // Handle numeric values
+          dataObject[setting.pcfField] = parseFloat(textValue);
+        } else {
+          // Handle other fields
+          dataObject[setting.pcfField] = textValue;
+        }
+      }
     }
 
-    const workbook = XLSX.read(data, { type: "binary", cellDates: true });
-    const sheetName = workbook.SheetNames[0]; // Assuming data is in the first sheet
-    const worksheet = workbook.Sheets[sheetName];
-    const parsedData: any[][] = XLSX.utils.sheet_to_json(worksheet, {
-      header: 1,
-    });
-    const headers = parsedData[0].map((header: any) => header.toString());
-    setUserDefinedSettings(headers);
+    return dataObject;
+  };
+  //? ---------------------parsers -----------------
+  const parsePrimaveraXML = (
+    xmlDoc: Document,
+    userSelectionData: UdfSetting[]
+  ) => {
+    const graphData: any[] = [];
+    setLoading(true);
+    // Get the <Project> element (assuming it's the root element)
+    const project = xmlDoc.getElementsByTagName("Project")[0];
 
-    // Assuming your data structure matches the XLSX columns order
-    // const graphData = parsedData
-    //   .slice(1)
-    //   .filter((row) => row[0] !== null && row[0] !== undefined)
-    //   .map((row) => {
-    //     const startDate = moment.utc(row[2], "DD/MM/YYYY", true); // Parse Start Date
-    //     const finishDate = moment.utc(row[3], "DD/MM/YYYY", true);
-    //     if (!startDate.isValid() || !finishDate.isValid()) {
-    //       // Handle invalid date format here
-    //       return null;
-    //     }
-    //     startDate.add(1, "day");
-    //     finishDate.add(1, "day");
-    //     return {
-    //       id: row[0],
-    //       activityName: row[1].toString().trim(),
-    //       startDate: startDate.toISOString(), // Assign parsed Start Date
-    //       finishDate: finishDate.toISOString(), // Assign parsed Finish Date
-    //       startChainage: parseFloat(row[4]),
-    //       finishChainage: parseFloat(row[5]),
-    //       style: row[6],
-    //     } as GraphDataType;
-    //   })
-    //   .filter((item) => item !== null) as GraphDataType[];
-    return parsedData;
+    if (project) {
+      const activities = project.getElementsByTagName("Activity");
+
+      for (let i = 0; i < activities.length; i++) {
+        const activity = activities[i];
+        const activityId = activity.getElementsByTagName("Id")[0].textContent;
+        const activityName =
+          activity.getElementsByTagName("Name")[0].textContent;
+
+        const startDate =
+          activity.getElementsByTagName("StartDate")[0].textContent;
+        const finishDate =
+          activity.getElementsByTagName("FinishDate")[0].textContent;
+
+        // Get UDF data based on specific Titles
+        const udfData = getUDFData(xmlDoc, activity, userSelectionData);
+
+        graphData.push({
+          id: activityId,
+          activityName,
+          startDate,
+          finishDate,
+          ...udfData,
+        });
+      }
+    }
+
+    // setGraphData(graphData);
+    dispatch(addGraphDataList({ graphData: graphData }));
+    formik.setFieldValue("graphData", graphData);
+    setLoading(false);
   };
 
-  function parseXLsxContent(parsedData: any[][]) {
+  const parseMSProjectXML = (
+    xmlDoc: Document,
+    userSelectionData: UdfSetting[]
+  ) => {
+    const graphData: any[] = [];
+    setLoading(true);
+    // Get the <Project> element (assuming it's the root element)
+    const project = xmlDoc.getElementsByTagName("Project")[0];
+
+    if (project) {
+      const activities = xmlDoc.getElementsByTagName("Tasks")[0].children;
+
+      for (let i = 0; i < activities.length; i++) {
+        const activity = activities[i];
+
+        const activityId = activity.getElementsByTagName("ID")[0].textContent;
+        const activityName =
+          activity.getElementsByTagName("Name")[0].textContent;
+        const startDate = activity.getElementsByTagName("Start")[0].textContent;
+        const finishDate =
+          activity.getElementsByTagName("Finish")[0].textContent;
+
+        // Get UDF data based on specific Titles
+        const udfData = getExtendPropertyData(
+          xmlDoc,
+          activity,
+          userSelectionData
+        );
+
+        graphData.push({
+          id: activityId,
+          activityName,
+          startDate,
+          finishDate,
+          ...udfData,
+        });
+      }
+    }
+
+    //setGraphData(graphData);
+    dispatch(addGraphDataList({ graphData: graphData }));
+    formik.setFieldValue("graphData", graphData);
+    setLoading(false);
+  };
+
+  const parseXLsxContent = (
+    parsedData: any[][],
+    userSelectionData: UdfSetting[]
+  ) => {
     setLoading(true);
     const graphData = parsedData
       .slice(1)
       .filter((row) => row[0] !== null && row[0] !== undefined)
       .map((row) => {
         const dataObject: Partial<GraphDataType> = {}; // Create an empty object to store data
-
-        udfSettingsData?.forEach((setting) => {
+        console.warn("this is errors of xlsx data ", row, userSelectionData);
+        userSelectionData?.forEach((setting) => {
           const columnName = setting.udfSettingName; // Get the column name from udfSettings
-          const columnIndex = parsedData[0].indexOf(columnName); // Find the index of the column
+          const columnIndex = parsedData[0].indexOf(columnName);
 
           if (columnIndex !== -1) {
             const value = row[columnIndex]; // Get the value from the row
+
             if (
               setting.pcfField === "startDate" ||
               setting.pcfField === "finishDate"
@@ -251,18 +418,81 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         return dataObject as GraphDataType;
       })
       .filter((item) => item !== null) as GraphDataType[];
-
+    // console.warn("this is errors of xlsx data ", graphData);
     //setGraphData(graphData);
     dispatch(addGraphDataList({ graphData: graphData }));
     formik.setFieldValue("graphData", graphData);
     setLoading(false);
+  };
+
+  const submitData = (userSelectionData: UdfSetting[]) => {
+    setSettingParsedModal(false);
+    if (parsedData && fileType === ProjectFileType.XLSX) {
+      parseXLsxContent(parsedData, userSelectionData);
+      return;
+    }
+    if (parsedData && fileType === ProjectFileType.MicrosoftProject) {
+      parseMSProjectXML(parsedData, userSelectionData);
+      return;
+    }
+    if (parsedData && fileType === ProjectFileType.PrimaveraXML) {
+      parsePrimaveraXML(parsedData, userSelectionData);
+      return;
+    }
+  };
+
+  function adjustTimeZone(dateString: string) {
+    const [day, month, year] = dateString.split("/");
+    const parsedDate = new Date(`${year}-${month}-${day}T00:00:00Z`);
+    return parsedDate.toISOString().split("T")[0]; // Output as YYYY-MM-DD
   }
+
+  const handleFileData = (data: ArrayBuffer | null) => {
+    if (!data) {
+      return [];
+    }
+
+    const workbook = XLSX.read(data, { type: "binary", cellDates: true });
+    const sheetName = workbook.SheetNames[0]; // Assuming data is in the first sheet
+    const worksheet = workbook.Sheets[sheetName];
+    const parsedData: any[][] = XLSX.utils.sheet_to_json(worksheet, {
+      header: 1,
+    });
+    const headers = parsedData[0].map((header: any) => header.toString());
+    setUserDefinedSettings((prev) => headers);
+
+    // Assuming your data structure matches the XLSX columns order
+    // const graphData = parsedData
+    //   .slice(1)
+    //   .filter((row) => row[0] !== null && row[0] !== undefined)
+    //   .map((row) => {
+    //     const startDate = moment.utc(row[2], "DD/MM/YYYY", true); // Parse Start Date
+    //     const finishDate = moment.utc(row[3], "DD/MM/YYYY", true);
+    //     if (!startDate.isValid() || !finishDate.isValid()) {
+    //       // Handle invalid date format here
+    //       return null;
+    //     }
+    //     startDate.add(1, "day");
+    //     finishDate.add(1, "day");
+    //     return {
+    //       id: row[0],
+    //       activityName: row[1].toString().trim(),
+    //       startDate: startDate.toISOString(), // Assign parsed Start Date
+    //       finishDate: finishDate.toISOString(), // Assign parsed Finish Date
+    //       startChainage: parseFloat(row[4]),
+    //       finishChainage: parseFloat(row[5]),
+    //       style: row[6],
+    //     } as GraphDataType;
+    //   })
+    //   .filter((item) => item !== null) as GraphDataType[];
+    return parsedData;
+  };
+
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
     event.preventDefault();
     event.stopPropagation();
-    console.log("this is new ", event);
 
     const fileInput = event.target as HTMLInputElement;
 
@@ -330,10 +560,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
       reader.onload = async (e) => {
         const xmlData = e.target?.result as string;
-        console.error(
-          "🚀 ~ file: ImportFileForm.tsx:260 ~ ImportFileForm ~ xmlData:",
-          xmlData
-        );
+
         if (xmlData) {
           const parsedData = await handlePrimaveraXMLData(xmlData);
 
@@ -359,7 +586,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
         const UDFTypes = xmlDoc.getElementsByTagName("UDFType");
 
-        const udfArray = [];
+        const udfArray: any[] = [];
         for (let j = 0; j < UDFTypes.length; j++) {
           const UDFType = UDFTypes[j];
           const udfId =
@@ -375,102 +602,13 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           udfArray.push(userDefinedSetting);
         }
 
-        setUserDefinedSettings(udfArray);
+        setUserDefinedSettings((pre) => udfArray);
         resolve(xmlDoc);
       } catch (error) {
         reject(error);
       }
     });
   };
-
-  const parsePrimaveraXML = (xmlDoc: Document) => {
-    const graphData: any[] = [];
-    setLoading(true);
-    // Get the <Project> element (assuming it's the root element)
-    const project = xmlDoc.getElementsByTagName("Project")[0];
-
-    if (project) {
-      const activities = project.getElementsByTagName("Activity");
-
-      for (let i = 0; i < activities.length; i++) {
-        const activity = activities[i];
-        const activityId = activity.getElementsByTagName("Id")[0].textContent;
-        const activityName =
-          activity.getElementsByTagName("Name")[0].textContent;
-
-        const startDate =
-          activity.getElementsByTagName("StartDate")[0].textContent;
-        const finishDate =
-          activity.getElementsByTagName("FinishDate")[0].textContent;
-
-        // Get UDF data based on specific Titles
-        const udfData = getUDFData(xmlDoc, activity);
-        console.log(
-          "🚀 ~ file: ImportFileForm.tsx:422 ~ parsePrimaveraXML ~ udfData:",
-          udfData
-        );
-
-        graphData.push({
-          id: activityId,
-          activityName,
-          startDate,
-          finishDate,
-          ...udfData,
-        });
-      }
-    }
-
-    // setGraphData(graphData);
-    dispatch(addGraphDataList({ graphData: graphData }));
-    formik.setFieldValue("graphData", graphData);
-    setLoading(false);
-  };
-
-  function getUDFData(xmlDoc: any, activity: any) {
-    const UDFElements = activity.getElementsByTagName("UDF");
-
-    const dataObject: Partial<GraphDataType> = {};
-
-    for (let i = 0; i < UDFElements.length; i++) {
-      const UDF = UDFElements[i];
-
-      const typeObjectId =
-        UDF.getElementsByTagName("TypeObjectId")[0].textContent;
-      const textValue = UDF.getElementsByTagName("TextValue")[0].textContent;
-
-      // Find the corresponding setting based on the typeObjectId
-      const setting = udfSettingsData!.find(
-        (x) => x.udfSettingId === typeObjectId
-      );
-
-      if (setting) {
-        if (
-          setting.pcfField === "startDate" ||
-          setting.pcfField === "finishDate"
-        ) {
-          // Handle date values
-          const date = moment.utc(textValue, "DD/MM/YYYY", true);
-          if (date.isValid()) {
-            date.add(1, "day");
-            dataObject[setting.pcfField] = date.toISOString();
-          } else {
-            // Handle invalid date format
-          }
-        } else if (
-          setting.pcfField === "startChainage" ||
-          setting.pcfField === "finishChainage"
-        ) {
-          // Handle numeric values
-          dataObject[setting.pcfField] = parseFloat(textValue);
-        } else {
-          // Handle other fields
-          dataObject[setting.pcfField] = textValue;
-        }
-      }
-    }
-
-    return dataObject;
-  }
 
   //! this is case of MS
   const handleMsProjectXMLFile = async (file: File) => {
@@ -514,14 +652,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       try {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlData, "text/xml");
-        console.log(
-          "🚀 ~ file: ImportFileForm.tsx:517 ~ returnnewPromise ~ xmlDoc:",
-          xmlDoc
-        );
 
         const UDFTypes =
           xmlDoc.getElementsByTagName("ExtendedAttributes")[0].children;
-        const udfArray = [];
+        const udfArray: any[] = [];
         for (let j = 0; j < UDFTypes.length; j++) {
           const UDFType = UDFTypes[j];
           const udfId = UDFType.getElementsByTagName("FieldID")[0].textContent;
@@ -535,7 +669,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           };
           udfArray.push(userDefiendSetting);
         }
-        setUserDefinedSettings(udfArray);
+        setUserDefinedSettings((prev) => udfArray);
         resolve(xmlDoc);
       } catch (error) {
         reject(error);
@@ -544,121 +678,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     });
   };
 
-  const parseMSProjectXML = (xmlDoc: Document) => {
-    const graphData: any[] = [];
-    setLoading(true);
-    // Get the <Project> element (assuming it's the root element)
-    const project = xmlDoc.getElementsByTagName("Project")[0];
-
-    if (project) {
-      const activities = xmlDoc.getElementsByTagName("Tasks")[0].children;
-
-      for (let i = 0; i < activities.length; i++) {
-        const activity = activities[i];
-
-        const activityId = activity.getElementsByTagName("ID")[0].textContent;
-        const activityName =
-          activity.getElementsByTagName("Name")[0].textContent;
-        const startDate = activity.getElementsByTagName("Start")[0].textContent;
-        const finishDate =
-          activity.getElementsByTagName("Finish")[0].textContent;
-
-        // Get UDF data based on specific Titles
-        const udfData = getExtendPropertyData(xmlDoc, activity);
-
-        graphData.push({
-          id: activityId,
-          activityName,
-          startDate,
-          finishDate,
-          ...udfData,
-        });
-      }
-    }
-
-    //setGraphData(graphData);
-    dispatch(addGraphDataList({ graphData: graphData }));
-    formik.setFieldValue("graphData", graphData);
-    setLoading(false);
-  };
-
-  function getExtendPropertyData(xmlDoc: any, activity: any) {
-    // const UDFTypes =
-    //   xmlDoc.getElementsByTagName("ExtendedAttributes")[0].children;
-
-    const UDFElements = activity.getElementsByTagName("ExtendedAttribute");
-
-    const dataObject: Partial<GraphDataType> = {};
-    if (!UDFElements) {
-      return {
-        startChainage: 0,
-        finishChainage: 0,
-        style: activity.getElementsByTagName("Name")[0].textContent,
-      };
-    }
-    for (let i = 0; i < UDFElements.length; i++) {
-      const UDF = UDFElements[i];
-
-      const typeObjectId = UDF.getElementsByTagName("FieldID")[0].textContent;
-      const value = UDF.getElementsByTagName("Value")[0].textContent;
-
-      const setting = udfSettingsData?.find(
-        (x) => x.udfSettingId === typeObjectId
-      );
-      console.error(
-        "🚀 ~ file: ImportFileForm.tsx:582 ~ getExtendPropertyData ~ UDFType:",
-        setting,
-        udfSettingsData,
-        typeObjectId
-      );
-
-      if (!setting) return;
-      if (
-        setting.pcfField === "startDate" ||
-        setting.pcfField === "finishDate"
-      ) {
-        // Handle date values
-        const date = moment.utc(value, "DD/MM/YYYY", true);
-        if (date.isValid()) {
-          date.add(1, "day");
-          dataObject[setting.pcfField] = date.toISOString();
-        } else {
-          // Handle invalid date format
-        }
-      } else if (
-        setting.pcfField === "startChainage" ||
-        setting.pcfField === "finishChainage"
-      ) {
-        // Handle numeric values
-        dataObject[setting.pcfField] = parseFloat(value);
-      } else {
-        // Handle other fields
-        dataObject[setting.pcfField] = value;
-      }
-      // const typeObjectIdFromUDFType =
-      //   UDFType.getElementsByTagName("FieldID")[0].textContent;
-      // const title = UDFType.getElementsByTagName("Alias")[0].textContent;
-      // const textValue = UDF.getElementsByTagName("Value")[0].textContent;
-      // console.log(
-      //   "🚀 ~ file: ImportFileForm.tsx:523 ~ getExtendPropertyData ~ textValue:",
-      //   typeObjectIdFromUDFType,
-      //   title,
-      //   textValue
-      // );
-
-      // if (typeObjectId === typeObjectIdFromUDFType) {
-      //   if (title === "TilosStart") {
-      //     udfData.startChainage = parseFloat(textValue);
-      //   } else if (title === "TilosEnd") {
-      //     udfData.finishChainage = parseFloat(textValue);
-      //   } else if (title === "TilosStyle") {
-      //     udfData.style = textValue;
-      //   }
-      // }
-    }
-
-    return dataObject;
-  }
   const handleClick = (event: any) => {
     const { target = {} } = event || {};
     target.value = "";
@@ -1081,10 +1100,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                 </th>
               </tr>
             </thead>
-            <tbody key={uniqueId()}>
+            <tbody>
               {graphSettings.graphData.map((data, index) => (
                 <tr
-                  key={data.id + index}
+                  key={data.id + index + uniqueId()}
                   className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                 >
                   <th

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   GraphStringsSetting,
   ProjectFileType,
+  getOptions,
   graphStringsSettings,
 } from "src/const/vars";
 import Dropdown from "./DropDown";
@@ -22,7 +23,7 @@ export interface MsProjectOption {
 interface ParameterSelectorProps {
   udfSettingString: string[] | MsProjectOption[];
   handleClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (userColumnData: UdfSetting[]) => void;
 }
 
 function ParameterSelector({
@@ -32,6 +33,7 @@ function ParameterSelector({
 }: ParameterSelectorProps) {
   const { t } = useTranslation();
   const [selectedPairs, setSelectedPairs] = useState<UdfSetting[]>([]);
+  const [isSubmited, setIsSubmited] = useState(false);
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   const udfSettingsData = useSelector(
     (state: RootState) => state.userDefindSettings
@@ -39,7 +41,15 @@ function ParameterSelector({
   const filetype = useSelector(
     (state: RootState) => state.projectSettings.fileType
   );
-  const [udfStringsOptions, setUDFStringsOptions] = useState(getOptions());
+  let udfStringsOptions = useMemo(
+    () => getOptions(udfSettingString, filetype!),
+    [filetype, udfSettingString]
+  );
+  console.log(
+    "🚀 ~ file: ParmeterSelector.tsx:47 ~ udfStringsOptions:",
+    udfStringsOptions
+  );
+
   const handleSelect = (
     selectable: GraphStringsSetting,
     selectedValue: string
@@ -51,11 +61,12 @@ function ParameterSelector({
       udfStringsOptions
     );
     const existingPair = selectedPairs.find(
-      (pair) => pair.udfSettingId === selectedValue
+      (pair) => pair.udfSettingId === selectedValue.toString()
     );
     console.log(
       "🚀 ~ file: ParmeterSelector.tsx:30 ~ handleSelect ~ existingPair:",
-      existingPair
+      existingPair,
+      selectedPairs
     );
 
     if (existingPair) {
@@ -68,6 +79,11 @@ function ParameterSelector({
 
     const updatedPairs = [...selectedPairs];
     // // Find the matching "Read-only String" based on the selectable value
+    console.log(
+      "🚀 ~ file: ParmeterSelector.tsx:68 ~ selectedOption:",
+      selectedOption,
+      updatedPairs
+    );
 
     if (selectedOption) {
       updatedPairs.push({
@@ -80,11 +96,11 @@ function ParameterSelector({
     }
   };
   const handleSaveUdfSetting = () => {
+    setIsSubmited(true);
     dispatch(updateUDFSettings({ udfSettings: selectedPairs }));
-    onSubmit();
+    onSubmit(selectedPairs);
   };
 
-  useEffect(() => {}, [selectedPairs]);
   return (
     <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-white bg-opacity-20 dark:bg-gray-700 dark-bg-opacity-20">
       <div className="mt-20 max-h-full w-[50%] overflow-y-auto rounded bg-white p-6 shadow-md dark:bg-gray-700">
@@ -101,10 +117,10 @@ function ParameterSelector({
                 <Dropdown
                   options={udfStringsOptions!}
                   label=""
-                  //   value={
-                  //     udfSettingsData?.find((x) => x.pcfField === string.field)
-                  //       ?.udfSettingId
-                  //   }
+                  // value={
+                  //   udfSettingsData?.find((x) => x.pcfField === string.field)
+                  //     ?.udfSettingId
+                  // }
                   onChange={(e) => handleSelect(string, e.target.value)}
                 />
               </li>
@@ -116,7 +132,7 @@ function ParameterSelector({
           <PrimaryButton
             type="button"
             //   disabled={!isValid}
-            onClick={handleSaveUdfSetting}
+            onClick={() => handleSaveUdfSetting()}
           >
             {t("activityForm.save")}
           </PrimaryButton>
@@ -127,67 +143,6 @@ function ParameterSelector({
       </div>
     </div>
   );
-
-  function getOptions() {
-    if (filetype === ProjectFileType.XLSX) {
-      return (udfSettingString as string[]).map((str, index) => ({
-        name: str,
-        id: (index + 1).toString(),
-      }));
-    }
-    if (filetype === ProjectFileType.MicrosoftProject) {
-      let udfs = (udfSettingString as MsProjectOption[]).map((ud, index) => ({
-        name: ud.alias,
-        id: ud.udfId,
-      }));
-
-      return [
-        ...udfs,
-        {
-          name: "ID",
-          id: uniqueId(),
-        },
-        {
-          name: "Name",
-          id: uniqueId(),
-        },
-        {
-          name: "Start",
-          id: uniqueId(),
-        },
-        {
-          name: "Finish",
-          id: uniqueId(),
-        },
-      ];
-    }
-    if (filetype === ProjectFileType.PrimaveraXML) {
-      let udfs = (udfSettingString as MsProjectOption[]).map((ud, index) => ({
-        name: ud.alias,
-        id: ud.udfId,
-      }));
-
-      return [
-        ...udfs,
-        {
-          name: "ObjectId",
-          id: uniqueId(),
-        },
-        {
-          name: "Name",
-          id: uniqueId(),
-        },
-        {
-          name: "StartDate",
-          id: uniqueId(),
-        },
-        {
-          name: "FinishDate",
-          id: uniqueId(),
-        },
-      ];
-    }
-  }
 }
 
 export default ParameterSelector;

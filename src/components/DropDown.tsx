@@ -46,7 +46,6 @@ const Dropdown = ({
   } else {
     selectedOption = options[0];
   }
-  console.log("🚀 ~ file: DropDown.tsx:48 ~ selectedOption:", selectedOption);
 
   const selectedValue = selectedOption
     ? selectedOption[optionValue ?? "id"]
