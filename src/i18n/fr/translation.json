@@ -206,6 +206,7 @@
     "logout": "Déconnexion"
   },
   "employeeList": {
+    "Email": "Email",
     "fullName": "Nom Complet",
     "jobTitle": "Titre du Poste",
     "canRead": "Peut Lire",
@@ -228,6 +229,24 @@
     "buttons": {
       "edit": "Edit",
       "delete": "Delete"
+    }
+  },
+  "employeeForm": {
+    "addEmployee": "Ajouter un employé",
+    "editEmployee": "Modifier l'employé",
+    "fullName": "Nom complet",
+    "email": "Email",
+    "password": "Mot de passe",
+    "canRead": "Peut lire",
+    "canWrite": "Peut écrire",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "errors": {
+      "fullName": "Le nom complet est requis",
+      "email": "Adresse email invalide",
+      "password": "Le mot de passe est requis",
+      "canRead": "La permission de lecture est requise",
+      "canWrite": "La permission d'écriture est requise"
     }
   }
 }

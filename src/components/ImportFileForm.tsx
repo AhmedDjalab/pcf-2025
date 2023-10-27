@@ -337,11 +337,11 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
     if (project) {
       const activities = xmlDoc.getElementsByTagName("Tasks")[0].children;
-      const sumary = xmlDoc.getElementsByTagName("Summary")[0];
+      // const sumary = xmlDoc.getElementsByTagName("Summary")[0];
 
-      if (sumary) {
-        return;
-      }
+      // if (sumary) {
+      //   return;
+      // }
 
       for (let i = 0; i < activities.length; i++) {
         const activity = activities[i];
@@ -384,7 +384,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       .filter((row) => row[0] !== null && row[0] !== undefined)
       .map((row) => {
         const dataObject: Partial<GraphDataType> = {}; // Create an empty object to store data
-        console.warn("this is errors of xlsx data ", row, userSelectionData);
         userSelectionData?.forEach((setting) => {
           const columnName = setting.udfSettingName; // Get the column name from udfSettings
           const columnIndex = parsedData[0].indexOf(columnName);
@@ -422,6 +421,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       .filter((item) => item !== null) as GraphDataType[];
     // console.warn("this is errors of xlsx data ", graphData);
     //setGraphData(graphData);
+    console.warn("this is errors of xlsx data ", graphData);
+
     dispatch(addGraphDataList({ graphData: graphData }));
     formik.setFieldValue("graphData", graphData);
   };
@@ -459,6 +460,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     const parsedData: any[][] = XLSX.utils.sheet_to_json(worksheet, {
       header: 1,
     });
+
+    console.log("this is erors ", parsedData);
     const headers = parsedData[0].map((header: any) => header.toString());
     setUserDefinedSettings((prev) => headers);
 

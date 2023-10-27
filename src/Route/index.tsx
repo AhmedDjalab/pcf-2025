@@ -9,6 +9,7 @@ import DrawGraphStep from "../components/DrawGraphStep";
 import Employees from "src/pages/Employee";
 import Projects from "src/pages/Project";
 import { DrawGraphForm } from "src/components/DrawGraphForm";
+import EmployeeForm from "src/pages/Employee/EmployeeForm";
 
 const AppRoutes = () => {
   return (

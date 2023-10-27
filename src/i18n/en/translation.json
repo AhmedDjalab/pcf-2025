@@ -234,5 +234,24 @@
       "edit": "Edit",
       "delete": "Delete"
     }
+  },
+
+  "employeeForm": {
+    "addEmployee": "Add Employee",
+    "editEmployee": "Edit Employee",
+    "fullName": "Full Name",
+    "email": "Email",
+    "password": "Password",
+    "canRead": "Can Read",
+    "canWrite": "Can Write",
+    "save": "Save",
+    "cancel": "Cancel",
+    "errors": {
+      "fullName": "Full Name is required",
+      "email": "Invalid email address",
+      "password": "Password is required",
+      "canRead": "Can Read is required",
+      "canWrite": "Can Write is required"
+    }
   }
 }

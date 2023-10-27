@@ -27,6 +27,7 @@ import { useTranslation } from "react-i18next";
 import ActivityTableForm from "./ActivityTableForm";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import DefaultLayout from "./DefaultLayout";
+import StyleForm from "./ShapesPopup";
 
 export interface ActivityData {
   id: string;
@@ -63,6 +64,7 @@ function DrawGraphStep() {
   const [selectedShapeType, setSelectedShapeType] = useState(null);
   const [selectedShapes, setSelectedShapes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isStyleModalOpen, setStyleModalOpen] = useState(false);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const containerSVGRef = useRef<SVGSVGElement | null>(null);
@@ -1221,6 +1223,14 @@ function DrawGraphStep() {
               {/* {"Export Graph Data"} */}
               {t("drawGraph.exportGraphData")}
             </button>
+            {/* <button
+              type="button"
+              className="px-10 py-2 bg-slate-600 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
+              onClick={() => setStyleModalOpen(true)}
+            >
+             
+              Change Style
+            </button> */}
           </div>
 
           <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
@@ -1284,6 +1294,15 @@ function DrawGraphStep() {
             maxDistance={parseFloat(toDistance)}
           />
         )}
+        {/* {isStyleModalOpen && (
+          <StyleForm
+            id={selectedShapeData?.style}
+            onSubmit={closeModal}
+            handleClose={closeModal}
+            minDistance={parseFloat(fromDistance)}
+            maxDistance={parseFloat(toDistance)}
+          />
+        )} */}
       </div>
     </DefaultLayout>
   );

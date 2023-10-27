@@ -1,6 +1,12 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DefaultLayout from "src/components/DefaultLayout";
+import EmployeeForm, { EmployeeData } from "./EmployeeForm";
+import {
+  deleteEmployeeAndUser,
+  getEmployees,
+} from "src/Services/EmployeeService";
+import { useUserContext } from "src/context/UserContext";
 
 const exampleEmployees = [
   {
@@ -21,7 +27,42 @@ const exampleEmployees = [
 ];
 
 const Employees = () => {
-  const [employees, setEmployees] = useState(exampleEmployees);
+  const [employees, setEmployees] = useState<EmployeeData[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [edit, setEdit] = useState<EmployeeData | null>(null);
+  const { user } = useUserContext();
+  const fetchEmploye = useCallback(async () => {
+    if (user?.uid) {
+      const emp = await getEmployees(user?.uid!);
+
+      setEmployees(emp);
+    }
+  }, [user?.uid]);
+
+  useEffect(() => {
+    fetchEmploye();
+  }, [fetchEmploye]);
+
+  const handleAddClick = () => {
+    setEdit(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = (grT: EmployeeData) => {
+    setEdit(grT);
+    setIsModalOpen(true);
+    fetchEmploye();
+  };
+
+  const handleDeleteClick = (gtId: string) => {
+    deleteEmployeeAndUser(gtId);
+    fetchEmploye();
+  };
+  const closeModal = () => {
+    fetchEmploye();
+    setIsModalOpen(false);
+    setEdit(null);
+  };
   const { t } = useTranslation();
 
   const handleCheckboxChange = (employeeId: string, property: any) => {
@@ -40,7 +81,7 @@ const Employees = () => {
       <div>
         <div className="my-4 ml-10 flex justify-between">
           <button
-            onClick={() => {}}
+            onClick={() => setIsModalOpen(true)}
             className=" text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
           >
             {t("taskSlotsList.addButton")}
@@ -53,7 +94,7 @@ const Employees = () => {
                 {t("employeeList.fullName")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                {t("employeeList.jobTitle")}
+                {t("employeeForm.email")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 {t("employeeList.canRead")}
@@ -69,14 +110,15 @@ const Employees = () => {
           <tbody>
             {employees.map((employee) => (
               <tr key={employee.id}>
-                <td className="px-6 py-4">{employee.fullName}</td>
-                <td className="px-6 py-4">{employee.jobTitle}</td>
+                <td className="px-6 py-4  ">{employee.fullName}</td>
+                <td className="px-6 py-4  ">{employee.email}</td>
+
                 <td className="px-6 py-4">
                   <input
                     type="checkbox"
                     checked={employee.canRead}
                     onChange={() =>
-                      handleCheckboxChange(employee.id, "canRead")
+                      handleCheckboxChange(employee.id!, "canRead")
                     }
                   />
                 </td>
@@ -85,20 +127,20 @@ const Employees = () => {
                     type="checkbox"
                     checked={employee.canWrite}
                     onChange={() =>
-                      handleCheckboxChange(employee.id, "canWrite")
+                      handleCheckboxChange(employee.id!, "canWrite")
                     }
                   />
                 </td>
                 <td className="whitespace-nowrap px-6 py-4">
                   <button
                     className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                    onClick={() => {}}
+                    onClick={() => handleEditClick(employee)}
                   >
                     {t("taskSlotsList.buttons.edit")}
                   </button>
                   <button
                     className="focus:outline-none text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-                    onClick={() => {}}
+                    onClick={() => handleDeleteClick(employee.id!)}
                   >
                     {t("taskSlotsList.buttons.delete")}
                   </button>
@@ -107,6 +149,13 @@ const Employees = () => {
             ))}
           </tbody>
         </table>
+        {isModalOpen && (
+          <EmployeeForm
+            initialValues={edit || undefined}
+            onSubmit={closeModal}
+            handleClose={() => setIsModalOpen(false)}
+          />
+        )}
       </div>
     </DefaultLayout>
   );

@@ -27,7 +27,7 @@ const Header = () => {
   return (
     <header className="text-white p-5 bg-boxdark text-center flex flex-col items-center">
       <div className="flex justify-between items-center w-full">
-        <img src={Logo} alt="logo" className="h-15 w-15 object-contain" />
+        <img src={Logo} alt="logo" className="h-20 w-20 object-contain" />
 
         <div className="flex justify-start items-center space-x-10 ml-10">
           <NavLink

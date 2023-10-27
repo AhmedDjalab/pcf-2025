@@ -26,7 +26,7 @@ export const PopoverColorPicker = ({
   useClickOutside(popover, close);
 
   return (
-    <div className="relative ">
+    <div className="relative w-full">
       <div
         className="w-7 h-7 shadow-[0_0_0_1px_rgba(0,0,0,0.1),inset_0_0_0_1px_rgba(0,0,0,0.1)] cursor-pointer rounded-lg border-[3px] border-solid border-white"
         style={{ backgroundColor: currentColor }}
