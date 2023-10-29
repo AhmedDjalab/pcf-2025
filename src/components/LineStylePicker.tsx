@@ -6,19 +6,31 @@ import { default as TypeList } from "./LineStyle";
 import { markersConfig } from "../const/markerAndPatternsConfig";
 
 export interface ILineStylePickerProps {
+  id?: string;
   rowId: string;
   color: string;
   onSelectLineStyle: any;
   selectedLineStyle: LineStyle;
   lineStyles: any[];
+  classname?: string;
+  width?: number;
+  height?: number;
+  startOffset?: number;
+  label?: string;
 }
 
 const LineStylePicker = ({
+  id,
   rowId,
   color,
   onSelectLineStyle,
   selectedLineStyle,
   lineStyles,
+  classname,
+  width = 150,
+  height = 40,
+  startOffset = 25,
+  label,
 }: ILineStylePickerProps) => {
   const popover = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -38,11 +50,21 @@ const LineStylePicker = ({
 
   return (
     <div className="relative" ref={popover}>
+      {label && (
+        <label
+          htmlFor={id}
+          className={`
+        mb-2 block  text-sm font-medium text-gray-900 dark:text-white     
+        `}
+        >
+          {label}
+        </label>
+      )}
       <div
-        className="cursor-pointer rounded-lg border-[3px] border-solid border-white"
+        className="cursor-pointer rounded-lg border-[3px] border-solid border-transparent"
         onClick={() => setIsOpen(true)}
       >
-        <svg width="150" height="40">
+        <svg width={width} height={height}>
           <defs>
             {/* Add the arrowEnd marker */}
             {Object.keys(markersConfig).map((key: any) => {
@@ -57,10 +79,10 @@ const LineStylePicker = ({
           </defs>
 
           <line
-            x1="25"
-            y1="30"
-            x2="135"
-            y2="30"
+            x1={startOffset}
+            y1={height - 10}
+            x2={width - 5}
+            y2={height - 10}
             stroke={
               selectedLineStyle.patternUrl
                 ? `url(#${selectedLineStyle.patternUrl})`
@@ -93,25 +115,26 @@ const LineStylePicker = ({
           />
         </svg>
       </div>
+      {/* block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 */}
       {isOpen && (
-        <div className="absolute z-20 shadow-[0_6px_12px_rgba(0,0,0,0.15)] rounded-[9px] left-0 top-[calc(100%_+_2px)]">
-          <div className="flex flex-col max-h-[150px] overflow-y-scroll px-4 justify-start bg-white p-2">
+        <div className="absolute z-20 shadow-[0_6px_12px_rgba(0,0,0,0.15)] rounded-[9px] left-0 top-[calc(100%_+_2px)] dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+          <div className="flex flex-col max-h-[150px] overflow-y-scroll px-4 justify-start bg-white p-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
             {lineStyles.map((lineStyle: LineStyle) => (
               <div
                 key={lineStyle.id}
-                className={`cursor-pointer w-full rounded-lg border-[3px] border-solid border-white ${
+                className={`cursor-pointer w-full rounded-lg border-[3px] border-solid border-transparent dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 ${
                   selectedLineStyle.id === lineStyle.id
                     ? "border-blue-500" // Highlight selected style
                     : ""
                 }`}
                 onClick={() => handleLineStyleClick(lineStyle)}
               >
-                <svg width="150" height="40">
+                <svg width={width} height={height}>
                   <line
-                    x1="25"
-                    y1="30"
-                    x2="135"
-                    y2="30"
+                    x1={startOffset}
+                    y1={height - 10}
+                    x2={width - 5}
+                    y2={height - 10}
                     stroke={
                       lineStyle.patternUrl
                         ? `url(#${lineStyle.patternUrl})`

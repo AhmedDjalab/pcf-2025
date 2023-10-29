@@ -12,6 +12,7 @@ import {
   InformationCircleIcon,
   QueueListIcon,
 } from "@heroicons/react/24/solid";
+import DarkModeSwitcher from "./DarkModeSwitcher";
 
 const Header = () => {
   const { user, logoutUser } = useUserContext();
@@ -45,11 +46,11 @@ const Header = () => {
             text={t("header.employees")}
             icon={<UserGroupIcon className="w-6 h-6" />}
           />
-          <NavLink
+          {/* <NavLink
             to="/pricing"
             text={t("header.pricing")}
             icon={<CurrencyDollarIcon className="w-6 h-6" />}
-          />
+          /> */}
           <NavLink
             to="/about-us"
             text={t("header.aboutUs")}
@@ -57,12 +58,15 @@ const Header = () => {
           />
         </div>
 
-        <div className="flex justify-end items-center">
+        <div className="flex justify-end items-center ">
+          <div className="md:ml-4">
+            <DarkModeSwitcher />
+          </div>
           <div className="md:ml-4">
             <DropdownLanguage />
           </div>
           <p className="text-lg px-5 mb-2">
-            {t("header.contact")}{" "}
+            {t("header.contact")}
             <span className="text-lg text-blue-600">admin@ientreprize.com</span>
           </p>
           {user && (

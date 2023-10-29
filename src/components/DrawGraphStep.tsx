@@ -124,6 +124,12 @@ function DrawGraphStep() {
   //   setStartDate(start);
   //   setEndDate(end);
   // };
+  const DrawXScale = (distanceAxisWidth: number) => {
+    return d3
+      .scaleLinear()
+      .domain([fromDistance, toDistance])
+      .range([10, distanceAxisWidth]);
+  };
 
   useEffect(() => {
     // Function to handle window resize
@@ -278,7 +284,7 @@ function DrawGraphStep() {
       const shapes = g
         .selectAll(".activity-rectangle")
         .data(graphData, (d: GraphDataType) => d.id);
-      console.log("graphe Data ", graphData);
+
       shapes
         .enter()
         .append((d) => {
@@ -463,7 +469,7 @@ function DrawGraphStep() {
             });
         });
 
-      shapes.exit().remove();
+      //shapes.exit().remove();
     },
     [
       endDateObject,
@@ -760,6 +766,7 @@ function DrawGraphStep() {
     zoom,
     containerWidth,
     containerHeight,
+    shapesData,
   ]);
 
   useEffect(() => {
@@ -1038,6 +1045,15 @@ function DrawGraphStep() {
     setIsModalOpen(false);
     setSelectedShapeData(null);
   };
+  const closeStyleModal = () => {
+    setStyleModalOpen(false);
+    setSelectedShapeData(null);
+  };
+  const submitStyleModal = () => {
+    setStyleModalOpen(false);
+    setSelectedShapeData(null);
+    window.location.reload(false);
+  };
 
   // export logic
   const handleExportGraphClick = () => {
@@ -1103,7 +1119,7 @@ function DrawGraphStep() {
 
   return (
     <DefaultLayout>
-      <div className="flex flex-col">
+      <div className="flex flex-col dark:bg-boxdark">
         <div>
           <button
             // disabled
@@ -1130,7 +1146,7 @@ function DrawGraphStep() {
             {t("drawGraph.cancelZoomButtonLabel")}
           </button>
         )}
-        <div className="flex flex-col" id="graph-container">
+        <div className="flex flex-col " id="graph-container">
           <div className="graph-container">
             <div className="flex items-center border m-4">
               <img
@@ -1223,14 +1239,14 @@ function DrawGraphStep() {
               {/* {"Export Graph Data"} */}
               {t("drawGraph.exportGraphData")}
             </button>
-            {/* <button
+            <button
               type="button"
+              disabled={!selectedShapeData}
               className="px-10 py-2 bg-slate-600 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
               onClick={() => setStyleModalOpen(true)}
             >
-             
-              Change Style
-            </button> */}
+              {t("drawGraph.changeStyle")}
+            </button>
           </div>
 
           <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
@@ -1294,25 +1310,16 @@ function DrawGraphStep() {
             maxDistance={parseFloat(toDistance)}
           />
         )}
-        {/* {isStyleModalOpen && (
+        {isStyleModalOpen && (
           <StyleForm
             id={selectedShapeData?.style}
-            onSubmit={closeModal}
-            handleClose={closeModal}
-            minDistance={parseFloat(fromDistance)}
-            maxDistance={parseFloat(toDistance)}
+            onSubmit={submitStyleModal}
+            handleClose={closeStyleModal}
           />
-        )} */}
+        )}
       </div>
     </DefaultLayout>
   );
-
-  function DrawXScale(distanceAxisWidth: number) {
-    return d3
-      .scaleLinear()
-      .domain([fromDistance, toDistance])
-      .range([10, distanceAxisWidth]);
-  }
 }
 
 export default DrawGraphStep;

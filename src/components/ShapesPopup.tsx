@@ -10,6 +10,7 @@ import {
   updateActivity,
   addActivity,
   ShapeType,
+  updateStyleShape,
 } from "src/state/slices/graphSlice"; // Replace with your actual slice
 import { GraphDataType } from "src/state/slices/graphSlice";
 import { RootState } from "src/state";
@@ -22,7 +23,12 @@ import LineStylePicker from "./LineStylePicker";
 import TexturePicker from "./TexturePicker";
 import texturesData from "src/const/texturesArray";
 import { PopoverColorPicker } from "./PopoverColorPicker";
-
+import { uniqueId } from "lodash";
+const shapeTypes = [
+  { value: "line", text: "Ligne" },
+  { value: "rect", text: "Rectangle" },
+  { value: "triangle", text: "Triangle" },
+];
 interface StyleFormProps {
   id: string;
   onSubmit: (values: GraphDataType) => void;
@@ -41,12 +47,15 @@ const StyleForm: React.FC<StyleFormProps> = ({
   const { t } = useTranslation();
   console.log("this is name ", id);
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
+  const [isOpen, toggle] = useState(false);
 
   const shapesData = useSelector((state: RootState) => state.shapes.shapesData);
-
   const [initialValues, setInitialValues] = useState(
     shapesData.find((x) => x.name == id)!
   );
+  // const [color, setColor] = useState(
+  //   shapesData.find((x) => x.name == id)!.color
+  // );
 
   //   let validationSchema = Yup.object().shape({
   //     activityName: Yup.string().required("activityForm.errors.activityName"),
@@ -78,43 +87,36 @@ const StyleForm: React.FC<StyleFormProps> = ({
   //     style: Yup.string().required("activityForm.errors.activityStyle"),
   //   });
 
-  const handleSubmitData = (
-    values: ShapeType,
-    validateForm?: FormikHelpers<ShapeType>
-  ) => {
-    // const selectedShapeId =
-    //   shapesData.find((x) => x.name === values.style)?.id ?? "0";
-    // if (!!initialValues) {
-    //   dispatch(
-    //     updateActivity({
-    //       activity: values,
-    //       shapeId: selectedShapeId,
-    //     })
-    //   );
-    // } else {
-    //   dispatch(addActivity({ activity: values, shapeId: selectedShapeId }));
-    // }
-    // handleClose();
+  const handleSubmitData = (values: ShapeType, validateForm?: any) => {
+    if (!!initialValues) {
+      dispatch(
+        updateStyleShape({
+          style: values,
+        })
+      );
+
+      handleClose();
+    }
   };
-  const [isOpen, toggle] = useState(false);
 
   return (
-    <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-white bg-opacity-20 dark:bg-gray-700 dark:bg-opacity-20">
-      <div className=" mt-20 max-h-full  w-[50%] overflow-y-auto rounded bg-white p-6 shadow-md dark:bg-gray-700">
+    <div className="fixed left-0 top-0 z-50 flex  w-full h-full  items-center justify-center bg-white bg-opacity-20 dark:bg-gray-700 dark:bg-opacity-20">
+      <div className="  max-h-full w-[60%] md:w-[30%] overflow-y-auto rounded bg-white p-6 shadow-md dark:bg-gray-700">
         <div className="mb-4 text-2xl font-semibold">
-          {!!initialValues
-            ? t("activityForm.editActivity")
-            : t("activityForm.addActivity")}
+          {!!initialValues ? "Edit Style" : "Add Style"}
         </div>
         {/* @ts-ignore */}
-        <Formik
-          initialValues={initialValues}
-          onSubmit={handleSubmitData}
-          enableReinitialize={true}
-        >
-          {({ values, errors, handleChange, handleSubmit, isValid }) => (
+        <Formik initialValues={initialValues} onSubmit={handleSubmitData}>
+          {({
+            values,
+            errors,
+            handleChange,
+            setFieldValue,
+            handleSubmit,
+            isValid,
+          }) => (
             <Form>
-              <div className="mb-4">
+              <div className="mb-2">
                 <Input
                   id="name"
                   type="text"
@@ -125,12 +127,42 @@ const StyleForm: React.FC<StyleFormProps> = ({
                   errors={errors}
                 />
               </div>
-              <div className="group relative   mb-6 w-full">
+              <div className="mb-4 relative ">
+                <label
+                  htmlFor={"type"}
+                  className={`
+        mb-4 block  text-sm font-medium text-gray-900 dark:text-white  
+        `}
+                >
+                  {t("shapesForm.headers.formatStyle")}
+                </label>
+                <select
+                  className=" w-full self-center  block  rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                  id="type"
+                  name="type"
+                  value={values.type}
+                  onChange={handleChange}
+                >
+                  {shapeTypes.map(({ value, text }) => (
+                    <option key={value} value={value}>
+                      {/* @ts-ignore */}
+                      {t(`shapesForm.${text}`)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="group relative  mb-6 w-full">
                 <LineStylePicker
+                  id="lineType"
+                  startOffset={35}
+                  label={t("shapesForm.headers.lineType")}
+                  width={300}
                   rowId={values.id}
                   color={values.color}
                   lineStyles={lineStyles}
-                  onSelectLineStyle={handleChange}
+                  onSelectLineStyle={(lineId: string) => {
+                    setFieldValue("lineType", lineId);
+                  }}
                   selectedLineStyle={
                     lineStyles.find((x: any) => x.id === values.lineType)! ??
                     lineStyles[0]
@@ -139,20 +171,32 @@ const StyleForm: React.FC<StyleFormProps> = ({
               </div>
               <div className="group relative   mb-6 w-full">
                 <TexturePicker
-                  rowId={values.id}
+                  id="backgroundTexture"
+                  label={t("shapesForm.headers.rectangleTriangleType")}
+                  rowId={values.id + uniqueId()}
                   color={values.color}
+                  width={280}
                   texturetype={
-                    texturesData.find((x) => x.id === values.backgroundTexture)!
+                    texturesData.find(
+                      (x) => x.id === values.backgroundTexture
+                    )! ?? texturesData[0]
                   }
-                  onSelectTexture={handleChange}
+                  onSelectTexture={(textureId: string) => {
+                    setFieldValue("backgroundTexture", textureId);
+                  }}
                 />
               </div>
               <div className="mb-4 w-full ">
                 <PopoverColorPicker
+                  id="color"
+                  classname="ml-10 w-70"
+                  label={t("shapesForm.headers.color")}
                   isOpen={isOpen}
                   toggle={toggle}
                   color={values.color}
-                  onChangeComplete={handleChange}
+                  onChangeComplete={(color: string) => {
+                    setFieldValue("color", color);
+                  }}
                 />
               </div>
 
@@ -160,7 +204,7 @@ const StyleForm: React.FC<StyleFormProps> = ({
                 <button
                   type="submit"
                   //   disabled={!isValid}
-                  className="  mb-2 mr-2 rounded-lg border border-primary-700 px-5 py-2.5 text-center text-sm font-medium text-primary-700 hover:bg-primary-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-primary-300 dark:border-primary-500 dark:text-primary-500 dark:hover:bg-primary-600 dark:hover:text-white dark:focus:ring-primary-800 "
+                  className="  mb-4 mr-2 rounded-lg border border-primary-700 px-5 py-2.5 text-center text-sm font-medium text-primary-700 hover:bg-primary-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-primary-300 dark:border-primary-500 dark:text-primary-500 dark:hover:bg-primary-600 dark:hover:text-white dark:focus:ring-primary-800 "
                 >
                   {t("activityForm.save")}
                 </button>

@@ -108,9 +108,9 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-white bg-opacity-80">
-      <div className="bg-white p-6 rounded shadow-md w-96">
-        <div className="text-2xl font-semibold mb-4">
+    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-white bg-opacity-80 dark:bg-gray-700 dark:bg-opacity-20">
+      <div className="bg-white p-6 rounded shadow-md w-96 dark:bg-gray-700 ">
+        <div className="text-2xl font-semibold mb-4 dark:bg-gray-700 dark:text-white">
           {isNew
             ? t("taskSlotsPopUp.titles.add")
             : t("taskSlotsPopUp.titles.edit")}
@@ -130,7 +130,7 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
           }) => (
             <Form>
               <div className="mb-4">
-                <label className="block text-gray-700 font-bold mb-2">
+                <label className="block text-gray-700 font-bold mb-2  dark:text-white">
                   {t("taskSlotsPopUp.labels.name")}
                 </label>
                 <Field
@@ -139,7 +139,7 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
                   placeholder={t("taskSlotsPopUp.placeholders.name")}
                   className={`border ${
                     errors.name ? "border-red-500" : "border-gray-300"
-                  } rounded p-2 w-full`}
+                  } rounded p-2 w-full block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500`}
                 />
                 <ErrorMessage
                   name="name"
@@ -148,7 +148,7 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 font-bold mb-2">
+                <label className="block text-gray-700 font-bold mb-2  dark:text-white">
                   {t("taskSlotsPopUp.labels.start")}
                 </label>
                 <Field
@@ -157,7 +157,7 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
                   placeholder={t("taskSlotsPopUp.placeholders.start")}
                   className={`border ${
                     errors.start ? "border-red-500" : "border-gray-300"
-                  } rounded p-2 w-full`}
+                  } rounded p-2 w-full block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500`}
                 />
                 <ErrorMessage
                   name="start"
@@ -166,7 +166,7 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 font-bold mb-2">
+                <label className="block text-gray-700 font-bold mb-2  dark:text-white">
                   {t("taskSlotsPopUp.labels.end")}
                 </label>
                 <Field
@@ -175,7 +175,7 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
                   placeholder={t("taskSlotsPopUp.placeholders.end")}
                   className={`border ${
                     errors.end ? "border-red-500" : "border-gray-300"
-                  } rounded p-2 w-full`}
+                  } rounded p-2 w-full block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500`}
                 />
                 <ErrorMessage
                   name="end"

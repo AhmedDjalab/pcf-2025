@@ -148,6 +148,7 @@
       "startChainageLabel": " PK DE DÉBUT",
       "finishChainageLabel": "PK DE FIN"
     },
+    "changeStyle": "Changer le style",
     "cancelZoomButtonLabel": "Annuler le Zoom",
     "exportAllData": "Exporter toutes les données",
     "exportGraphData": "Exporter les données du graphique"

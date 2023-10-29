@@ -768,7 +768,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       value={value}
       onClick={onClick}
       onChange={onChange}
-      className="w-full px-3 py-2 border rounded-lg outline-none focus:ring focus:ring-blue-300"
+      className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
     />
   ));
 
@@ -870,7 +870,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         {isLoading ? (
           <Spinner />
         ) : (
-          <label className="flex justify-center items-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
+          <label className=" dark:bg-boxdark  flex justify-center items-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
             <span className="flex items-center space-x-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -907,7 +907,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               <div className="mb-4">
                 <label
                   htmlFor="fromDate"
-                  className="block font-medium text-gray-700"
+                  className="block font-medium text-gray-700 dark:text-white"
                 >
                   {t("importFileForm.startDate")}
                 </label>
@@ -933,7 +933,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               <div className="mb-4">
                 <label
                   htmlFor="toDate"
-                  className="block font-medium text-gray-700"
+                  className="block font-medium text-gray-700 dark:text-white"
                 >
                   {t("importFileForm.endDate")}
                 </label>
@@ -958,7 +958,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               <div className="mb-4">
                 <label
                   htmlFor="timeRange"
-                  className="block font-medium text-gray-700"
+                  className="block font-medium text-gray-700 dark:text-white"
                 >
                   {t("importFileForm.timeScale")}
                 </label>
@@ -968,7 +968,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   onBlur={formik.handleBlur}
                   id="timeRange"
                   name="timeRange"
-                  className="w-full px-3 py-2 border rounded-lg outline-none focus:ring focus:ring-blue-300"
+                  className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                 >
                   <option value="Yearly">
                     {t("importFileForm.yearlyOption")}
@@ -987,7 +987,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               <div className="mb-4">
                 <label
                   htmlFor="fromDistance"
-                  className="block font-medium text-gray-700"
+                  className="block font-medium text-gray-700 dark:text-white"
                 >
                   {t("importFileForm.startPk")}
                 </label>
@@ -998,7 +998,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   value={formik.values.fromDistance}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="w-full px-3 py-2 border rounded-lg outline-none focus:ring focus:ring-blue-300"
+                  className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                 />
                 {formik.touched.fromDistance && formik.errors.fromDistance && (
                   <div className="text-red-600">
@@ -1010,7 +1010,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               <div className="mb-4">
                 <label
                   htmlFor="toDistance"
-                  className="block font-medium text-gray-700"
+                  className="block font-medium text-gray-700 dark:text-white"
                 >
                   {t("importFileForm.endPk")}
                 </label>
@@ -1021,7 +1021,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   value={formik.values.toDistance}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="w-full px-3 py-2 border rounded-lg outline-none focus:ring focus:ring-blue-300"
+                  className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                 />
                 {formik.touched.toDistance && formik.errors.toDistance && (
                   <div className="text-red-600">{formik.errors.toDistance}</div>
@@ -1031,7 +1031,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               <div className="mb-4">
                 <label
                   htmlFor="distanceRange"
-                  className="block font-medium text-gray-700"
+                  className="block font-medium text-gray-700 dark:text-white"
                 >
                   {t("importFileForm.distanceRange")}
                 </label>
@@ -1042,7 +1042,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   value={formik.values.distanceRange}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="w-full px-3 py-2 border rounded-lg outline-none focus:ring focus:ring-blue-300"
+                  className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                 />
                 {formik.touched.distanceRange &&
                   formik.errors.distanceRange && (

@@ -150,6 +150,8 @@
       "startChainageLabel": " START  CHINAGE",
       "finishChainageLabel": "END  CHINAGE"
     },
+
+    "changeStyle": "Change Style",
     "cancelZoomButtonLabel": "Cancel Zoom",
     "exportAllData": "Export All Data",
     "exportGraphData": "Export Graph Data"

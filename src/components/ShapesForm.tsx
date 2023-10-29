@@ -83,6 +83,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
           return (
             <select
               value={row.values["type"]}
+              className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
               onChange={(e) => handleTypeChange(e.target.value as LineType)}
             >
               {shapeTypes.map(({ value, text }) => (
@@ -192,6 +193,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
         Cell: ({ row }) => (
           <input
             type="text"
+            className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
             value={row.values["name"]}
             onChange={(e) => handleNameChange(row, e.target.value)}
           />
@@ -236,8 +238,8 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
   };
 
   return (
-    <div>
-      <div className="my-4 flex justify-between">
+    <div className="relative h-[100vh]">
+      <div className="my-4 flex justify-between ">
         <button
           type="button"
           onClick={() => setCurrentStep(currentStep - 1)} // Handle going back to the previous step

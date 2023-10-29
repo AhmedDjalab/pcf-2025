@@ -78,8 +78,8 @@ const Employees = () => {
 
   return (
     <DefaultLayout>
-      <div>
-        <div className="my-4 ml-10 flex justify-between">
+      <div className="dark:bg-boxdark bg-white h-[100vh]">
+        <div className="py-2 ml-10 flex justify-between ">
           <button
             onClick={() => setIsModalOpen(true)}
             className=" text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
@@ -87,7 +87,7 @@ const Employees = () => {
             {t("taskSlotsList.addButton")}
           </button>
         </div>
-        <table className="min-w-full divide-y divide-gray-200 m-10">
+        <table className="min-w-full divide-y divide-gray-200 m-10 dark:text-gray-400">
           <thead>
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">

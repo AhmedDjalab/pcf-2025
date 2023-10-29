@@ -7,6 +7,7 @@ import Checkbox from "src/components/Checkbox";
 import { addEmployeeAndUser, editEmployee } from "src/Services/EmployeeService";
 import { uniqueId } from "lodash";
 import { useUserContext } from "src/context/UserContext";
+import { LabelButton } from "src/components/Button";
 
 interface EmployeeFormProps {
   initialValues?: EmployeeData;
@@ -74,7 +75,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
   return (
     <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-white bg-opacity-20 dark:bg-gray-700 dark:bg-opacity-20">
       <div className="mt-20 max-h-full w-[50%] overflow-y-auto rounded bg-white p-6 shadow-md dark:bg-gray-700">
-        <div className="mb-4 text-2xl font-semibold">
+        <div className="mb-4 text-2xl font-semibold dark:text-white">
           {!!initialValues
             ? t("employeeForm.editEmployee")
             : t("employeeForm.addEmployee")}
@@ -152,12 +153,19 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
               </div>
 
               <div className="flex items-center justify-between">
-                <button type="submit" className="button">
+                <button
+                  type="submit"
+                  className="  mb-2 mr-2 rounded-lg border border-primary-700 px-5 py-2.5 text-center text-sm font-medium text-primary-700 hover:bg-primary-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-primary-300 dark:border-primary-500 dark:text-primary-500 dark:hover:bg-primary-600 dark:hover:text-white dark:focus:ring-primary-800 "
+                >
                   {t("employeeForm.save")}
                 </button>
-                <button type="button" onClick={handleClose} className="button">
+                <LabelButton
+                  type="button"
+                  onClick={handleClose}
+                  className="button"
+                >
                   {t("employeeForm.cancel")}
-                </button>
+                </LabelButton>
               </div>
             </Form>
           )}

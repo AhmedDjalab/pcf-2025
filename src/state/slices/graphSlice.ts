@@ -266,6 +266,27 @@ const GraphSlice = createSlice({
       state.rawGraphDataFromFile = [...newgraphData];
       return state;
     },
+
+    updateStyleShape(state, action: PayloadAction<{ style: ShapeType }>) {
+      const { style } = action.payload;
+
+      const shapeIndex = state.shapes.shapesData.findIndex(
+        (item) => item.id === style.id
+      );
+      console.log(
+        "🚀 ~ file: graphSlice.ts:276 ~ updateStyleShape ~ shapeIndex:",
+        shapeIndex,
+        state.shapes.shapesData
+      );
+
+      if (shapeIndex !== -1) {
+        state.shapes.shapesData[shapeIndex] = style;
+
+        return state;
+      }
+
+      return state;
+    },
     // removeActivityFromShapeList(
     //   state,
     //   action: PayloadAction<{ activityId: string; shapeId: string }>
@@ -351,6 +372,7 @@ export const {
   updateUDFSettings,
   addGraphDataList,
   applyFilter,
+  updateStyleShape,
 } = GraphSlice.actions;
 
 export default GraphSlice.reducer;

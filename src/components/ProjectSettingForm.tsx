@@ -84,7 +84,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
         <div className="mb-4">
           <label
             htmlFor="projectTitle"
-            className="block text-gray-700 text-sm font-bold mb-2"
+            className="block text-gray-700 text-sm font-bold mb-2 dark:text-white"
           >
             {t("projectForm.title")}
           </label>
@@ -94,7 +94,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
             name="projectTitle"
             value={projectTitle}
             onChange={handleTitleChange}
-            className="w-full px-3 py-2 border rounded-lg"
+            className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
             required
           />
         </div>
@@ -102,7 +102,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
         <div className="mb-4">
           <label
             htmlFor="projectImage"
-            className="block text-gray-700 text-sm font-bold mb-2"
+            className="block text-gray-700 text-sm font-bold mb-2  dark:text-white"
           >
             {t("projectForm.logo")}
           </label>
@@ -115,7 +115,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
         <div className="mb-4">
           <label
             htmlFor="projectFileType"
-            className="block text-gray-700 text-sm font-bold mb-2"
+            className="block text-gray-700 text-sm font-bold mb-2 dark:text-white "
           >
             {t("projectForm.fileType")}
           </label>
@@ -124,7 +124,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
             name="projectFileType"
             value={projectFileType}
             onChange={handleFileTypeChange}
-            className="w-full px-3 py-2 border rounded-lg"
+            className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
           >
             {ProjectFiletypeOptions.map((option) => (
               <option key={option.id} value={option.id}>

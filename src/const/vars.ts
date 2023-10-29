@@ -22,9 +22,9 @@ enum ProjectFileType {
 }
 
 const ProjectFiletypeOptions = [
-  { id: ProjectFileType.XLSX, name: "XLSX" },
-  { id: ProjectFileType.PrimaveraXML, name: "Primavera XML" },
-  { id: ProjectFileType.MicrosoftProject, name: "Microsoft Project" },
+  { id: ProjectFileType.XLSX, name: "Fichier Excel - XLSX" },
+  { id: ProjectFileType.PrimaveraXML, name: "Primavera P6 - XML" },
+  { id: ProjectFileType.MicrosoftProject, name: "Microsoft Project - XML" },
 ];
 
 export type GraphStringsSetting = {
