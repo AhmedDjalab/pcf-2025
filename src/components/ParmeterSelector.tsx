@@ -45,10 +45,6 @@ function ParameterSelector({
     () => getOptions(udfSettingString, filetype!),
     [filetype, udfSettingString]
   );
-  console.log(
-    "🚀 ~ file: ParmeterSelector.tsx:47 ~ udfStringsOptions:",
-    udfStringsOptions
-  );
 
   const handleSelect = (
     selectable: GraphStringsSetting,
@@ -112,7 +108,7 @@ function ParameterSelector({
           <ul>
             {graphStringsSettings.map((string, index) => (
               <li key={index} className="mb-2 flex items-center">
-                <span className="w-[30%] mr-2">{string.name}:</span>
+                <span className="w-[30%] mr-2">{t(string.name)}:</span>
 
                 <Dropdown
                   options={udfStringsOptions!}

@@ -41,32 +41,32 @@ export const graphStringsSettings: GraphStringsSetting[] = [
   },
   {
     id: 2,
-    name: "Activity Name",
+    name: "drawGraph.activityDetails.activityNameLabel",
     field: "activityName",
   },
   {
     id: 3,
-    name: "Start Date",
+    name: "drawGraph.activityDetails.startDateLabel",
     field: "startDate",
   },
   {
     id: 4,
-    name: "Finish Date",
+    name: "drawGraph.activityDetails.finishDateLabel",
     field: "finishDate",
   },
   {
     id: 5,
-    name: "Start chainage",
+    name: "drawGraph.activityDetails.startChainageLabel",
     field: "startChainage",
   },
   {
     id: 6,
-    name: "Finish chainage",
+    name: "drawGraph.activityDetails.finishChainageLabel",
     field: "finishChainage",
   },
   {
     id: 7,
-    name: "Style",
+    name: "drawGraph.activityDetails.styleLabel",
     field: "style",
   },
 ];
