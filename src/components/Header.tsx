@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useUserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -18,44 +18,114 @@ const Header = () => {
   const { user, logoutUser } = useUserContext();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [showNav, setShowNav] = useState(false); // State to toggle visibility of navigation on smaller screens
 
   const [popupVisible, setPopupVisible] = useState(false);
 
   const togglePopup = () => {
     setPopupVisible(!popupVisible);
   };
+  const handleToggleNav = () => {
+    setShowNav(!showNav);
+  };
+
+  useEffect(() => {
+    const handleWindowResize = () => {
+      // Check screen width to decide when to hide/show the nav links
+      if (window.innerWidth > 768) {
+        setShowNav(false); // Reset to hide nav on larger screens
+      }
+    };
+
+    window.addEventListener("resize", handleWindowResize);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, []);
 
   return (
-    <header className="text-white p-5 bg-boxdark text-center flex flex-col items-center">
+    <header className="text-white  p-5 bg-boxdark text-center flex flex-col items-center">
       <div className="flex justify-between items-center w-full">
         <img src={Logo} alt="logo" className="h-20 w-20 object-contain" />
 
         <div className="flex justify-start items-center space-x-10 ml-10">
-          <NavLink
-            to="/create-project"
-            text={t("header.createProject")}
-            icon={<HomeIcon className="w-6 h-6" />}
-          />
-          <NavLink
-            to="/projects"
-            text={t("header.projects")}
-            icon={<QueueListIcon className="w-6 h-6" />}
-          />
-          <NavLink
-            to="/employees"
-            text={t("header.employees")}
-            icon={<UserGroupIcon className="w-6 h-6" />}
-          />
-          {/* <NavLink
-            to="/pricing"
-            text={t("header.pricing")}
-            icon={<CurrencyDollarIcon className="w-6 h-6" />}
-          /> */}
-          <NavLink
-            to="/about-us"
-            text={t("header.aboutUs")}
-            icon={<InformationCircleIcon className="w-6 h-6" />}
-          />
+          <div className="md:hidden" onClick={handleToggleNav}>
+            <button className="flex items-center mr-10">
+              <svg
+                className="h-6 w-6 text-white cursor-pointer"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d={
+                    showNav ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"
+                  }
+                />
+              </svg>
+            </button>
+          </div>
+          <div className="hidden md:flex justify-start items-center space-x-10 ml-10">
+            <NavLink
+              to="/create-project"
+              text={t("header.createProject")}
+              icon={<HomeIcon className="w-6 h-6" />}
+            />
+            <NavLink
+              to="/projects"
+              text={t("header.projects")}
+              icon={<QueueListIcon className="w-6 h-6" />}
+            />
+            <NavLink
+              to="/employees"
+              text={t("header.employees")}
+              icon={<UserGroupIcon className="w-6 h-6" />}
+            />
+            {/* <NavLink
+              to="/pricing"
+              text={t("header.pricing")}
+              icon={<CurrencyDollarIcon className="w-6 h-6" />}
+            /> */}
+            <NavLink
+              to="/about-us"
+              text={t("header.aboutUs")}
+              icon={<InformationCircleIcon className="w-6 h-6" />}
+            />
+          </div>
+
+          {showNav && (
+            <div className="md:hidden flex flex-col absolute top-20 bg-white rounded-lg left-0 dark:bg-boxdark p-8 gap-5 text-bodydark2 shadow-md dark:text-white">
+              <NavLink
+                to="/create-project"
+                text={t("header.createProject")}
+                icon={<HomeIcon className="w-6 h-6" />}
+              />
+              <NavLink
+                to="/projects"
+                text={t("header.projects")}
+                icon={<QueueListIcon className="w-6 h-6" />}
+              />
+              <NavLink
+                to="/employees"
+                text={t("header.employees")}
+                icon={<UserGroupIcon className="w-6 h-6" />}
+              />
+              {/* <NavLink
+              to="/pricing"
+              text={t("header.pricing")}
+              icon={<CurrencyDollarIcon className="w-6 h-6" />}
+            /> */}
+              <NavLink
+                to="/about-us"
+                text={t("header.aboutUs")}
+                icon={<InformationCircleIcon className="w-6 h-6" />}
+              />
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end items-center ">

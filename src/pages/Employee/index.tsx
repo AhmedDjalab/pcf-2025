@@ -78,7 +78,7 @@ const Employees = () => {
 
   return (
     <DefaultLayout>
-      <div className="dark:bg-boxdark bg-white h-[100vh]">
+      <div className="dark:bg-boxdark bg-white h-[100vh] w-full overflow-x-auto">
         <div className="py-2 ml-10 flex justify-between ">
           <button
             onClick={() => setIsModalOpen(true)}
