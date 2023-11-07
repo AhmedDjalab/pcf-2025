@@ -137,7 +137,9 @@ const Header = () => {
           </div>
           <p className="text-lg px-5 mb-2 hidden md:flex">
             {t("header.contact")}
-            <span className="text-lg text-blue-600">admin@ientreprize.com</span>
+            <span className="text-lg text-blue-600">
+              &nbsp;admin@ientreprize.com
+            </span>
           </p>
           {user && (
             <div className="relative inline-block">

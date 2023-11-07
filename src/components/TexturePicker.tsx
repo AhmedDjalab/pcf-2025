@@ -70,7 +70,11 @@ const TexturePicker = ({
   useClickOutside(popover, close);
 
   return (
-    <div className="relative " ref={popover} key={key}>
+    <div
+      className="relative justify-center items-center flex"
+      ref={popover}
+      key={key}
+    >
       {label && (
         <label
           htmlFor={id}

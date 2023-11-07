@@ -41,7 +41,7 @@ export const PopoverColorPicker = ({
   useClickOutside(popover, close);
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full justify-center items-center flex">
       {label && (
         <label
           htmlFor={id}

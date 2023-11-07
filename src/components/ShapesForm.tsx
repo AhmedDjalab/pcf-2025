@@ -285,7 +285,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
                   return (
                     <td
                       {...cell.getCellProps()}
-                      className="whitespace-nowrap px-6 py-4 text-center"
+                      className="whitespace-nowrap px-6 py-4 text-center "
                       role="cell"
                     >
                       {cell.render("Cell")}

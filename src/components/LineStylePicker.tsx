@@ -49,7 +49,7 @@ const LineStylePicker = ({
   useClickOutside(popover, close);
 
   return (
-    <div className="relative" ref={popover}>
+    <div className="relative justify-center items-center flex" ref={popover}>
       {label && (
         <label
           htmlFor={id}
