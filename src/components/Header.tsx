@@ -135,7 +135,7 @@ const Header = () => {
           <div className="md:ml-4">
             <DropdownLanguage />
           </div>
-          <p className="text-lg px-5 mb-2">
+          <p className="text-lg px-5 mb-2 hidden md:flex">
             {t("header.contact")}
             <span className="text-lg text-blue-600">admin@ientreprize.com</span>
           </p>

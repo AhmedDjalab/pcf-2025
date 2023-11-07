@@ -165,25 +165,16 @@ function DrawGraphStep() {
       let totalHeight = 1 * tickSpacing;
 
       if (timeRange === "Yearly") {
-        const tickSpacing = 50; // Adjust the spacing between ticks as needed
-
         // Generate an array of tick values for yearly intervals
         const ticks = d3.timeYear
           .every(1)
           .range(startDateObject, endDateObject);
-        console.log(
-          "🚀 ~ file: DrawGraphStep.tsx:165 ~ DrawGraphStep ~ ticks:",
-          ticks
-        );
 
         // Ensure there's at least one tick for the start date
         if (ticks[0] > startDateObject) {
           ticks.unshift(startDateObject);
         }
-        console.log(
-          "🚀 ~ file: DrawGraphStep.tsx:165 ~ DrawGraphStep ~ ticks:",
-          ticks
-        );
+
         // Set the tick values
         yAxis.tickValues(ticks);
 
@@ -192,11 +183,11 @@ function DrawGraphStep() {
 
         totalHeight =
           ticksCount * tickSpacing < window.innerHeight
-            ? ticksCount * 200
+            ? ticksCount * 100
             : ticksCount * tickSpacing;
         //yScale.range([margin.top, margin.top + totalHeight]);
       } else if (timeRange === "Monthly") {
-        const tickSpacing = 50; // Adjust the spacing between ticks as needed
+        // Adjust the spacing between ticks as needed
 
         // Generate an array of tick values for monthly intervals
         const ticks = d3.timeMonth
@@ -224,7 +215,6 @@ function DrawGraphStep() {
           new Date(startDate),
           new Date(endDate)
         );
-        const tickSpacing = 50; // Adjust the spacing between ticks as needed
         yAxis.ticks(d3.timeWeek.every(1));
         // this is only for test
         // Calculate the total height required for the ticks
@@ -234,7 +224,6 @@ function DrawGraphStep() {
       } else if (timeRange.includes("Daily")) {
         const ticksCount = d3.timeDay.count(startDateObject, endDateObject);
 
-        const tickSpacing = 50; // Adjust the spacing between ticks as needed
         yAxis.ticks(d3.timeDay.every(1));
 
         // Calculate the total height required for the ticks
