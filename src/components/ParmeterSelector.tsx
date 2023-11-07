@@ -108,7 +108,9 @@ function ParameterSelector({
           <ul>
             {graphStringsSettings.map((string, index) => (
               <li key={index} className="mb-2 flex items-center">
-                <span className="w-[30%] mr-2">{t(string.name)}:</span>
+                <span className="w-[50%] inline-block mr-2">
+                  {t(string.name)}:
+                </span>
 
                 <Dropdown
                   options={udfStringsOptions!}

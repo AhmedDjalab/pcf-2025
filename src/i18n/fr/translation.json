@@ -200,7 +200,7 @@
   "header": {
     "createProject": "Créer un Projet",
     "projects": "Projets",
-    "employees": "Employés",
+    "employees": "Salariés",
     "pricing": "Tarification",
     "aboutUs": "À Propos de Nous",
     "contact": "Contact :",
@@ -216,7 +216,7 @@
   },
   "projectsList": {
     "title": "Titre",
-    "numEmployees": "Nombre d'Employés",
+    "numEmployees": "Nombre de Salariés",
     "actions": "Actions",
     "buttons": {
       "edit": "Modifier",
@@ -225,7 +225,7 @@
   },
   "graphSettings": {
     "title": "Paramètres du graphique",
-    "numEmployees": "Number of Employees",
+    "numEmployees": "Nombre de Salariés",
     "actions": "Actions",
     "buttons": {
       "edit": "Edit",
@@ -233,8 +233,8 @@
     }
   },
   "employeeForm": {
-    "addEmployee": "Ajouter un employé",
-    "editEmployee": "Modifier l'employé",
+    "addEmployee": "Ajouter un salarié",
+    "editEmployee": "Modifier le salarié",
     "fullName": "Nom complet",
     "email": "Email",
     "password": "Mot de passe",

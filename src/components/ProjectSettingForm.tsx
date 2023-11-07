@@ -142,7 +142,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
                        text-gray-900 dark:text-white
                   `}
           >
-            {"Employees"}
+            {t("header.employees")}
           </label>
           <Select
             id="employees"
