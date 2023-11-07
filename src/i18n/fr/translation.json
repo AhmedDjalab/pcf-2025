@@ -249,5 +249,11 @@
       "canRead": "La permission de lecture est requise",
       "canWrite": "La permission d'écriture est requise"
     }
+  },
+
+  "projectFileTypes": {
+    "XLSX": "Fichier Excel - XLSX",
+    "PrimaveraXML": "Primavera P6 - XML",
+    "MicrosoftProject": "Microsoft Project - XML"
   }
 }

@@ -230,5 +230,10 @@
       "edit": "Edit",
       "delete": "Delete"
     }
+  },
+  "projectFileTypes": {
+    "XLSX": "Archivo de Excel - XLSX",
+    "PrimaveraXML": "Primavera P6 - XML",
+    "MicrosoftProject": "Microsoft Project - XML"
   }
 }

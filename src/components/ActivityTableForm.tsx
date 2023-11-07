@@ -86,7 +86,7 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
 
   return (
     <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-white bg-opacity-20 dark:bg-gray-700 dark:bg-opacity-20">
-      <div className=" mt-20 max-h-full  w-[50%] overflow-y-auto rounded bg-white p-6 shadow-md dark:bg-gray-700">
+      <div className=" mt-20 max-h-full  w-[50%]  text-boxdark dark:text-white overflow-y-auto rounded bg-white p-6 shadow-md dark:bg-gray-700">
         <div className="mb-4 text-2xl font-semibold">
           {!!initialValues
             ? t("activityForm.editActivity")

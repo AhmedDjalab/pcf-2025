@@ -97,8 +97,8 @@
     },
     "tableHeaders": {
       "name": "SEGMENT NAME",
-      "start": "START CHINAGE",
-      "end": "END CHINAGE",
+      "start": "START CHAINAGE",
+      "end": "END CHAINAGE",
       "actions": "Actions"
     },
     "buttons": {
@@ -121,19 +121,19 @@
     },
     "labels": {
       "name": "Name:",
-      "start": "Start  Chinage:",
-      "end": "End  Chinage:"
+      "start": "Start  Chainage:",
+      "end": "End  Chainage:"
     },
     "placeholders": {
       "name": "Enter segment name",
-      "start": "Enter start  Chinage",
-      "end": "Enter end  Chinage"
+      "start": "Enter start  Chainage",
+      "end": "Enter end  Chainage"
     },
     "errors": {
       "required": "This field is required",
       "minDistance": "Value must be greater than or equal to {{minDistance}}",
       "maxDistance": "Value must be less than or equal to {{maxDistance}}",
-      "greaterThanStart": "End  Chinage must be greater than start  Chinage"
+      "greaterThanStart": "End  Chainage must be greater than start  Chainage"
     },
     "buttons": {
       "add": "Add",
@@ -147,8 +147,8 @@
       "styleLabel": "STYLE",
       "startDateLabel": "START DATE",
       "finishDateLabel": "FINISH DATE",
-      "startChainageLabel": " START  CHINAGE",
-      "finishChainageLabel": "END  CHINAGE"
+      "startChainageLabel": " START  CHAINAGE",
+      "finishChainageLabel": "END  CHAINAGE"
     },
 
     "changeStyle": "Change Style",
@@ -186,8 +186,8 @@
     "activityName": "Activity Name",
     "startDate": "Start Date",
     "endDate": "End Date",
-    "startPk": "Start  Chinage",
-    "endPk": "End  Chinage",
+    "startPk": "Start  Chainage",
+    "endPk": "End  Chainage",
     "activityStyle": "Activity Style",
     "save": "Save",
     "cancel": "Cancel",
@@ -195,8 +195,8 @@
       "activityName": "Activity Name is required",
       "startDate": "Start Date is required",
       "endDate": "End Date is required",
-      "startPk": "Start Chinage is required",
-      "endPk": "End  Chinage is required",
+      "startPk": "Start Chainage is required",
+      "endPk": "End  Chainage is required",
       "activityStyle": "Activity Style is required",
       "endDateMin": "the finish date must be greater or equal to start date"
     }
@@ -255,5 +255,11 @@
       "canRead": "Can Read is required",
       "canWrite": "Can Write is required"
     }
+  },
+
+  "projectFileTypes": {
+    "XLSX": "Excel File - XLSX",
+    "PrimaveraXML": "Primavera P6 - XML",
+    "MicrosoftProject": "Microsoft Project - XML"
   }
 }

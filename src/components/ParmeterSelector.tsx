@@ -99,7 +99,7 @@ function ParameterSelector({
 
   return (
     <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-opacity-20 bg-white  dark:bg-gray-700 dark:bg-opacity-20">
-      <div className="mt-20 max-h-full w-[50%] overflow-y-auto rounded bg-white p-6 shadow-md dark:bg-gray-700 ">
+      <div className="mt-20 max-h-full w-[50%] overflow-y-auto rounded  text-boxdark dark:text-white bg-white p-6 shadow-md dark:bg-gray-700 ">
         <div className="mb-4 text-2xl font-semibold">
           {t("graphSettings.title")}
         </div>
