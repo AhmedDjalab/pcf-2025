@@ -196,7 +196,7 @@ function Login() {
                 <div className="text-sm text-gray-500 dark:text-gray-400">
                   <p>{t("login.noAccount")}</p>
                   <p>
-                    {t("login.contactUs")}:{" "}
+                    {t("login.contactUs")}{" "}
                     <span className="text-blue-700">
                       {t("login.adminEmail")}
                     </span>
