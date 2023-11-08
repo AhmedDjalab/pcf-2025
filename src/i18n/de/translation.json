@@ -148,6 +148,7 @@
       "startChainageLabel": " START-PK",
       "finishChainageLabel": "ENDE-PK"
     },
+    "changeStyle": "Stil ändern",
     "cancelZoomButtonLabel": "Zoom abbrechen",
     "exportAllData": "Exportar todos los datos",
     "exportGraphData": "Exportar datos del gráfico"
@@ -218,7 +219,9 @@
     "actions": "Aktionen",
     "buttons": {
       "edit": "Bearbeiten",
-      "delete": "Löschen"
+      "delete": "Löschen",
+      "viewGraph": "Ansicht",
+      "download": "Herunterladen"
     }
   },
   "graphSettings": {

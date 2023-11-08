@@ -225,7 +225,9 @@
     "actions": "Actions",
     "buttons": {
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "viewGraph": "View",
+      "download": "Download"
     }
   },
   "graphSettings": {

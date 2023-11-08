@@ -28,6 +28,7 @@ import ActivityTableForm from "./ActivityTableForm";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import DefaultLayout from "./DefaultLayout";
 import StyleForm from "./ShapesPopup";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export interface ActivityData {
   id: string;
@@ -77,6 +78,8 @@ function DrawGraphStep() {
   const rawcontainerWidth = window.innerWidth;
   let width = rawcontainerHeight - margin.left - margin.right;
   let height = rawcontainerWidth - margin.top - margin.bottom;
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [containerWidth, setContainerWidth] = useState(rawcontainerWidth);
   const [containerHeight, setContainerHeight] = useState(height);
@@ -470,7 +473,7 @@ function DrawGraphStep() {
             });
         });
 
-      //shapes.exit().remove();
+      shapes.exit().remove();
     },
     [
       endDateObject,
@@ -599,6 +602,24 @@ function DrawGraphStep() {
     },
     [containerHeight, endDateObject, margin.top, startDateObject]
   );
+
+  const callTextureData = useCallback(() => {
+    const svg = d3.select(svgRef2.current);
+    svg.selectAll("*").remove();
+
+    shapesData.shapesData.forEach((shape) => {
+      let selectedTexture = texturesData.find(
+        (x) => x.id === shape.backgroundTexture
+      );
+
+      if (selectedTexture) {
+        const optionTexture = selectedTexture.configuration
+          .id(sanitizeClassName(shape.id + selectedTexture.id))
+          .stroke(shape.color);
+        svg.call(optionTexture);
+      }
+    });
+  }, [shapesData.shapesData]);
 
   const drawD3Chart = useCallback(() => {
     // Set the height attribute of the parent SVG to fit its children
@@ -771,7 +792,6 @@ function DrawGraphStep() {
   ]);
 
   useEffect(() => {
-    console.warn("ths os new caled ", graphData);
     drawD3Chart();
     // Gray border
   }, [graphData]);
@@ -796,7 +816,7 @@ function DrawGraphStep() {
 
   useEffect(() => {
     callTextureData();
-  }, [shapesData.shapesData, svgRef2]);
+  }, [callTextureData, shapesData.shapesData, svgRef2]);
 
   const resetZoom = () => {
     // const svg = d3.select(svgRef.current); // Ensure svgRef.current is defined
@@ -839,10 +859,7 @@ function DrawGraphStep() {
       );
 
       const textureId = sanitizeClassName(shape.id + textureConfig.id);
-      console.log(
-        "🚀 ~ file: DrawGraphStep.tsx:823 ~ returnshapesData.shapesData.map ~ textureConfig:",
-        textureId
-      );
+
       // const handleMouseOver = () => {
       //   // Select all shapes and fade them out except the one being hovered over
       //   d3.selectAll(".activity-rectangle")
@@ -960,10 +977,7 @@ function DrawGraphStep() {
 
     // Calculate the dimensions in pixels based on the user's device DPI
     const dpi = window.devicePixelRatio || 1; // Get the device DPI
-    console.log(
-      "🚀 ~ file: DrawGraphStep.tsx:775 ~ saveAsPdfOrImage ~ dpi:",
-      dpi
-    );
+
     const pageWidthPx = Math.floor((A4_WIDTH_MM * dpi) / 25.4); // Convert mm to pixels
     const pageHeightPx = Math.floor((A4_HEIGHT_MM * dpi) / 25.4);
 
@@ -1059,12 +1073,12 @@ function DrawGraphStep() {
   const closeStyleModal = () => {
     setStyleModalOpen(false);
     setSelectedShapeData(null);
+    navigate("/refresh");
+    navigate(-1);
   };
   const submitStyleModal = () => {
-    callTextureData();
     setStyleModalOpen(false);
     setSelectedShapeData(null);
-    setTimeout(() => document.location.reload());
   };
 
   // export logic
@@ -1332,26 +1346,6 @@ function DrawGraphStep() {
       </div>
     </DefaultLayout>
   );
-
-  function callTextureData() {
-    const svg = d3.select(svgRef2.current);
-    shapesData.shapesData.forEach((shape) => {
-      let selectedTexture = texturesData.find(
-        (x) => x.id === shape.backgroundTexture
-      );
-
-      if (selectedTexture) {
-        console.warn(
-          "🚀 ~ file: DrawGraphStep.tsx:801 ~ texturesData.forEach ~ selectedTexture:",
-          sanitizeClassName(shape.id + selectedTexture.id)
-        );
-        const optionTexture = selectedTexture.configuration
-          .id(sanitizeClassName(shape.id + selectedTexture.id))
-          .stroke(shape.color);
-        svg.call(optionTexture);
-      }
-    });
-  }
 }
 
 export default DrawGraphStep;
