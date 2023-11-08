@@ -67,6 +67,7 @@ function DrawGraphStep() {
   const [isStyleModalOpen, setStyleModalOpen] = useState(false);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const svgRef2 = useRef<SVGSVGElement | null>(null);
   const containerSVGRef = useRef<SVGSVGElement | null>(null);
   const legendRef = useRef<HTMLDivElement | null>(null);
   const { t } = useTranslation();
@@ -97,6 +98,10 @@ function DrawGraphStep() {
 
   const [selectedShapeData, setSelectedShapeData] = useState<GraphDataType>();
   const [patternsData, setPatternsData] = useState<any[]>([]);
+  const sanitizeClassName = (key: string): string => {
+    // Replace any characters that are not letters, numbers, hyphens, or underscores with hyphens
+    return key.replace(/[^a-zA-Z0-9-_]/g, "-");
+  };
 
   const generateTooltipContent = (data: GraphDataType) => {
     return `
@@ -345,7 +350,7 @@ function DrawGraphStep() {
                 markersConfig[lineStyleAttr.markerStartName];
               const endArrowMarker = defs
                 .append("marker")
-                .attr("id", `${markerConfig.id}${shape.id}`)
+                .attr("id", `${markerConfig.id}${textureConfig.id}`)
                 .attr("viewBox", markerConfig.config.viewBox)
                 .attr("markerWidth", markerConfig.config.markerWidth)
                 .attr("markerHeight", markerConfig.config.markerHeight)
@@ -429,10 +434,17 @@ function DrawGraphStep() {
               .attr("cy", (y1 + y2) / 2)
               .attr("r", 5);
           }
-
+          let textureId = "";
           if (textureConfig) {
-            svg.call(textureConfig?.configuration.stroke(shapeStroke));
-            shapeInCanvas.style("fill", textureConfig?.configuration.url());
+            textureId = sanitizeClassName(shape.id + textureConfig.id);
+
+            // svg.call(
+            //   textureConfig?.configuration.id(shape.id).stroke(shapeStroke)
+            // );
+            shapeInCanvas.style(
+              "fill",
+              textureConfig?.configuration.id(textureId).url()
+            );
           }
           shapeInCanvas.attr("id", `shape-${(d as GraphDataType).id}`);
 
@@ -781,6 +793,11 @@ function DrawGraphStep() {
   //     }
   //   }
   // };
+
+  useEffect(() => {
+    callTextureData();
+  }, [shapesData.shapesData, svgRef2]);
+
   const resetZoom = () => {
     // const svg = d3.select(svgRef.current); // Ensure svgRef.current is defined
     // const g = svg.select("g"); // Adjust the selector to match your chart structure
@@ -821,6 +838,11 @@ function DrawGraphStep() {
         (x) => x.id === shape.backgroundTexture
       );
 
+      const textureId = sanitizeClassName(shape.id + textureConfig.id);
+      console.log(
+        "🚀 ~ file: DrawGraphStep.tsx:823 ~ returnshapesData.shapesData.map ~ textureConfig:",
+        textureId
+      );
       // const handleMouseOver = () => {
       //   // Select all shapes and fade them out except the one being hovered over
       //   d3.selectAll(".activity-rectangle")
@@ -865,7 +887,7 @@ function DrawGraphStep() {
         >
           <div className="shape-container">
             {shape.type === "line" && (
-              <svg width="40" height="20">
+              <svg width="40" height="20" ref={svgRef2}>
                 <line
                   x1="10"
                   y1="10"
@@ -894,22 +916,22 @@ function DrawGraphStep() {
                   y="2"
                   width="30"
                   height="16"
-                  fill={textureConfig?.configuration.url()}
+                  fill={textureConfig?.configuration.id(textureId).url()}
                   stroke={shape.color}
                 />
               </svg>
             )}
             {shape.type === "triangle" && (
-              <svg width="40" height="20">
+              <svg width="40" height="20" ref={svgRef2}>
                 <polygon
                   points="10,18 40,2 40,18"
-                  fill={textureConfig?.configuration.url()}
+                  fill={textureConfig?.configuration.id(textureId).url()}
                   stroke={shape.color}
                 />
               </svg>
             )}
             {shape.type === "circle" && (
-              <svg width="40" height="20">
+              <svg width="40" height="20" ref={svgRef2}>
                 <circle cx="20" cy="10" r="8" fill={shape.color} />
               </svg>
             )}
@@ -1039,9 +1061,10 @@ function DrawGraphStep() {
     setSelectedShapeData(null);
   };
   const submitStyleModal = () => {
+    callTextureData();
     setStyleModalOpen(false);
     setSelectedShapeData(null);
-    window.location.reload(false);
+    setTimeout(() => document.location.reload());
   };
 
   // export logic
@@ -1309,6 +1332,26 @@ function DrawGraphStep() {
       </div>
     </DefaultLayout>
   );
+
+  function callTextureData() {
+    const svg = d3.select(svgRef2.current);
+    shapesData.shapesData.forEach((shape) => {
+      let selectedTexture = texturesData.find(
+        (x) => x.id === shape.backgroundTexture
+      );
+
+      if (selectedTexture) {
+        console.warn(
+          "🚀 ~ file: DrawGraphStep.tsx:801 ~ texturesData.forEach ~ selectedTexture:",
+          sanitizeClassName(shape.id + selectedTexture.id)
+        );
+        const optionTexture = selectedTexture.configuration
+          .id(sanitizeClassName(shape.id + selectedTexture.id))
+          .stroke(shape.color);
+        svg.call(optionTexture);
+      }
+    });
+  }
 }
 
 export default DrawGraphStep;

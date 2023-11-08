@@ -45,14 +45,15 @@ const StyleForm: React.FC<StyleFormProps> = ({
   maxDistance,
 }) => {
   const { t } = useTranslation();
-  console.log("this is name ", id);
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   const [isOpen, toggle] = useState(false);
 
   const shapesData = useSelector((state: RootState) => state.shapes.shapesData);
   const [initialValues, setInitialValues] = useState(
-    shapesData.find((x) => x.name == id)!
+    shapesData.find((x) => x.name === id)!
   );
+  console.error("this is name ", id, shapesData.find((x) => x.name === id)!);
+
   // const [color, setColor] = useState(
   //   shapesData.find((x) => x.name == id)!.color
   // );
@@ -106,7 +107,11 @@ const StyleForm: React.FC<StyleFormProps> = ({
           {!!initialValues ? "Edit Style" : "Add Style"}
         </div>
         {/* @ts-ignore */}
-        <Formik initialValues={initialValues} onSubmit={handleSubmitData}>
+        <Formik
+          initialValues={initialValues}
+          onSubmit={handleSubmitData}
+          enableReinitialize={true}
+        >
           {({
             values,
             errors,
