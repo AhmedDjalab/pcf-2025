@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Step {
   stepNumber: number;
@@ -12,12 +13,15 @@ interface StepperProps {
 }
 
 const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
+  const navigate = useNavigate();
+  const baseroute = "/create-project";
   return (
     <ol className="w-[100%] items-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0">
       {steps.map((step) => (
         <li
           key={step.stepNumber}
-          className={`flex items-center ${
+          onClick={() => navigate(`${baseroute}/${step.stepNumber}`)}
+          className={`flex items-center cursor-pointer ${
             step.stepNumber <= currentStep
               ? "text-blue-600 dark:text-blue-500"
               : "text-gray-500 dark:text-gray-400"

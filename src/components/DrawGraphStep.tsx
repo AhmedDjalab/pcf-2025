@@ -1160,7 +1160,7 @@ function DrawGraphStep() {
           </button>
           <button
             type="button"
-            onClick={() => navigate("/create-project")} // Handle going back to the previous step
+            onClick={() => navigate("/create-project/5")} // Handle going back to the previous step
             className=" mt-5 bg-gray-400 text-white  hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 flex items-center"
           >
             {t("shapesForm.backButton")}

@@ -26,6 +26,7 @@ const AppRoutes = () => {
         <Route path="/employees" element={<Employees />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/create-project" element={<DrawGraphForm />} />
+        <Route path="/create-project/:id" element={<DrawGraphForm />} />
         {/* <Route path="/pricing" element={<PricingComponent />} />
         <Route path="/about-us" element={<AboutUsComponent />} />
         <Route path="/create-project" element={<CreateProjectComponent />} />

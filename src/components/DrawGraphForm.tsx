@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import ShapesForm from "./ShapesForm";
 import { ImportFileForm } from "./ImportFileForm";
 import Stepper from "./Stepper";
@@ -10,6 +10,7 @@ import {
   UNSAFE_NavigationContext,
   useLocation,
   useNavigate,
+  useParams,
   useRoutes,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -23,8 +24,12 @@ export interface MultiStepFormProps {
 }
 
 export const DrawGraphForm = ({}) => {
+  const { id } = useParams();
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
+
+  useEffect(() => setCurrentStep(id ? parseInt(id) : 1), [id]);
+
   const steps = [
     {
       stepNumber: 1,
