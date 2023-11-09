@@ -862,7 +862,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
   return (
     <div
-      className="w-full mt-10 relative"
+      className="w-full mt-10 relative h-screen"
       onDragOver={preventDefault}
       onDrop={handleDrop}
     >
