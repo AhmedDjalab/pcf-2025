@@ -31,7 +31,7 @@ const shapeTypes = [
 ];
 interface StyleFormProps {
   id: string;
-  onSubmit: (values: GraphDataType) => void;
+  onSubmit: (values: any) => void;
   handleClose: () => void;
   minDistance: number;
   maxDistance: number;
@@ -96,7 +96,7 @@ const StyleForm: React.FC<StyleFormProps> = ({
         })
       );
 
-      handleClose();
+      onSubmit(values);
     }
   };
 

@@ -1077,6 +1077,7 @@ function DrawGraphStep() {
     navigate("/refresh");
     navigate(-1);
   };
+
   const submitStyleModal = () => {
     setStyleModalOpen(false);
     setSelectedShapeData(null);
@@ -1347,8 +1348,8 @@ function DrawGraphStep() {
         {isStyleModalOpen && (
           <StyleForm
             id={selectedShapeData?.style}
-            onSubmit={submitStyleModal}
-            handleClose={closeStyleModal}
+            onSubmit={closeStyleModal}
+            handleClose={submitStyleModal}
           />
         )}
       </div>
