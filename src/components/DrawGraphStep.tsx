@@ -174,6 +174,7 @@ function DrawGraphStep() {
 
       if (timeRange === "Yearly") {
         // Generate an array of tick values for yearly intervals
+        tickSpacing *= 2;
         const ticks = d3.timeYear
           .every(1)
           .range(startDateObject, endDateObject);
@@ -191,7 +192,7 @@ function DrawGraphStep() {
 
         totalHeight =
           ticksCount * tickSpacing < window.innerHeight
-            ? ticksCount * 100
+            ? ticksCount * 200
             : ticksCount * tickSpacing;
         //yScale.range([margin.top, margin.top + totalHeight]);
       } else if (timeRange === "Monthly") {
@@ -216,7 +217,7 @@ function DrawGraphStep() {
 
         totalHeight =
           adjustedTicksCount * tickSpacing < 200
-            ? adjustedTicksCount * 100
+            ? adjustedTicksCount * 200
             : adjustedTicksCount * tickSpacing;
       } else if (timeRange === "Weekly") {
         const ticksCount = d3.timeWeek.count(
@@ -1146,7 +1147,7 @@ function DrawGraphStep() {
   return (
     <DefaultLayout>
       <div className="flex flex-col dark:bg-boxdark">
-        <div>
+        <div className="flex gap-2">
           <button
             // disabled
             className="focus:outline-none mt-5  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
@@ -1156,6 +1157,13 @@ function DrawGraphStep() {
               <LockClosedIcon className="w-4 h-4" /> {/* Lock icon */}
             </span>
             PDF
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate("/create-project")} // Handle going back to the previous step
+            className=" mt-5 bg-gray-400 text-white  hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 flex items-center"
+          >
+            {t("shapesForm.backButton")}
           </button>
           {/* <button
           className="focus:outline-none mt-5 text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
