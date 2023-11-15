@@ -52,6 +52,7 @@ export interface TaskSlotModel {
   level: number;
   projectId?: string | null;
   id?: string | null;
+  idnew?: string | null;
 }
 
 // Assuming 'Image' is a custom type defined somewhere in your code.

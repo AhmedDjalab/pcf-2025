@@ -11,7 +11,8 @@ interface TaskSlotsPopUpProps {
     name: string;
     start: number;
     end: number;
-    id: string;
+    id?: string;
+    idnew: string;
   } | null;
   closeModal: () => void;
   handleAddTaskSlot: (values: any) => void;
@@ -101,7 +102,7 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
     if (isNew) {
       handleAddTaskSlot(values);
     } else {
-      handleEditTaskSlot({ ...values, id: editRow!.id });
+      handleEditTaskSlot({ ...values, id: editRow!.idnew });
     }
 
     closeModal();

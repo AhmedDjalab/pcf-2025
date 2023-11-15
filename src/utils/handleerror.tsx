@@ -23,7 +23,7 @@ const handleApiError = (error: any) => {
       case 401:
         toast.error("Unauthorized: " + errorMessage);
         secureLocalStorage.removeItem(tokenKeys);
-        window.location.href = "/auth/login";
+        window.location.href = "/login";
         break;
       case 403:
         toast.error("Forbidden: " + errorMessage);

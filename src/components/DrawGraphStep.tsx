@@ -6,6 +6,7 @@ import { RootState } from "../state";
 import {
   GraphDataType,
   TaskSlot,
+  applyFilter,
   fetchProjectByIdThunk,
   removeActivity,
   saveProjectThunk,
@@ -100,6 +101,32 @@ function DrawGraphStep() {
 
   const [containerWidth, setContainerWidth] = useState(rawcontainerWidth);
   const [containerHeight, setContainerHeight] = useState(height);
+
+  useEffect(() => {
+    if (!graphSettings.loading && graphData.length === 0) {
+      dispatch(
+        applyFilter({
+          filters: {
+            fromDate: startDate,
+            toDate: endDate,
+            fromDistance: fromDistance,
+            toDistance: toDistance,
+            timeRange: timeRange,
+            distanceRange: distanceRange,
+          },
+        })
+      );
+    }
+  }, [
+    dispatch,
+    distanceRange,
+    endDate,
+    fromDistance,
+    graphSettings.loading,
+    startDate,
+    timeRange,
+    toDistance,
+  ]);
 
   // State to manage the selected date range
 

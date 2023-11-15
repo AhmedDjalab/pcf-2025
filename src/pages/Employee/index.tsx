@@ -84,6 +84,7 @@ const Employees = () => {
 
   const handleDeleteClick = (gtId: string) => {
     deleteEmployee(gtId);
+    refetchEmployee();
   };
 
   const closeModal = () => {

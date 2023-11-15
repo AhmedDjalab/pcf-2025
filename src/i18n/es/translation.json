@@ -205,7 +205,8 @@
     "pricing": "Precios",
     "aboutUs": "Acerca de Nosotros",
     "contact": "Contacto:",
-    "logout": "Cerrar Sesión"
+    "logout": "Cerrar Sesión",
+    "users": "usuarios"
   },
   "employeeList": {
     "fullName": "Nombre Completo",
@@ -238,5 +239,24 @@
     "XLSX": "Archivo de Excel - XLSX",
     "PrimaveraXML": "Primavera P6 - XML",
     "MicrosoftProject": "Microsoft Project - XML"
+  },
+  "employeeForm": {
+    "addEmployee": "Mitarbeiter hinzufügen",
+    "editEmployee": "Mitarbeiter bearbeiten",
+    "fullName": "Vollständiger Name",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "canRead": "Leserechte",
+    "canWrite": "Schreibrechte",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "errors": {
+      "fullName": "Vollständiger Name ist erforderlich",
+      "email": "Ungültige E-Mail-Adresse",
+      "password": "Passwort ist erforderlich",
+      "canRead": "Leseberechtigung ist erforderlich",
+      "canWrite": "Schreibberechtigung ist erforderlich",
+      "fullNameMustTwoString": "Der vollständige Name sollte aus zwei Namen bestehen, getrennt durch ein Leerzeichen"
+    }
   }
 }

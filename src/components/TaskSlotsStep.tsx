@@ -43,7 +43,7 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
 
   const handleDeleteClick = (rowId: string) => {
     // Find the index of the row to be deleted
-    const rowIndex = formFieldValues.findIndex((row) => row.id === rowId);
+    const rowIndex = formFieldValues.findIndex((row) => row.idnew === rowId);
 
     if (rowIndex !== -1) {
       // Create a copy of the task slots array without the deleted row
@@ -74,7 +74,7 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
 
   const handleAddTaskSlot = (data: TaskSlot) => {
     const newTask = {
-      id: uuidv4(),
+      idnew: uuidv4(),
       name: data.name,
       start: data.start,
       end: data.end,
@@ -91,7 +91,7 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
 
   const handleEditTaskSlot = (data: TaskSlot) => {
     const updatedTaskSlots = formFieldValues.map((taskSlot) =>
-      taskSlot.id === data.id ? { ...taskSlot, ...data } : taskSlot
+      taskSlot.idnew === data.idnew ? { ...taskSlot, ...data } : taskSlot
     );
     setFormFieldValues(updatedTaskSlots);
     // dispatch(
@@ -156,7 +156,7 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
                 </button>
                 <button
                   className="focus:outline-none text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-                  onClick={() => handleDeleteClick(row.id)}
+                  onClick={() => handleDeleteClick(row.idnew!)}
                   disabled={!canWrite && !isAdmin}
                 >
                   {t("taskSlotsList.buttons.delete")}

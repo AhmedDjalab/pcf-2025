@@ -44,7 +44,8 @@ export interface TaskSlot {
   start: number;
   end: number;
   name: string;
-  id: string;
+  id?: string;
+  idnew: string;
 }
 export interface UdfSetting {
   pcfSettingName: string;
@@ -212,6 +213,7 @@ export const saveProjectThunk = createAsyncThunk<
       taskSlotsLevelOne: state.taskSlots.map((taskSlot) => ({
         // Map properties from TaskSlot to TaskSlotModel
         id: taskSlot.id,
+        idnew: taskSlot.id,
         start: taskSlot.start,
         end: taskSlot.end,
         name: taskSlot.name,
@@ -220,6 +222,7 @@ export const saveProjectThunk = createAsyncThunk<
       taskSlotsLevelTwo: state.taskSlotsLevelTwo.map((taskSlot) => ({
         // Map properties from TaskSlot to TaskSlotModel
         id: taskSlot.id,
+        idnew: taskSlot.id,
         start: taskSlot.start,
         end: taskSlot.end,
         name: taskSlot.name,
@@ -612,6 +615,7 @@ const GraphSlice = createSlice({
             name: taskSlot.name,
             level: 1,
             id: taskSlot.id!,
+            idnew: taskSlot.id!,
           })) ?? [],
         taskSlotsLevelTwo:
           action.payload.data!.taskSlotsLevelTwo?.map((taskSlot) => ({
@@ -620,6 +624,7 @@ const GraphSlice = createSlice({
             name: taskSlot.name,
             level: 2,
             id: taskSlot.id!,
+            idnew: taskSlot.id!,
           })) ?? [],
       };
       state.id = projectData.id;

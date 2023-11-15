@@ -37,11 +37,27 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
   const { user } = useAuth();
 
   const validationSchema = Yup.object().shape({
-    fullName: Yup.string().required(t("employeeForm.errors.fullName")),
+    fullName: Yup.string()
+      .required(t("employeeForm.errors.fullName"))
+      .matches(
+        /^[\w']+ [\w']+$/,
+        t("employeeForm.errors.fullNameMustTwoString")
+      ),
+
     email: Yup.string()
       .email(t("employeeForm.errors.email"))
       .required(t("employeeForm.errors.email")),
-    password: Yup.string().required(t("employeeForm.errors.password")),
+    password: Yup.string()
+      .required("validationMessages.passwordRequired")
+      .min(8, "validationMessages.passwordMinLength")
+      .matches(/[A-Z]/, "validationMessages.passwordCapitalLetters")
+      .matches(/[a-z]/, "validationMessages.passwordLowercaseLetters")
+      .matches(/\d/, "validationMessages.passwordDigits")
+      .matches(
+        /[\[\]!"!@$%^&*(){}:;<>,.?/+_=|'~\\-]/,
+        "validationMessages.passwordSpecialCharacters"
+      )
+      .matches(/^[^£# “”]*$/, "validationMessages.passwordNoInvalidCharacters"),
     canRead: Yup.boolean().required(t("employeeForm.errors.canRead")),
     canWrite: Yup.boolean().required(t("employeeForm.errors.canWrite")),
   });

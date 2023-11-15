@@ -12,7 +12,10 @@ import DefaultLayout from "./DefaultLayout";
 import { useDispatch } from "react-redux";
 import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import { RootState } from "src/state";
-import { fetchProjectByIdThunk } from "src/state/slices/graphSlice";
+import {
+  applyFilter,
+  fetchProjectByIdThunk,
+} from "src/state/slices/graphSlice";
 
 export interface MultiStepFormProps {
   currentStep: number;
@@ -33,6 +36,7 @@ export const DrawGraphForm = () => {
       dispatch(fetchProjectByIdThunk(id));
     }
   }, [dispatch, id]);
+
   const steps = [
     {
       stepNumber: 1,

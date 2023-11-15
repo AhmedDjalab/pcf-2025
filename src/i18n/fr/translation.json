@@ -87,6 +87,18 @@
     "Rectangle": "Rectangle",
     "Ligne": "Ligne"
   },
+  "validationMessages": {
+    "passwordRequired": "Le mot de passe est requis.",
+    "passwordMinLength": "Le mot de passe doit comporter au moins 8 caractères.",
+    "passwordCapitalLetters": "Le mot de passe doit contenir une ou plusieurs lettres majuscules.",
+    "passwordLowercaseLetters": "Le mot de passe doit contenir une ou plusieurs lettres minuscules.",
+    "passwordDigits": "Le mot de passe doit contenir un ou plusieurs chiffres.",
+    "passwordSpecialCharacters": "Le mot de passe doit contenir un ou plusieurs caractères spéciaux.",
+    "passwordNoInvalidCharacters": "Le mot de passe ne doit pas contenir £, #, “”, ni d'espaces.",
+    "emailAlreadyExists": "L'email existe déjà",
+    "teamLeaderNotInEmployees": "Le chef d'équipe ne peut pas être sélectionné en tant qu'employé.",
+    "teamLeaderIsRequired": "Le chef d'équipe est requis."
+  },
   "taskSlotsList": {
     "addButton": "Ajouter",
     "sectionHeaders": {
@@ -204,7 +216,8 @@
     "pricing": "Tarification",
     "aboutUs": "À Propos de Nous",
     "contact": "Contact :",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "users": "Utilisateurs"
   },
   "employeeList": {
     "Email": "Email",
@@ -249,7 +262,8 @@
       "email": "Adresse email invalide",
       "password": "Le mot de passe est requis",
       "canRead": "La permission de lecture est requise",
-      "canWrite": "La permission d'écriture est requise"
+      "canWrite": "La permission d'écriture est requise",
+      "fullNameMustTwoString": "Le nom complet doit contenir deux noms séparés par un espace"
     }
   },
 

@@ -141,6 +141,18 @@
       "cancel": "Cancel"
     }
   },
+  "validationMessages": {
+    "passwordRequired": "Password is required.",
+    "passwordMinLength": "Password must be at least 8 characters long.",
+    "passwordCapitalLetters": "Password must contain one or more capital letters.",
+    "passwordLowercaseLetters": "Password must contain one or more lowercase letters.",
+    "passwordDigits": "Password must contain one or more digits.",
+    "passwordSpecialCharacters": "Password must contain one or more special characters.",
+    "passwordNoInvalidCharacters": "Password must not contain £, #, “”, or spaces.",
+    "emailAlreadyExists": "Email already exist",
+    "teamLeaderNotInEmployees": "Team leader cannot be selected as an employee.",
+    "teamLeaderIsRequired": "Team leader is Required."
+  },
   "drawGraph": {
     "activityDetails": {
       "activityNameLabel": "ACTIVITY NAME",
@@ -210,7 +222,8 @@
     "pricing": "Pricing",
     "aboutUs": "About Us",
     "contact": "Contact:",
-    "logout": "Logout"
+    "logout": "Logout",
+    "users": "Users"
   },
   "employeeList": {
     "fullName": "Full Name",
@@ -255,7 +268,8 @@
       "email": "Invalid email address",
       "password": "Password is required",
       "canRead": "Can Read is required",
-      "canWrite": "Can Write is required"
+      "canWrite": "Can Write is required",
+      "fullNameMustTwoString": "Full name should have two names separated by a space"
     }
   },
 

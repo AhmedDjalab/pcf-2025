@@ -205,7 +205,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
                        text-gray-900 dark:text-white
                   `}
           >
-            {t("header.employees")}
+            {t("header.users")}
           </label>
           {employeeLoading ? (
             <Spinner />
