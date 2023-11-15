@@ -6,7 +6,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "../Helpers/firebase";
-import { useUserContext } from "../context/UserContext";
+import { IsAuth, useAuth } from "../context/UserContext";
 import { FirebaseError } from "firebase/app";
 import logo from "../assets/Logo/logo.png";
 import { useTranslation } from "react-i18next";
@@ -18,23 +18,19 @@ function Login() {
   const [loader, setLoader] = useState(false);
   const [password, setPassword] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  const { loginUser } = useUserContext();
+  const { Login: LoginFn, user } = useAuth();
   const { t } = useTranslation();
-
+  const isLogged = IsAuth();
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserEmail(user.email || "");
-      } else {
-        setUserEmail("");
-      }
-    });
-    return unsubscribe;
-  }, []);
+    if (isLogged && user && !window.location.pathname.includes("/")) {
+      navigate("/");
+    }
+  }, [isLogged, user, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
-    setLoader(true);
     e.preventDefault();
+    setLoader(true);
+
     if (!validateEmail(email)) {
       setError(t("common.invalidEmail"));
       setLoader(false);
@@ -46,12 +42,15 @@ function Login() {
       return;
     }
     try {
-      const loginStatus = await loginUser(email, password);
-
-      if (loginStatus) navigate("/");
+      const loginStatus = await LoginFn({
+        email: email,
+        password: password,
+      });
+      
       setLoader(false);
+      if (loginStatus) navigate("/");
     } catch (err: any) {
-      handleFirebaseError(err);
+      console.log("🚀 ~ file: Login.tsx:52 ~ handleLogin ~ err:", err);
     }
   };
 

@@ -158,7 +158,6 @@ const ConstructionGraph = ({ data }) => {
       const shape = svg.select(`#shape-${d.ID}`); // Select the shape by ID
       const row = table.select(`#${d.ID}`); // Select the table row by ID
       if (shape.size() === 0 || row.size() === 0) {
-        console.error(`Shape or row not found for ID: ${d.ID}`);
         return;
       }
       // Get the middle coordinates of the table row

@@ -1,0 +1,60 @@
+export interface Project {
+  id?: string;
+  title: string;
+  logoUrl?: string;
+  logoUrlId?: string | null;
+  companyId: string;
+  employeesId?: string[];
+  activities?: ActivityModel[];
+  graphSettings?: GraphSettingModel;
+  activityStyles?: ActivityStyleModel[];
+  taskSlotsLevelOne?: TaskSlotModel[];
+  taskSlotsLevelTwo?: TaskSlotModel[];
+}
+
+export interface ActivityModel {
+  id?: string | null;
+  name: string;
+  activityId: string;
+  startDate: Date;
+  endDate: Date;
+  startPk: number;
+  endPk: number;
+  style: string;
+  activityStyleId?: string | null;
+  graphSettingId?: string | null;
+  projectId?: string | null;
+}
+
+export interface ActivityStyleModel {
+  name: string;
+  color: string;
+  backgroundTextureType: string;
+  lineStyleType: string;
+  shapeType: "line" | "rect" | "triangle";
+  activityId?: string | null;
+}
+
+export interface GraphSettingModel {
+  fromDate: Date;
+  toDate: Date;
+  fromDistance: number;
+  toDistance: number;
+  distanceRange?: number | null;
+  graphActivities?: ActivityModel[] | null;
+  timeRange: "Yearly" | "Monthly" | "Weekly" | "Daily";
+}
+
+export interface TaskSlotModel {
+  start: number;
+  end: number;
+  name: string;
+  level: number;
+  projectId?: string | null;
+  id?: string | null;
+}
+
+// Assuming 'Image' is a custom type defined somewhere in your code.
+export interface Image {
+  // Define the properties of the Image type
+}

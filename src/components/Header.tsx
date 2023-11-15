@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useUserContext } from "../context/UserContext";
+import { useAuth } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import DropdownLanguage from "./DropdownLanguage";
@@ -15,11 +15,11 @@ import {
 import DarkModeSwitcher from "./DarkModeSwitcher";
 
 const Header = () => {
-  const { user, logoutUser } = useUserContext();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [showNav, setShowNav] = useState(false); // State to toggle visibility of navigation on smaller screens
-
+  const { isAdmin } = useAuth();
   const [popupVisible, setPopupVisible] = useState(false);
 
   const togglePopup = () => {
@@ -45,8 +45,8 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="text-white  p-5 bg-boxdark text-center flex flex-col items-center">
-      <div className="flex justify-between items-center w-full">
+    <header className="text-white  bg-boxdark text-center flex flex-col items-center ">
+      <div className="flex justify-between items-center w-full dark:shadow-md">
         <img src={Logo} alt="logo" className="h-20 w-20 object-contain" />
 
         <div className="flex justify-start items-center space-x-10 ml-10">
@@ -70,21 +70,23 @@ const Header = () => {
             </button>
           </div>
           <div className="hidden md:flex justify-start items-center space-x-10 ml-10">
-            <NavLink
+            {/* <NavLink
               to="/create-project"
               text={t("header.createProject")}
               icon={<HomeIcon className="w-6 h-6" />}
-            />
+            /> */}
             <NavLink
               to="/projects"
               text={t("header.projects")}
               icon={<QueueListIcon className="w-6 h-6" />}
             />
-            <NavLink
-              to="/employees"
-              text={t("header.employees")}
-              icon={<UserGroupIcon className="w-6 h-6" />}
-            />
+            {isAdmin && (
+              <NavLink
+                to="/employees"
+                text={t("header.employees")}
+                icon={<UserGroupIcon className="w-6 h-6" />}
+              />
+            )}
             {/* <NavLink
               to="/pricing"
               text={t("header.pricing")}
@@ -156,7 +158,7 @@ const Header = () => {
                   <p className="mb-2 font-semibold">{user.email}</p>
                   <button
                     onClick={() => {
-                      logoutUser();
+                      logout();
                       navigate("/login");
                     }}
                     className="hover:bg-blue-100 px-2 py-1 rounded-lg focus:outline-none"

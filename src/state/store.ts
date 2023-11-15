@@ -19,7 +19,7 @@ const persistConfig = {
   stateReconciler: autoMergeLevel1<GraphCreateType>,
 };
 
-const persistedReducer = persistReducer(persistConfig, graphSlice);
+export const persistedReducer = persistReducer(persistConfig, graphSlice);
 
 export const store = configureStore({
   reducer: persistedReducer,

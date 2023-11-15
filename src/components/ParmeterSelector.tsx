@@ -50,19 +50,8 @@ function ParameterSelector({
     selectable: GraphStringsSetting,
     selectedValue: string
   ) => {
-    console.log(
-      "🚀 ~ file: ParmeterSelector.tsx:20 ~ handleSelect ~ selectable: string, selectedValue: string:",
-      selectable,
-      selectedValue,
-      udfStringsOptions
-    );
     const existingPair = selectedPairs.find(
       (pair) => pair.udfSettingId === selectedValue.toString()
-    );
-    console.log(
-      "🚀 ~ file: ParmeterSelector.tsx:30 ~ handleSelect ~ existingPair:",
-      existingPair,
-      selectedPairs
     );
 
     if (existingPair) {
@@ -75,11 +64,6 @@ function ParameterSelector({
 
     const updatedPairs = [...selectedPairs];
     // // Find the matching "Read-only String" based on the selectable value
-    console.log(
-      "🚀 ~ file: ParmeterSelector.tsx:68 ~ selectedOption:",
-      selectedOption,
-      updatedPairs
-    );
 
     if (selectedOption) {
       updatedPairs.push({

@@ -1,21 +1,21 @@
 import AppRoutes from "./Route";
 import { Provider } from "react-redux";
 import { store } from "./state";
-import { UserProvider } from "./context/UserContext";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
+import { AuthProvider } from "./context/UserContext";
 
 // import { BrowserRouter, Route, RouterProvider, Routes } from "react-router-dom";
-let persistor = persistStore(store);
+export const persistor = persistStore(store);
 
 function App() {
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <UserProvider>
-          <AppRoutes />
-        </UserProvider>
-      </PersistGate>
+      {/* <PersistGate loading={null} persistor={persistor}> */}
+
+      <AppRoutes />
+
+      {/* </PersistGate> */}
     </Provider>
   );
 }

@@ -1,35 +1,88 @@
-import React, { useState, ChangeEvent, useEffect } from "react";
+import imageCompression from "browser-image-compression";
+import React, { useState, ChangeEvent, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import api from "src/utils/api";
+import { UploadImagesUrl, siteName } from "src/variables/Urls";
 
 interface ImagePickerProps {
   onChange: (image: string | null) => void;
+  setFileName: (name: string) => void;
   imageValue?: string | null;
+  disabled?: boolean;
 }
 
-const ImagePicker: React.FC<ImagePickerProps> = ({ onChange, imageValue }) => {
-  const [selectedImage, setSelectedImage] = useState<string | null | undefined>(
-    imageValue
-  );
+const ImagePicker: React.FC<ImagePickerProps> = ({
+  onChange,
+  imageValue,
+  setFileName,
+  disabled,
+}) => {
+  const [selectedImage, setSelectedImage] = useState<string | null>(
+    imageValue || null
+  ); // Set initial value to null if imageValue is not provided
+  const isDevelopment = process.env.REACT_APP_ENV === "development";
+
   const { t } = useTranslation();
+  // const url = useMemo(
+  //   () => (),
+  //   [selectedImage, isDevelopment]
+  // );
 
   useEffect(() => {
-    setSelectedImage(imageValue);
+    setSelectedImage(imageValue || null); // Update selectedImage if imageValue changes
   }, [imageValue]);
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+
+  const handleUpload = async (file: File) => {
+    let formData = new FormData();
+
+    const compressedFile = await imageCompression(file, {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+    });
+
+    const compressedAsFile = new File([compressedFile], file.name, {
+      type: file.type,
+      lastModified: file.lastModified,
+    });
+
+    formData.append("image", compressedAsFile);
+
+    return api
+      .post(UploadImagesUrl, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          const fullUrl = isDevelopment
+            ? siteName + response.data
+            : response.data;
+
+          return fullUrl;
+        }
+      })
+      .catch((ex) => {
+        console.error("🚀 ~ file: graphSlice.ts:189 ~ > ~ response:", ex);
+        return null;
+      });
+  };
+
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target && e.target.files) {
       const file = e.target.files[0];
 
       if (file && file.type.startsWith("image/")) {
         const reader = new FileReader();
         reader.onload = (event) => {
-          const base64Image = event.target?.result as string; // Convert image to Base64-encoded string
-          setSelectedImage(base64Image);
-          onChange(base64Image); // Pass the Base64-encoded string to the parent component
+          const base64Image = event.target?.result as string;
+          setFileName(file.name);
+          // onChange(base64Image);
         };
         reader.readAsDataURL(file);
+        var imageUrl = await handleUpload(file);
+        onChange(imageUrl);
+        setSelectedImage(imageUrl);
       } else {
         alert(t("imagePicker.selectValidImage"));
-
         setSelectedImage(null);
         onChange(null);
       }
@@ -44,10 +97,11 @@ const ImagePicker: React.FC<ImagePickerProps> = ({ onChange, imageValue }) => {
         onChange={handleImageChange}
         className="hidden"
         id="imagePickerInput"
+        disabled={disabled}
       />
       <label
         htmlFor="imagePickerInput"
-        className=" cursor-pointer block p-4 border border-dashed border-gray-300 rounded-lg text-center hover:bg-gray-100"
+        className="cursor-pointer block p-4 border border-dashed border-gray-300 rounded-lg text-center hover:bg-gray-100"
       >
         {selectedImage ? (
           <img

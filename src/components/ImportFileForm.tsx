@@ -26,6 +26,8 @@ import Spinner from "./Spinner";
 import ParameterSelector from "./ParmeterSelector";
 import { type } from "@testing-library/user-event/dist/type";
 import { uniqueId } from "lodash";
+import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
+import { useAuth } from "src/context/UserContext";
 
 export type FormValues = {
   fromDate: Date;
@@ -37,6 +39,8 @@ export type FormValues = {
   distanceRange?: number;
 };
 export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
+  const { user, canWrite, isAdmin } = useAuth();
+
   const currentYear = new Date().getFullYear();
   const nextYear = currentYear + 1;
 
@@ -50,7 +54,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     distanceRange: 200,
   };
 
-  const dispatch = useDispatch();
+  const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   const graphSettings = useSelector((state: RootState) => state.settings);
   const fileType = useSelector(
     (state: RootState) => state.projectSettings.fileType
@@ -60,7 +64,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const udfSettingsData = useSelector(
     (state: RootState) => state.userDefindSettings
   );
-  console.error("MyComponent is rendering", udfSettingsData); // Add this line
+  console.error("MyComponent is rendering", rawData); // Add this line
 
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -768,6 +772,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       value={value}
       onClick={onClick}
       onChange={onChange}
+      disabled={!canWrite && !isAdmin}
       className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
     />
   ));
@@ -841,12 +846,14 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   useEffect(() => {
     dispatch(
       applyFilter({
-        fromDate: formik.values.fromDate.toISOString(),
-        toDate: formik.values.toDate.toISOString(),
-        fromDistance: parseFloat(formik.values.fromDistance),
-        toDistance: parseFloat(formik.values.toDistance),
-        timeRange: formik.values.timeRange,
-        distanceRange: formik.values.distanceRange,
+        filters: {
+          fromDate: formik.values.fromDate.toISOString(),
+          toDate: formik.values.toDate.toISOString(),
+          fromDistance: parseFloat(formik.values.fromDistance),
+          toDistance: parseFloat(formik.values.toDistance),
+          timeRange: formik.values.timeRange,
+          distanceRange: formik.values.distanceRange,
+        },
       })
     );
   }, [
@@ -857,7 +864,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     formik.values.timeRange,
     formik.values.toDate,
     formik.values.toDistance,
-    graphSettings.graphData.length,
   ]);
 
   return (
@@ -968,6 +974,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   onBlur={formik.handleBlur}
                   id="timeRange"
                   name="timeRange"
+                  disabled={!canWrite && !isAdmin}
                   className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                 >
                   <option value="Yearly">
@@ -995,6 +1002,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                   id="fromDistance"
                   name="fromDistance"
                   type="number"
+                  disabled={!canWrite && !isAdmin}
                   value={formik.values.fromDistance}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -1017,6 +1025,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                 <input
                   id="toDistance"
                   name="toDistance"
+                  disabled={!canWrite && !isAdmin}
                   type="number"
                   value={formik.values.toDistance}
                   onChange={formik.handleChange}
@@ -1038,6 +1047,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                 <input
                   id="distanceRange"
                   name="distanceRange"
+                  disabled={!canWrite && !isAdmin}
                   type="number"
                   value={formik.values.distanceRange}
                   onChange={formik.handleChange}
@@ -1143,11 +1153,13 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                       type="button"
                       onClick={() => handleEditClick(data)}
                       className="text-blue-500 hover:text-blue-700"
+                      disabled={!canWrite && !isAdmin}
                     >
                       {t("importFileForm.edit")}
                     </button>
                     <button
                       type="button"
+                      disabled={!canWrite && !isAdmin}
                       onClick={() => handleDeleteClick(data.id)}
                       className="ml-2 text-red-500 hover:text-red-700"
                     >

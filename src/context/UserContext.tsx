@@ -1,84 +1,135 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import firebase from "firebase/app";
-import "firebase/auth";
 import {
-  User,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
-import { auth } from "../Helpers/firebase";
+  AuthUserKey,
+  CompanyKey,
+  LicenseKey,
+  loginUrl,
+  tokenKeys,
+} from "src/variables/Urls";
+import { createContext, useState, useContext, useEffect } from "react";
+import api from "src/utils/api";
 
-interface UserContextType {
-  user: User | null;
-  loginUser: (email: string, password: string) => Promise<boolean>;
-  logoutUser: () => void;
-}
+// import { getLicense, getLicenseByUserId } from "@/services/LicenseService";
+import secureLocalStorage from "react-secure-storage";
+import { User } from "src/types/user";
+import { UserRoles } from "src/enums/UsersRole";
+import { getLicenseByUserId } from "src/Services/LicenseService";
+import toast from "react-hot-toast";
 
-const UserContext = createContext<UserContextType | null>(null);
+// interface AuthContextType {
+//   token: string | null;
+//   login: (email: string, password: string) => void;
+//   logout: () => void;
+//   signed: boolean;
+// }
 
-export const useUserContext = () => {
-  const context = useContext(UserContext);
-  if (!context) {
-    throw new Error("useUserContext must be used within a UserProvider");
-  }
-  return context;
+export type LoginType = {
+  email: string;
+  password: string;
 };
+export interface AuthContextData {
+  signed: boolean;
+  user: User | null;
+  loading: boolean;
+  Login: ({}: LoginType) => Promise<boolean>;
+  logout: () => void;
+  isAdmin?: boolean;
+  canRead?: boolean;
+  canWrite?: boolean;
+}
+const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
-export const UserProvider = ({ children }: any) => {
+export const AuthProvider = ({ children }: any) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Add a Firebase authentication state listener
-    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
-      if (authUser) {
-        // User is signed in.
-        setUser(authUser);
-      } else {
-        // User is signed out.
-        setUser(null);
-      }
-    });
+    async function loadStorageData() {
+      const storageUser = secureLocalStorage.getItem(AuthUserKey);
+      const storageToken = secureLocalStorage.getItem(tokenKeys);
 
-    // Clean up the listener on unmount
-    return () => unsubscribe();
+      if (storageUser && storageToken) {
+        setUser(JSON.parse(storageUser.toString()!));
+      }
+      setLoading(false);
+    }
+
+    loadStorageData();
   }, []);
 
-  const loginUser = (email: string, password: string) => {
-    // Sign in with Firebase authentication
-    const value = signInWithEmailAndPassword(auth, email, password)
-      .then(async (authUser) => {
-        // User is signed in.
-        setUser(authUser.user);
-        const token = await authUser.user.getIdToken();
-        localStorage.setItem("token", token); // .user is the user object
-        return true;
-      })
-      .catch((error) => {
-        // Handle login error
-
-        throw error;
+  const Login = async ({ email, password }: any) => {
+    try {
+      const { data: userData } = await api.post(loginUrl, {
+        email: email,
+        password: password,
       });
-    return value;
+
+      let roleName = userData.role;
+      let userId = userData.id;
+      const claims = userData.claims;
+      //? we have two cases : emplyee , company
+      if (roleName === UserRoles.Admin) {
+        setUser(userData);
+        //secureLocalStorage.setItem(refreshTokens, jwt.refreshToken);
+        //hubOpenConnection(jwt.token);
+      } else {
+        if (roleName === UserRoles.Employee) {
+        }
+      }
+      // check validity of license
+      let licenses = await getLicenseByUserId(userId, roleName);
+      if (!licenses || !licenses?.isValidLicense) {
+        toast.error("your License has Been expired please call the support ");
+        // window.location.href = '/auth/login';
+      }
+
+      // get the list of module types
+      secureLocalStorage.setItem(tokenKeys, userData.token);
+      secureLocalStorage.setItem(LicenseKey, licenses!.id);
+      secureLocalStorage.setItem(CompanyKey, licenses!.companyId);
+      secureLocalStorage.setItem(AuthUserKey, JSON.stringify(userData));
+
+      setUser(userData);
+      window.location.href = "/";
+
+      return true;
+      //return true;
+    } catch (err) {
+      return false;
+    }
   };
 
-  const logoutUser = () => {
-    // Sign out with Firebase authentication
-    signOut(auth)
-      .then(() => {
-        // User is signed out.
-        setUser(null);
-        localStorage.removeItem("token");
-      })
-      .catch((error) => {
-        // Handle logout error
-        console.error(error);
-      });
+  const logout = () => {
+    secureLocalStorage.clear();
+    setUser(null);
+    window.location.href = "/login";
   };
 
   return (
-    <UserContext.Provider value={{ user, loginUser, logoutUser }}>
+    <AuthContext.Provider
+      value={{
+        signed: !!user,
+        user,
+        loading,
+        Login,
+        logout,
+        isAdmin: user?.role === UserRoles.Admin,
+        canRead: user?.canRead,
+        canWrite: user?.canWrite,
+      }}
+    >
       {children}
-    </UserContext.Provider>
+    </AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
+export const IsAuth = () => {
+  const storageToken = secureLocalStorage.getItem(tokenKeys);
+
+  if (storageToken) {
+    return true;
+  }
+  return false;
 };

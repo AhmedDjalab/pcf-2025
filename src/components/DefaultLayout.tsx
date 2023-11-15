@@ -3,14 +3,18 @@ import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { DrawGraphForm } from "./DrawGraphForm";
 import Header from "./Header";
 import DrawGraphStep from "./DrawGraphStep";
+import { tokenKeys } from "src/variables/Urls";
+import { IsAuth, useAuth } from "src/context/UserContext";
 
 function DefaultLayout({ children }: any) {
-  const token: any = localStorage.getItem("token");
+  const token: any = IsAuth();
+  const { user } = useAuth();
+  console.log("🚀 ~ file: DefaultLayout.tsx:12 ~ DefaultLayout ~ user:", user);
   return (
     <>
       {token ? (
         <>
-          <div>
+          <div className="w-full relative h-screen">
             <Header />
             {/* Use the Routes and Route components to define your routes */}
             {children}

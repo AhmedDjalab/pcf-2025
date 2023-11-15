@@ -4,19 +4,21 @@ import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
 import Input from "src/components/Input";
 import Checkbox from "src/components/Checkbox";
-import { addEmployeeAndUser, editEmployee } from "src/Services/EmployeeService";
+import { saveEmployee } from "src/Services/EmployeeService2";
 import { uniqueId } from "lodash";
-import { useUserContext } from "src/context/UserContext";
+import { useAuth } from "src/context/UserContext";
 import { LabelButton } from "src/components/Button";
+import { Employee } from "src/Services/EmployeeService2";
+import { getCompanyId } from "src/Services/AuthService";
 
 interface EmployeeFormProps {
-  initialValues?: EmployeeData;
-  onSubmit: (values: EmployeeData) => void;
+  initialValues?: Employee;
+  onSubmit: () => void;
   handleClose: () => void;
 }
 
 export interface EmployeeData {
-  id: string;
+  id?: string;
   fullName: string;
   email: string;
   password: string;
@@ -32,7 +34,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
   handleClose,
 }) => {
   const { t } = useTranslation();
-  const { user } = useUserContext();
+  const { user } = useAuth();
 
   const validationSchema = Yup.object().shape({
     fullName: Yup.string().required(t("employeeForm.errors.fullName")),
@@ -53,24 +55,25 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
     canWrite: Yup.boolean().required(t("employeeForm.errors.canWrite")),
   });
 
-  const handleSubmitData = async (values: EmployeeData) => {
-    handleClose();
-    // try {
-    //   if (initialValues) {
-    //     // If initialValues is provided, it's an edit operation
-    //     // You can call your editEmployee function from your EmployeeService
-    //     await editEmployee(initialValues.id!, values);
-    //   } else {
-    //     // If initialValues is not provided, it's an add operation
-    //     // You can call your addEmployee function from your EmployeeService
-    //     await addEmployeeAndUser(values);
-    //   }
+  const handleSubmitData = async (values: Employee) => {
+    try {
+      var companyId = getCompanyId();
 
-    //   // After the edit or add operation is successful, you can close the form
-    //   handleClose();
-    // } catch (error) {
-    //   console.error("Error updating or adding employee: ", error);
-    // }
+      const employee: Employee = {
+        ...values,
+        userAdminId: user?.id!,
+        //@ts-ignore
+        companyId: companyId,
+      };
+      // If initialValues is not provided, it's an add operation
+      // You can call your addEmployee function from your EmployeeService
+      await saveEmployee(employee);
+
+      // After the edit or add operation is successful, you can close the form
+      onSubmit();
+    } catch (error) {
+      console.error("Error updating or adding employee: ", error);
+    }
   };
   return (
     <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-white bg-opacity-20 dark:bg-gray-700 dark:bg-opacity-20">
@@ -83,13 +86,12 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
         <Formik
           initialValues={
             initialValues || {
-              id: uniqueId("emp-"),
               fullName: "",
               email: "",
               password: "",
               canRead: false,
               canWrite: false,
-              adminUserId: user?.uid!,
+              userAdminId: user?.id!,
             }
           }
           onSubmit={handleSubmitData}

@@ -52,7 +52,6 @@ const StyleForm: React.FC<StyleFormProps> = ({
   const [initialValues, setInitialValues] = useState(
     shapesData.find((x) => x.name === id)!
   );
-  console.error("this is name ", id, shapesData.find((x) => x.name === id)!);
 
   // const [color, setColor] = useState(
   //   shapesData.find((x) => x.name == id)!.color

@@ -1,8 +1,24 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  current,
+  PayloadAction,
+} from "@reduxjs/toolkit";
 import texturesData from "../../const/texturesArray";
 import { lineStyles } from "../../const/linesArray";
 import { uuidv4 } from "@firebase/util";
 import { ProjectFileType } from "src/const/vars";
+import { Employee, getEmployees } from "src/Services/EmployeeService2";
+import { User } from "src/types/user";
+import { ActivityModel, Project } from "src/types/Project";
+import { RootState } from "../store";
+import { getGraph, getProject, saveProject } from "src/Services/ProjectService";
+import { getCompanyId } from "src/Services/AuthService";
+import axios from "axios";
+import { UploadImagesUrl } from "src/variables/Urls";
+import imageCompression from "browser-image-compression"; // Import the library
+import { base64ToFile } from "src/Helpers/utils";
+import api from "src/utils/api";
 
 export interface GraphDataType {
   id: string;
@@ -39,8 +55,13 @@ export interface UdfSetting {
 
 export interface ProjectSettings {
   title: string;
-  logoImg: string;
+  logoImg?: string;
+  logoId?: string;
   fileType?: ProjectFileType;
+  employees?: Employee[];
+  employeesId?: string[];
+  file?: string;
+  fileName?: string;
 }
 export interface GraphSetting {
   graphData: GraphDataType[];
@@ -57,12 +78,14 @@ export interface ShapesSettings {
 }
 
 export interface GraphCreateType {
+  id?: string;
   projectSettings: ProjectSettings;
   settings: GraphSetting;
   shapes: ShapesSettings;
   taskSlots: TaskSlot[];
   taskSlotsLevelTwo: TaskSlot[];
-  loading: boolean;
+  loading?: boolean;
+  error?: string;
   rawGraphDataFromFile?: GraphDataType[];
   userDefindSettings?: UdfSetting[];
 }
@@ -72,10 +95,12 @@ const nextYear = currentYear + 1;
 const startDate = new Date(currentYear, 0, 1); // Month 0 is January
 const endDate = new Date(nextYear, 11, 31);
 const initialState: GraphCreateType = {
+  id: "",
   projectSettings: {
     title: "",
     logoImg: "",
     fileType: ProjectFileType.XLSX,
+    employees: [],
   },
   settings: {
     graphData: [],
@@ -96,9 +121,130 @@ const initialState: GraphCreateType = {
   userDefindSettings: [],
 };
 
+export const fetchEmployees = createAsyncThunk(
+  "projectSettings/fetchEmployees",
+  async (user: User) => {
+    const response = await getEmployees({
+      fromvalue: 0,
+      takevalue: 0,
+      search: "",
+      userAdminId: user.id,
+    });
+
+    return response?.employees; // Assuming your API returns an object with an 'employees' property
+  }
+);
+
+export const fetchProjectByIdThunk = createAsyncThunk<
+  { success: boolean; data?: Project; message?: string },
+  string, // Assuming the project ID is a string, adjust as needed
+  { state: RootState }
+>("projectSettings/fetchProjectById", async (projectId, thunkAPI) => {
+  try {
+    // Get the current Redux state
+    const state: RootState = thunkAPI.getState();
+
+    // Call your fetchProjectById API with the project ID
+    const response = await getProject(projectId);
+
+    // Handle the response if needed and return the appropriate data
+    if (response) {
+      return { success: true, data: response };
+    } else {
+      return { success: false, message: response };
+    }
+  } catch (error) {
+    // Handle errors here if needed
+    return {
+      success: false,
+      message: "An error occurred while fetching the project.",
+    };
+  }
+});
+
+export const saveProjectThunk = createAsyncThunk<
+  { success: boolean; message?: string },
+  User,
+  { state: RootState }
+>("projectSettings/saveProject", async (user: User, thunkAPI) => {
+  try {
+    // Get the current Redux state
+
+    const state: RootState = thunkAPI.getState();
+    console.log(" ---statee project data --- ", state);
+
+    // Transform the state into the format expected by your backend
+    const projectData: Project = {
+      id: state.id,
+      title: state.projectSettings.title,
+      logoUrl: state.projectSettings.logoImg,
+      logoUrlId: state.projectSettings.logoId,
+      //@ts-ignore
+      companyId: getCompanyId(),
+      employeesId: state.projectSettings.employeesId,
+      activities: state.rawGraphDataFromFile!.map((act) => ({
+        // Map properties from GraphDataType to ActivityModel
+        name: act.activityName,
+        activityId: act.id,
+        startDate: new Date(act.startDate),
+        endDate: new Date(act.finishDate),
+        startPk: act.startChainage,
+        endPk: act.finishChainage,
+        style: act.style,
+      })),
+      graphSettings: {
+        fromDate: new Date(state.settings.fromDate),
+        toDate: new Date(state.settings.toDate),
+        fromDistance: state.settings.fromDistance,
+        toDistance: state.settings.toDistance,
+        distanceRange: state.settings.distanceRange,
+        timeRange: state.settings.timeRange,
+      },
+      activityStyles: state.shapes.shapesData.map((shape) => ({
+        // Map properties from ShapeType to ActivityStyleModel
+        name: shape.name,
+        color: shape.color,
+        backgroundTextureType: shape.backgroundTexture,
+        lineStyleType: shape.lineType,
+        shapeType: shape.type,
+        activityId: shape.activityId?.[0], // You need to adjust this based on your actual model
+      })),
+      taskSlotsLevelOne: state.taskSlots.map((taskSlot) => ({
+        // Map properties from TaskSlot to TaskSlotModel
+        id: taskSlot.id,
+        start: taskSlot.start,
+        end: taskSlot.end,
+        name: taskSlot.name,
+        level: 1, // Assuming Level is 1 for taskSlots
+      })),
+      taskSlotsLevelTwo: state.taskSlotsLevelTwo.map((taskSlot) => ({
+        // Map properties from TaskSlot to TaskSlotModel
+        id: taskSlot.id,
+        start: taskSlot.start,
+        end: taskSlot.end,
+        name: taskSlot.name,
+        level: 2, // Assuming Level is 2 for taskSlotsLevelTwo
+      })),
+    };
+
+    console.log(" ---backend project data --- ", projectData);
+    const response = await saveProject(projectData);
+    console.log("🚀 ~ file: graphSlice.ts:189 ~ > ~ response:", response);
+
+    // Handle the response if needed and return the appropriate data
+    return { success: true, message: "Project saved successfully" };
+  } catch (error) {
+    // Handle errors here if needed
+    return {
+      success: false,
+      message: "An error occurred while saving the project.",
+    };
+  }
+});
+
 const GraphSlice = createSlice({
   name: "Graphform",
-  initialState,
+  initialState: initialState,
   reducers: {
     updateProjectSettingsValue(
       state,
@@ -107,6 +253,41 @@ const GraphSlice = createSlice({
       const projectSettings = action.payload.projectSettings;
       state.projectSettings = { ...projectSettings };
       state.userDefindSettings = [];
+      console.log("raw ", current(state.rawGraphDataFromFile));
+    },
+
+    applyFilter(
+      state,
+      action: PayloadAction<{ filters: Omit<GraphSetting, "graphData"> }>
+    ) {
+      const { fromDate, toDate, fromDistance, toDistance } =
+        action.payload.filters;
+      console.log("thisi sdat", current(state.rawGraphDataFromFile));
+      state.settings.fromDate = fromDate;
+      state.settings.toDate = toDate;
+      state.settings.fromDistance = fromDistance;
+      state.settings.toDistance = toDistance;
+
+      if (fromDate > toDate) {
+        return state;
+      }
+      const filteredGraphData = state.rawGraphDataFromFile!.filter((data) => {
+        const dataStartDate = new Date(data.startDate);
+        const dataFinishDate = new Date(data.finishDate);
+
+        return (
+          dataFinishDate >= new Date(fromDate) &&
+          dataStartDate <= new Date(toDate) &&
+          data.startChainage >= fromDistance &&
+          data.finishChainage <= toDistance
+        );
+      });
+
+      state.settings.graphData = filteredGraphData;
+      console.log(
+        "🚀 ~ file: graphSlice.ts:316 ~ filteredGraphData:",
+        filteredGraphData
+      );
     },
     updateGraphSettingsValue(
       state,
@@ -143,11 +324,6 @@ const GraphSlice = createSlice({
             .map((data) => data.id),
         };
       });
-
-      console.log(
-        "🚀 ~ file: graphSlice.ts:131 ~ shapes=uniqueStyles.map ~ shapes:",
-        shapes
-      );
 
       return {
         ...state,
@@ -225,7 +401,7 @@ const GraphSlice = createSlice({
 
       const uniqueStyles = Array.from(styles);
 
-      shapes = uniqueStyles.map((style, index) => ({
+      const newShapes = uniqueStyles.map((style, index) => ({
         type: "line",
         backgroundTexture: texturesData[0].id,
         color: "#24303F",
@@ -237,7 +413,26 @@ const GraphSlice = createSlice({
           .map((data) => data.id),
       }));
 
-      state.shapes.shapesData = shapes;
+      // Check if shapesData already exists in state.shapes
+      if (state.shapes.shapesData) {
+        // Filter out shapes with the same id from newShapes
+        const uniqueNewShapes = newShapes.filter((newShape) => {
+          return !state.shapes.shapesData!.some(
+            (existingShape) => existingShape.name === newShape.name
+          );
+        });
+
+        // Merge the existing shapes with the new unique shapes
+        //@ts-ignore
+        state.shapes.shapesData = [
+          ...state.shapes.shapesData,
+          ...uniqueNewShapes,
+        ];
+      } else {
+        // If it doesn't exist, assign the new shapes directly
+        //@ts-ignore
+        state.shapes.shapesData = newShapes;
+      }
     },
     updateActivity(
       state,
@@ -316,35 +511,6 @@ const GraphSlice = createSlice({
       state.loading = action.payload;
     },
 
-    applyFilter: (
-      state,
-      action: PayloadAction<Omit<GraphSetting, "graphData">>
-    ) => {
-      const { fromDate, toDate, fromDistance, toDistance } = action.payload;
-
-      state.settings.fromDate = fromDate;
-      state.settings.toDate = toDate;
-      state.settings.fromDistance = fromDistance;
-      state.settings.toDistance = toDistance;
-      if (fromDate > toDate) {
-        return state;
-      }
-      const filteredGraphData = state.rawGraphDataFromFile!.filter((data) => {
-        const dataStartDate = new Date(data.startDate);
-        const dataFinishDate = new Date(data.finishDate);
-
-        return (
-          dataFinishDate >= new Date(fromDate) &&
-          dataStartDate <= new Date(toDate) &&
-          data.startChainage >= fromDistance &&
-          data.finishChainage <= toDistance
-        );
-      });
-
-      state.settings.graphData = filteredGraphData;
-      return state;
-    },
-
     resetForm(state) {
       state.settings = { ...initialState.settings };
       state.projectSettings = { ...initialState.projectSettings };
@@ -355,7 +521,119 @@ const GraphSlice = createSlice({
       state.loading = false;
     },
   },
-  extraReducers: () => {},
+  extraReducers: (builder) => {
+    builder.addCase(saveProjectThunk.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(saveProjectThunk.fulfilled, (state, action) => {
+      state.loading = false;
+    });
+    builder.addCase(saveProjectThunk.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    });
+
+    builder.addCase(fetchEmployees.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(fetchEmployees.fulfilled, (state, action) => {
+      console.log("🚀 ~ file: graphSlice.ts:382 ~ .addCase ~ action:", action);
+      state.projectSettings.employees = action.payload ?? [];
+      state.loading = false;
+    });
+    builder.addCase(fetchEmployees.rejected, (state) => {
+      state.projectSettings.employees = [];
+      state.loading = false;
+    });
+    builder.addCase(fetchProjectByIdThunk.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(fetchProjectByIdThunk.fulfilled, (state, action) => {
+      state.loading = false;
+      resetForm();
+      console.log("---- this project from backend  ---", action.payload.data);
+      const projectData: GraphCreateType = {
+        id: action.payload.data?.id,
+        projectSettings: {
+          title: action.payload.data!.title,
+          employeesId: action.payload.data!.employeesId,
+          logoImg: action.payload.data!.logoUrl,
+          logoId: action.payload.data!.logoUrlId ?? undefined,
+        },
+
+        rawGraphDataFromFile: action.payload.data!.activities?.map((act) => ({
+          id: act.activityId,
+          styleId: act.style,
+          activityId: act.activityId,
+          startDate: new Date(act.startDate).toISOString(),
+          finishDate: new Date(act.endDate).toISOString(),
+          startChainage: act.startPk,
+          finishChainage: act.endPk,
+          style: act.style,
+          activityName: act.name,
+        })),
+        settings: {
+          graphData: [],
+          fromDate: new Date(
+            action.payload.data!.graphSettings?.fromDate ??
+              initialState.settings.fromDate
+          ).toISOString(),
+          toDate: new Date(
+            action.payload.data!.graphSettings?.toDate ??
+              initialState.settings.toDate
+          ).toISOString(),
+          fromDistance:
+            action.payload.data!.graphSettings?.fromDistance ??
+            initialState.settings.fromDistance,
+          toDistance:
+            action.payload.data!.graphSettings?.toDistance ??
+            initialState.settings.toDistance,
+          distanceRange: action.payload.data!.graphSettings?.distanceRange!,
+          timeRange:
+            action.payload.data!.graphSettings?.timeRange ??
+            initialState.settings.timeRange,
+        },
+        shapes: {
+          shapesData:
+            action.payload.data!.activityStyles?.map((shape) => ({
+              name: shape.name,
+              color: shape.color,
+              backgroundTexture: shape.backgroundTextureType,
+              lineType: shape.lineStyleType,
+              type: shape.shapeType,
+              activityId: [],
+              id: shape.name,
+            })) ?? [],
+        },
+        taskSlots:
+          action.payload.data!.taskSlotsLevelOne?.map((taskSlot) => ({
+            start: taskSlot.start,
+            end: taskSlot.end,
+            name: taskSlot.name,
+            level: 1,
+            id: taskSlot.id!,
+          })) ?? [],
+        taskSlotsLevelTwo:
+          action.payload.data!.taskSlotsLevelTwo?.map((taskSlot) => ({
+            start: taskSlot.start,
+            end: taskSlot.end,
+            name: taskSlot.name,
+            level: 2,
+            id: taskSlot.id!,
+          })) ?? [],
+      };
+      state.id = projectData.id;
+      state.settings = projectData.settings;
+      state.projectSettings = projectData.projectSettings;
+      state.shapes = projectData.shapes;
+      state.taskSlots = projectData.taskSlots;
+      state.taskSlotsLevelTwo = projectData.taskSlotsLevelTwo;
+      state.rawGraphDataFromFile = projectData.rawGraphDataFromFile;
+    });
+    builder.addCase(fetchProjectByIdThunk.rejected, (state) => {
+      state.loading = false;
+    });
+  },
 });
 
 export const {

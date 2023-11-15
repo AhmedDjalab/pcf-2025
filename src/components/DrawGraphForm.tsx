@@ -16,6 +16,10 @@ import {
 import { useTranslation } from "react-i18next";
 import TaskSlotsLevelTwoList from "./TaskSlotStepLevelTwo";
 import DefaultLayout from "./DefaultLayout";
+import { useDispatch } from "react-redux";
+import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
+import { RootState } from "src/state";
+import { fetchProjectByIdThunk } from "src/state/slices/graphSlice";
 
 export interface MultiStepFormProps {
   currentStep: number;
@@ -23,13 +27,19 @@ export interface MultiStepFormProps {
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export const DrawGraphForm = ({}) => {
+export const DrawGraphForm = () => {
   const { id } = useParams();
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
 
-  useEffect(() => setCurrentStep(id ? parseInt(id) : 1), [id]);
+  // useEffect(() => setCurrentStep(id ? parseInt(id) : 1), [id]);
+  const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
 
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchProjectByIdThunk(id));
+    }
+  }, [dispatch, id]);
   const steps = [
     {
       stepNumber: 1,

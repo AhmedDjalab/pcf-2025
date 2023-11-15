@@ -20,8 +20,8 @@ const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
       {steps.map((step) => (
         <li
           key={step.stepNumber}
-          onClick={() => navigate(`${baseroute}/${step.stepNumber}`)}
-          className={`flex items-center cursor-pointer ${
+          //onClick={() => navigate(`${baseroute}/${step.stepNumber}`)}
+          className={`flex items-center  ${
             step.stepNumber <= currentStep
               ? "text-blue-600 dark:text-blue-500"
               : "text-gray-500 dark:text-gray-400"

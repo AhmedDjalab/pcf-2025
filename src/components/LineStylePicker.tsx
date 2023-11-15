@@ -4,6 +4,7 @@ import * as d3 from "d3";
 import { LineStyle } from "../const/linesArray";
 import { default as TypeList } from "./LineStyle";
 import { markersConfig } from "../const/markerAndPatternsConfig";
+import { useAuth } from "src/context/UserContext";
 
 export interface ILineStylePickerProps {
   id?: string;
@@ -33,6 +34,8 @@ const LineStylePicker = ({
   label,
 }: ILineStylePickerProps) => {
   const popover = useRef(null);
+  const { user, canWrite, isAdmin } = useAuth();
+
   const [isOpen, setIsOpen] = useState(false);
 
   const close = useCallback(() => setIsOpen(false), []);
@@ -62,7 +65,7 @@ const LineStylePicker = ({
       )}
       <div
         className="cursor-pointer rounded-lg border-[3px] border-solid border-transparent"
-        onClick={() => setIsOpen(true)}
+        onClick={() => (isAdmin || canWrite) && setIsOpen(true)}
       >
         <svg width={width} height={height}>
           <defs>

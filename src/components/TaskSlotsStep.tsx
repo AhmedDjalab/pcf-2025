@@ -7,12 +7,15 @@ import { MultiStepFormProps } from "./DrawGraphForm";
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "src/context/UserContext";
 
 const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editRow, setEditRow] = useState<TaskSlot | null>(null);
   const [isNew, setIsNew] = useState(false);
   const { t } = useTranslation();
+  const { user, canWrite, isAdmin } = useAuth();
+
   const navigate = useNavigate();
   const taskSlots: TaskSlot[] = useSelector(
     (state: RootState) => state.taskSlots
@@ -113,6 +116,7 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
     <div className="h-[100vh]">
       <div className="my-4 flex justify-start items-start   ">
         <button
+          disabled={!canWrite && !isAdmin}
           onClick={handleAddClick}
           className=" text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
         >
@@ -146,12 +150,14 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
                 <button
                   className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                   onClick={() => handleEditClick(row)}
+                  disabled={!canWrite && !isAdmin}
                 >
                   {t("taskSlotsList.buttons.edit")}
                 </button>
                 <button
                   className="focus:outline-none text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                   onClick={() => handleDeleteClick(row.id)}
+                  disabled={!canWrite && !isAdmin}
                 >
                   {t("taskSlotsList.buttons.delete")}
                 </button>

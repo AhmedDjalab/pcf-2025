@@ -10,8 +10,12 @@ import Employees from "src/pages/Employee";
 import Projects from "src/pages/Project";
 import { DrawGraphForm } from "src/components/DrawGraphForm";
 import EmployeeForm from "src/pages/Employee/EmployeeForm";
+import { IsAuth, useAuth } from "src/context/UserContext";
+import ViewGraph from "src/pages/Graph/ViewGraph";
 
 const AppRoutes = () => {
+  const isLogged = IsAuth();
+  const { isAdmin } = useAuth();
   return (
     <Router>
       <Routes>
@@ -19,19 +23,15 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* Private Routes */}
-        {/* <Route path="/" element={<DefaultLayout />} /> */}
-        <Route path="/" element={<DrawGraphForm />} />
-
-        <Route path="/employees" element={<Employees />} />
+        <Route path="/" element={<Projects />} />
+        {isAdmin && <Route path="/employees" element={<Employees />} />}
         <Route path="/projects" element={<Projects />} />
         <Route path="/create-project" element={<DrawGraphForm />} />
         <Route path="/create-project/:id" element={<DrawGraphForm />} />
-        {/* <Route path="/pricing" element={<PricingComponent />} />
-        <Route path="/about-us" element={<AboutUsComponent />} />
-        <Route path="/create-project" element={<CreateProjectComponent />} />
-        <Route path="/projects" element={<ProjectsComponent />} /> */}
+
         <Route path="/graph" element={<DrawGraphStep />} />
+        <Route path="/graph/:id" element={<DrawGraphStep />} />
+        <Route path="/view-graph/:id" element={<ViewGraph />} />
       </Routes>
     </Router>
   );

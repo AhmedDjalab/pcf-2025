@@ -2,38 +2,39 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../state";
+import { RootState } from "src/state";
 import {
   GraphDataType,
   TaskSlot,
-  fetchProjectByIdThunk,
+  applyFilter,
   removeActivity,
   saveProjectThunk,
   updateGraphSettingsValue,
-} from "../state/slices/graphSlice";
-import texturesData from "../const/texturesArray";
+} from "src/state/slices/graphSlice";
+import texturesData from "src/const/texturesArray";
 import moment from "moment";
 import jsPDF from "jspdf";
 import domtoimage from "dom-to-image";
-import logo from "../assets/Logo/logo.png";
+import logo from "src/assets/Logo/logo.png";
 import { LockClosedIcon } from "@heroicons/react/24/solid";
 import * as XLSX from "xlsx";
 
-import { LineStyle, lineStyles } from "../const/linesArray";
+import { LineStyle, lineStyles } from "src/const/linesArray";
 import {
   MarkerConfig,
   PatternConfig,
   markersConfig,
-} from "../const/markerAndPatternsConfig";
+} from "src/const/markerAndPatternsConfig";
 import { useTranslation } from "react-i18next";
-import ActivityTableForm from "./ActivityTableForm";
+import ActivityTableForm from "src/components/ActivityTableForm";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
-import DefaultLayout from "./DefaultLayout";
-import StyleForm from "./ShapesPopup";
+import DefaultLayout from "src/components/DefaultLayout";
+import StyleForm from "src/components/ShapesPopup";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "src/context/UserContext";
 import { siteName } from "src/variables/Urls";
-import Spinner from "./Spinner";
+import Spinner from "src/components/Spinner";
+import { fetchProjectByIdThunk } from "src/state/slices/graphSlice";
 
 export interface ActivityData {
   id: string;
@@ -44,19 +45,22 @@ export interface ActivityData {
   finishChainage: number;
   style: string; // Shape type (line, rectangle, circle, triangle, etc.)
 }
-function DrawGraphStep() {
+function ViewGraph() {
   const { id } = useParams();
-  const { user, canWrite, isAdmin } = useAuth();
-
+  const { canWrite } = useAuth();
+  const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   let graphSettings = useSelector((state: RootState) => state);
   let graphData = useSelector((state: RootState) => state.settings.graphData);
   let startDate = useSelector((state: RootState) => state.settings.fromDate);
   let endDate = useSelector((state: RootState) => state.settings.toDate);
   let rawData = useSelector((state: RootState) => state.rawGraphDataFromFile);
+  useEffect(() => {
+    dispatch(fetchProjectByIdThunk(id));
+  }, []);
   const fromDistance = useSelector(
     (state: RootState) => state.settings.fromDistance
   );
-
+  const { user } = useAuth();
   const toDistance = useSelector(
     (state: RootState) => state.settings.toDistance
   );
@@ -64,7 +68,32 @@ function DrawGraphStep() {
   const distanceRange = useSelector(
     (state: RootState) => state.settings.distanceRange
   );
-  const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
+  useEffect(() => {
+    if (!graphSettings.loading) {
+      dispatch(
+        applyFilter({
+          filters: {
+            fromDate: startDate,
+            toDate: endDate,
+            fromDistance: fromDistance,
+            toDistance: toDistance,
+            timeRange: timeRange,
+            distanceRange: distanceRange,
+          },
+        })
+      );
+    }
+  }, [
+    dispatch,
+    distanceRange,
+    endDate,
+    fromDistance,
+    graphSettings.loading,
+    startDate,
+    timeRange,
+    toDistance,
+  ]);
+
   const isDevelopment = process.env.REACT_APP_ENV === "development";
 
   const url = useMemo(
@@ -1161,9 +1190,8 @@ function DrawGraphStep() {
     // Export the workbook to an XLSX file
     XLSX.writeFile(workbook, "pcfallData.xlsx");
   };
-  const handleSaveProject = async () => {
-    await dispatch(saveProjectThunk(user!));
-    navigate("/projects");
+  const handleSaveProject = () => {
+    dispatch(saveProjectThunk(user!));
   };
 
   return (
@@ -1190,15 +1218,13 @@ function DrawGraphStep() {
         >
           {t("shapesForm.backButton")}
         </button> */}
-            {(isAdmin || canWrite) && (
-              <button
-                type="button"
-                onClick={handleSaveProject} // Handle going back to the previous step
-                className=" mt-5 bg-gray-400 text-white  hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 flex items-center"
-              >
-                save Project
-              </button>
-            )}
+            {/* <button
+              type="button"
+              onClick={handleSaveProject} // Handle going back to the previous step
+              className=" mt-5 bg-gray-400 text-white  hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 flex items-center"
+            >
+              save Project
+            </button> */}
 
             {/* <button
         className="focus:outline-none mt-5 text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
@@ -1270,7 +1296,7 @@ function DrawGraphStep() {
       </button> */}
               <button
                 type="button"
-                disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+                disabled={!selectedShapeData || !canWrite}
                 className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
                 onClick={handleEditClick}
               >
@@ -1280,7 +1306,7 @@ function DrawGraphStep() {
                 type="button"
                 className="px-10 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
                 onClick={handleAddClick}
-                disabled={!canWrite && !isAdmin}
+                disabled={!canWrite}
               >
                 {t("importFileForm.add")}
               </button>
@@ -1288,7 +1314,7 @@ function DrawGraphStep() {
                 type="button"
                 className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
                 onClick={handleDeleteClick}
-                disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+                disabled={!selectedShapeData || !canWrite}
               >
                 {t("importFileForm.delete")}
               </button>
@@ -1296,7 +1322,7 @@ function DrawGraphStep() {
                 type="button"
                 className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
                 onClick={handleExportAllClick}
-                disabled={!canWrite && !isAdmin}
+                disabled={!canWrite}
               >
                 {/* {"Export All Data"} */}
                 {t("drawGraph.exportAllData")}
@@ -1306,14 +1332,14 @@ function DrawGraphStep() {
                 type="button"
                 className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
                 onClick={handleExportGraphClick}
-                disabled={!canWrite && !isAdmin}
+                disabled={!canWrite}
               >
                 {/* {"Export Graph Data"} */}
                 {t("drawGraph.exportGraphData")}
               </button>
               <button
                 type="button"
-                disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+                disabled={!selectedShapeData || !canWrite}
                 className="px-10 py-2 bg-slate-600 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
                 onClick={() => setStyleModalOpen(true)}
               >
@@ -1395,4 +1421,4 @@ function DrawGraphStep() {
   );
 }
 
-export default DrawGraphStep;
+export default ViewGraph;

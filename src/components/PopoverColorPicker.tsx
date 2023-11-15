@@ -2,6 +2,7 @@ import React, { useCallback, useRef, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import useClickOutside from "../hooks/useClickOutside";
 import { classNames } from "src/const/vars";
+import { useAuth } from "src/context/UserContext";
 
 export interface PopoverColorPickerProps {
   color: string;
@@ -24,6 +25,8 @@ export const PopoverColorPicker = ({
   label,
   classname,
 }: PopoverColorPickerProps) => {
+  const { user, canWrite, isAdmin } = useAuth();
+
   const [currentColor, setCurrentColor] = useState(color);
   const popover = useRef<HTMLDivElement>(null);
 
@@ -57,7 +60,7 @@ export const PopoverColorPicker = ({
           classname ? classname : "w-7 "
         }  h-7 shadow-[0_0_0_1px_rgba(0,0,0,0.1),inset_0_0_0_1px_rgba(0,0,0,0.1)] cursor-pointer rounded-lg border-[3px] border-solid border-transparent`}
         style={{ backgroundColor: currentColor }}
-        onClick={() => toggle(true)}
+        onClick={() => (isAdmin || canWrite) && toggle(true)}
       />
 
       {isOpen && (

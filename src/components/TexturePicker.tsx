@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import useClickOutside from "../hooks/useClickOutside";
 import texturesData, { TextureData } from "../const/texturesArray";
 import * as d3 from "d3";
+import { useAuth } from "src/context/UserContext";
 
 export interface ITexturePickerProps {
   rowId: string;
@@ -26,6 +27,8 @@ const TexturePicker = ({
   height = 40,
   width = 40,
 }: ITexturePickerProps) => {
+  const { user, canWrite, isAdmin } = useAuth();
+
   const popover = useRef(null);
   const svgRef = useRef<SVGSVGElement | null>(null); // Ref for the SVG element
 
@@ -46,8 +49,6 @@ const TexturePicker = ({
   };
 
   useEffect(() => {
-    console.log("ti ham been called ", color);
-
     // Access the SVG element using the ref
     const svg = d3.select(svgRef.current);
     svg.selectAll(`${".svg-" + sanitizeClassName(key.trim())}`).remove();
@@ -88,7 +89,7 @@ const TexturePicker = ({
       {/* Assign ref to the SVG element */}
       <div
         className="cursor-pointer flex justify-center items-center rounded-lg border-[3px] border-solid border-transparent  dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-        onClick={() => setIsOpen(true)}
+        onClick={() => (isAdmin || canWrite) && setIsOpen(true)}
       >
         <svg
           ref={svgRef} // Attach the ref to the SVG element

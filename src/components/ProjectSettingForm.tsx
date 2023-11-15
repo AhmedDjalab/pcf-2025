@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import {
   ProjectSettings,
+  fetchEmployees,
   updateProjectSettingsValue,
 } from "src/state/slices/graphSlice";
 import { RootState } from "src/state";
@@ -10,9 +11,18 @@ import { MultiStepFormProps } from "./DrawGraphForm";
 import ImagePicker from "./ImagePicker";
 import { ProjectFileType, ProjectFiletypeOptions } from "src/const/vars";
 import { EmployeeData } from "src/pages/Employee/EmployeeForm";
-import { getEmployees } from "src/Services/EmployeeService";
+import {
+  Employee,
+  EmployeesResponse,
+  getEmployees,
+} from "src/Services/EmployeeService2";
 import Select from "react-select";
-import { useUserContext } from "src/context/UserContext";
+import { useAuth } from "src/context/UserContext";
+import Spinner from "./Spinner";
+import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
+import { base64ToFile } from "src/Helpers/utils";
+import { QueryClient, useQuery } from "@tanstack/react-query";
+import { siteName } from "src/variables/Urls";
 
 interface Options {
   label: string;
@@ -20,29 +30,75 @@ interface Options {
 }
 const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const [projectTitle, setProjectTitle] = useState("");
-  const [selectedImage, setSelectedImage] = useState("");
-  const [selectedEmployees, setSelectedEmployees] = useState<Options[]>([]);
+
+  const [fileName, setFileName] = useState("");
 
   const [projectFileType, setProjectFileType] = useState(ProjectFileType.XLSX); // Set a default value
-  const dispatch = useDispatch();
+  const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   const { t } = useTranslation();
-  const [employees, setEmployees] = useState<EmployeeData[]>([]);
-  const { user } = useUserContext();
+
+  const { user, canWrite, isAdmin } = useAuth();
 
   const projectSettings = useSelector(
     (state: RootState) => state.projectSettings
   );
-  const fetchEmploye = useCallback(async () => {
-    if (user?.uid) {
-      const emp = await getEmployees(user?.uid!);
+  // const [employees, setEmployees] = useState<Employee[]>(
+  //   projectSettings.employees ?? []
+  // );
+  const isDevelopment = process.env.REACT_APP_ENV === "development";
+  // const url = useMemo(
+  //   () =>
+  //     projectSettings.logoImg
+  //       ? isDevelopment
+  //         ? siteName + projectSettings.logoImg
+  //         : projectSettings.logoImg
+  //       : "",
+  //   [projectSettings.logoImg, isDevelopment]
+  // );
+  const [selectedImage, setSelectedImage] = useState(
+    projectSettings.logoImg ?? ""
+  );
+  const [selectedEmployees, setSelectedEmployees] = useState<Options[]>([]);
 
-      setEmployees(emp);
+  const loading = useSelector((state: RootState) => state.loading);
+  const queryClient = new QueryClient();
+  const {
+    data: employeeData,
+    isLoading: employeeLoading,
+    refetch: refetchEmployee,
+    isSuccess,
+  } = useQuery({
+    queryKey: ["employees", user?.id],
+    queryFn: () =>
+      getEmployees({
+        fromvalue: 0,
+        takevalue: 0,
+        userAdminId: user?.id,
+        search: "",
+      }),
+
+    refetchOnWindowFocus: false,
+    staleTime: 6000,
+    enabled: !!user?.id,
+  });
+  const selectedEmployeesData = useMemo(() => {
+    if (employeeData === undefined) {
+      return [];
     }
-  }, [user?.uid]);
-
+    return (
+      projectSettings.employeesId?.map((x) => {
+        return {
+          label: employeeData.employees.find((e) => e.id === x)!.email,
+          value: x,
+        };
+      }) ?? []
+    );
+  }, [employeeData, projectSettings.employeesId]);
   useEffect(() => {
-    fetchEmploye();
-  }, [fetchEmploye]);
+    if (isSuccess && employeeData) {
+      setSelectedEmployees(selectedEmployeesData);
+    }
+  }, [employeeData, isSuccess, selectedEmployeesData]);
 
   useEffect(() => {
     if (projectSettings) {
@@ -73,13 +129,16 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
       fileType: ProjectFiletypeOptions.find(
         (option) => option.id === projectFileType
       )?.id!,
+      employeesId: selectedEmployees.map((x) => x.value),
+      file: selectedImage,
+      fileName: fileName,
     };
     dispatch(updateProjectSettingsValue({ projectSettings: projectSetting }));
     setCurrentStep((step) => step + 1);
   };
 
   return (
-    <div className=" mx-auto">
+    <div className=" mx-auto w-full mt-10 relative h-screen">
       <form onSubmit={handleSubmit} className="p-4">
         <div className="mb-4">
           <label
@@ -96,6 +155,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
             onChange={handleTitleChange}
             className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
             required
+            disabled={!canWrite && !isAdmin}
           />
         </div>
 
@@ -109,6 +169,8 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
           <ImagePicker
             onChange={handleImageChange}
             imageValue={selectedImage}
+            setFileName={(fileName) => setFileName(fileName)}
+            disabled={!canWrite && !isAdmin}
           />
         </div>
 
@@ -123,6 +185,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
             id="projectFileType"
             name="projectFileType"
             value={projectFileType}
+            disabled={!canWrite && !isAdmin}
             onChange={handleFileTypeChange}
             className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
           >
@@ -144,11 +207,15 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
           >
             {t("header.employees")}
           </label>
-          <Select
-            id="employees"
-            name="employees"
-            classNames={{
-              control: () => `block w-full rounded-lg border
+          {employeeLoading ? (
+            <Spinner />
+          ) : (
+            <Select
+              id="employees"
+              name="employees"
+              isDisabled={!canWrite && !isAdmin}
+              classNames={{
+                control: () => `block w-full rounded-lg border
                     border-gray-300   text-sm
                      text-gray-900 focus:border-blue-500
                       focus:ring-blue-500 dark:border-gray-600
@@ -158,26 +225,27 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
                           dark:focus:ring-blue-500 
                           font-bold text-lg dark:text-white
                           `,
-              menu: () => "bg-white dark:bg-gray-700",
-            }}
-            options={
-              employees.map((employee) => ({
-                value: employee.id,
-                label: employee.email,
-              })) ?? []
-            }
-            isMulti
-            value={selectedEmployees}
-            onChange={(selectedOptions: any, { action }: any) => {
-              if (action === "select-option" || action === "remove-value") {
-                setSelectedEmployees(selectedOptions as Options[]);
-                // setFieldValue(
-                //   "employees",
-                //   (selectedOptions as Options[]).map((option) => option.value)
-                // );
+                menu: () => "bg-white dark:bg-gray-700",
+              }}
+              options={
+                employeeData?.employees.map((employee) => ({
+                  value: employee.id!,
+                  label: employee.email,
+                })) ?? []
               }
-            }}
-          />
+              isMulti
+              value={selectedEmployees}
+              onChange={(selectedOptions: any, { action }: any) => {
+                if (action === "select-option" || action === "remove-value") {
+                  setSelectedEmployees(selectedOptions as Options[]);
+                  // formik.setFieldValue(
+                  //   "employees",
+                  //   (selectedOptions as Options[]).map((option) => option.value)
+                  // );
+                }
+              }}
+            />
+          )}
         </div>
         {/* End Multi-Select for Employees */}
 

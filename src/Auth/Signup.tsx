@@ -7,7 +7,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../Helpers/firebase";
-import { useUserContext } from "../context/UserContext";
+import { useAuth } from "../context/UserContext";
 import { FirebaseError } from "firebase/app";
 import logo from "../assets/Logo/logo.png";
 
@@ -18,7 +18,7 @@ function Signup() {
   const [loader, setLoader] = useState(false);
   const [password, setPassword] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  const { loginUser } = useUserContext();
+  const { Login } = useAuth();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -46,8 +46,8 @@ function Signup() {
       return;
     }
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      const loginStatus = await loginUser(email, password);
+      // await createUserWithEmailAndPassword(auth, email, password);
+      const loginStatus = await Login({ email, password });
 
       if (loginStatus) {
         localStorage.removeItem("persist:root");

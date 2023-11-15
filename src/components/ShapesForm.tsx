@@ -24,6 +24,7 @@ import { animateScroll as scroll } from "react-scroll";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/solid";
 import { BackToTopHeightSize } from "../const/vars";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "src/context/UserContext";
 // Import the ShapeType interface
 const shapeTypes = [
   { value: "line", text: "Ligne" },
@@ -32,6 +33,8 @@ const shapeTypes = [
 ];
 type LineType = "line" | "rect" | "triangle";
 function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
+  const { user, canWrite, isAdmin } = useAuth();
+
   const graphSettings = useSelector((state: RootState) => state.shapes);
   const dispatch = useDispatch();
   const [rowColors, setRowColors] = useState<{ [key: string]: string }>({});
@@ -69,7 +72,6 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
         Cell: ({ row }) => {
           const handleTypeChange = (newType: LineType) => {
             // Update the underlying data (shapesList) with the new type
-            console.log("this is row id ", row.id);
             let clonedShapes = [...shapesList];
             const updatedShapesList = clonedShapes.map((shape) => {
               if (shape.id === row.original["id"]) {
@@ -83,6 +85,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
           return (
             <select
               value={row.values["type"]}
+              disabled={!canWrite && !isAdmin}
               className=" rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
               onChange={(e) => handleTypeChange(e.target.value as LineType)}
             >
@@ -114,7 +117,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
           let lineType = lineStyles.find(
             (x) => x.id === row.values["lineType"]
           )!;
-          console.log("this is idata ", row);
+
           return (
             <LineStylePicker
               rowId={row["id"]}
@@ -130,13 +133,9 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
         Header: t("shapesForm.headers.rectangleTriangleType"),
         accessor: "backgroundTexture",
         Cell: ({ row }) => {
-          console.error(
-            "🚀 ~ file: ShapesForm.tsx:131 ~ ShapesForm ~ row:",
-            row
-          );
           const handleTextureChange = (newTexture: string) => {
             // Update the underlying data (shapesList) with the new color
-            console.log("this is row id ", row);
+
             let clonesShapes = [...shapesList];
             const updatedShapesList = clonesShapes.map((shape) => {
               if (shape.id === row.original["id"]) {
