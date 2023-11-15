@@ -1,18 +1,11 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ShapesForm from "./ShapesForm";
 import { ImportFileForm } from "./ImportFileForm";
 import Stepper from "./Stepper";
-import DrawGraphStep from "./DrawGraphStep";
 import TaskSlotsStep from "./TaskSlotsStep";
 import ProjectSettingForm from "./ProjectSettingForm";
 
-import {
-  UNSAFE_NavigationContext,
-  useLocation,
-  useNavigate,
-  useParams,
-  useRoutes,
-} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import TaskSlotsLevelTwoList from "./TaskSlotStepLevelTwo";
 import DefaultLayout from "./DefaultLayout";
