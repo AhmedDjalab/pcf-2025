@@ -37,10 +37,10 @@ function ParameterSelector({
   const [isSubmited, setIsSubmited] = useState(false);
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   const udfSettingsData = useSelector(
-    (state: RootState) => state.userDefindSettings
+    (state: RootState) => state.graph.userDefindSettings
   );
   const filetype = useSelector(
-    (state: RootState) => state.projectSettings.fileType
+    (state: RootState) => state.graph.projectSettings.fileType
   );
   let udfStringsOptions = useMemo(
     () => getOptions(udfSettingString, filetype!),

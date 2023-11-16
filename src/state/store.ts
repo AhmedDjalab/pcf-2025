@@ -1,37 +1,29 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import graphSlice, { GraphCreateType } from "./slices/graphSlice";
 import {
-  persistStore,
-  persistReducer,
-  FLUSH,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-  REHYDRATE,
-} from "redux-persist";
-import storage from "redux-persist/lib/storage";
-import autoMergeLevel1 from "redux-persist/es/stateReconciler/autoMergeLevel1";
-// ...
-const persistConfig = {
-  key: "root", // Key under which your store will be saved in storage
-  storage,
-  stateReconciler: autoMergeLevel1<GraphCreateType>,
-};
+  combineReducers,
+  configureStore,
+  getDefaultMiddleware,
+} from "@reduxjs/toolkit";
+import thunk from "redux-thunk"; // Import Redux Thunk middleware
+import graphSlice, { GraphCreateType } from "./slices/graphSlice";
 
-export const persistedReducer = persistReducer(persistConfig, graphSlice);
+const rootReducer = combineReducers({
+  graph: graphSlice,
+  // Add other reducers if you have them
+});
 
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredActions: [
+          /* Add actions to ignore if needed */
+        ],
       },
-    }),
+    }).concat(thunk), // Add Redux Thunk middleware
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+// Inferred type: { graph: GraphCreateType, ...otherReducerStates }
 export type AppDispatch = typeof store.dispatch;

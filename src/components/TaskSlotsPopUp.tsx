@@ -28,10 +28,10 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
 }) => {
   const { t } = useTranslation();
   const minDistance: number = useSelector(
-    (state: RootState) => state.settings.fromDistance
+    (state: RootState) => state.graph.settings.fromDistance
   );
   const maxDistance: number = useSelector(
-    (state: RootState) => state.settings.toDistance
+    (state: RootState) => state.graph.settings.toDistance
   );
 
   const initialValues = {

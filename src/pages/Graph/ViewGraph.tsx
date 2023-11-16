@@ -49,50 +49,33 @@ function ViewGraph() {
   const { id } = useParams();
   const { canWrite } = useAuth();
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
-  let graphSettings = useSelector((state: RootState) => state);
-  let graphData = useSelector((state: RootState) => state.settings.graphData);
-  let startDate = useSelector((state: RootState) => state.settings.fromDate);
-  let endDate = useSelector((state: RootState) => state.settings.toDate);
-  let rawData = useSelector((state: RootState) => state.rawGraphDataFromFile);
+  let graphSettings = useSelector((state: RootState) => state.graph);
+  let graphData = useSelector(
+    (state: RootState) => state.graph.rawGraphDataFromFile
+  );
+  let startDate = useSelector(
+    (state: RootState) => state.graph.settings.fromDate
+  );
+  let endDate = useSelector((state: RootState) => state.graph.settings.toDate);
+  let rawData = useSelector(
+    (state: RootState) => state.graph.rawGraphDataFromFile
+  );
   useEffect(() => {
     dispatch(fetchProjectByIdThunk(id));
-  }, []);
+  }, [dispatch, id]);
   const fromDistance = useSelector(
-    (state: RootState) => state.settings.fromDistance
+    (state: RootState) => state.graph.settings.fromDistance
   );
   const { user } = useAuth();
   const toDistance = useSelector(
-    (state: RootState) => state.settings.toDistance
+    (state: RootState) => state.graph.settings.toDistance
   );
-  const timeRange = useSelector((state: RootState) => state.settings.timeRange);
+  const timeRange = useSelector(
+    (state: RootState) => state.graph.settings.timeRange
+  );
   const distanceRange = useSelector(
-    (state: RootState) => state.settings.distanceRange
+    (state: RootState) => state.graph.settings.distanceRange
   );
-  useEffect(() => {
-    if (!graphSettings.loading) {
-      dispatch(
-        applyFilter({
-          filters: {
-            fromDate: startDate,
-            toDate: endDate,
-            fromDistance: fromDistance,
-            toDistance: toDistance,
-            timeRange: timeRange,
-            distanceRange: distanceRange,
-          },
-        })
-      );
-    }
-  }, [
-    dispatch,
-    distanceRange,
-    endDate,
-    fromDistance,
-    graphSettings.loading,
-    startDate,
-    timeRange,
-    toDistance,
-  ]);
 
   const isDevelopment = process.env.REACT_APP_ENV === "development";
 
@@ -104,7 +87,7 @@ function ViewGraph() {
     [graphSettings.projectSettings.logoImg]
   );
   const [graphSize, setGraphSize] = useState(graphData.length);
-  const shapesData = useSelector((state: RootState) => state.shapes);
+  const shapesData = useSelector((state: RootState) => state.graph.shapes);
   const [transform, setTransform] = useState({ k: 1, x: 0, y: 0 });
   const [zoomLevel, setZoomLevel] = useState(1);
   const [zoomAttr, setZoomAttr] = useState({});

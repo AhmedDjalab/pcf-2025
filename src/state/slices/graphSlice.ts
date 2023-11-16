@@ -10,7 +10,12 @@ import { uuidv4 } from "@firebase/util";
 import { ProjectFileType } from "src/const/vars";
 import { Employee, getEmployees } from "src/Services/EmployeeService2";
 import { User } from "src/types/user";
-import { ActivityModel, Project } from "src/types/Project";
+import {
+  ActivityModel,
+  filterTypes,
+  GraphSettingModel,
+  Project,
+} from "src/types/Project";
 import { RootState } from "../store";
 import { getGraph, getProject, saveProject } from "src/Services/ProjectService";
 import { getCompanyId } from "src/Services/AuthService";
@@ -19,6 +24,8 @@ import { UploadImagesUrl } from "src/variables/Urls";
 import imageCompression from "browser-image-compression"; // Import the library
 import { base64ToFile } from "src/Helpers/utils";
 import api from "src/utils/api";
+import { getActivities } from "src/Services/ActivityService";
+import { actions } from "react-table";
 
 export interface GraphDataType {
   id: string;
@@ -65,7 +72,7 @@ export interface ProjectSettings {
   fileName?: string;
 }
 export interface GraphSetting {
-  graphData: GraphDataType[];
+  graphData?: GraphDataType[];
   fromDate: string;
   toDate: string;
   fromDistance: number;
@@ -135,7 +142,26 @@ export const fetchEmployees = createAsyncThunk(
     return response?.employees; // Assuming your API returns an object with an 'employees' property
   }
 );
+export interface AcitivityFetchProp {
+  projectId: string;
+  filter: filterTypes;
+}
+export const fetchActivities = createAsyncThunk(
+  "importFile/fetchActivities",
+  async ({ projectId, filter }: AcitivityFetchProp) => {
+    const response = await getActivities({
+      fromvalue: 0,
+      takevalue: 0,
+      search: "",
+      fromDate: filter.fromDate,
+      toDate: filter.toDate,
+      fromDistance: filter.fromDistance,
+      toDistance: filter.toDistance,
+    });
 
+    return response?.activities; // Assuming your API returns an object with an 'employees' property
+  }
+);
 export const fetchProjectByIdThunk = createAsyncThunk<
   { success: boolean; data?: Project; message?: string },
   string, // Assuming the project ID is a string, adjust as needed
@@ -176,15 +202,15 @@ export const saveProjectThunk = createAsyncThunk<
 
     // Transform the state into the format expected by your backend
     const projectData: Project = {
-      id: state.id,
-      title: state.projectSettings.title,
-      logoUrl: state.projectSettings.logoImg,
-      logoUrlId: state.projectSettings.logoId,
-      fileType: state.projectSettings.fileType,
+      id: state.graph.id,
+      title: state.graph.projectSettings.title,
+      logoUrl: state.graph.projectSettings.logoImg,
+      logoUrlId: state.graph.projectSettings.logoId,
+      fileType: state.graph.projectSettings.fileType,
       //@ts-ignore
       companyId: getCompanyId(),
-      employeesId: state.projectSettings.employeesId,
-      activities: state.rawGraphDataFromFile!.map((act) => ({
+      employeesId: state.graph.projectSettings.employeesId,
+      activities: state.graph.rawGraphDataFromFile!.map((act) => ({
         // Map properties from GraphDataType to ActivityModel
         name: act.activityName,
         activityId: act.id,
@@ -195,14 +221,14 @@ export const saveProjectThunk = createAsyncThunk<
         style: act.style,
       })),
       graphSettings: {
-        fromDate: new Date(state.settings.fromDate),
-        toDate: new Date(state.settings.toDate),
-        fromDistance: state.settings.fromDistance,
-        toDistance: state.settings.toDistance,
-        distanceRange: state.settings.distanceRange,
-        timeRange: state.settings.timeRange,
+        fromDate: new Date(state.graph.settings.fromDate),
+        toDate: new Date(state.graph.settings.toDate),
+        fromDistance: state.graph.settings.fromDistance,
+        toDistance: state.graph.settings.toDistance,
+        distanceRange: state.graph.settings.distanceRange,
+        timeRange: state.graph.settings.timeRange,
       },
-      activityStyles: state.shapes.shapesData.map((shape) => ({
+      activityStyles: state.graph.shapes.shapesData.map((shape) => ({
         // Map properties from ShapeType to ActivityStyleModel
         name: shape.name,
         color: shape.color,
@@ -211,7 +237,7 @@ export const saveProjectThunk = createAsyncThunk<
         shapeType: shape.type,
         activityId: shape.activityId?.[0], // You need to adjust this based on your actual model
       })),
-      taskSlotsLevelOne: state.taskSlots.map((taskSlot) => ({
+      taskSlotsLevelOne: state.graph.taskSlots.map((taskSlot) => ({
         // Map properties from TaskSlot to TaskSlotModel
         id: taskSlot.id,
         idnew: taskSlot.id,
@@ -220,7 +246,7 @@ export const saveProjectThunk = createAsyncThunk<
         name: taskSlot.name,
         level: 1, // Assuming Level is 1 for taskSlots
       })),
-      taskSlotsLevelTwo: state.taskSlotsLevelTwo.map((taskSlot) => ({
+      taskSlotsLevelTwo: state.graph.taskSlotsLevelTwo.map((taskSlot) => ({
         // Map properties from TaskSlot to TaskSlotModel
         id: taskSlot.id,
         idnew: taskSlot.id,
@@ -257,7 +283,19 @@ const GraphSlice = createSlice({
       const projectSettings = action.payload.projectSettings;
       state.projectSettings = { ...projectSettings };
       state.userDefindSettings = [];
-      console.log("raw ", current(state.rawGraphDataFromFile));
+    },
+
+    saveSettings(
+      state,
+      action: PayloadAction<{ filters: Omit<GraphSetting, "graphData"> }>
+    ) {
+      const { fromDate, toDate, fromDistance, toDistance } =
+        action.payload.filters;
+      console.log("thisi sdat", current(state.rawGraphDataFromFile));
+      state.settings.fromDate = fromDate;
+      state.settings.toDate = toDate;
+      state.settings.fromDistance = fromDistance;
+      state.settings.toDistance = toDistance;
     },
 
     applyFilter(
@@ -293,15 +331,11 @@ const GraphSlice = createSlice({
         filteredGraphData
       );
     },
-    updateGraphSettingsValue(
-      state,
-      action: PayloadAction<{ graphSettingsForm: GraphSetting }>
-    ) {
-      let shapes: ShapeType[] = [];
-      const graphSettingsForm = action.payload.graphSettingsForm;
 
+    updateShapes(state) {
+      let shapes: ShapeType[] = [];
       let styles = new Set<string>();
-      graphSettingsForm.graphData.forEach((data) => {
+      state.settings.graphData?.forEach((data) => {
         styles.add(data.style);
       });
       const uniqueStyles = Array.from(styles);
@@ -323,8 +357,46 @@ const GraphSlice = createSlice({
           name: style,
           lineType: lineStyles[0].id,
           id: style,
-          activityId: graphSettingsForm.graphData
-            .filter((x) => x.style === style)
+          activityId: state.settings.graphData
+            ?.filter((x) => x.style === style)
+            .map((data) => data.id),
+        };
+      });
+      state.shapes.shapesData = shapes;
+    },
+
+    updateGraphSettingsValue(
+      state,
+      action: PayloadAction<{ graphSettingsForm: GraphSetting }>
+    ) {
+      let shapes: ShapeType[] = [];
+      const graphSettingsForm = action.payload.graphSettingsForm;
+      console.log("ts isi state ", state.settings.graphData);
+      let styles = new Set<string>();
+      state.settings.graphData?.forEach((data) => {
+        styles.add(data.style);
+      });
+      const uniqueStyles = Array.from(styles);
+
+      shapes = uniqueStyles.map((style, index) => {
+        const existingShape = state.shapes.shapesData.find(
+          (shape) => shape.id === style
+        );
+
+        if (existingShape) {
+          // If a shape with the same id already exists, don't update it.
+          return existingShape;
+        }
+
+        return {
+          type: "line",
+          backgroundTexture: texturesData[0].id,
+          color: "#24303F",
+          name: style,
+          lineType: lineStyles[0].id,
+          id: style,
+          activityId: state.settings.graphData
+            ?.filter((x) => x.style === style)
             .map((data) => data.id),
         };
       });
@@ -364,8 +436,8 @@ const GraphSlice = createSlice({
 
       //state.settings.graphData.unshift();
       //state.rawGraphDataFromFile!.unshift(newActivity);
-      const graphData = [newActivity, ...state.settings.graphData];
-      const rawData = [newActivity, ...state.settings.graphData];
+      const graphData = [newActivity, ...(state.settings.graphData ?? [])];
+      const rawData = [newActivity, ...(state.settings.graphData ?? [])];
       return {
         ...state,
         settings: { ...state.settings, graphData: graphData },
@@ -385,7 +457,7 @@ const GraphSlice = createSlice({
       action: PayloadAction<{ graphData: GraphDataType[] }>
     ) {
       const existingIds = new Set(
-        state.settings.graphData.map((data) => data.id)
+        state.settings.graphData?.map((data) => data.id)
       );
 
       // Filter out duplicate graph data based on ID
@@ -444,12 +516,14 @@ const GraphSlice = createSlice({
     ) {
       const { activity, shapeId } = action.payload;
 
-      const graphDataIndex = state.settings.graphData.findIndex(
+      const graphDataIndex = state.settings.graphData?.findIndex(
         (item) => item.id === activity.id
       );
 
-      if (graphDataIndex !== -1) {
-        state.settings.graphData[graphDataIndex] = activity;
+      if (graphDataIndex !== undefined && graphDataIndex !== -1) {
+        //@ts-ignore
+        state.settings.graphData![graphDataIndex] = activity;
+        //@ts-ignore
         state.rawGraphDataFromFile![graphDataIndex] = activity;
         return state;
       }
@@ -458,11 +532,13 @@ const GraphSlice = createSlice({
     },
 
     removeActivity(state, action: PayloadAction<{ activityId: string }>) {
-      let newgraphData = state.settings.graphData.filter(
-        (x) => x.id !== action.payload.activityId
-      );
-      state.settings.graphData = [...newgraphData];
-      state.rawGraphDataFromFile = [...newgraphData];
+      let newGraphData = state.settings.graphData
+        ? state.settings.graphData.filter(
+            (x) => x.id !== action.payload.activityId
+          )
+        : [];
+      state.settings.graphData = [...newGraphData];
+      state.rawGraphDataFromFile = [...newGraphData];
       return state;
     },
 
@@ -540,6 +616,30 @@ const GraphSlice = createSlice({
       state.error = action.error.message;
     });
 
+    builder.addCase(fetchActivities.pending, (state) => {
+      state.loading = true;
+    });
+
+    builder.addCase(fetchActivities.fulfilled, (state, action) => {
+      state.loading = false;
+      var activities = action.payload?.map((act) => ({
+        id: act.activityId,
+        styleId: act.style,
+        activityId: act.activityId,
+        startDate: new Date(act.startDate).toISOString(),
+        finishDate: new Date(act.endDate).toISOString(),
+        startChainage: act.startPk,
+        finishChainage: act.endPk,
+        style: act.style,
+        activityName: act.name,
+      }));
+      state.settings.graphData = activities ?? [];
+    });
+    builder.addCase(fetchActivities.rejected, (state, action) => {
+      state.loading = false;
+      state.settings.graphData = [];
+    });
+
     builder.addCase(fetchEmployees.pending, (state) => {
       state.loading = true;
     });
@@ -559,6 +659,18 @@ const GraphSlice = createSlice({
       state.loading = false;
       resetStoreState();
       console.log("---- this project from backend  ---", action.payload.data);
+
+      var activities = action.payload.data!.activities?.map((act) => ({
+        id: act.activityId,
+        styleId: act.style,
+        activityId: act.activityId,
+        startDate: new Date(act.startDate).toISOString(),
+        finishDate: new Date(act.endDate).toISOString(),
+        startChainage: act.startPk,
+        finishChainage: act.endPk,
+        style: act.style,
+        activityName: act.name,
+      }));
       const projectData: GraphCreateType = {
         id: action.payload.data?.id,
         projectSettings: {
@@ -569,19 +681,9 @@ const GraphSlice = createSlice({
           fileType: action.payload.data!.fileType ?? undefined,
         },
 
-        rawGraphDataFromFile: action.payload.data!.activities?.map((act) => ({
-          id: act.activityId,
-          styleId: act.style,
-          activityId: act.activityId,
-          startDate: new Date(act.startDate).toISOString(),
-          finishDate: new Date(act.endDate).toISOString(),
-          startChainage: act.startPk,
-          finishChainage: act.endPk,
-          style: act.style,
-          activityName: act.name,
-        })),
+        rawGraphDataFromFile: activities,
         settings: {
-          graphData: [],
+          graphData: activities ?? [],
           fromDate: new Date(
             action.payload.data!.graphSettings?.fromDate ??
               initialState.settings.fromDate
@@ -647,6 +749,8 @@ const GraphSlice = createSlice({
 });
 
 export const {
+  saveSettings,
+  updateShapes,
   updateProjectSettingsValue,
   updateGraphSettingsValue,
   updateShapesValue,

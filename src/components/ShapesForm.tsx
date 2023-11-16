@@ -35,7 +35,7 @@ type LineType = "line" | "rect" | "triangle";
 function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
   const { user, canWrite, isAdmin } = useAuth();
 
-  const graphSettings = useSelector((state: RootState) => state.shapes);
+  const graphSettings = useSelector((state: RootState) => state.graph.shapes);
   const dispatch = useDispatch();
   const [rowColors, setRowColors] = useState<{ [key: string]: string }>({});
   const [showBackToTopButton, setShowBackToTopButton] = useState(false);

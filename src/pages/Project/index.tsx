@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import DefaultLayout from "src/components/DefaultLayout";
-import { RootState, persistedReducer } from "src/state";
+import { RootState } from "src/state";
 import * as XLSX from "xlsx";
 
 import {
@@ -100,9 +100,6 @@ const Projects = () => {
   };
   const handlePurgeAndNavigate = async () => {
     try {
-      // Purge the Redux store state
-      await persistor.purge();
-
       // After purging, you can reset the store state if needed
       resetStoreState();
 

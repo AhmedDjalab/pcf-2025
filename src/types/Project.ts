@@ -38,6 +38,13 @@ export interface ActivityStyleModel {
   activityId?: string | null;
 }
 
+export interface filterTypes {
+  fromDate: Date;
+  toDate: Date;
+  fromDistance: number;
+  toDistance: number;
+  timeRange?: "Yearly" | "Monthly" | "Weekly" | "Daily";
+}
 export interface GraphSettingModel {
   fromDate: Date;
   toDate: Date;

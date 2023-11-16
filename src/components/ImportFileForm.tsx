@@ -9,6 +9,7 @@ import {
   applyFilter,
   removeActivity,
   updateGraphSettingsValue,
+  updateShapes,
 } from "src/state/slices/graphSlice";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -33,6 +34,7 @@ import { XLSXIcon } from "./filesSVG";
 import excel from "src/assets/filesLogo/excel.svg";
 import primavera from "src/assets/filesLogo/PrimaveraXML.png";
 import msProject from "src/assets/filesLogo/msProject.png";
+import FiltersInputs from "./FiltersInputs";
 export type FormValues = {
   fromDate: Date;
   toDate: Date;
@@ -43,7 +45,7 @@ export type FormValues = {
   distanceRange?: number;
 };
 export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
-  const { user, canWrite, isAdmin } = useAuth();
+  const { canWrite, isAdmin } = useAuth();
   const { id } = useParams();
 
   const editForm = id !== null && id !== "" && id !== undefined;
@@ -63,16 +65,15 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     timeRange: "Yearly",
     distanceRange: 200,
   };
-  const loading = useSelector((state: RootState) => state.loading);
+  const loading = useSelector((state: RootState) => state.graph.loading);
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
-  const graphSettings = useSelector((state: RootState) => state.settings);
+  const graphSettings = useSelector((state: RootState) => state.graph.settings);
   const fileType = useSelector(
-    (state: RootState) => state.projectSettings.fileType
+    (state: RootState) => state.graph.projectSettings.fileType
   );
 
-  const rawData = useSelector((state: RootState) => state.rawGraphDataFromFile);
-  const udfSettingsData = useSelector(
-    (state: RootState) => state.userDefindSettings
+  const rawData = useSelector(
+    (state: RootState) => state.graph.rawGraphDataFromFile
   );
   console.error("MyComponent is rendering", rawData); // Add this line
 
@@ -117,16 +118,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     setIsModalOpen(false);
     setEdit(null);
   };
-  const handleSaveActivity = (degree: GraphDataType) => {
-    // Handle save logic
-    // Call the API or dispatch an action to save the degree
-    closeModal();
-  };
   const formik = useFormik({
     initialValues: {
       fromDate: new Date(graphSettings.fromDate) ?? initForm.fromDate,
       toDate: new Date(graphSettings.toDate) ?? initForm.toDate,
-      graphData: graphSettings.graphData,
       fromDistance: graphSettings.fromDistance.toString() ?? "10000",
       toDistance: graphSettings.toDistance.toString() ?? "20000",
       timeRange: graphSettings.timeRange ?? "Yearly",
@@ -136,15 +131,13 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     enableReinitialize: true,
 
     onSubmit: (values) => {
-      if (values.graphData.length === 0) return;
-
       dispatch(
         updateGraphSettingsValue({
           graphSettingsForm: {
             ...values,
             fromDate: values.fromDate.toISOString(),
             toDate: values.toDate.toISOString(),
-            graphData: graphSettings.graphData,
+
             fromDistance: parseInt(values.fromDistance),
             toDistance: parseInt(values.toDistance),
             timeRange: values.timeRange,
@@ -154,13 +147,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       setCurrentStep((prevStep) => prevStep + 1);
     },
   });
-  function arraysEqual(arr1: string[], arr2: string[]) {
-    if (arr1.length !== arr2.length) return false;
-    // for (let i = 0; i < arr1.length; i++) {
-    //   if (arr1[i] !== arr2[i]) return false;
-    // }
-    return true;
-  }
 
   //?  --------****--- parsers -------***---------------------
 
@@ -457,12 +443,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     }
   };
 
-  function adjustTimeZone(dateString: string) {
-    const [day, month, year] = dateString.split("/");
-    const parsedDate = new Date(`${year}-${month}-${day}T00:00:00Z`);
-    return parsedDate.toISOString().split("T")[0]; // Output as YYYY-MM-DD
-  }
-
   const handleFileData = (data: ArrayBuffer | null) => {
     if (!data) {
       return [];
@@ -477,32 +457,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
     console.log("this is erors ", parsedData);
     const headers = parsedData[0].map((header: any) => header.toString());
-    setUserDefinedSettings((prev) => headers);
+    setUserDefinedSettings(() => headers);
 
-    // Assuming your data structure matches the XLSX columns order
-    // const graphData = parsedData
-    //   .slice(1)
-    //   .filter((row) => row[0] !== null && row[0] !== undefined)
-    //   .map((row) => {
-    //     const startDate = moment.utc(row[2], "DD/MM/YYYY", true); // Parse Start Date
-    //     const finishDate = moment.utc(row[3], "DD/MM/YYYY", true);
-    //     if (!startDate.isValid() || !finishDate.isValid()) {
-    //       // Handle invalid date format here
-    //       return null;
-    //     }
-    //     startDate.add(1, "day");
-    //     finishDate.add(1, "day");
-    //     return {
-    //       id: row[0],
-    //       activityName: row[1].toString().trim(),
-    //       startDate: startDate.toISOString(), // Assign parsed Start Date
-    //       finishDate: finishDate.toISOString(), // Assign parsed Finish Date
-    //       startChainage: parseFloat(row[4]),
-    //       finishChainage: parseFloat(row[5]),
-    //       style: row[6],
-    //     } as GraphDataType;
-    //   })
-    //   .filter((item) => item !== null) as GraphDataType[];
     return parsedData;
   };
 
@@ -620,7 +576,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           udfArray.push(userDefinedSetting);
         }
 
-        setUserDefinedSettings((pre) => udfArray);
+        setUserDefinedSettings(() => udfArray);
         resolve(xmlDoc);
       } catch (error) {
         reject(error);
@@ -699,7 +655,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           };
           udfArray.push(userDefiendSetting);
         }
-        setUserDefinedSettings((prev) => udfArray);
+        setUserDefinedSettings(() => udfArray);
         resolve(xmlDoc);
       } catch (error) {
         reject(error);
@@ -776,16 +732,19 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   //   return <span title={tooltipText}>{shortMonth}</span>;
   // };
 
-  const CustomInput = forwardRef(({ value, onClick, onChange }: any, ref) => (
-    <input
-      type="text"
-      value={value}
-      onClick={onClick}
-      onChange={onChange}
-      disabled={!canWrite && !isAdmin}
-      className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-    />
-  ));
+  const CustomInput = forwardRef<HTMLInputElement, any>(
+    ({ value, onClick, onChange }: any, ref: React.Ref<HTMLInputElement>) => (
+      <input
+        type="text"
+        ref={ref}
+        value={value}
+        onClick={onClick}
+        onChange={onChange}
+        disabled={!canWrite && !isAdmin}
+        className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+      />
+    )
+  );
 
   const handleBack = () => {
     // Define what should happen when the "Back" button is clicked.
@@ -812,28 +771,31 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     };
   }, []);
 
-  useEffect(() => {
-    dispatch(
-      applyFilter({
-        filters: {
-          fromDate: formik.values.fromDate.toISOString(),
-          toDate: formik.values.toDate.toISOString(),
-          fromDistance: parseFloat(formik.values.fromDistance),
-          toDistance: parseFloat(formik.values.toDistance),
-          timeRange: formik.values.timeRange,
-          distanceRange: formik.values.distanceRange,
-        },
-      })
-    );
-  }, [
-    dispatch,
-    formik.values.distanceRange,
-    formik.values.fromDate,
-    formik.values.fromDistance,
-    formik.values.timeRange,
-    formik.values.toDate,
-    formik.values.toDistance,
-  ]);
+  // useEffect(() => {
+  //   if (!editForm) {
+  //     dispatch(
+  //       applyFilter({
+  //         filters: {
+  //           fromDate: formik.values.fromDate.toISOString(),
+  //           toDate: formik.values.toDate.toISOString(),
+  //           fromDistance: parseFloat(formik.values.fromDistance),
+  //           toDistance: parseFloat(formik.values.toDistance),
+  //           timeRange: formik.values.timeRange,
+  //           distanceRange: formik.values.distanceRange,
+  //         },
+  //       })
+  //     );
+  //   }
+  // }, [
+  //   dispatch,
+  //   editForm,
+  //   formik.values.distanceRange,
+  //   formik.values.fromDate,
+  //   formik.values.fromDistance,
+  //   formik.values.timeRange,
+  //   formik.values.toDate,
+  //   formik.values.toDistance,
+  // ]);
 
   const fileSvgIcons = () => {
     switch (fileType) {
@@ -850,319 +812,317 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         break;
     }
   };
+
+  const filterInputs = useCallback(() => {
+    return (
+      <form onSubmit={formik.handleSubmit}>
+        <div className="grid grid-cols-3 gap-2 justify-center">
+          <div className="mb-4">
+            <label
+              htmlFor="fromDate"
+              className="block font-medium text-gray-700 dark:text-white"
+            >
+              {t("importFileForm.startDate")}
+            </label>
+            <DatePicker
+              id="fromDate"
+              selected={formik.values.fromDate}
+              onChange={(date) => formik.setFieldValue("fromDate", date)}
+              dateFormat="MM/yyyy"
+              wrapperClassName="w-full px-3 py-2 border rounded-lg"
+              customInput={
+                <CustomInput
+                  value={moment(formik.values.fromDate).format("MMMM")}
+                />
+              }
+              showMonthYearPicker
+            />
+            {/* {formik.touched.fromDate && formik.errors.fromDate ? (
+           <div className="text-red-600">{formik.errors.fromDate}</div>
+         ) : null} */}
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="toDate"
+              className="block font-medium text-gray-700 dark:text-white"
+            >
+              {t("importFileForm.endDate")}
+            </label>
+            <DatePicker
+              id="toDate"
+              selected={formik.values.toDate}
+              onChange={(date) => formik.setFieldValue("toDate", date)}
+              dateFormat="MM/yyyy"
+              wrapperClassName="w-full px-3 py-2 border rounded-lg"
+              customInput={
+                <CustomInput
+                  value={moment(formik.values.toDate).format("MMMM")}
+                />
+              }
+              showMonthYearPicker
+            />
+            {/* {formik.touched.toDate && formik.errors.toDate ? (
+           <div className="text-red-600">{formik.errors.toDate}</div>
+         ) : null} */}
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="timeRange"
+              className="block font-medium text-gray-700 dark:text-white"
+            >
+              {t("importFileForm.timeScale")}
+            </label>
+            <select
+              value={formik.values.timeRange}
+              onChange={formik.handleChange}
+              id="timeRange"
+              name="timeRange"
+              disabled={!canWrite && !isAdmin}
+              className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            >
+              <option value="Yearly">{t("importFileForm.yearlyOption")}</option>
+              <option value="Monthly">
+                {t("importFileForm.monthlyOption")}
+              </option>
+              <option value="Weekly">{t("importFileForm.weeklyOption")}</option>
+              <option value="Daily">{t("importFileForm.dailyOption")}</option>
+            </select>
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="fromDistance"
+              className="block font-medium text-gray-700 dark:text-white"
+            >
+              {t("importFileForm.startPk")}
+            </label>
+            <input
+              id="fromDistance"
+              name="fromDistance"
+              type="number"
+              disabled={!canWrite && !isAdmin}
+              value={formik.values.fromDistance}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            />
+            {formik.touched.fromDistance && formik.errors.fromDistance && (
+              <div className="text-red-600">{formik.errors.fromDistance}</div>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="toDistance"
+              className="block font-medium text-gray-700 dark:text-white"
+            >
+              {t("importFileForm.endPk")}
+            </label>
+            <input
+              id="toDistance"
+              name="toDistance"
+              disabled={!canWrite && !isAdmin}
+              type="number"
+              value={formik.values.toDistance}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            />
+            {formik.touched.toDistance && formik.errors.toDistance && (
+              <div className="text-red-600">{formik.errors.toDistance}</div>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="distanceRange"
+              className="block font-medium text-gray-700 dark:text-white"
+            >
+              {t("importFileForm.distanceRange")}
+            </label>
+            <input
+              id="distanceRange"
+              name="distanceRange"
+              disabled={!canWrite && !isAdmin}
+              type="number"
+              value={formik.values.distanceRange}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            />
+            {formik.touched.distanceRange && formik.errors.distanceRange && (
+              <div className="text-red-600">{formik.errors.distanceRange}</div>
+            )}
+          </div>
+        </div>
+      </form>
+    );
+  }, [CustomInput, canWrite, formik, isAdmin, t]);
+
   return (
     <div
       className="w-full mt-10 relative h-screen"
       onDragOver={preventDefault}
       onDrop={handleDrop}
     >
-      <form onSubmit={formik.handleSubmit}>
-        {loading ? (
-          <Spinner />
-        ) : (
-          <label className=" relative dark:bg-boxdark  flex justify-center items-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
-            {editForm ? (
-              fileSvgIcons()
-            ) : (
-              <>
-                <span className="flex items-center space-x-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-6 h-6 text-gray-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    />
-                  </svg>
-                  <span className="font-medium text-gray-600">
-                    {t("importFileForm.dragOrImport")}
-                  </span>
+      {loading ? (
+        <Spinner />
+      ) : (
+        <label className=" relative dark:bg-boxdark  flex justify-center items-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
+          {editForm ? (
+            fileSvgIcons()
+          ) : (
+            <>
+              <span className="flex items-center space-x-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-6 h-6 text-gray-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  />
+                </svg>
+                <span className="font-medium text-gray-600">
+                  {t("importFileForm.dragOrImport")}
                 </span>
-                <input
-                  onChange={handleFileUpload}
-                  type="file"
-                  onClick={handleClick}
-                  disabled={!canWrite && !isAdmin}
-                  name="file_upload"
-                  className="hidden"
-                  accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                />
-              </>
-            )}
-          </label>
-        )}
-
-        <div className="relative   w-full mt-10">
-          {rawData && rawData.length > 0 && (
-            <div className="grid grid-cols-3 gap-2 justify-center">
-              <div className="mb-4">
-                <label
-                  htmlFor="fromDate"
-                  className="block font-medium text-gray-700 dark:text-white"
-                >
-                  {t("importFileForm.startDate")}
-                </label>
-                <DatePicker
-                  id="fromDate"
-                  selected={formik.values.fromDate}
-                  onChange={(date) => formik.setFieldValue("fromDate", date)}
-                  dateFormat="MM/yyyy"
-                  wrapperClassName="w-full px-3 py-2 border rounded-lg"
-                  customInput={
-                    <CustomInput
-                      className="w-full px-3 py-2 border rounded-lg"
-                      value={moment(formik.values.fromDate).format("MMMM")}
-                    />
-                  }
-                  showMonthYearPicker
-                />
-                {/* {formik.touched.fromDate && formik.errors.fromDate ? (
-                   <div className="text-red-600">{formik.errors.fromDate}</div>
-                 ) : null} */}
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="toDate"
-                  className="block font-medium text-gray-700 dark:text-white"
-                >
-                  {t("importFileForm.endDate")}
-                </label>
-                <DatePicker
-                  id="toDate"
-                  selected={formik.values.toDate}
-                  onChange={(date) => formik.setFieldValue("toDate", date)}
-                  dateFormat="MM/yyyy"
-                  wrapperClassName="w-full px-3 py-2 border rounded-lg"
-                  customInput={
-                    <CustomInput
-                      value={moment(formik.values.toDate).format("MMMM")}
-                    />
-                  }
-                  showMonthYearPicker
-                />
-                {/* {formik.touched.toDate && formik.errors.toDate ? (
-                   <div className="text-red-600">{formik.errors.toDate}</div>
-                 ) : null} */}
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="timeRange"
-                  className="block font-medium text-gray-700 dark:text-white"
-                >
-                  {t("importFileForm.timeScale")}
-                </label>
-                <select
-                  value={formik.values.timeRange}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  id="timeRange"
-                  name="timeRange"
-                  disabled={!canWrite && !isAdmin}
-                  className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                >
-                  <option value="Yearly">
-                    {t("importFileForm.yearlyOption")}
-                  </option>
-                  <option value="Monthly">
-                    {t("importFileForm.monthlyOption")}
-                  </option>
-                  <option value="Weekly">
-                    {t("importFileForm.weeklyOption")}
-                  </option>
-                  <option value="Daily">
-                    {t("importFileForm.dailyOption")}
-                  </option>
-                </select>
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="fromDistance"
-                  className="block font-medium text-gray-700 dark:text-white"
-                >
-                  {t("importFileForm.startPk")}
-                </label>
-                <input
-                  id="fromDistance"
-                  name="fromDistance"
-                  type="number"
-                  disabled={!canWrite && !isAdmin}
-                  value={formik.values.fromDistance}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                />
-                {formik.touched.fromDistance && formik.errors.fromDistance && (
-                  <div className="text-red-600">
-                    {formik.errors.fromDistance}
-                  </div>
-                )}
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="toDistance"
-                  className="block font-medium text-gray-700 dark:text-white"
-                >
-                  {t("importFileForm.endPk")}
-                </label>
-                <input
-                  id="toDistance"
-                  name="toDistance"
-                  disabled={!canWrite && !isAdmin}
-                  type="number"
-                  value={formik.values.toDistance}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                />
-                {formik.touched.toDistance && formik.errors.toDistance && (
-                  <div className="text-red-600">{formik.errors.toDistance}</div>
-                )}
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="distanceRange"
-                  className="block font-medium text-gray-700 dark:text-white"
-                >
-                  {t("importFileForm.distanceRange")}
-                </label>
-                <input
-                  id="distanceRange"
-                  name="distanceRange"
-                  disabled={!canWrite && !isAdmin}
-                  type="number"
-                  value={formik.values.distanceRange}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                />
-                {formik.touched.distanceRange &&
-                  formik.errors.distanceRange && (
-                    <div className="text-red-600">
-                      {formik.errors.distanceRange}
-                    </div>
-                  )}
-              </div>
-            </div>
+              </span>
+              <input
+                onChange={handleFileUpload}
+                type="file"
+                onClick={handleClick}
+                disabled={!canWrite && !isAdmin}
+                name="file_upload"
+                className="hidden"
+                accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              />
+            </>
           )}
-          <div className="my-4 flex justify-between">
-            {/* Add the "Back" button */}
+        </label>
+      )}
+
+      <div className="relative   w-full mt-10">
+        {rawData && rawData.length > 0 && <FiltersInputs />}
+
+        <div className="my-4 flex justify-between">
+          {/* Add the "Back" button */}
+          <button
+            type="button"
+            className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600"
+            onClick={handleBack}
+          >
+            {t("importFileForm.back")}
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
+            disabled={
+              graphSettings.graphData?.length === 0 ||
+              graphSettings.fromDate > graphSettings.toDate
+            }
+            onClick={() => {
+              dispatch(updateShapes());
+              setCurrentStep((prevStep) => prevStep + 1);
+            }}
+          >
+            {t("importFileForm.next")}
+          </button>
+        </div>
+        {
+          <div className="my-4 flex justify-start">
             <button
               type="button"
-              className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600"
-              onClick={handleBack}
+              onClick={handleAddClick}
+              className="mb-2 mr-2 rounded-lg bg-green-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
             >
-              {t("importFileForm.back")}
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
-              disabled={
-                graphSettings.graphData.length === 0 ||
-                graphSettings.fromDate > graphSettings.toDate
-              }
-            >
-              {t("importFileForm.next")}
+              {t("importFileForm.add")}
             </button>
           </div>
-          {
-            <div className="my-4 flex justify-start">
-              <button
-                type="button"
-                onClick={handleAddClick}
-                className="mb-2 mr-2 rounded-lg bg-green-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+        }
+        <table
+          key={uniqueId()}
+          className="   w-full  text-sm text-left text-gray-500 dark:text-gray-400"
+        >
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" className="px-6 py-3">
+                ID
+              </th>
+              <th scope="col" className="px-6 py-3">
+                {t("importFileForm.activityName")}
+              </th>
+              <th scope="col" className="px-6 py-3">
+                {t("importFileForm.startDate")}
+              </th>
+              <th scope="col" className="px-6 py-3">
+                {t("importFileForm.endDate")}
+              </th>
+              <th scope="col" className="px-6 py-3">
+                {t("importFileForm.startPk")}
+              </th>
+              <th scope="col" className="px-6 py-3">
+                {t("importFileForm.endPk")}
+              </th>
+              <th scope="col" className="px-6 py-3">
+                {t("importFileForm.activityStyle")}
+              </th>
+              <th scope="col" className="px-6 py-3">
+                {t("importFileForm.actions")}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {graphSettings.graphData?.map((data, index) => (
+              <tr
+                key={data.id + index + uniqueId()}
+                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
               >
-                {t("importFileForm.add")}
-              </button>
-            </div>
-          }
-          <table
-            key={uniqueId()}
-            className="   w-full  text-sm text-left text-gray-500 dark:text-gray-400"
-          >
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" className="px-6 py-3">
-                  ID
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  {t("importFileForm.activityName")}
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  {t("importFileForm.startDate")}
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  {t("importFileForm.endDate")}
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  {t("importFileForm.startPk")}
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  {t("importFileForm.endPk")}
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  {t("importFileForm.activityStyle")}
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  {t("importFileForm.actions")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {graphSettings.graphData.map((data, index) => (
-                <tr
-                  key={data.id + index + uniqueId()}
-                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  {data.id}
+                </th>
+                <td className="px-6 py-4">{data.activityName}</td>
+                <td className="px-6 py-4">
+                  {moment(data.startDate).format("DD/MM/YYYY")}
+                </td>
+                <td className="px-6 py-4">
+                  {moment(data.finishDate).format("DD/MM/YYYY")}
+                </td>
+                <td className="px-6 py-4">{data.startChainage}</td>
+                <td className="px-6 py-4">{data.finishChainage}</td>
+                <td className="px-6 py-4">{data.style}</td>
+                <td className="flex px-6 py-3">
+                  <button
+                    type="button"
+                    onClick={() => handleEditClick(data)}
+                    className="text-blue-500 hover:text-blue-700"
+                    disabled={!canWrite && !isAdmin}
                   >
-                    {data.id}
-                  </th>
-                  <td className="px-6 py-4">{data.activityName}</td>
-                  <td className="px-6 py-4">
-                    {moment(data.startDate).format("DD/MM/YYYY")}
-                  </td>
-                  <td className="px-6 py-4">
-                    {moment(data.finishDate).format("DD/MM/YYYY")}
-                  </td>
-                  <td className="px-6 py-4">{data.startChainage}</td>
-                  <td className="px-6 py-4">{data.finishChainage}</td>
-                  <td className="px-6 py-4">{data.style}</td>
-                  <td className="flex px-6 py-3">
-                    <button
-                      type="button"
-                      onClick={() => handleEditClick(data)}
-                      className="text-blue-500 hover:text-blue-700"
-                      disabled={!canWrite && !isAdmin}
-                    >
-                      {t("importFileForm.edit")}
-                    </button>
-                    <button
-                      type="button"
-                      disabled={!canWrite && !isAdmin}
-                      onClick={() => handleDeleteClick(data.id)}
-                      className="ml-2 text-red-500 hover:text-red-700"
-                    >
-                      {t("importFileForm.delete")}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </form>
+                    {t("importFileForm.edit")}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!canWrite && !isAdmin}
+                    onClick={() => handleDeleteClick(data.id)}
+                    className="ml-2 text-red-500 hover:text-red-700"
+                  >
+                    {t("importFileForm.delete")}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       {
         <>
           {showBackToTopButton && (

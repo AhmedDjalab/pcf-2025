@@ -48,7 +48,9 @@ const StyleForm: React.FC<StyleFormProps> = ({
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   const [isOpen, toggle] = useState(false);
 
-  const shapesData = useSelector((state: RootState) => state.shapes.shapesData);
+  const shapesData = useSelector(
+    (state: RootState) => state.graph.shapes.shapesData
+  );
   const [initialValues, setInitialValues] = useState(
     shapesData.find((x) => x.name === id)!
   );

@@ -18,15 +18,15 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
 
   const navigate = useNavigate();
   const taskSlots: TaskSlot[] = useSelector(
-    (state: RootState) => state.taskSlots
+    (state: RootState) => state.graph.taskSlots
   );
   const [formFieldValues, setFormFieldValues] = useState(taskSlots);
 
   const minDistance: number = useSelector(
-    (state: RootState) => state.settings.fromDistance
+    (state: RootState) => state.graph.settings.fromDistance
   );
   const maxDistance: number = useSelector(
-    (state: RootState) => state.settings.toDistance
+    (state: RootState) => state.graph.settings.toDistance
   );
   const dispatch = useDispatch();
 

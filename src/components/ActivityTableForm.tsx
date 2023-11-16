@@ -31,7 +31,9 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
-  const shapesData = useSelector((state: RootState) => state.shapes.shapesData);
+  const shapesData = useSelector(
+    (state: RootState) => state.graph.shapes.shapesData
+  );
   const [selectedShapeId, setSelectedShapeId] = useState("");
 
   let validationSchema = Yup.object().shape({

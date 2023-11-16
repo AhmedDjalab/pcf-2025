@@ -39,7 +39,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const { user, canWrite, isAdmin } = useAuth();
 
   const projectSettings = useSelector(
-    (state: RootState) => state.projectSettings
+    (state: RootState) => state.graph.projectSettings
   );
   // const [employees, setEmployees] = useState<Employee[]>(
   //   projectSettings.employees ?? []
@@ -59,7 +59,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
   );
   const [selectedEmployees, setSelectedEmployees] = useState<Options[]>([]);
 
-  const loading = useSelector((state: RootState) => state.loading);
+  const loading = useSelector((state: RootState) => state.graph.loading);
   const queryClient = new QueryClient();
   const {
     data: employeeData,

@@ -27,7 +27,7 @@ const TaskSlotsLevelTwoList = ({
   const { user } = useAuth();
   const navigate = useNavigate();
   const taskSlots: TaskSlot[] = useSelector(
-    (state: RootState) => state.taskSlotsLevelTwo
+    (state: RootState) => state.graph.taskSlotsLevelTwo
   );
 
   const { canWrite, isAdmin } = useAuth();
@@ -35,10 +35,10 @@ const TaskSlotsLevelTwoList = ({
   const [formFieldValues, setFormFieldValues] = useState(taskSlots);
 
   const minDistance: number = useSelector(
-    (state: RootState) => state.settings.fromDistance
+    (state: RootState) => state.graph.settings.fromDistance
   );
   const maxDistance: number = useSelector(
-    (state: RootState) => state.settings.toDistance
+    (state: RootState) => state.graph.settings.toDistance
   );
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
 
