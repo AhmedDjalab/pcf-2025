@@ -1,8 +1,11 @@
+import { ProjectFileType } from "src/const/vars";
+
 export interface Project {
   id?: string;
   title: string;
   logoUrl?: string;
   logoUrlId?: string | null;
+  fileType?: ProjectFileType;
   companyId: string;
   employeesId?: string[];
   activities?: ActivityModel[];

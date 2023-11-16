@@ -31,6 +31,7 @@ function ParameterSelector({
   handleClose,
   onSubmit,
 }: ParameterSelectorProps) {
+  console.log("this is settitng ", udfSettingString);
   const { t } = useTranslation();
   const [selectedPairs, setSelectedPairs] = useState<UdfSetting[]>([]);
   const [isSubmited, setIsSubmited] = useState(false);

@@ -18,7 +18,7 @@ import { deleteProject, getProjects } from "src/Services/ProjectService";
 import Spinner from "src/components/Spinner";
 import { Project } from "src/types/Project";
 import { TrashIcon } from "@heroicons/react/24/solid";
-import { resetForm } from "src/state/slices/graphSlice";
+import { resetStoreState } from "src/state/slices/graphSlice";
 import { persistor } from "src/App";
 
 const exampleProjects = [
@@ -98,17 +98,28 @@ const Projects = () => {
   const handleDeleteClick = async (project: Project) => {
     await deleteProject(project.id!);
   };
+  const handlePurgeAndNavigate = async () => {
+    try {
+      // Purge the Redux store state
+      await persistor.purge();
+
+      // After purging, you can reset the store state if needed
+      resetStoreState();
+
+      // Now, navigate to the desired location
+      navigate("/create-project");
+    } catch (error) {
+      console.error("Error purging state:", error);
+    }
+  };
+
   return (
     <DefaultLayout>
       <div className="dark:bg-boxdark bg-white h-[calc(100dvh)] w-full overflow-x-auto">
         <div className="py-2 ml-10 flex justify-between">
           <button
             disabled={!canWrite && !isAdmin}
-            onClick={() => {
-              persistor.purge();
-              resetForm();
-              navigate("/create-project");
-            }}
+            onClick={handlePurgeAndNavigate}
             className=" text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
           >
             {t("taskSlotsList.addButton")}
@@ -162,7 +173,7 @@ const Projects = () => {
                         to={`/create-project/${project.id}`}
                         onClick={() => {
                           persistor.purge();
-                          resetForm();
+                          resetStoreState();
                         }}
                         className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover-bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                       >

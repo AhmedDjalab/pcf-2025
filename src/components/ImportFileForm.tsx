@@ -28,7 +28,11 @@ import { type } from "@testing-library/user-event/dist/type";
 import { uniqueId } from "lodash";
 import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import { useAuth } from "src/context/UserContext";
-
+import { useParams } from "react-router-dom";
+import { XLSXIcon } from "./filesSVG";
+import excel from "src/assets/filesLogo/excel.svg";
+import primavera from "src/assets/filesLogo/PrimaveraXML.png";
+import msProject from "src/assets/filesLogo/msProject.png";
 export type FormValues = {
   fromDate: Date;
   toDate: Date;
@@ -40,7 +44,13 @@ export type FormValues = {
 };
 export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const { user, canWrite, isAdmin } = useAuth();
+  const { id } = useParams();
 
+  const editForm = id !== null && id !== "" && id !== undefined;
+  console.log(
+    "🚀 ~ file: ImportFileForm.tsx:47 ~ ImportFileForm ~ editForm:",
+    id
+  );
   const currentYear = new Date().getFullYear();
   const nextYear = currentYear + 1;
 
@@ -53,7 +63,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     timeRange: "Yearly",
     distanceRange: 200,
   };
-
+  const loading = useSelector((state: RootState) => state.loading);
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   const graphSettings = useSelector((state: RootState) => state.settings);
   const fileType = useSelector(
@@ -802,47 +812,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     };
   }, []);
 
-  // const applyFilter = () => {
-  //   const filteredGraphData = graphSettings.graphData.filter((data) => {
-  //     const dataStartDate = new Date(data.startDate);
-  //     console.log(
-  //       "🚀 ~ file: ImportFileForm.tsx:290 ~ filteredGraphData ~ dataStartDate:",
-  //       dataStartDate
-  //     );
-  //     const dataFinishDate = new Date(data.finishDate);
-  //     console.log(
-  //       "🚀 ~ file: ImportFileForm.tsx:292 ~ filteredGraphData ~ dataFinishDate:",
-  //       dataFinishDate
-  //     );
-
-  //     const zeroDistance =
-  //       formik.values.fromDistance == "0" && formik.values.toDistance == "0";
-  //     const fromDate = new Date(formik.values.fromDate);
-  //     console.log(
-  //       "🚀 ~ file: ImportFileForm.tsx:303 ~ filteredGraphData ~ fromDate:",
-  //       fromDate
-  //     );
-  //     const toDate = new Date(formik.values.toDate);
-  //     console.log(
-  //       "🚀 ~ file: ImportFileForm.tsx:305 ~ filteredGraphData ~ toDate:",
-  //       toDate
-  //     );
-
-  //     return (
-  //       dataFinishDate >= fromDate &&
-  //       dataStartDate <= toDate &&
-  //       data.startChainage >= parseFloat(formik.values.fromDistance) &&
-  //       data.finishChainage <= parseFloat(formik.values.toDistance)
-  //     );
-  //   });
-  //   console.log(
-  //     "🚀 ~ file: ImportFileForm.tsx:304 ~ filteredGraphData ~ filteredGraphData:",
-  //     filteredGraphData,
-  //     graphSettings.graphData
-  //   );
-  //   setFilteredData(filteredGraphData);
-  // };
-
   useEffect(() => {
     dispatch(
       applyFilter({
@@ -866,6 +835,21 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     formik.values.toDistance,
   ]);
 
+  const fileSvgIcons = () => {
+    switch (fileType) {
+      case ProjectFileType.MicrosoftProject:
+        return <img src={msProject} alt="filelogo" className="h-30 w-30" />;
+
+      case ProjectFileType.PrimaveraXML:
+        return <img src={primavera} alt="filelogo" className="h-30 w-30" />;
+
+      case ProjectFileType.XLSX:
+        return <img src={excel} alt="filelogo" className="h-30 w-30" />;
+
+      default:
+        break;
+    }
+  };
   return (
     <div
       className="w-full mt-10 relative h-screen"
@@ -873,37 +857,44 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       onDrop={handleDrop}
     >
       <form onSubmit={formik.handleSubmit}>
-        {isLoading ? (
+        {loading ? (
           <Spinner />
         ) : (
-          <label className=" dark:bg-boxdark  flex justify-center items-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
-            <span className="flex items-center space-x-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-6 h-6 text-gray-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+          <label className=" relative dark:bg-boxdark  flex justify-center items-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
+            {editForm ? (
+              fileSvgIcons()
+            ) : (
+              <>
+                <span className="flex items-center space-x-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-6 h-6 text-gray-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
+                  </svg>
+                  <span className="font-medium text-gray-600">
+                    {t("importFileForm.dragOrImport")}
+                  </span>
+                </span>
+                <input
+                  onChange={handleFileUpload}
+                  type="file"
+                  onClick={handleClick}
+                  disabled={!canWrite && !isAdmin}
+                  name="file_upload"
+                  className="hidden"
+                  accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 />
-              </svg>
-              <span className="font-medium text-gray-600">
-                {t("importFileForm.dragOrImport")}
-              </span>
-            </span>
-            <input
-              onChange={handleFileUpload}
-              type="file"
-              onClick={handleClick}
-              name="file_upload"
-              className="hidden"
-              accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            />
+              </>
+            )}
           </label>
         )}
 

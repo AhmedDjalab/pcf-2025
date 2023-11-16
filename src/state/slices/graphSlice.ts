@@ -180,6 +180,7 @@ export const saveProjectThunk = createAsyncThunk<
       title: state.projectSettings.title,
       logoUrl: state.projectSettings.logoImg,
       logoUrlId: state.projectSettings.logoId,
+      fileType: state.projectSettings.fileType,
       //@ts-ignore
       companyId: getCompanyId(),
       employeesId: state.projectSettings.employeesId,
@@ -514,12 +515,15 @@ const GraphSlice = createSlice({
       state.loading = action.payload;
     },
 
-    resetForm(state) {
+    resetStoreState(state) {
       state.settings = { ...initialState.settings };
       state.projectSettings = { ...initialState.projectSettings };
       state.shapes = { ...initialState.shapes };
       state.taskSlots = { ...initialState.taskSlots };
       state.taskSlotsLevelTwo = { ...initialState.taskSlotsLevelTwo };
+      state.rawGraphDataFromFile = {
+        ...(initialState.rawGraphDataFromFile ?? []),
+      };
 
       state.loading = false;
     },
@@ -553,7 +557,7 @@ const GraphSlice = createSlice({
     });
     builder.addCase(fetchProjectByIdThunk.fulfilled, (state, action) => {
       state.loading = false;
-      resetForm();
+      resetStoreState();
       console.log("---- this project from backend  ---", action.payload.data);
       const projectData: GraphCreateType = {
         id: action.payload.data?.id,
@@ -562,6 +566,7 @@ const GraphSlice = createSlice({
           employeesId: action.payload.data!.employeesId,
           logoImg: action.payload.data!.logoUrl,
           logoId: action.payload.data!.logoUrlId ?? undefined,
+          fileType: action.payload.data!.fileType ?? undefined,
         },
 
         rawGraphDataFromFile: action.payload.data!.activities?.map((act) => ({
@@ -648,7 +653,7 @@ export const {
   updateTaskSlotsValue,
   updateTaskSlotsLevelTwoValue,
   setLoading,
-  resetForm,
+  resetStoreState,
   addActivity,
   updateActivity,
   removeActivity,

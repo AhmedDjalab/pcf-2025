@@ -32,7 +32,6 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const [projectTitle, setProjectTitle] = useState("");
 
   const [fileName, setFileName] = useState("");
-
   const [projectFileType, setProjectFileType] = useState(ProjectFileType.XLSX); // Set a default value
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   const { t } = useTranslation();
@@ -78,7 +77,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
       }),
 
     refetchOnWindowFocus: false,
-    staleTime: 6000,
+    staleTime: 10000,
     enabled: !!user?.id,
   });
   const selectedEmployeesData = useMemo(() => {
@@ -139,83 +138,86 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
   return (
     <div className=" mx-auto w-full mt-10 relative h-screen">
-      <form onSubmit={handleSubmit} className="p-4">
-        <div className="mb-4">
-          <label
-            htmlFor="projectTitle"
-            className="block text-gray-700 text-sm font-bold mb-2 dark:text-white"
-          >
-            {t("projectForm.title")}
-          </label>
-          <input
-            type="text"
-            id="projectTitle"
-            name="projectTitle"
-            value={projectTitle}
-            onChange={handleTitleChange}
-            className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-            required
-            disabled={!canWrite && !isAdmin}
-          />
-        </div>
+      {loading ? (
+        <Spinner height="80" width="80" />
+      ) : (
+        <form onSubmit={handleSubmit} className="p-4">
+          <div className="mb-4">
+            <label
+              htmlFor="projectTitle"
+              className="block text-gray-700 text-sm font-bold mb-2 dark:text-white"
+            >
+              {t("projectForm.title")}
+            </label>
+            <input
+              type="text"
+              id="projectTitle"
+              name="projectTitle"
+              value={projectTitle}
+              onChange={handleTitleChange}
+              className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+              required
+              disabled={!canWrite && !isAdmin}
+            />
+          </div>
 
-        <div className="mb-4">
-          <label
-            htmlFor="projectImage"
-            className="block text-gray-700 text-sm font-bold mb-2  dark:text-white"
-          >
-            {t("projectForm.logo")}
-          </label>
-          <ImagePicker
-            onChange={handleImageChange}
-            imageValue={selectedImage}
-            setFileName={(fileName) => setFileName(fileName)}
-            disabled={!canWrite && !isAdmin}
-          />
-        </div>
+          <div className="mb-4">
+            <label
+              htmlFor="projectImage"
+              className="block text-gray-700 text-sm font-bold mb-2  dark:text-white"
+            >
+              {t("projectForm.logo")}
+            </label>
+            <ImagePicker
+              onChange={handleImageChange}
+              imageValue={selectedImage}
+              setFileName={(fileName) => setFileName(fileName)}
+              disabled={!canWrite && !isAdmin}
+            />
+          </div>
 
-        <div className="mb-4">
-          <label
-            htmlFor="projectFileType"
-            className="block text-gray-700 text-sm font-bold mb-2 dark:text-white "
-          >
-            {t("projectForm.fileType")}
-          </label>
-          <select
-            id="projectFileType"
-            name="projectFileType"
-            value={projectFileType}
-            disabled={!canWrite && !isAdmin}
-            onChange={handleFileTypeChange}
-            className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-          >
-            {ProjectFiletypeOptions.map((option) => (
-              <option key={option.id} value={option.id}>
-                {t(`projectFileTypes.${option.name}`)}
-              </option>
-            ))}
-          </select>
-        </div>
-        {/* Multi-Select for Employees */}
-        <div className="group relative z-0 mb-6 w-full">
-          <label
-            htmlFor="employees"
-            className={`mb-2 block text-sm font-medium 
+          <div className="mb-4">
+            <label
+              htmlFor="projectFileType"
+              className="block text-gray-700 text-sm font-bold mb-2 dark:text-white "
+            >
+              {t("projectForm.fileType")}
+            </label>
+            <select
+              id="projectFileType"
+              name="projectFileType"
+              value={projectFileType}
+              disabled={!canWrite && !isAdmin}
+              onChange={handleFileTypeChange}
+              className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            >
+              {ProjectFiletypeOptions.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {t(`projectFileTypes.${option.name}`)}
+                </option>
+              ))}
+            </select>
+          </div>
+          {/* Multi-Select for Employees */}
+          <div className="group relative z-0 mb-6 w-full">
+            <label
+              htmlFor="employees"
+              className={`mb-2 block text-sm font-medium 
                     
                        text-gray-900 dark:text-white
                   `}
-          >
-            {t("header.users")}
-          </label>
-          {employeeLoading ? (
-            <Spinner />
-          ) : (
-            <Select
-              id="employees"
-              name="employees"
-              isDisabled={!canWrite && !isAdmin}
-              classNames={{
-                control: () => `block w-full rounded-lg border
+            >
+              {t("header.users")}
+            </label>
+            {employeeLoading ? (
+              <Spinner />
+            ) : (
+              <Select
+                id="employees"
+                name="employees"
+                isDisabled={!canWrite && !isAdmin}
+                classNames={{
+                  control: () => `block w-full rounded-lg border
                     border-gray-300   text-sm
                      text-gray-900 focus:border-blue-500
                       focus:ring-blue-500 dark:border-gray-600
@@ -225,39 +227,40 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
                           dark:focus:ring-blue-500 
                           font-bold text-lg dark:text-white
                           `,
-                menu: () => "bg-white dark:bg-gray-700",
-              }}
-              options={
-                employeeData?.employees.map((employee) => ({
-                  value: employee.id!,
-                  label: employee.email,
-                })) ?? []
-              }
-              isMulti
-              value={selectedEmployees}
-              onChange={(selectedOptions: any, { action }: any) => {
-                if (action === "select-option" || action === "remove-value") {
-                  setSelectedEmployees(selectedOptions as Options[]);
-                  // formik.setFieldValue(
-                  //   "employees",
-                  //   (selectedOptions as Options[]).map((option) => option.value)
-                  // );
+                  menu: () => "bg-white dark:bg-gray-700",
+                }}
+                options={
+                  employeeData?.employees.map((employee) => ({
+                    value: employee.id!,
+                    label: employee.email,
+                  })) ?? []
                 }
-              }}
-            />
-          )}
-        </div>
-        {/* End Multi-Select for Employees */}
+                isMulti
+                value={selectedEmployees}
+                onChange={(selectedOptions: any, { action }: any) => {
+                  if (action === "select-option" || action === "remove-value") {
+                    setSelectedEmployees(selectedOptions as Options[]);
+                    // formik.setFieldValue(
+                    //   "employees",
+                    //   (selectedOptions as Options[]).map((option) => option.value)
+                    // );
+                  }
+                }}
+              />
+            )}
+          </div>
+          {/* End Multi-Select for Employees */}
 
-        <div className="mt-4 flex justify-end w-full">
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 self-end"
-          >
-            {t("projectForm.next")}
-          </button>
-        </div>
-      </form>
+          <div className="mt-4 flex justify-end w-full">
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 self-end"
+            >
+              {t("projectForm.next")}
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 };
