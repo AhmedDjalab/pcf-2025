@@ -168,6 +168,7 @@ const Projects = () => {
                     {
                       <Link
                         to={`/create-project/${project.id}`}
+                        hidden={!canWrite && !isAdmin}
                         onClick={() => {
                           persistor.purge();
                           resetStoreState();
