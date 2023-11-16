@@ -12,6 +12,7 @@ import { DrawGraphForm } from "src/components/DrawGraphForm";
 import EmployeeForm from "src/pages/Employee/EmployeeForm";
 import { IsAuth, useAuth } from "src/context/UserContext";
 import ViewGraph from "src/pages/Graph/ViewGraph";
+import AboutUs from "src/components/AboutUs";
 
 const AppRoutes = () => {
   const isLogged = IsAuth();
@@ -28,6 +29,7 @@ const AppRoutes = () => {
         <Route path="/projects" element={<Projects />} />
         <Route path="/create-project" element={<DrawGraphForm />} />
         <Route path="/create-project/:id" element={<DrawGraphForm />} />
+        <Route path="/about-us" element={<AboutUs />} />
 
         <Route path="/graph" element={<DrawGraphStep />} />
         <Route path="/graph/:id" element={<DrawGraphStep />} />

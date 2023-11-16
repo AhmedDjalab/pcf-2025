@@ -258,5 +258,10 @@
       "canWrite": "Schreibberechtigung ist erforderlich",
       "fullNameMustTwoString": "Der vollständige Name sollte aus zwei Namen bestehen, getrennt durch ein Leerzeichen"
     }
+  },
+  "AboutUs": {
+    "description": "iEntrepriZe es una plataforma colaborativa en línea que permite construir horarios de ferrocarril y compartirlos con los miembros del equipo.",
+    "Allrightsreserved": "Todos los derechos reservados",
+    "isProductOF": "PCF PLANIFICACIÓN DE FERROCARRIL es un producto de iEntrepriZe"
   }
 }

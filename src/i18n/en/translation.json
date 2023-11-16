@@ -277,5 +277,11 @@
     "XLSX": "Excel File - XLSX",
     "PrimaveraXML": "Primavera P6 - XML",
     "MicrosoftProject": "Microsoft Project - XML"
+  },
+
+  "AboutUs": {
+    "description": "iEntrepriZe is an online collaborative platform that allows building railroad schedules and sharing them with team members.",
+    "Allrightsreserved": "All rights reserved",
+    "isProductOF": "PCF RAILWAY PLANNING is a product of iEntrepriZe"
   }
 }

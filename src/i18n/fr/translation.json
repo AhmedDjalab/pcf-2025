@@ -271,5 +271,10 @@
     "XLSX": "Fichier Excel - XLSX",
     "PrimaveraXML": "Primavera P6 - XML",
     "MicrosoftProject": "Microsoft Project - XML"
+  },
+  "AboutUs": {
+    "description": "iEntrepriZe est une plateforme collaborative en ligne qui permet de bâtir des plannings chemin de fer et les partager avec les membres d’une équipe.",
+    "Allrightsreserved": "Tous droits réservés",
+    "isProductOF": "PCF PLANNING CHEMIN DE FER est un produit de iEntrepriZe"
   }
 }
