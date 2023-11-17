@@ -79,23 +79,30 @@ function FiltersInputs() {
     enableReinitialize: true,
 
     onSubmit: (values) => {
-      //   dispatch(
-      //     updateGraphSettingsValue({
-      //       graphSettingsForm: {
-      //         ...values,
-      //         fromDate: values.fromDate.toISOString(),
-      //         toDate: values.toDate.toISOString(),
-      //         fromDistance: parseInt(values.fromDistance),
-      //         toDistance: parseInt(values.toDistance),
-      //         timeRange: values.timeRange,
-      //       },
-      //     })
-      //   );
-      //setCurrentStep((prevStep) => prevStep + 1);
+      if (editForm) {
+        dispatch(
+          fetchActivities({
+            projectId: id,
+            filter: {
+              fromDate: values.fromDate,
+              toDate: values.toDate,
+              fromDistance: parseFloat(values.fromDistance),
+              toDistance: parseFloat(values.toDistance),
+              timeRange: values.timeRange,
+              distanceRange: values.distanceRange,
+            },
+          })
+        );
+      }
     },
   });
 
   useEffect(() => {
+    console.warn(
+      "🚀 ~ file: FiltersInputs.tsx:101 ~ useEffect ~ editForm:",
+      editForm
+    );
+
     if (!editForm) {
       dispatch(
         applyFilter({
@@ -110,41 +117,50 @@ function FiltersInputs() {
         })
       );
     } else {
-      console.log("thi is dates", formik.values.toDate);
-      dispatch(
-        saveSettings({
-          filters: {
-            fromDate: formik.values.fromDate.toISOString(),
-            toDate: formik.values.toDate.toISOString(),
-            fromDistance: parseFloat(formik.values.fromDistance),
-            toDistance: parseFloat(formik.values.toDistance),
-            timeRange: formik.values.timeRange,
-            distanceRange: formik.values.distanceRange,
-          },
-        })
-      );
-      dispatch(
-        fetchActivities({
-          projectId: id,
-          filter: {
-            fromDate: formik.values.fromDate,
-            toDate: formik.values.toDate,
-            fromDistance: parseFloat(formik.values.fromDistance),
-            toDistance: parseFloat(formik.values.toDistance),
-            timeRange: formik.values.timeRange,
-          },
-        })
-      );
+      console.log("thi is dates", formik.values);
+      // dispatch(
+      //   saveSettings({
+      //     filters: {
+      //       fromDate: formik.values.fromDate.toISOString(),
+      //       toDate: formik.values.toDate.toISOString(),
+      //       fromDistance: parseFloat(formik.values.fromDistance),
+      //       toDistance: parseFloat(formik.values.toDistance),
+      //       timeRange: formik.values.timeRange,
+      //       distanceRange: formik.values.distanceRange,
+      //     },
+      //   })
+      // );
+      // const timeoutId = setTimeout(() => {
+      //   dispatch(
+      //     fetchActivities({
+      //       projectId: id,
+      //       filter: {
+      //         fromDate: formik.values.fromDate,
+      //         toDate: formik.values.toDate,
+      //         fromDistance: parseFloat(formik.values.fromDistance),
+      //         toDistance: parseFloat(formik.values.toDistance),
+      //         timeRange: formik.values.timeRange,
+      //         distanceRange: formik.values.distanceRange,
+      //       },
+      //     })
+      //   );
+      // }, 1000); // Adjust the delay as needed (e.g., 500 milliseconds)
+
+      // return () => {
+      //   clearTimeout(timeoutId);
+      // };
     }
   }, [
     dispatch,
     editForm,
-    formik.values.distanceRange,
+    formik.values,
+
     formik.values.fromDate,
     formik.values.fromDistance,
     formik.values.timeRange,
     formik.values.toDate,
     formik.values.toDistance,
+    id,
   ]);
 
   return (
@@ -277,19 +293,33 @@ function FiltersInputs() {
             >
               {t("importFileForm.distanceRange")}
             </label>
-            <input
-              id="distanceRange"
-              name="distanceRange"
-              disabled={!canWrite && !isAdmin}
-              type="number"
-              value={formik.values.distanceRange}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-            />
-            {formik.touched.distanceRange && formik.errors.distanceRange && (
-              <div className="text-red-600">{formik.errors.distanceRange}</div>
-            )}
+            <div className="flex gap-2">
+              <input
+                id="distanceRange"
+                name="distanceRange"
+                disabled={!canWrite && !isAdmin}
+                type="number"
+                value={formik.values.distanceRange}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className={` ${
+                  editForm ? "w-[50%]" : "w-full"
+                } block  rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500`}
+              />
+              {formik.touched.distanceRange && formik.errors.distanceRange && (
+                <div className="text-red-600">
+                  {formik.errors.distanceRange}
+                </div>
+              )}
+              {editForm && (
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-violet-500 text-white rounded-lg hover:bg-violet-600 focus:outline-none focus:ring focus:ring-violet-300 disabled:bg-gray-600"
+                >
+                  {t("importFileForm.SaveFilter")}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </form>

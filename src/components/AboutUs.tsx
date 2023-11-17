@@ -18,7 +18,7 @@ const AboutUs: React.FC = () => {
 
   return (
     <DefaultLayout>
-      <div className="flex flex-col items-center justify-center space-y-8">
+      <div className=" dark:bg-boxdark  h-screen flex flex-col items-center justify-center space-y-8">
         <div className="flex space-x-4 my-10">
           <img src={logo} alt="PCF" className="h-40 w-80" />
           <img src={companyLogo} alt="Logo 2" className="h-40 w-100" />

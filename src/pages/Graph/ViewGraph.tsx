@@ -47,7 +47,7 @@ export interface ActivityData {
 }
 function ViewGraph() {
   const { id } = useParams();
-  const { canWrite } = useAuth();
+  const { canWrite, isAdmin } = useAuth();
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   let graphSettings = useSelector((state: RootState) => state.graph);
   let graphData = useSelector(
@@ -1279,7 +1279,7 @@ function ViewGraph() {
       </button> */}
               <button
                 type="button"
-                disabled={!selectedShapeData || !canWrite}
+                disabled={!selectedShapeData || (!canWrite && !isAdmin)}
                 className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
                 onClick={handleEditClick}
               >
@@ -1289,7 +1289,7 @@ function ViewGraph() {
                 type="button"
                 className="px-10 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
                 onClick={handleAddClick}
-                disabled={!canWrite}
+                disabled={!canWrite && !isAdmin}
               >
                 {t("importFileForm.add")}
               </button>
@@ -1297,7 +1297,7 @@ function ViewGraph() {
                 type="button"
                 className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
                 onClick={handleDeleteClick}
-                disabled={!selectedShapeData || !canWrite}
+                disabled={!selectedShapeData || (!canWrite && !isAdmin)}
               >
                 {t("importFileForm.delete")}
               </button>
@@ -1305,7 +1305,7 @@ function ViewGraph() {
                 type="button"
                 className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
                 onClick={handleExportAllClick}
-                disabled={!canWrite}
+                disabled={!canWrite && !isAdmin}
               >
                 {/* {"Export All Data"} */}
                 {t("drawGraph.exportAllData")}
@@ -1315,14 +1315,14 @@ function ViewGraph() {
                 type="button"
                 className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
                 onClick={handleExportGraphClick}
-                disabled={!canWrite}
+                disabled={!canWrite && !isAdmin}
               >
                 {/* {"Export Graph Data"} */}
                 {t("drawGraph.exportGraphData")}
               </button>
               <button
                 type="button"
-                disabled={!selectedShapeData || !canWrite}
+                disabled={!selectedShapeData || (!canWrite && !isAdmin)}
                 className="px-10 py-2 bg-slate-600 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
                 onClick={() => setStyleModalOpen(true)}
               >

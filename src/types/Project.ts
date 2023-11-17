@@ -44,6 +44,7 @@ export interface filterTypes {
   fromDistance: number;
   toDistance: number;
   timeRange?: "Yearly" | "Monthly" | "Weekly" | "Daily";
+  distanceRange?: number | null;
 }
 export interface GraphSettingModel {
   fromDate: Date;

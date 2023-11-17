@@ -947,6 +947,9 @@ function DrawGraphStep() {
         }
       };
 
+      if (shape.type === "line" && shape.name === "TBM - Remplissage - Grave") {
+        console.log("thisi s chsape ", shape);
+      }
       return (
         <div
           key={index}
@@ -1206,7 +1209,7 @@ function DrawGraphStep() {
       {graphSettings.loading ? (
         <Spinner />
       ) : (
-        <div className="flex flex-col dark:bg-boxdark dark:bg-opacity-70 w-full overflow-x-auto">
+        <div className="flex flex-col  w-full ">
           <div className="flex gap-2">
             <button
               // disabled

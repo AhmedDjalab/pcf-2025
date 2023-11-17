@@ -146,6 +146,7 @@ export interface AcitivityFetchProp {
   projectId: string;
   filter: filterTypes;
 }
+
 export const fetchActivities = createAsyncThunk(
   "importFile/fetchActivities",
   async ({ projectId, filter }: AcitivityFetchProp) => {
@@ -157,9 +158,13 @@ export const fetchActivities = createAsyncThunk(
       toDate: filter.toDate,
       fromDistance: filter.fromDistance,
       toDistance: filter.toDistance,
+      projectId: projectId,
     });
 
-    return response?.activities; // Assuming your API returns an object with an 'employees' property
+    return {
+      activities: response?.activities,
+      fitler: filter,
+    }; // Assuming your API returns an object with an 'employees' property
   }
 );
 export const fetchProjectByIdThunk = createAsyncThunk<
@@ -302,13 +307,21 @@ const GraphSlice = createSlice({
       state,
       action: PayloadAction<{ filters: Omit<GraphSetting, "graphData"> }>
     ) {
-      const { fromDate, toDate, fromDistance, toDistance } =
-        action.payload.filters;
+      const {
+        fromDate,
+        toDate,
+        fromDistance,
+        toDistance,
+        timeRange,
+        distanceRange,
+      } = action.payload.filters;
       console.log("thisi sdat", current(state.rawGraphDataFromFile));
       state.settings.fromDate = fromDate;
       state.settings.toDate = toDate;
       state.settings.fromDistance = fromDistance;
       state.settings.toDistance = toDistance;
+      state.settings.timeRange = timeRange;
+      state.settings.distanceRange = distanceRange;
 
       if (fromDate > toDate) {
         return state;
@@ -367,6 +380,7 @@ const GraphSlice = createSlice({
 
     updateGraphSettingsValue(
       state,
+
       action: PayloadAction<{ graphSettingsForm: GraphSetting }>
     ) {
       let shapes: ShapeType[] = [];
@@ -621,8 +635,12 @@ const GraphSlice = createSlice({
     });
 
     builder.addCase(fetchActivities.fulfilled, (state, action) => {
+      console.warn(
+        "🚀 ~ file: graphSlice.ts:625 ~ builder.addCase ~ state:",
+        state
+      );
       state.loading = false;
-      var activities = action.payload?.map((act) => ({
+      var activities = action.payload?.activities?.map((act) => ({
         id: act.activityId,
         styleId: act.style,
         activityId: act.activityId,
@@ -634,6 +652,22 @@ const GraphSlice = createSlice({
         activityName: act.name,
       }));
       state.settings.graphData = activities ?? [];
+
+      const {
+        fromDate,
+        toDate,
+        fromDistance,
+        toDistance,
+        timeRange,
+        distanceRange,
+      } = action.payload.fitler;
+      console.log("thisi sdat", current(state.rawGraphDataFromFile));
+      state.settings.fromDate = fromDate.toISOString();
+      state.settings.toDate = toDate.toISOString();
+      state.settings.fromDistance = fromDistance;
+      state.settings.toDistance = toDistance;
+      state.settings.timeRange = timeRange ?? "Yearly";
+      state.settings.distanceRange = distanceRange ?? 200;
     });
     builder.addCase(fetchActivities.rejected, (state, action) => {
       state.loading = false;
