@@ -7,7 +7,7 @@ import Checkbox from "src/components/Checkbox";
 import { saveEmployee } from "src/Services/EmployeeService2";
 import { uniqueId } from "lodash";
 import { useAuth } from "src/context/UserContext";
-import { LabelButton } from "src/components/Button";
+import { LabelButton } from "src/components/shared/Button";
 import { Employee } from "src/Services/EmployeeService2";
 import { getCompanyId } from "src/Services/AuthService";
 

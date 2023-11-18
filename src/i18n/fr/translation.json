@@ -276,5 +276,23 @@
     "description": "iEntrepriZe est une plateforme collaborative en ligne qui permet de bâtir des plannings chemin de fer et les partager avec les membres d’une équipe.",
     "Allrightsreserved": "Tous droits réservés",
     "isProductOF": "PCF PLANNING CHEMIN DE FER est un produit de iEntrepriZe"
+  },
+  "DynamicTable": {
+    "Search": "Rechercher :",
+    "records": "Enregistrements"
+  },
+  "DeleteModal": {
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet élément ?",
+    "yes": "Oui, je suis sûr",
+    "no": "Non, annuler"
+  },
+  "Pagination": {
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page {{pageIndex}} sur {{pageCount}}",
+    "itemsPerPage": "Articles par page",
+    "show": "Afficher {{pageSize}}",
+    "first": "Premier",
+    "last": "Dernier"
   }
 }

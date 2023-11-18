@@ -19,7 +19,7 @@ export interface PaginatingParmas {
 }
 export async function getProjects({
   fromvalue = 0,
-  takevalue = 10,
+  takevalue = 0,
   search = "",
   userAdminId,
 }: PaginatingParmas) {
@@ -34,6 +34,28 @@ export async function getProjects({
       },
     };
     const { data } = await api.get(apiEndpoint + "/get", config);
+    return data as ProjectsResponse;
+  } catch (ex: any) {
+    console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
+  }
+}
+
+export async function getProjectsByEmployeeId({
+  fromvalue = 0,
+  takevalue = 0,
+  search = "",
+  employeeId,
+}: PaginatingParmas) {
+  try {
+    let config = {
+      params: {
+        from: fromvalue,
+        take: takevalue,
+        search: search,
+        employeeId: employeeId,
+      },
+    };
+    const { data } = await api.get(apiEndpoint + "/getByEmployeeId", config);
     return data as ProjectsResponse;
   } catch (ex: any) {
     console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);

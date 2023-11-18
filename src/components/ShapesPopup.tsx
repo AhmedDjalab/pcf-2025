@@ -16,7 +16,7 @@ import { GraphDataType } from "src/state/slices/graphSlice";
 import { RootState } from "src/state";
 import Input from "./Input";
 import DatePickerDefault from "./DatePicker";
-import { LabelButton } from "./Button";
+import { LabelButton } from "./shared/Button";
 import Dropdown from "./DropDown";
 import { lineStyles } from "src/const/linesArray";
 import LineStylePicker from "./LineStylePicker";

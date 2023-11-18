@@ -6,7 +6,7 @@ import {
   graphStringsSettings,
 } from "src/const/vars";
 import Dropdown from "./DropDown";
-import { LabelButton, PrimaryButton } from "./Button";
+import { LabelButton, PrimaryButton } from "./shared/Button";
 import { useTranslation } from "react-i18next";
 import { UdfSetting, updateUDFSettings } from "src/state/slices/graphSlice";
 import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";

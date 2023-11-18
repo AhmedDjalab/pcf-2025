@@ -262,5 +262,23 @@
     "description": "iEntrepriZe ist eine Online-Kollaborationsplattform, die es ermöglicht, Fahrpläne für Eisenbahnen zu erstellen und mit Teammitgliedern zu teilen.",
     "Allrightsreserved": "Alle Rechte vorbehalten",
     "isProductOF": "PCF EISENBAHNPLANUNG ist ein Produkt von iEntrepriZe"
+  },
+  "DynamicTable": {
+    "Search": "Suche:",
+    "records": "Datensätze"
+  },
+  "DeleteModal": {
+    "confirmDelete": "Möchten Sie diesen Eintrag wirklich löschen?",
+    "yes": "Ja, ich bin sicher",
+    "no": "Nein, abbrechen"
+  },
+  "Pagination": {
+    "previous": "Zurück",
+    "next": "Weiter",
+    "page": "Seite {{pageIndex}} von {{pageCount}}",
+    "itemsPerPage": "Einträge pro Seite",
+    "show": "Zeige {{pageSize}}",
+    "first": "Erste",
+    "last": "Letzte"
   }
 }

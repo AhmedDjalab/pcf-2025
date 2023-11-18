@@ -284,5 +284,24 @@
     "description": "iEntrepriZe is an online collaborative platform that allows building railroad schedules and sharing them with team members.",
     "Allrightsreserved": "All rights reserved",
     "isProductOF": "PCF RAILWAY PLANNING is a product of iEntrepriZe"
+  },
+
+  "DynamicTable": {
+    "Search": "Search:",
+    "records": "Records"
+  },
+  "DeleteModal": {
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "yes": "Yes, I'm sure",
+    "no": "No, cancel"
+  },
+  "Pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{pageIndex}} of {{pageCount}}",
+    "itemsPerPage": "Items Per Page",
+    "show": "Show {{pageSize}}",
+    "first": "First",
+    "last": "Last"
   }
 }

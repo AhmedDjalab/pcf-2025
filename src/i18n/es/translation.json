@@ -263,5 +263,23 @@
     "description": "iEntrepriZe es una plataforma colaborativa en línea que permite construir horarios de ferrocarril y compartirlos con los miembros del equipo.",
     "Allrightsreserved": "Todos los derechos reservados",
     "isProductOF": "PCF PLANIFICACIÓN DE FERROCARRIL es un producto de iEntrepriZe"
+  },
+  "DynamicTable": {
+    "Search": "Buscar:",
+    "records": "Registros"
+  },
+  "DeleteModal": {
+    "confirmDelete": "¿Estás seguro de que quieres eliminar este elemento?",
+    "yes": "Sí, estoy seguro",
+    "no": "No, cancelar"
+  },
+  "Pagination": {
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "page": "Página {{pageIndex}} de {{pageCount}}",
+    "itemsPerPage": "Elementos por página",
+    "show": "Mostrar {{pageSize}}",
+    "first": "Primera",
+    "last": "Última"
   }
 }

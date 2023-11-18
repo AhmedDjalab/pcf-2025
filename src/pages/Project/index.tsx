@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import DefaultLayout from "src/components/DefaultLayout";
@@ -11,15 +11,28 @@ import {
   DocumentArrowDownIcon,
 } from "@heroicons/react/24/outline";
 import { Link, useNavigate } from "react-router-dom";
-import { QueryClient, useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { getEmployees } from "src/Services/EmployeeService2";
 import { useAuth } from "src/context/UserContext";
-import { deleteProject, getProjects } from "src/Services/ProjectService";
+import {
+  deleteProject,
+  getProjects,
+  getProjectsByEmployeeId,
+} from "src/Services/ProjectService";
 import Spinner from "src/components/Spinner";
 import { Project } from "src/types/Project";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { resetStoreState } from "src/state/slices/graphSlice";
 import { persistor } from "src/App";
+import { UserRoles } from "src/enums/UsersRole";
+import DynamicTable, { SelectColumnFilter } from "src/components/DynamicTable";
+import DeleteConfirmationModal from "src/components/shared/DeleteConfirmationModal";
+import Pagination from "src/components/shared/Pagination";
 
 const exampleProjects = [
   {
@@ -37,30 +50,125 @@ const exampleProjects = [
 
 const Projects = () => {
   const [projects, setProjects] = useState();
-
-  const { user, isAdmin, canWrite } = useAuth();
-  const queryClient = new QueryClient();
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState<string>("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedRow, setSelectedRow] = useState("");
+  const { user, canWrite } = useAuth();
+  const isAdmin = user?.role === UserRoles.Admin;
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const ActionButtonsCell = ({ value }: any) => {
+    return (
+      <div className="flex gap-2">
+        <Link
+          to={`/view-graph/${value}`}
+          className="focus:outline-none text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-purple-600 dark:hover-bg-purple-700 dark:focus:ring-purple-900"
+        >
+          <EyeIcon className="w-5 h-5 mr-2 inline" />
+          {t("projectsList.buttons.viewGraph")}
+        </Link>{" "}
+        <Link
+          to={`/create-project/${value}`}
+          hidden={!canWrite && !isAdmin}
+          onClick={() => {
+            persistor.purge();
+            resetStoreState();
+          }}
+          className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover-bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+        >
+          <PencilIcon className="w-5 h-5 mr-2 inline" />
+          {t("projectsList.buttons.edit")}
+        </Link>
+        {isAdmin && (
+          <button
+            className="focus:outline-none text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover-bg-red-700 dark:focus:ring-red-900"
+            onClick={(e) => {
+              setSelectedRow(value);
+              setIsModalVisible(true);
+            }}
+          >
+            <TrashIcon className="w-5 h-5 mr-2 inline" />
+            {t("projectsList.buttons.delete")}
+          </button>
+        )}
+      </div>
+    );
+  };
+  const columns = useMemo(
+    () => [
+      {
+        Header: t("projectsList.title"),
+        accessor: "title",
+        Filter: SelectColumnFilter,
+      },
+      {
+        Header: t("projectsList.actions"),
+        accessor: "id",
+        Cell: ({ cell: { value } }: any) => <ActionButtonsCell value={value} />,
+      },
+    ],
+    [t, ActionButtonsCell, isAdmin]
+  );
+  const handleCancelDelete = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleDeleteConfirmation = () => {
+    handleDeleteProject.mutate(selectedRow);
+    setIsModalVisible(false);
+  };
+  const handleDeleteProject = useMutation({
+    mutationFn: async (id: string) => {
+      await deleteProject(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects", user?.id] });
+    },
+  });
+
   const {
     data: projectsData,
     isLoading: projectsLoading,
     refetch: refetchProject,
   } = useQuery({
-    queryKey: ["projects", user?.id],
-    queryFn: () =>
-      getProjects({
-        fromvalue: 0,
-        takevalue: 0,
-        userAdminId: user?.id,
-        search: "",
-      }),
+    queryKey: ["projects", user?.id, pageIndex, pageSize, search],
+    queryFn: () => {
+      if (user?.role === UserRoles.Admin) {
+        return getProjects({
+          fromvalue: pageIndex,
+          takevalue: pageSize,
+          search: search,
+          userAdminId: user?.id,
+        });
+      } else {
+        return getProjectsByEmployeeId({
+          fromvalue: pageIndex,
+          takevalue: pageSize,
+          search: search,
+          employeeId: user?.id,
+        });
+      }
+    },
 
     refetchOnWindowFocus: false,
-    staleTime: 6000,
+    staleTime: Infinity,
     enabled: !!user?.id,
   });
 
-  const { t } = useTranslation();
+  const pageCount = useMemo(() => {
+    return Math.ceil((projectsData?.count ?? 0) / pageSize);
+  }, [pageSize, projectsData]);
+  const nextPage = () => setPageIndex(pageIndex + 1);
+  const previousPage = () => setPageIndex(pageIndex - 1);
+  const onPageChange = (newPageIndex: number) => setPageIndex(newPageIndex);
+  const onPageSizeChange = (newPageSize: number) => {
+    setPageIndex(0);
+    setPageSize(newPageSize);
+  };
+
   const handleExportAllClick = (project: Project) => {
     const rawData = project.activities;
     if (!rawData) return;
@@ -95,8 +203,8 @@ const Projects = () => {
     XLSX.writeFile(workbook, "pcfallData.xlsx");
   };
 
-  const handleDeleteClick = async (project: Project) => {
-    await deleteProject(project.id!);
+  const handleDeleteClick = async (projectId: string) => {
+    await deleteProject(projectId!);
   };
   const handlePurgeAndNavigate = async () => {
     try {
@@ -112,7 +220,7 @@ const Projects = () => {
 
   return (
     <DefaultLayout>
-      <div className="dark:bg-boxdark bg-white h-[calc(100dvh)] w-full overflow-x-auto">
+      <div className="dark:bg-boxdark bg-white  w-full overflow-x-auto ">
         <div className="py-2 ml-10 flex justify-between">
           <button
             disabled={!canWrite && !isAdmin}
@@ -125,91 +233,30 @@ const Projects = () => {
         {projectsLoading ? (
           <Spinner />
         ) : (
-          <table className="min-w-full divide-y divide-gray-200 m-8 dark:text-gray-400">
-            <thead>
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  {t("projectsList.title")}
-                </th>
-                {/* <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              {t("projectsList.numEmployees")}
-            </th> */}
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  {t("projectsList.actions")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* {projects.map((project) => (
-            <tr key={project.id}>
-              <td className="px-6 py-4">{project.title}</td>
-              <td className="px-6 py-4">{project.numEmployees}</td>
-              <td className="whitespace-nowrap px-6 py-4">
-                <button
-                  className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover-bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                  onClick={() => {}}
-                >
-                  {t("projectsList.buttons.edit")}
-                </button>
-                <button
-                  className="focus:outline-none text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover-bg-red-700 dark:focus:ring-red-900"
-                  onClick={() => {}}
-                >
-                  {t("projectsList.buttons.delete")}
-                </button>
-              </td>
-            </tr>
-          ))} */}
-              {projectsData?.projects.map((project) => (
-                <tr key={"projectSettings.id"}>
-                  <td className="px-6 py-4">{project.title}</td>
-
-                  <td className="whitespace-nowrap px-6 py-4">
-                    {
-                      <Link
-                        to={`/create-project/${project.id}`}
-                        hidden={!canWrite && !isAdmin}
-                        onClick={() => {
-                          persistor.purge();
-                          resetStoreState();
-                        }}
-                        className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover-bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                      >
-                        <PencilIcon className="w-5 h-5 mr-2 inline" />
-                        {t("projectsList.buttons.edit")}
-                      </Link>
-                    }
-
-                    <Link
-                      to={`/view-graph/${project.id}`}
-                      className="focus:outline-none text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-purple-600 dark:hover-bg-purple-700 dark:focus:ring-purple-900"
-                    >
-                      <EyeIcon className="w-5 h-5 mr-2 inline" />
-                      {t("projectsList.buttons.viewGraph")}
-                    </Link>
-
-                    {/* <button
-                      className="focus:outline-none text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover-bg-green-700 dark:focus:ring-green-900"
-                      onClick={(e) => handleExportAllClick(project)}
-                    >
-                      <DocumentArrowDownIcon className="w-5 h-5 mr-2 inline" />
-                      {t("projectsList.buttons.download")}
-                    </button> */}
-
-                    {isAdmin && (
-                      <button
-                        className="focus:outline-none text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover-bg-red-700 dark:focus:ring-red-900"
-                        onClick={(e) => handleDeleteClick(project)}
-                      >
-                        <TrashIcon className="w-5 h-5 mr-2 inline" />
-                        {t("projectsList.buttons.delete")}
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="flex flex-col mx-auto w-[40rem] ">
+            <DynamicTable
+              dataCount={projectsData?.count}
+              data={projectsData?.projects ?? []}
+              columns={columns}
+              setSearch={setSearch}
+            />
+            {isModalVisible && (
+              <DeleteConfirmationModal
+                isOpen={isModalVisible}
+                onDelete={handleDeleteConfirmation}
+                onCancel={handleCancelDelete}
+              />
+            )}
+            <Pagination
+              pageIndex={pageCount === 0 ? -1 : pageIndex}
+              pageCount={pageCount}
+              pageSize={pageSize}
+              onNextPage={nextPage}
+              onPreviousPage={previousPage}
+              onPageChange={onPageChange}
+              onPageSizeChange={onPageSizeChange}
+            />
+          </div>
         )}
       </div>
     </DefaultLayout>
