@@ -233,7 +233,7 @@ const Projects = () => {
         {projectsLoading ? (
           <Spinner />
         ) : (
-          <div className="flex flex-col mx-auto w-[40rem] ">
+          <div className="flex flex-col mx-auto min-w-[40rem] ">
             <DynamicTable
               dataCount={projectsData?.count}
               data={projectsData?.projects ?? []}
