@@ -97,7 +97,8 @@ function ViewGraph() {
   const [isStyleModalOpen, setStyleModalOpen] = useState(false);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const svgRef2 = useRef<SVGSVGElement | null>(null);
+  const textureDefsRef = useRef<SVGSVGElement | null>(null);
+  const svgRefِContiner = useRef<SVGSVGElement | null>(null);
   const containerSVGRef = useRef<SVGSVGElement | null>(null);
   const legendRef = useRef<HTMLDivElement | null>(null);
   const { t } = useTranslation();
@@ -634,8 +635,9 @@ function ViewGraph() {
   );
 
   const callTextureData = useCallback(() => {
-    const svg = d3.select(svgRef2.current);
-    svg.selectAll("*").remove();
+    const svg = d3.select("legend-item");
+    const svgTexture = d3.select(textureDefsRef.current!);
+    svgTexture.selectAll("*").remove();
 
     shapesData.shapesData.forEach((shape) => {
       let selectedTexture = texturesData.find(
@@ -646,7 +648,7 @@ function ViewGraph() {
         const optionTexture = selectedTexture.configuration
           .id(sanitizeClassName(shape.id + selectedTexture.id))
           .stroke(shape.color);
-        svg.call(optionTexture);
+        svgTexture.call(optionTexture);
       }
     });
   }, [shapesData.shapesData]);
@@ -846,7 +848,7 @@ function ViewGraph() {
 
   useEffect(() => {
     callTextureData();
-  }, [callTextureData, shapesData.shapesData, svgRef2]);
+  }, [callTextureData, shapesData.shapesData, textureDefsRef]);
 
   const resetZoom = () => {
     // const svg = d3.select(svgRef.current); // Ensure svgRef.current is defined
@@ -890,28 +892,12 @@ function ViewGraph() {
 
       const textureId = sanitizeClassName(shape.id + textureConfig.id);
 
-      // const handleMouseOver = () => {
-      //   // Select all shapes and fade them out except the one being hovered over
-      //   d3.selectAll(".activity-rectangle")
-      //     .transition()
-      //     .duration(200)
-      //     .attr("opacity", (d: GraphDataType) => {
-      //       console.log("this is ", d.style, shape.name);
-      //       if (d.style) {
-      //         return d.style.trim() === shape.name.trim() ? 1 : 0.2;
-      //       } else {
-      //         return 1;
-      //       }
-      //     });
-      // };
-
-      // const handleMouseOut = () => {
-      //   // Restore opacity for all shapes
-      //   d3.selectAll(".activity-rectangle")
-      //     .transition()
-      //     .duration(200)
-      //     .attr("opacity", 1);
-      // };
+      if (shape.type === "line" && shape.name === "Repli de chantier") {
+        console.warn("thisi s chsape ", shape);
+      }
+      if (shape.type === "line" && shape.name === "GC - Elevations") {
+        console.warn("thisi s chsape ", shape);
+      }
       const isSelected = selectedShapes.includes(shape.name);
       const handleLegendItemClick = (shape) => {
         // Toggle the selected shape
@@ -934,7 +920,7 @@ function ViewGraph() {
         >
           <div className="shape-container">
             {shape.type === "line" && (
-              <svg width="40" height="20" ref={svgRef2}>
+              <svg width="40" height="20">
                 <line
                   x1="10"
                   y1="10"
@@ -958,6 +944,7 @@ function ViewGraph() {
             )}
             {shape.type === "rect" && (
               <svg width="40" height="20">
+                <defs ref={textureDefsRef}></defs>
                 <rect
                   x="10"
                   y="2"
@@ -969,7 +956,8 @@ function ViewGraph() {
               </svg>
             )}
             {shape.type === "triangle" && (
-              <svg width="40" height="20" ref={svgRef2}>
+              <svg width="40" height="20">
+                <defs ref={textureDefsRef}></defs>
                 <polygon
                   points="10,18 40,2 40,18"
                   fill={textureConfig?.configuration.id(textureId).url()}
@@ -978,7 +966,7 @@ function ViewGraph() {
               </svg>
             )}
             {shape.type === "circle" && (
-              <svg width="40" height="20" ref={svgRef2}>
+              <svg width="40" height="20">
                 <circle cx="20" cy="10" r="8" fill={shape.color} />
               </svg>
             )}
