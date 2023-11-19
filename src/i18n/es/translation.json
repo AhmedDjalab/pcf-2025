@@ -68,7 +68,7 @@
   "importFileForm.delete": "Eliminar",
   "importFileForm.actions": "Acciones",
   "importFileForm.add": "Agregar",
-
+  "importFileForm.SaveFilter": "Guardar Filtros",
   "shapesForm": {
     "backButton": "Atrás",
     "nextButton": "Siguiente",

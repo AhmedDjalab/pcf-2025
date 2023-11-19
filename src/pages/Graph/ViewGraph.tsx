@@ -1182,7 +1182,7 @@ function ViewGraph() {
       {graphSettings.loading ? (
         <Spinner />
       ) : (
-        <div className="flex flex-col dark:bg-boxdark dark:bg-opacity-70 w-full overflow-x-auto">
+        <div className="flex flex-col bg-white dark:bg-body w-full overflow-x-auto">
           <div className="flex gap-2">
             <button
               // disabled
@@ -1224,7 +1224,7 @@ function ViewGraph() {
               {t("drawGraph.cancelZoomButtonLabel")}
             </button>
           )}
-          <div className="flex flex-col w-full " id="graph-container">
+          <div className="flex flex-col w-full  " id="graph-container">
             <div className="graph-container">
               <div className="flex items-center border m-4 w-full ">
                 <img

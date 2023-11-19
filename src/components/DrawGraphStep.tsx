@@ -1209,7 +1209,7 @@ function DrawGraphStep() {
       {graphSettings.loading ? (
         <Spinner />
       ) : (
-        <div className="flex flex-col  w-full ">
+        <div className="flex flex-col  w-full dark:bg-body">
           <div className="flex gap-2">
             <button
               // disabled
