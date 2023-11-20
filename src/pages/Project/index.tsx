@@ -136,20 +136,20 @@ const Projects = () => {
   } = useQuery({
     queryKey: ["projects", user?.id, pageIndex, pageSize, search],
     queryFn: () => {
-      if (user?.role === UserRoles.Admin) {
+      if (true) {
         return getProjects({
           fromvalue: pageIndex,
           takevalue: pageSize,
           search: search,
           userAdminId: user?.id,
         });
-      } else {
-        return getProjectsByEmployeeId({
-          fromvalue: pageIndex,
-          takevalue: pageSize,
-          search: search,
-          employeeId: user?.id,
-        });
+        // } else {
+        //   return getProjectsByEmployeeId({
+        //     fromvalue: pageIndex,
+        //     takevalue: pageSize,
+        //     search: search,
+        //     employeeId: user?.id,
+        //   });
       }
     },
 
