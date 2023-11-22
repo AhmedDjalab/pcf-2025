@@ -10,6 +10,7 @@ const handleApiError = (error: any) => {
     const status = error.response.status;
 
     const errorData = error.response.data;
+
     const errorMessage =
       errorData?.message ||
       errorData?.error ||
@@ -27,6 +28,10 @@ const handleApiError = (error: any) => {
         break;
       case 403:
         toast.error("Forbidden: " + errorMessage);
+        break;
+
+      case 409:
+        toast.error("Validation: " + errorMessage);
         break;
       case 404:
         toast.error("Not Found: " + errorMessage);

@@ -10,6 +10,7 @@ import { IsAuth, useAuth } from "../context/UserContext";
 import { FirebaseError } from "firebase/app";
 import logo from "../assets/Logo/logo.png";
 import { useTranslation } from "react-i18next";
+import { loginWithMicrosoft } from "src/Services/AuthService";
 
 function Login() {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ function Login() {
         email: email,
         password: password,
       });
-      
+
       setLoader(false);
       if (loginStatus) navigate("/");
     } catch (err: any) {
@@ -63,6 +64,19 @@ function Login() {
       localStorage.setItem("token", token);
       navigate("/");
       setLoader(false);
+    } catch (error: any) {
+      CommonError(error);
+    }
+  };
+  const handleMicrsoftLogin = async () => {
+    setLoader(true);
+
+    try {
+      const data = await loginWithMicrosoft();
+      if (data) {
+        //   navigate("/");
+        // setLoader(false);
+      }
     } catch (error: any) {
       CommonError(error);
     }
@@ -191,6 +205,10 @@ function Login() {
                   </button>
                 </div>
               </form>
+
+              {/* <button onClick={handleMicrsoftLogin}>
+                Login With microsoft
+              </button> */}
               <div className="flex items-center justify-center space-x-2 text-center">
                 <div className="text-sm text-gray-500 dark:text-gray-400">
                   <p>{t("login.noAccount")}</p>

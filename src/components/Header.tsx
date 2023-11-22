@@ -113,7 +113,7 @@ const Header = () => {
               />
               <NavLink
                 to="/employees"
-                text={t("header.employees")}
+                text={t("header.users")}
                 icon={<UserGroupIcon className="w-6 h-6" />}
               />
               {/* <NavLink

@@ -3,6 +3,7 @@ import secureLocalStorage from "react-secure-storage";
 
 import {
   CompanyKey,
+  ExternalLoginUrl,
   LicenseKey,
   loginUrl,
   putUserserUrl,
@@ -50,6 +51,22 @@ export async function login(email: string, password: string) {
     // console.log("role errror ");
     throw new RoleException("your not authrized to login to this page ");
   }
+}
+
+export async function loginWithMicrosoft() {
+  const provider = "Microsoft";
+  const url = "/projects";
+  return await api
+    .post(ExternalLoginUrl, {
+      provider: provider,
+      returnUrl: url,
+    })
+    .then((responce) => {
+      return responce;
+    })
+    .catch((error) => {
+      return error;
+    });
 }
 // export function sendSms(number) {
 //   return http.post(apiEndpoint + '/sendSmsCode', {

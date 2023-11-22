@@ -22,6 +22,7 @@ export const refreshTokenUrl = usedUrl + "/token/refresh";
 export const googleApiKey = "AIzaSyAZsmDxm0r2Sgzko6tgiavKpkrGxOXqG3Y";
 
 export const loginUrl = usedUrl + "/Accounts/Login";
+export const ExternalLoginUrl = usedUrl + "/Accounts/ExternalLogin";
 export const userUrl = usedUrl + "/Accounts/GetByJwt";
 export const usersUrl = usedUrl + "/users";
 
