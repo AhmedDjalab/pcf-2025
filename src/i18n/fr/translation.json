@@ -233,6 +233,12 @@
     "title": "Titre",
     "numEmployees": "Nombre de Salariés",
     "actions": "Actions",
+    "createdAt": "Créé le",
+    "NoDateAvailable": "Pas de date disponible",
+
+    "LastModifiedAt": "Dernière modification le",
+    "CreatedBy": "Créé par",
+    "ModifiedBy": "Modifié par",
     "buttons": {
       "edit": "Modifier",
       "delete": "Supprimer",

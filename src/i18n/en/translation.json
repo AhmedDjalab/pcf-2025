@@ -237,6 +237,11 @@
     "title": "Title",
     "numEmployees": "Number of Employees",
     "actions": "Actions",
+    "createdAt": "Created At",
+    "LastModifiedAt": "Last Modified At",
+    "CreatedBy": "Created By",
+    "ModifiedBy": "Modified By",
+    "NoDateAvailable": "No date available",
     "buttons": {
       "edit": "Edit",
       "delete": "Delete",

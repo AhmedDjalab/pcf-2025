@@ -220,6 +220,12 @@
     "title": "Titel",
     "numEmployees": "Anzahl der Mitarbeiter",
     "actions": "Aktionen",
+    "createdAt": "Erstellt am",
+    "LastModifiedAt": "Zuletzt geändert am",
+    "CreatedBy": "Erstellt von",
+    "ModifiedBy": "Geändert von",
+    "NoDateAvailable": "Kein Datum verfügbar",
+
     "buttons": {
       "edit": "Bearbeiten",
       "delete": "Löschen",

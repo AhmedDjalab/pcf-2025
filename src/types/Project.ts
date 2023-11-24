@@ -13,6 +13,11 @@ export interface Project {
   activityStyles?: ActivityStyleModel[];
   taskSlotsLevelOne?: TaskSlotModel[];
   taskSlotsLevelTwo?: TaskSlotModel[];
+  UpdatedAt?: Date;
+  CreatedAt?: Date;
+  ModifierName?: string;
+  CreatorName?: string;
+  userId?: string;
 }
 
 export interface ActivityModel {

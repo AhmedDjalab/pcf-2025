@@ -214,6 +214,7 @@ export const saveProjectThunk = createAsyncThunk<
       fileType: state.graph.projectSettings.fileType,
       //@ts-ignore
       companyId: getCompanyId(),
+      userId: user.id,
       employeesId: state.graph.projectSettings.employeesId,
       activities: state.graph.rawGraphDataFromFile!.map((act) => ({
         // Map properties from GraphDataType to ActivityModel

@@ -33,6 +33,8 @@ import { UserRoles } from "src/enums/UsersRole";
 import DynamicTable, { SelectColumnFilter } from "src/components/DynamicTable";
 import DeleteConfirmationModal from "src/components/shared/DeleteConfirmationModal";
 import Pagination from "src/components/shared/Pagination";
+import moment from "moment-timezone";
+import { Cell, Column, Row } from "react-table";
 
 const exampleProjects = [
   {
@@ -57,6 +59,8 @@ const Projects = () => {
   const [selectedRow, setSelectedRow] = useState("");
   const { user, canWrite } = useAuth();
   const isAdmin = user?.role === UserRoles.Admin;
+  const userTimeZone = moment.tz.guess();
+  const timeZoneString = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -102,6 +106,50 @@ const Projects = () => {
       {
         Header: t("projectsList.title"),
         accessor: "title",
+        Filter: SelectColumnFilter,
+      },
+      {
+        Header: t("projectsList.createdAt"),
+        accessor: "createdAt",
+
+        Cell: ({ cell: { value } }: any) => {
+          const dateValue = moment.utc(value);
+
+          if (dateValue.format("YYYY-MM-DD") === "0001-01-01") {
+            return <div>{t("projectsList.NoDateAvailable")}</div>;
+          }
+
+          const formattedValue = dateValue
+            .tz(userTimeZone)
+            .format("YYYY-MM-DD hh:mm");
+          return <div>{formattedValue}</div>;
+        },
+      },
+      {
+        Header: t("projectsList.LastModifiedAt"),
+        accessor: "updatedAt",
+
+        Cell: ({ cell: { value } }: any) => {
+          const dateValue = moment.utc(value);
+
+          if (dateValue.format("YYYY-MM-DD") === "0001-01-01") {
+            return <div>{t("projectsList.NoDateAvailable")}</div>;
+          }
+
+          const formattedValue = dateValue
+            .tz(userTimeZone)
+            .format("YYYY-MM-DD hh:mm");
+          return <div>{formattedValue}</div>;
+        },
+      },
+      {
+        Header: t("projectsList.CreatedBy"),
+        accessor: "creatorName",
+        Filter: SelectColumnFilter,
+      },
+      {
+        Header: t("projectsList.ModifiedBy"),
+        accessor: "modifierName",
         Filter: SelectColumnFilter,
       },
       {
