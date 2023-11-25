@@ -5,7 +5,7 @@ import translationDE from "./de/translation.json";
 import translationFR from "./fr/translation.json";
 import translationES from "./es/translation.json";
 
-export const storedLanguage = localStorage.getItem("language") || "en";
+export const storedLanguage = localStorage.getItem("language") || "fr";
 
 i18next.use(initReactI18next).init({
   lng: storedLanguage,

@@ -234,9 +234,9 @@
     "numEmployees": "Nombre de Salariés",
     "actions": "Actions",
     "createdAt": "Créé le",
-    "NoDateAvailable": "Pas de date disponible",
+    "NoDateAvailable": "N/A",
 
-    "LastModifiedAt": "Dernière modification le",
+    "LastModifiedAt": "Dernière modification",
     "CreatedBy": "Créé par",
     "ModifiedBy": "Modifié par",
     "buttons": {

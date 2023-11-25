@@ -603,6 +603,7 @@ function DrawGraphStep() {
         .attr("height", 35)
 
         .style("fill", "none")
+        .style("position", "relative")
         .style("stroke", slotClassName === "Task1" ? "#ed9b9b" : "#6c9ae8");
 
       // Create labels for task slots using foreignObject
@@ -613,11 +614,11 @@ function DrawGraphStep() {
 
       labels
         .append("foreignObject")
-        .attr("class", "slot-label-" + slotClassName)
+        .attr("class", "slot-label-text" + slotClassName)
         .attr("x", (d) => xScale(d.start))
         .attr("y", () => (slotClassName === "Task1" ? 45 : 0))
         .attr("width", (d) => xScale(d.end) - xScale(d.start))
-        .attr("height", 20) // Adjust the height as needed
+        .attr("height", 35)
         .append("xhtml:div")
         .style("display", "flex") // Use flexbox for vertical centering
         .style("justify-content", "center") // Center horizontally
@@ -627,14 +628,14 @@ function DrawGraphStep() {
         .style("text-overflow", "ellipsis")
 
         .style("padding-bottom", "5px") // Adjust the padding-bottom as needed
-        .html((d) => d.name)
+        .html((d) => d.name.replace(/<</g, "&lt;&lt;"))
         .on("mouseover", function (event: MouseEvent, d: unknown) {
           // Show tooltip on hover
-          const slotName = d.name;
+          const slotName = d.name.replace(/<</g, "&lt;&lt;");
 
           tooltip
             .html(slotName)
-            .style("display", "block")
+            .style("display", "flex")
             .style("padding", "10px")
             .style(
               "background-color",

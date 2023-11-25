@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 export interface DynamicTableProps {
   columns: any;
   data: any[];
+  rawData?: any[];
   dataCount?: number;
   setSearch?: any;
   initialeStateColumn?: Partial<TableState<object>> | undefined;
@@ -64,25 +65,31 @@ function GlobalFilter({
 // a unique option from a list
 export function SelectColumnFilter({
   column: { filterValue, setFilter, preFilteredRows, id, render },
+  data,
 }: any) {
   // Calculate the options for filtering
-  // using the preFilteredRows
   const options = React.useMemo(() => {
-    const options = new Set();
-    preFilteredRows.forEach((row: any) => {
-      options.add(row.values[id]);
-    });
-    return [...options.values()];
-  }, [id, preFilteredRows]);
+    if (data) {
+      // If data is provided, assume it's an array of values for the given column
+      return data.map((e: any) => e[id]);
+    } else {
+      // If data is not provided, use preFilteredRows
+      const uniqueOptions = new Set();
+      preFilteredRows.forEach((row: any) => {
+        uniqueOptions.add(row.values[id]);
+      });
+      return [...uniqueOptions.values()];
+    }
+  }, [id, preFilteredRows, data]);
 
   // Render a multi-select box
   return (
-    <label className="flex items-baseline gap-x-4 ">
-      <span className="text-gray-700 dark:text-bodydark">
+    <label className="flex items-baseline gap-x-6 ">
+      <span className="pl-2 text-gray-700 dark:text-bodydark">
         {render("Header")}:{" "}
       </span>
       <select
-        className="rounded-md border-gray-300 px-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-boxdark-2 dark:text-bodydark"
+        className="rounded-md truncate w-32 border-gray-300 px-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-boxdark-2 dark:text-bodydark"
         name={id}
         id={id}
         value={filterValue}
@@ -91,7 +98,7 @@ export function SelectColumnFilter({
         }}
       >
         <option value="">All</option>
-        {options.map((option: any, i) => (
+        {options.map((option: any, i: any) => (
           <option key={i} value={option}>
             {option}
           </option>
@@ -139,6 +146,7 @@ export function AvatarCell({ value, column, row }: any) {
 }
 
 function DynamicTable({
+  rawData,
   columns,
   data,
   dataCount,

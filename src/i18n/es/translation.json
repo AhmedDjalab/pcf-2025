@@ -223,7 +223,7 @@
     "LastModifiedAt": "Última modificación en",
     "CreatedBy": "Creado por",
     "ModifiedBy": "Modificado por",
-    "NoDateAvailable": "No hay fecha disponible",
+    "NoDateAvailable": "N/A",
     "buttons": {
       "edit": "Editar",
       "delete": "Eliminar",

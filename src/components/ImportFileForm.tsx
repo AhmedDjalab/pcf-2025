@@ -1,4 +1,10 @@
-import React, { forwardRef, useCallback, useEffect, useState } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { MultiStepFormProps } from "./DrawGraphForm";
 
 import * as XLSX from "xlsx";
@@ -8,6 +14,7 @@ import {
   addGraphDataList,
   applyFilter,
   removeActivity,
+  resetStoreState,
   updateGraphSettingsValue,
   updateShapes,
 } from "src/state/slices/graphSlice";
@@ -19,7 +26,12 @@ import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../state";
 import { animateScroll as scroll } from "react-scroll";
-import { ArrowUpCircleIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowUpCircleIcon,
+  EyeIcon,
+  PencilIcon,
+  TrashIcon,
+} from "@heroicons/react/24/solid";
 import { BackToTopHeightSize, ProjectFileType } from "../const/vars";
 import { useTranslation } from "react-i18next";
 import ActivityTableForm from "./ActivityTableForm";
@@ -29,12 +41,18 @@ import { type } from "@testing-library/user-event/dist/type";
 import { uniqueId } from "lodash";
 import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import { useAuth } from "src/context/UserContext";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { XLSXIcon } from "./filesSVG";
 import excel from "src/assets/filesLogo/excel.svg";
 import primavera from "src/assets/filesLogo/PrimaveraXML.png";
 import msProject from "src/assets/filesLogo/msProject.png";
 import FiltersInputs from "./FiltersInputs";
+import DynamicTable, { SelectColumnFilter } from "./DynamicTable";
+import DeleteConfirmationModal from "./shared/DeleteConfirmationModal";
+import Pagination from "./shared/Pagination";
+import { useMutation } from "@tanstack/react-query";
+import { persistor } from "src/App";
+import { deleteProject } from "src/Services/ProjectService";
 export type FormValues = {
   fromDate: Date;
   toDate: Date;
@@ -55,6 +73,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   );
   const currentYear = new Date().getFullYear();
   const nextYear = currentYear + 1;
+  const userTimeZone = moment.tz.guess();
 
   const initForm: FormValues = {
     fromDate: new Date(currentYear, 0, 1), // Month 0 is January
@@ -65,6 +84,11 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     timeRange: "Yearly",
     distanceRange: 200,
   };
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState<string>("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedRow, setSelectedRow] = useState("");
   const loading = useSelector((state: RootState) => state.graph.loading);
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   const graphSettings = useSelector((state: RootState) => state.graph.settings);
@@ -72,10 +96,45 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     (state: RootState) => state.graph.projectSettings.fileType
   );
 
+  const graphDataTable = useMemo(() => {
+    // Apply search filter
+    const uniqueIds = new Set();
+
+    const filteredData = graphSettings.graphData?.filter((item) => {
+      const id: string = item.activityId;
+      if (!uniqueIds.has(id) && id.includes(search)) {
+        uniqueIds.add(id);
+        return true;
+      }
+      return false;
+    });
+    console.warn(
+      "🚀 ~ file: ImportFileForm.tsx:105 ~ filteredData ~ filteredData:",
+      filteredData
+    );
+
+    // Apply pagination
+    const startIndex = pageIndex * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedData = filteredData?.slice(startIndex, endIndex);
+
+    return paginatedData;
+  }, [graphSettings.graphData, pageIndex, pageSize, search]);
   const rawData = useSelector(
     (state: RootState) => state.graph.rawGraphDataFromFile
   );
   console.error("MyComponent is rendering", rawData); // Add this line
+
+  const pageCount = useMemo(() => {
+    return Math.ceil((graphSettings.graphData?.length ?? 0) / pageSize);
+  }, [pageSize, graphSettings.graphData]);
+  const nextPage = () => setPageIndex(pageIndex + 1);
+  const previousPage = () => setPageIndex(pageIndex - 1);
+  const onPageChange = (newPageIndex: number) => setPageIndex(newPageIndex);
+  const onPageSizeChange = (newPageSize: number) => {
+    setPageIndex(0);
+    setPageSize(newPageSize);
+  };
 
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -112,6 +171,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   };
 
   const handleDeleteClick = (gtId: string) => {
+    console.log(
+      "🚀 ~ file: ImportFileForm.tsx:174 ~ handleDeleteClick ~ gtId:",
+      gtId
+    );
     dispatch(removeActivity({ activityId: gtId }));
   };
   const closeModal = () => {
@@ -411,7 +474,11 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               dataObject[setting.pcfField] = parseFloat(value);
             } else {
               // Handle other fields
-              dataObject[setting.pcfField] = value;
+              if (setting.pcfField === "id") {
+                dataObject["activityId"] = value;
+              } else {
+                dataObject[setting.pcfField] = value;
+              }
             }
           }
         });
@@ -960,6 +1027,127 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     );
   }, [CustomInput, canWrite, formik, isAdmin, t]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const ActionButtonsCell = ({ value, row }: any) => {
+    return (
+      <div className="flex gap-2">
+        {/* <button
+                    type="button"
+                    onClick={() => handleEditClick(data)}
+                    className="text-blue-500 hover:text-blue-700"
+                    disabled={!canWrite && !isAdmin}
+                  >
+                    {t("importFileForm.edit")}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!canWrite && !isAdmin}
+                    onClick={() => handleDeleteClick(data.id)}
+                    className="ml-2 text-red-500 hover:text-red-700"
+                  >
+                    {t("importFileForm.delete")}
+                  </button> */}
+        <button
+          hidden={!canWrite && !isAdmin}
+          onClick={() => {
+            handleEditClick(row.original);
+          }}
+          className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover-bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+        >
+          <PencilIcon className="w-5 h-5 mr-2 inline" />
+          {t("projectsList.buttons.edit")}
+        </button>
+        {isAdmin && (
+          <button
+            className="focus:outline-none text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover-bg-red-700 dark:focus:ring-red-900"
+            onClick={(e) => {
+              setSelectedRow(row.original["id"]);
+              setIsModalVisible(true);
+            }}
+          >
+            <TrashIcon className="w-5 h-5 mr-2 inline" />
+            {t("projectsList.buttons.delete")}
+          </button>
+        )}
+      </div>
+    );
+  };
+  const columns = useMemo(
+    () => [
+      {
+        Header: "ID",
+        accessor: "activityId",
+      },
+      {
+        Header: t("importFileForm.activityName"),
+        accessor: "activityName",
+      },
+      {
+        Header: t("importFileForm.startDate"),
+        accessor: "startDate",
+
+        Cell: ({ cell: { value } }: any) => {
+          const dateValue = moment.utc(value);
+
+          if (dateValue.format("YYYY-MM-DD") === "0001-01-01") {
+            return <div>{t("projectsList.NoDateAvailable")}</div>;
+          }
+
+          const formattedValue = dateValue
+            .tz(userTimeZone)
+            .format("DD/MM/YYYY");
+          return <div>{formattedValue}</div>;
+        },
+      },
+      {
+        Header: t("importFileForm.endDate"),
+        accessor: "finishDate",
+
+        Cell: ({ cell: { value } }: any) => {
+          const dateValue = moment.utc(value);
+
+          if (dateValue.format("YYYY-MM-DD") === "0001-01-01") {
+            return <div>{t("projectsList.NoDateAvailable")}</div>;
+          }
+
+          const formattedValue = dateValue
+            .tz(userTimeZone)
+            .format("DD/MM/YYYY");
+          return <div>{formattedValue}</div>;
+        },
+      },
+      {
+        Header: t("importFileForm.startPk"),
+        accessor: "startChainage",
+      },
+      {
+        Header: t("importFileForm.endPk"),
+        accessor: "finishChainage",
+      },
+      {
+        Header: t("importFileForm.activityStyle"),
+        accessor: "style",
+      },
+      {
+        Header: t("projectsList.actions"),
+        accessor: "styleId",
+        Cell: ({ cell: { value, row } }: any) => (
+          <ActionButtonsCell value={value} row={row} />
+        ),
+      },
+    ],
+    [t, userTimeZone, ActionButtonsCell]
+  );
+  const handleCancelDelete = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleDeleteConfirmation = () => {
+    handleDeleteClick(selectedRow);
+
+    setIsModalVisible(false);
+  };
+
   return (
     <div
       className="w-full mt-10 relative h-screen"
@@ -1045,7 +1233,32 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             </button>
           </div>
         }
-        <table
+        <div className="flex flex-col mx-auto min-w-[40rem] ">
+          <DynamicTable
+            dataCount={graphSettings.graphData?.length ?? 1 - 1 ?? 0}
+            rawData={graphSettings.graphData ?? []}
+            data={graphDataTable ?? []}
+            columns={columns}
+            setSearch={setSearch}
+          />
+          {isModalVisible && (
+            <DeleteConfirmationModal
+              isOpen={isModalVisible}
+              onDelete={handleDeleteConfirmation}
+              onCancel={handleCancelDelete}
+            />
+          )}
+          <Pagination
+            pageIndex={pageCount === 0 ? -1 : pageIndex}
+            pageCount={pageCount}
+            pageSize={pageSize}
+            onNextPage={nextPage}
+            onPreviousPage={previousPage}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+          />
+        </div>
+        {/* <table
           key={uniqueId()}
           className="   w-full  text-sm text-left text-gray-500 dark:text-gray-400"
         >
@@ -1120,7 +1333,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table> */}
       </div>
 
       {

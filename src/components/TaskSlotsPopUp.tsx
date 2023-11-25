@@ -38,6 +38,8 @@ const TaskSlotsPopUp: React.FC<TaskSlotsPopUpProps> = ({
     name: isNew ? "" : editRow!.name,
     start: isNew ? "" : editRow!.start,
     end: isNew ? "" : editRow!.end,
+    idnew: isNew ? "" : editRow!.idnew,
+    id: isNew ? "" : editRow!.id,
   };
 
   // const validationSchema = Yup.object().shape({

@@ -28,8 +28,9 @@ import { getActivities } from "src/Services/ActivityService";
 import { actions } from "react-table";
 
 export interface GraphDataType {
-  id: string;
+  id?: string;
   activityName: string;
+  activityId: string;
   startDate: string;
   finishDate: string;
   startChainage: number;
@@ -44,7 +45,7 @@ export interface ShapeType {
   color: string;
   name: string;
   id: string;
-  activityId?: string[];
+  activityIds?: string[];
 }
 
 export interface TaskSlot {
@@ -219,12 +220,13 @@ export const saveProjectThunk = createAsyncThunk<
       activities: state.graph.rawGraphDataFromFile!.map((act) => ({
         // Map properties from GraphDataType to ActivityModel
         name: act.activityName,
-        activityId: act.id,
+        activityId: act.activityId,
         startDate: new Date(act.startDate),
         endDate: new Date(act.finishDate),
         startPk: act.startChainage,
         endPk: act.finishChainage,
         style: act.style,
+        id: act.id,
       })),
       graphSettings: {
         fromDate: new Date(state.graph.settings.fromDate),
@@ -241,7 +243,7 @@ export const saveProjectThunk = createAsyncThunk<
         backgroundTextureType: shape.backgroundTexture,
         lineStyleType: shape.lineType,
         shapeType: shape.type,
-        activityId: shape.activityId?.[0], // You need to adjust this based on your actual model
+        activityId: shape.activityIds?.[0], // You need to adjust this based on your actual model
       })),
       taskSlotsLevelOne: state.graph.taskSlots.map((taskSlot) => ({
         // Map properties from TaskSlot to TaskSlotModel
@@ -371,10 +373,11 @@ const GraphSlice = createSlice({
           name: style,
           lineType: lineStyles[0].id,
           id: style,
-          activityId: state.settings.graphData
-            ?.filter((x) => x.style === style)
-            .map((data) => data.id),
-        };
+          activityIds:
+            state.settings.graphData
+              ?.filter((x) => x.style === style)
+              .map((data) => data.id) ?? [],
+        } as ShapeType;
       });
       state.shapes.shapesData = shapes;
     },
@@ -410,10 +413,10 @@ const GraphSlice = createSlice({
           name: style,
           lineType: lineStyles[0].id,
           id: style,
-          activityId: state.settings.graphData
+          activityIds: state.settings.graphData
             ?.filter((x) => x.style === style)
             .map((data) => data.id),
-        };
+        } as ShapeType;
       });
 
       return {
@@ -452,7 +455,7 @@ const GraphSlice = createSlice({
       //state.settings.graphData.unshift();
       //state.rawGraphDataFromFile!.unshift(newActivity);
       const graphData = [newActivity, ...(state.settings.graphData ?? [])];
-      const rawData = [newActivity, ...(state.settings.graphData ?? [])];
+      const rawData = [newActivity, ...(state.rawGraphDataFromFile ?? [])];
       return {
         ...state,
         settings: { ...state.settings, graphData: graphData },
@@ -696,7 +699,7 @@ const GraphSlice = createSlice({
       console.log("---- this project from backend  ---", action.payload.data);
 
       var activities = action.payload.data!.activities?.map((act) => ({
-        id: act.activityId,
+        id: act.id,
         styleId: act.style,
         activityId: act.activityId,
         startDate: new Date(act.startDate).toISOString(),

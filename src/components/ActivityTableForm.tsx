@@ -104,7 +104,7 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
               startChainage: 0,
               finishChainage: 0,
               style: "",
-              id: "",
+              activityId: "",
               styleId: "",
             }
           }
@@ -234,6 +234,9 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
                 )}
               </div>
               <div className="flex items-center justify-between">
+                <LabelButton type="button" onClick={handleClose}>
+                  {t("activityForm.cancel")}
+                </LabelButton>
                 <button
                   type="submit"
                   //   disabled={!isValid}
@@ -241,10 +244,6 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
                 >
                   {t("activityForm.save")}
                 </button>
-
-                <LabelButton type="button" onClick={handleClose}>
-                  {t("activityForm.cancel")}
-                </LabelButton>
               </div>
             </Form>
           )}

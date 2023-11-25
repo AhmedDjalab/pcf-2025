@@ -241,7 +241,7 @@
     "LastModifiedAt": "Last Modified At",
     "CreatedBy": "Created By",
     "ModifiedBy": "Modified By",
-    "NoDateAvailable": "No date available",
+    "NoDateAvailable": "N/A",
     "buttons": {
       "edit": "Edit",
       "delete": "Delete",

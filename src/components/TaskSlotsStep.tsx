@@ -81,24 +81,34 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
     };
     const updatedTaskSlots = [...formFieldValues, newTask];
     setFormFieldValues(updatedTaskSlots);
-    // dispatch(
-    //   updateTaskSlotsValue({
-    //     taskSlots: updatedTaskSlots,
-    //   })
-    // );
+    dispatch(
+      updateTaskSlotsValue({
+        taskSlots: updatedTaskSlots,
+      })
+    );
     closeModal();
   };
 
   const handleEditTaskSlot = (data: TaskSlot) => {
+    console.error(
+      "🚀 ~ file: TaskSlotsStep.tsx:93 ~ handleEditTaskSlot ~ data:",
+      data
+    );
     const updatedTaskSlots = formFieldValues.map((taskSlot) =>
-      taskSlot.idnew === data.idnew ? { ...taskSlot, ...data } : taskSlot
+      taskSlot.id
+        ? taskSlot.id === data.id
+          ? { ...taskSlot, ...data }
+          : taskSlot
+        : taskSlot.idnew === data.idnew
+        ? { ...taskSlot, ...data }
+        : taskSlot
     );
     setFormFieldValues(updatedTaskSlots);
-    // dispatch(
-    //   updateTaskSlotsValue({
-    //     taskSlots: updatedTaskSlots,
-    //   })
-    // );
+    dispatch(
+      updateTaskSlotsValue({
+        taskSlots: updatedTaskSlots,
+      })
+    );
     closeModal();
   };
 

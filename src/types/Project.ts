@@ -21,7 +21,7 @@ export interface Project {
 }
 
 export interface ActivityModel {
-  id?: string | null;
+  id?: string;
   name: string;
   activityId: string;
   startDate: Date;
@@ -29,9 +29,10 @@ export interface ActivityModel {
   startPk: number;
   endPk: number;
   style: string;
-  activityStyleId?: string | null;
-  graphSettingId?: string | null;
-  projectId?: string | null;
+  activityStyleId?: string;
+
+  graphSettingId?: string;
+  projectId?: string;
 }
 
 export interface ActivityStyleModel {

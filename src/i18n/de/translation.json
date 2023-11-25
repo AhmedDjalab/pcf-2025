@@ -224,7 +224,7 @@
     "LastModifiedAt": "Zuletzt geändert am",
     "CreatedBy": "Erstellt von",
     "ModifiedBy": "Geändert von",
-    "NoDateAvailable": "Kein Datum verfügbar",
+    "NoDateAvailable": "N/A",
 
     "buttons": {
       "edit": "Bearbeiten",
