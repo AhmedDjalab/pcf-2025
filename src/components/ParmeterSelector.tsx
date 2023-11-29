@@ -13,6 +13,7 @@ import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/state";
 import { uniqueId } from "lodash";
+import Spinner from "./Spinner";
 
 export interface MsProjectOption {
   alias: string;
@@ -46,6 +47,39 @@ function ParameterSelector({
     () => getOptions(udfSettingString, filetype!),
     [filetype, udfSettingString]
   );
+
+  // useEffect(() => {
+  //   if (filetype === ProjectFileType.PrimaveraXML) {
+  //     let selectedPairsClone = [...selectedPairs];
+  //     selectedPairsClone.push(
+  //       {
+  //         pcfSettingName: "ID",
+  //         udfSettingId: "1",
+  //         udfSettingName: "ObjectId",
+  //         pcfField: "id",
+  //       },
+  //       {
+  //         pcfSettingName: "drawGraph.activityDetails.activityNameLabel",
+  //         udfSettingId: "2",
+  //         udfSettingName: "Name",
+  //         pcfField: "activityName",
+  //       },
+  //       {
+  //         pcfSettingName: "drawGraph.activityDetails.startDateLabel",
+  //         udfSettingId: "3",
+  //         udfSettingName: "StartDate",
+  //         pcfField: "startDate",
+  //       },
+  //       {
+  //         pcfSettingName: "drawGraph.activityDetails.finishDateLabel",
+  //         udfSettingId: "4",
+  //         udfSettingName: "FinishDate",
+  //         pcfField: "finishDate",
+  //       }
+  //     );
+  //     setSelectedPairs(selectedPairsClone);
+  //   }
+  // }, [filetype, selectedPairs]);
 
   const handleSelect = (
     selectable: GraphStringsSetting,
@@ -121,7 +155,7 @@ function ParameterSelector({
             className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover-bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
             onClick={() => handleSaveUdfSetting()}
           >
-            {t("activityForm.save")}
+            {isSubmited ? <Spinner /> : t("activityForm.save")}
           </PrimaryButton>
         </div>
       </div>

@@ -160,7 +160,7 @@ function DrawGraphStep() {
 
   const generateTooltipContent = (data: GraphDataType) => {
     return `
-    <strong>ID:</strong> ${data.id}<br>
+    <strong>ID:</strong> ${data.activityId}<br>
     <strong>${t("drawGraph.activityDetails.activityNameLabel")}:</strong> ${
       data.activityName
     }<br>
@@ -654,7 +654,7 @@ function DrawGraphStep() {
       slotsvg.exit().remove();
       labels.exit().remove();
     },
-    [containerHeight, endDateObject, margin.top, startDateObject]
+    [endDateObject, startDateObject]
   );
 
   const callTextureData = useCallback(() => {

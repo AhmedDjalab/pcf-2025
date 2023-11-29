@@ -53,6 +53,7 @@ import Pagination from "./shared/Pagination";
 import { useMutation } from "@tanstack/react-query";
 import { persistor } from "src/App";
 import { deleteProject } from "src/Services/ProjectService";
+import { updateDelete } from "typescript";
 export type FormValues = {
   fromDate: Date;
   toDate: Date;
@@ -307,42 +308,50 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
     const dataObject: Partial<GraphDataType> = {};
 
+    if (!UDFElements || UDFElements[0]?.children?.length === 0) {
+      // UDFElements is either null or empty
+      return null;
+    }
     for (let i = 0; i < UDFElements.length; i++) {
       const UDF = UDFElements[i];
 
       const typeObjectId =
-        UDF.getElementsByTagName("TypeObjectId")[0].textContent;
-      const textValue = UDF.getElementsByTagName("TextValue")[0].textContent;
+        UDF.getElementsByTagName("TypeObjectId")[0]?.textContent;
+      //! you have to check if it double or text
+
+      let textValue = UDF.getElementsByTagName("TextValue")[0]?.textContent;
+
+      if (!textValue) {
+        textValue = UDF.getElementsByTagName("DoubleValue")[0]?.textContent;
+      }
 
       // Find the corresponding setting based on the typeObjectId
       const setting = userSelectionData!.find(
         (x) => x.udfSettingId === typeObjectId.toString()
       );
+      // ? here you should check if they have pk and style
 
+      // if (!setting) {
+      //   // If any required property is null, return null for the entire dataObject
+      //   return null;
+      // }
       if (setting) {
         if (
-          setting.pcfField === "startDate" ||
-          setting.pcfField === "finishDate"
-        ) {
-          // Handle date values
-          const date = moment.utc(textValue, "DD/MM/YYYY", true);
-          if (date.isValid()) {
-            date.add(1, "day");
-            dataObject[setting.pcfField] = date.toISOString();
-          } else {
-            // Handle invalid date format
-          }
-        } else if (
           setting.pcfField === "startChainage" ||
           setting.pcfField === "finishChainage"
         ) {
           // Handle numeric values
           dataObject[setting.pcfField] = parseFloat(textValue);
-        } else {
-          // Handle other fields
+        } else if (setting.pcfField === "id") {
+          dataObject["activityId"] = textValue;
+        } else if (setting.pcfField === "style") {
           dataObject[setting.pcfField] = textValue;
         }
       }
+    }
+
+    if (Object.keys(dataObject).length === 0) {
+      return null;
     }
 
     return dataObject;
@@ -360,6 +369,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     if (project) {
       const activities = project.getElementsByTagName("Activity");
 
+      setLoading(true);
       for (let i = 0; i < activities.length; i++) {
         const activity = activities[i];
         const activityId = activity.getElementsByTagName("Id")[0].textContent;
@@ -374,13 +384,28 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         // Get UDF data based on specific Titles
         const udfData = getUDFData(xmlDoc, activity, userSelectionData);
 
-        graphData.push({
-          id: activityId,
-          activityName,
-          startDate,
-          finishDate,
-          ...udfData,
-        });
+        const requiredFields = ["startChainage", "finishChainage", "style"];
+
+        if (
+          udfData !== null &&
+          requiredFields.every(
+            (field) =>
+              udfData[field as keyof typeof udfData] !== undefined &&
+              udfData[field as keyof typeof udfData] !== null &&
+              udfData[field as keyof typeof udfData] !== ""
+          )
+        ) {
+          console.warn("this is ufdata", udfData);
+          graphData.push({
+            activityId: activityId,
+            activityName,
+            startDate,
+            finishDate,
+            ...udfData,
+          });
+        }
+
+        setLoading(false);
       }
     }
 
@@ -424,7 +449,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         );
 
         graphData.push({
-          id: activityId,
+          activityId: activityId,
           activityName,
           startDate,
           finishDate,

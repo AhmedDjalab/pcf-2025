@@ -56,11 +56,11 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
       setFormFieldValues(updatedTaskSlots);
 
       // // Dispatch the updated task slots to your Redux store
-      // dispatch(
-      //   updateTaskSlotsValue({
-      //     taskSlots: updatedTaskSlots,
-      //   })
-      // );
+      dispatch(
+        updateTaskSlotsValue({
+          taskSlots: updatedTaskSlots,
+        })
+      );
     }
 
     // Close the modal (if it's open)

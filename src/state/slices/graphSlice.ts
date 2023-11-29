@@ -342,10 +342,6 @@ const GraphSlice = createSlice({
       });
 
       state.settings.graphData = filteredGraphData;
-      console.log(
-        "🚀 ~ file: graphSlice.ts:316 ~ filteredGraphData:",
-        filteredGraphData
-      );
     },
 
     updateShapes(state) {
@@ -468,6 +464,8 @@ const GraphSlice = createSlice({
       action: PayloadAction<{ udfSettings: UdfSetting[] }>
     ) {
       state.userDefindSettings = [...action.payload.udfSettings];
+      state.rawGraphDataFromFile = [];
+      state.settings.graphData = [];
     },
 
     addGraphDataList(
@@ -698,7 +696,7 @@ const GraphSlice = createSlice({
       resetStoreState();
       console.log("---- this project from backend  ---", action.payload.data);
 
-      var activities = action.payload.data!.activities?.map((act) => ({
+      var activities = action.payload.data?.activities?.map((act) => ({
         id: act.id,
         styleId: act.style,
         activityId: act.activityId,
