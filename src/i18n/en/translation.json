@@ -52,7 +52,7 @@
   "importFileForm.startPk": "Start PK",
   "importFileForm.endPk": "End PK",
   "importFileForm.calendar": "CALENDAR",
-  "importFileForm.duration": "DURATION",
+  "importFileForm.duration": "DURATION (DAY)",
   "importFileForm.dateRequired": "Date is required",
   "importFileForm.startDateError": "Start date is required",
   "importFileForm.endDateError": "End date must be after the start date",
@@ -165,7 +165,7 @@
       "startChainageLabel": " START  CHAINAGE",
       "finishChainageLabel": "END  CHAINAGE",
       "calendar": "Calendar",
-      "duration": "Duration"
+      "duration": "Duration (Day)"
     },
 
     "changeStyle": "Change Style",
@@ -209,7 +209,7 @@
     "save": "Save",
     "cancel": "Cancel",
     "calendar": "Calendar",
-    "duration": "Duration",
+    "duration": "Duration (Day)",
     "errors": {
       "activityName": "Activity Name is required",
       "startDate": "Start Date is required",

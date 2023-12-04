@@ -148,10 +148,20 @@ function ViewGraph() {
         )}:</strong> ${moment(data.startDate).format("DD/MM/YYYY")}<br>
         <strong>${t(
           "drawGraph.activityDetails.finishDateLabel"
-        )}:</strong> ${moment(data.finishDate).format("DD/MM/YYYY")}<br>
+        )}:</strong> ${moment(data.finishDate).format("DD/MM/YYYY")}        
+        <br>
+        <strong>${t("drawGraph.activityDetails.duration")}:</strong> ${
+        data.duration
+      }
+      <br>
+      <strong>${t("drawGraph.activityDetails.calendar")}:</strong> ${
+        data.calendarName
+      }  
+      <br/>
         <strong>${t(
           "drawGraph.activityDetails.startChainageLabel"
-        )}:</strong> ${data.startChainage}<br>
+        )}:</strong> ${data.startChainage}
+        <br>
         <strong>${t(
           "drawGraph.activityDetails.finishChainageLabel"
         )}:</strong> ${data.finishChainage}
@@ -159,14 +169,7 @@ function ViewGraph() {
         <strong>${t("drawGraph.activityDetails.styleLabel")}:</strong> ${
         data.style
       }
-        <br>
-        <strong>${t("drawGraph.activityDetails.calendar")}:</strong> ${
-        data.calendarName
-      }
-        <br>
-        <strong>${t("drawGraph.activityDetails.duration")}:</strong> ${
-        data.duration
-      }
+       
       `;
     },
     [t]
