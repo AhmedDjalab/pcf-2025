@@ -51,6 +51,8 @@
   "importFileForm.timeScale": "Time Scale",
   "importFileForm.startPk": "Start PK",
   "importFileForm.endPk": "End PK",
+  "importFileForm.calendar": "CALENDAR",
+  "importFileForm.duration": "DURATION",
   "importFileForm.dateRequired": "Date is required",
   "importFileForm.startDateError": "Start date is required",
   "importFileForm.endDateError": "End date must be after the start date",
@@ -161,7 +163,9 @@
       "startDateLabel": "START DATE",
       "finishDateLabel": "FINISH DATE",
       "startChainageLabel": " START  CHAINAGE",
-      "finishChainageLabel": "END  CHAINAGE"
+      "finishChainageLabel": "END  CHAINAGE",
+      "calendar": "Calendar",
+      "duration": "Duration"
     },
 
     "changeStyle": "Change Style",
@@ -204,6 +208,8 @@
     "activityStyle": "Activity Style",
     "save": "Save",
     "cancel": "Cancel",
+    "calendar": "Calendar",
+    "duration": "Duration",
     "errors": {
       "activityName": "Activity Name is required",
       "startDate": "Start Date is required",

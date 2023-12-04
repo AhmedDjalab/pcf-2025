@@ -202,6 +202,28 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
                 />
               </div>
               <div className="mb-4">
+                <Input
+                  id="duration"
+                  type="number"
+                  name="duration"
+                  label={t("activityForm.duration")}
+                  onChange={handleChange}
+                  value={values.duration}
+                  errors={errors}
+                />
+              </div>
+              <div className="mb-4">
+                <Input
+                  id="calendarName"
+                  type="text"
+                  name="calendarName"
+                  label={t("activityForm.calendar")}
+                  onChange={handleChange}
+                  value={values.calendarName}
+                  errors={errors}
+                />
+              </div>
+              <div className="mb-4">
                 {shapesData.length > 0 ? (
                   <Dropdown
                     id="style"

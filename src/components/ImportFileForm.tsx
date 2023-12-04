@@ -146,6 +146,9 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const [initialValues, setInitialValues] = useState<FormValues>(initForm);
   const [graphData, setGraphData] = useState<GraphDataType[]>([]);
   const [filteredData, setFilteredData] = useState<GraphDataType[]>([]);
+  const [calendarData, setCalendarData] = useState<
+    { id: string; name: string; hoursByDay: number }[]
+  >([]);
   const [showBackToTopButton, setShowBackToTopButton] = useState(false);
   const [parsedData, setParsedData] = useState<any>();
 
@@ -226,13 +229,18 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     const UDFElements = activity.getElementsByTagName("ExtendedAttribute");
 
     const dataObject: Partial<GraphDataType> = {};
-    if (!UDFElements) {
-      return {
-        startChainage: 0,
-        finishChainage: 0,
-        style: activity.getElementsByTagName("Name")[0].textContent,
-      };
+
+    if (!UDFElements || UDFElements[0]?.children?.length === 0) {
+      // UDFElements is either null or empty
+      return null;
     }
+    // if (!UDFElements) {
+    //   return {
+    //     startChainage: 0,
+    //     finishChainage: 0,
+    //     style: activity.getElementsByTagName("Name")[0].textContent,
+    //   };
+    // }
     for (let i = 0; i < UDFElements.length; i++) {
       const UDF = UDFElements[i];
 
@@ -251,51 +259,34 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       //   UDF
       // );
 
-      if (!setting) return;
-      if (
-        setting.pcfField === "startDate" ||
-        setting.pcfField === "finishDate"
-      ) {
-        // Handle date values
-        const date = moment.utc(value, "DD/MM/YYYY", true);
-        if (date.isValid()) {
-          date.add(1, "day");
-          dataObject[setting.pcfField] = date.toISOString();
+      if (setting) {
+        if (
+          setting.pcfField === "startDate" ||
+          setting.pcfField === "finishDate"
+        ) {
+          // Handle date values
+          const date = moment.utc(value, "DD/MM/YYYY", true);
+          if (date.isValid()) {
+            date.add(1, "day");
+            dataObject[setting.pcfField] = date.toISOString();
+          } else {
+            // Handle invalid date format
+          }
+        } else if (
+          setting.pcfField === "startChainage" ||
+          setting.pcfField === "finishChainage"
+        ) {
+          // Handle numeric values
+          dataObject[setting.pcfField] = parseFloat(value);
         } else {
-          // Handle invalid date format
+          // Handle other fields
+          dataObject[setting.pcfField] = value;
         }
-      } else if (
-        setting.pcfField === "startChainage" ||
-        setting.pcfField === "finishChainage"
-      ) {
-        // Handle numeric values
-        dataObject[setting.pcfField] = parseFloat(value);
-      } else {
-        // Handle other fields
-        dataObject[setting.pcfField] = value;
       }
-      // const typeObjectIdFromUDFType =
-      //   UDFType.getElementsByTagName("FieldID")[0].textContent;
-      // const title = UDFType.getElementsByTagName("Alias")[0].textContent;
-      // const textValue = UDF.getElementsByTagName("Value")[0].textContent;
-      // console.log(
-      //   "🚀 ~ file: ImportFileForm.tsx:523 ~ getExtendPropertyData ~ textValue:",
-      //   typeObjectIdFromUDFType,
-      //   title,
-      //   textValue
-      // );
-
-      // if (typeObjectId === typeObjectIdFromUDFType) {
-      //   if (title === "TilosStart") {
-      //     udfData.startChainage = parseFloat(textValue);
-      //   } else if (title === "TilosEnd") {
-      //     udfData.finishChainage = parseFloat(textValue);
-      //   } else if (title === "TilosStyle") {
-      //     udfData.style = textValue;
-      //   }
-      // }
     }
-
+    if (Object.keys(dataObject).length === 0) {
+      return null;
+    }
     return dataObject;
   };
 
@@ -317,6 +308,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
       const typeObjectId =
         UDF.getElementsByTagName("TypeObjectId")[0]?.textContent;
+
       //! you have to check if it double or text
 
       let textValue = UDF.getElementsByTagName("TextValue")[0]?.textContent;
@@ -375,12 +367,29 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         const activityId = activity.getElementsByTagName("Id")[0].textContent;
         const activityName =
           activity.getElementsByTagName("Name")[0].textContent;
+        let duration = parseFloat(
+          activity.getElementsByTagName("AtCompletionDuration")[0]
+            .textContent ?? "0"
+        );
 
         const startDate =
           activity.getElementsByTagName("StartDate")[0].textContent;
         const finishDate =
           activity.getElementsByTagName("FinishDate")[0].textContent;
+        const calendarId =
+          activity.getElementsByTagName("CalendarObjectId")[0].textContent;
 
+        if (calendarId) {
+          var calendarName = calendarData.find(
+            (x) => x.id === calendarId
+          )?.name;
+          var hoursByDay = calendarData.find(
+            (x) => x.id === calendarId
+          )?.hoursByDay;
+          if (duration && hoursByDay && hoursByDay > 0) {
+            duration = duration / hoursByDay;
+          }
+        }
         // Get UDF data based on specific Titles
         const udfData = getUDFData(xmlDoc, activity, userSelectionData);
 
@@ -401,6 +410,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             activityName,
             startDate,
             finishDate,
+            calendarName,
+            duration,
             ...udfData,
           });
         }
@@ -441,20 +452,52 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         const finishDate =
           activity.getElementsByTagName("Finish")[0].textContent;
 
+        let duration = activity.getElementsByTagName("Duration")[0].textContent;
         // Get UDF data based on specific Titles
+        let durationNumber = convertDurationToHours(duration ?? "");
+
+        const calendarId =
+          activity.getElementsByTagName("CalendarUID")[0].textContent;
         const udfData = getExtendPropertyData(
           xmlDoc,
           activity,
           userSelectionData
         );
 
-        graphData.push({
-          activityId: activityId,
-          activityName,
-          startDate,
-          finishDate,
-          ...udfData,
-        });
+        if (calendarId) {
+          var calendarName = calendarData.find(
+            (x) => x.id === calendarId
+          )?.name;
+          var hoursByDay = calendarData.find(
+            (x) => x.id === calendarId
+          )?.hoursByDay;
+          if (duration && hoursByDay && hoursByDay > 0) {
+            durationNumber = durationNumber / hoursByDay;
+          }
+        }
+
+        const requiredFields = ["startChainage", "finishChainage", "style"];
+
+        if (
+          udfData !== null &&
+          requiredFields.every(
+            (field) =>
+              udfData[field as keyof typeof udfData] !== undefined &&
+              udfData[field as keyof typeof udfData] !== null &&
+              udfData[field as keyof typeof udfData] !== ""
+          )
+        ) {
+          console.warn("this is ufdata", udfData);
+          graphData.push({
+            activityId: activityId,
+            activityName,
+            startDate,
+            finishDate,
+            calendarName,
+            duration: durationNumber,
+            ...udfData,
+          });
+        }
       }
     }
 
@@ -553,6 +596,21 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
     return parsedData;
   };
+  function convertDurationToHours(duration: string): number {
+    const regex = /PT(\d+)H(\d+)M(\d+)S/;
+    const match = duration.match(regex);
+
+    if (!match) {
+      throw new Error("Invalid duration format");
+    }
+
+    const hours = parseInt(match[1], 10);
+    const minutes = parseInt(match[2], 10);
+    const seconds = parseInt(match[3], 10);
+
+    const totalHours = hours + minutes / 60 + seconds / 3600;
+    return totalHours;
+  }
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -651,6 +709,28 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         const xmlDoc = parser.parseFromString(xmlData, "text/xml");
 
         const UDFTypes = xmlDoc.getElementsByTagName("UDFType");
+        const calendars = xmlDoc.getElementsByTagName("Calendar");
+        const calendarArray: any[] = [];
+
+        for (let i = 0; i < calendars.length; i++) {
+          const calendar = calendars[i];
+
+          const calendarId =
+            calendar.getElementsByTagName("ObjectId")[0]?.textContent ?? "";
+          const calendarName =
+            calendar.getElementsByTagName("Name")[0]?.textContent ?? "";
+          const hoursByDay =
+            calendar.getElementsByTagName("HoursPerDay")[0]?.textContent ?? "";
+
+          const calendarData = {
+            id: calendarId,
+            name: calendarName,
+            hoursByDay: hoursByDay,
+          };
+
+          calendarArray.push(calendarData);
+          setCalendarData(calendarArray);
+        }
 
         const udfArray: any[] = [];
         for (let j = 0; j < UDFTypes.length; j++) {
@@ -718,18 +798,53 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       try {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlData, "text/xml");
-
-        const UDFTypes =
-          xmlDoc.getElementsByTagName("ExtendedAttributes")[0].children;
-        console.warn(
-          "🚀 ~ file: ImportFileForm.tsx:662 ~ returnnewPromise ~ UDFTypes:",
-          UDFTypes
+        console.log(
+          "🚀 ~ file: ImportFileForm.tsx:781 ~ returnnewPromise ~ UDFTypes:",
+          xmlDoc
         );
+        const UDFTypes =
+          xmlDoc.getElementsByTagName("ExtendedAttributes")[0]?.children ?? [];
+        const project = xmlDoc.getElementsByTagName("Project")[0];
+        const calendars =
+          xmlDoc.getElementsByTagName("Calendars")[0].children ?? [];
+        console.log(
+          "🚀 ~ file: ImportFileForm.tsx:802 ~ returnnewPromise ~ calendars:",
+          calendars
+        );
+        const minutesPerDay =
+          xmlDoc.getElementsByTagName("MinutesPerDay")[0].textContent;
+        const calendarArray: any[] = [];
 
+        for (let i = 0; i < calendars.length; i++) {
+          const calendar = calendars[i];
+
+          const calendarId =
+            calendar.getElementsByTagName("UID")[0]?.textContent ?? "";
+          const calendarName =
+            calendar.getElementsByTagName("Name")[0]?.textContent ?? "";
+
+          const calendarData = {
+            id: calendarId,
+            name: calendarName,
+            hoursByDay: parseFloat(minutesPerDay ?? "0") / 60,
+          };
+
+          calendarArray.push(calendarData);
+          setCalendarData(calendarArray);
+          console.log(
+            "🚀 ~ file: ImportFileForm.tsx:818 ~ returnnewPromise ~ calendarData:",
+            calendarData
+          );
+        }
         const udfArray: any[] = [];
         for (let j = 0; j < UDFTypes.length; j++) {
           const UDFType = UDFTypes[j];
-          const udfId = UDFType.getElementsByTagName("FieldID")[0].textContent;
+          console.log(
+            "🚀 ~ file: ImportFileForm.tsx:804 ~ returnnewPromise ~ UDFTypes[j]:",
+            UDFTypes[j]
+          );
+          const udfId =
+            UDFType.getElementsByTagName("FieldID")[0]?.textContent ?? "";
 
           const aliasElement = UDFType.getElementsByTagName("Alias")[0];
           const fieldNameElement = UDFType.getElementsByTagName("FieldName")[0];
@@ -739,7 +854,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             ? fieldNameElement.textContent
             : "Alias not found";
           const fieldName =
-            UDFType.getElementsByTagName("FieldName")[0].textContent;
+            UDFType.getElementsByTagName("FieldName")[0]?.textContent ?? "";
           const userDefiendSetting = {
             alias,
             fieldName,
@@ -1144,6 +1259,14 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       {
         Header: t("importFileForm.startPk"),
         accessor: "startChainage",
+      },
+      {
+        Header: t("importFileForm.calendar"),
+        accessor: "calendarName",
+      },
+      {
+        Header: t("importFileForm.duration"),
+        accessor: "duration",
       },
       {
         Header: t("importFileForm.endPk"),

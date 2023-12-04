@@ -56,7 +56,8 @@
   "importFileForm.startDistanceRequired": "La distance de début est requise",
   "importFileForm.endDistanceRequired": "La distance de fin est requise",
   "importFileForm.selectValidFile": "Veuillez sélectionner un fichier XLSX ou Excel valide.",
-
+  "importFileForm.calendar": "CALENDRIER",
+  "importFileForm.duration": "DURÉE",
   "importFileForm.activityStyle": "STYLE DE L’ACTIVITÉ",
   "importFileForm.activityName": "NOM DE L’ACTIVITÉ",
   "importFileForm.yearlyOption": "Annuel",
@@ -160,7 +161,9 @@
       "startDateLabel": "DATE DE DÉBUT",
       "finishDateLabel": "DATE DE FIN",
       "startChainageLabel": " PK DE DÉBUT",
-      "finishChainageLabel": "PK DE FIN"
+      "finishChainageLabel": "PK DE FIN",
+      "calendar": "CALENDRIER",
+      "duration": "DURÉE"
     },
     "changeStyle": "Changer le style",
     "cancelZoomButtonLabel": "Annuler le Zoom",
@@ -200,6 +203,8 @@
     "activityStyle": "Style de l'activité",
     "save": "Enregistrer",
     "cancel": "Annuler",
+    "calendar": "Calendrier",
+    "duration": "Durée",
     "errors": {
       "activityName": "Le nom de l'activité est requis",
       "startDate": "La date de début est requise",

@@ -136,27 +136,41 @@ function ViewGraph() {
     return key.replace(/[^a-zA-Z0-9-_]/g, "-");
   };
 
-  const generateTooltipContent = (data: GraphDataType) => {
-    return `
-    <strong>ID:</strong> ${data.activityId}<br>
-    <strong>${t("drawGraph.activityDetails.activityNameLabel")}:</strong> ${
-      data.activityName
-    }<br>
-    <strong>${t("drawGraph.activityDetails.startDateLabel")}:</strong> ${moment(
-      data.startDate
-    ).format("DD/MM/YYYY")}<br>
-    <strong>${t(
-      "drawGraph.activityDetails.finishDateLabel"
-    )}:</strong> ${moment(data.finishDate).format("DD/MM/YYYY")}<br>
-    <strong>${t("drawGraph.activityDetails.startChainageLabel")}:</strong> ${
-      data.startChainage
-    }<br>
-    <strong>${t("drawGraph.activityDetails.finishChainageLabel")}:</strong> ${
-      data.finishChainage
-    }<br>
-    <strong>${t("drawGraph.activityDetails.styleLabel")}:</strong> ${data.style}
-  `;
-  };
+  const generateTooltipContent = useCallback(
+    (data: GraphDataType) => {
+      return `
+        <strong>ID:</strong> ${data.activityId}<br>
+        <strong>${t("drawGraph.activityDetails.activityNameLabel")}:</strong> ${
+        data.activityName
+      }<br>
+        <strong>${t(
+          "drawGraph.activityDetails.startDateLabel"
+        )}:</strong> ${moment(data.startDate).format("DD/MM/YYYY")}<br>
+        <strong>${t(
+          "drawGraph.activityDetails.finishDateLabel"
+        )}:</strong> ${moment(data.finishDate).format("DD/MM/YYYY")}<br>
+        <strong>${t(
+          "drawGraph.activityDetails.startChainageLabel"
+        )}:</strong> ${data.startChainage}<br>
+        <strong>${t(
+          "drawGraph.activityDetails.finishChainageLabel"
+        )}:</strong> ${data.finishChainage}
+        <br>
+        <strong>${t("drawGraph.activityDetails.styleLabel")}:</strong> ${
+        data.style
+      }
+        <br>
+        <strong>${t("drawGraph.activityDetails.calendar")}:</strong> ${
+        data.calendarName
+      }
+        <br>
+        <strong>${t("drawGraph.activityDetails.duration")}:</strong> ${
+        data.duration
+      }
+      `;
+    },
+    [t]
+  );
   // const handleDateChange = (dates) => {
   //   const [start, end] = dates;
   //   setStartDate(start);
@@ -1360,6 +1374,20 @@ function ViewGraph() {
                 </div>
                 <div className="border border-gray-700 p-2">
                   {selectedShapeData?.finishChainage}
+                </div>
+
+                <div className="border border-gray-700 p-2 bg-slate-500">
+                  {t("drawGraph.activityDetails.calendar")}
+                </div>
+                <div className="border border-gray-700 p-2">
+                  {selectedShapeData?.calendarName}
+                </div>
+
+                <div className="border border-gray-700 p-2 bg-slate-500">
+                  {t("drawGraph.activityDetails.duration")}
+                </div>
+                <div className="border border-gray-700 p-2">
+                  {selectedShapeData?.duration}
                 </div>
               </div>
             </div>

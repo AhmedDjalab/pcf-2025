@@ -203,7 +203,7 @@ const Projects = () => {
     },
 
     refetchOnWindowFocus: false,
-    staleTime: Infinity,
+    staleTime: 6000,
     enabled: !!user?.id,
   });
 

@@ -30,7 +30,8 @@ export interface ActivityModel {
   endPk: number;
   style: string;
   activityStyleId?: string;
-
+  calendar?: string;
+  duration?: string;
   graphSettingId?: string;
   projectId?: string;
 }

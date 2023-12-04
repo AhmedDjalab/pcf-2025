@@ -37,6 +37,8 @@ export interface GraphDataType {
   finishChainage: number;
   style: string;
   styleId?: string;
+  calendarName?: string;
+  duration?: string;
 }
 export interface ShapeType {
   type: "line" | "rect" | "triangle";
@@ -226,6 +228,9 @@ export const saveProjectThunk = createAsyncThunk<
         startPk: act.startChainage,
         endPk: act.finishChainage,
         style: act.style,
+        calendar: act.calendarName ?? "",
+        duration: act.duration,
+
         id: act.id,
       })),
       graphSettings: {
@@ -652,6 +657,8 @@ const GraphSlice = createSlice({
         finishChainage: act.endPk,
         style: act.style,
         activityName: act.name,
+        calendarName: act.calendar,
+        duration: act.duration,
       }));
       state.settings.graphData = activities ?? [];
 
@@ -706,6 +713,8 @@ const GraphSlice = createSlice({
         finishChainage: act.endPk,
         style: act.style,
         activityName: act.name,
+        calendarName: act.calendar ?? "",
+        duration: act.duration,
       }));
       const projectData: GraphCreateType = {
         id: action.payload.data?.id,

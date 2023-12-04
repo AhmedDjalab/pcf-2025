@@ -26,7 +26,7 @@ export async function getProjects({
   try {
     let config = {
       params: {
-        from: fromvalue,
+        page: fromvalue,
         take: takevalue,
         search: search,
         userAdminId: userAdminId,
@@ -49,7 +49,7 @@ export async function getProjectsByEmployeeId({
   try {
     let config = {
       params: {
-        from: fromvalue,
+        page: fromvalue,
         take: takevalue,
         search: search,
         employeeId: employeeId,
