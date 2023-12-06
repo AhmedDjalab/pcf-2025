@@ -206,9 +206,9 @@ function Login() {
                 </div>
               </form>
 
-              <button onClick={handleMicrsoftLogin}>
+              {/* <button onClick={handleMicrsoftLogin}>
                 Login With microsoft
-              </button>
+              </button> */}
               <div className="flex items-center justify-center space-x-2 text-center">
                 <div className="text-sm text-gray-500 dark:text-gray-400">
                   <p>{t("login.noAccount")}</p>
