@@ -4,6 +4,7 @@ import {
   ProjectFileType,
   getOptions,
   graphStringsSettings,
+  graphStringsXLSXSettings,
 } from "src/const/vars";
 import Dropdown from "./DropDown";
 import { LabelButton, PrimaryButton } from "./shared/Button";
@@ -116,6 +117,28 @@ function ParameterSelector({
     onSubmit(selectedPairs);
   };
 
+  const optionsDraw = () => {
+    var pcfSettings =
+      filetype === ProjectFileType.XLSX
+        ? graphStringsXLSXSettings
+        : graphStringsSettings;
+    return pcfSettings.map((string, index) => (
+      <li key={index} className="mb-2 flex items-center">
+        <span className="w-[50%] inline-block mr-2">{t(string.name)}:</span>
+
+        <Dropdown
+          options={udfStringsOptions!}
+          label=""
+          // value={
+          //   udfSettingsData?.find((x) => x.pcfField === string.field)
+          //     ?.udfSettingId
+          // }
+          onChange={(e) => handleSelect(string, e.target.value)}
+        />
+      </li>
+    ));
+  };
+
   return (
     <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-opacity-20 bg-white  dark:bg-gray-700 dark:bg-opacity-20">
       <div className="mt-20 max-h-full w-[50%] overflow-y-auto rounded  text-boxdark dark:text-white bg-white p-6 shadow-md dark:bg-gray-700 ">
@@ -124,25 +147,7 @@ function ParameterSelector({
         </div>
 
         <div className="flex justify-center items-center p-4">
-          <ul>
-            {graphStringsSettings.map((string, index) => (
-              <li key={index} className="mb-2 flex items-center">
-                <span className="w-[50%] inline-block mr-2">
-                  {t(string.name)}:
-                </span>
-
-                <Dropdown
-                  options={udfStringsOptions!}
-                  label=""
-                  // value={
-                  //   udfSettingsData?.find((x) => x.pcfField === string.field)
-                  //     ?.udfSettingId
-                  // }
-                  onChange={(e) => handleSelect(string, e.target.value)}
-                />
-              </li>
-            ))}
-          </ul>
+          <ul>{optionsDraw()}</ul>
         </div>
 
         <div className="flex items-center justify-between">

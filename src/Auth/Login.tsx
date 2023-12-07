@@ -72,10 +72,9 @@ function Login() {
     setLoader(true);
 
     try {
-      const data = await loginWithMicrosoft();
-      if (data) {
-        //   navigate("/");
-        // setLoader(false);
+      const { request, data } = await loginWithMicrosoft();
+      if (request) {
+        window.location.href = request.responseURL;
       }
     } catch (error: any) {
       CommonError(error);

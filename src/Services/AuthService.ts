@@ -55,7 +55,7 @@ export async function login(email: string, password: string) {
 
 export async function loginWithMicrosoft() {
   const provider = "Microsoft";
-  const url = "/projects";
+  const url = "/";
   return await api
     .post(ExternalLoginUrl, {
       provider: provider,
