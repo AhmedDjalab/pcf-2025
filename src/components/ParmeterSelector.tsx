@@ -3,6 +3,7 @@ import {
   GraphStringsSetting,
   ProjectFileType,
   getOptions,
+  graphStringsMSProjectSettings,
   graphStringsSettings,
   graphStringsXLSXSettings,
 } from "src/const/vars";
@@ -121,6 +122,8 @@ function ParameterSelector({
     var pcfSettings =
       filetype === ProjectFileType.XLSX
         ? graphStringsXLSXSettings
+        : filetype === ProjectFileType.MicrosoftProject
+        ? graphStringsMSProjectSettings
         : graphStringsSettings;
     return pcfSettings.map((string, index) => (
       <li key={index} className="mb-2 flex items-center">

@@ -35,6 +35,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "src/context/UserContext";
 import { siteName } from "src/variables/Urls";
 import Spinner from "./Spinner";
+import Accordion from "./shared/Accordian";
+import Checkbox from "./Checkbox";
 
 export interface ActivityData {
   id: string;
@@ -92,6 +94,7 @@ function DrawGraphStep() {
   const [selectedShapes, setSelectedShapes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStyleModalOpen, setStyleModalOpen] = useState(false);
+  const [showCritical, setShowCritical] = useState(false);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const textureDefsRef = useRef<SVGSVGElement | null>(null);
@@ -238,6 +241,7 @@ function DrawGraphStep() {
         .ticks((toDistance - fromDistance) / distanceRange);
 
       let yAxis = d3.axisLeft(yScale);
+      let yAxisRight = d3.axisRight(yScale);
       let tickSpacing = 20;
       let totalHeight = 1 * tickSpacing;
 
@@ -255,6 +259,7 @@ function DrawGraphStep() {
 
         // Set the tick values
         yAxis.tickValues(ticks);
+        yAxisRight.tickValues(ticks);
 
         // Calculate the total height based on the number of ticks and tickSpacing
         const ticksCount = ticks.length;
@@ -279,7 +284,7 @@ function DrawGraphStep() {
 
         // Set the tick values
         yAxis.tickValues(ticks);
-
+        yAxisRight.tickValues(ticks);
         // Calculate the total height based on the number of ticks and tickSpacing
         const ticksCount = ticks.length;
         const adjustedTicksCount = Math.max(2, ticksCount); // Ensure a minimum of 2 ticks
@@ -294,6 +299,7 @@ function DrawGraphStep() {
           new Date(endDate)
         );
         yAxis.ticks(d3.timeWeek.every(1));
+        yAxisRight.ticks(d3.timeWeek.every(1));
         // this is only for test
         // Calculate the total height required for the ticks
         var ticksHeight = ticksCount * tickSpacing;
@@ -303,7 +309,7 @@ function DrawGraphStep() {
         const ticksCount = d3.timeDay.count(startDateObject, endDateObject);
 
         yAxis.ticks(d3.timeDay.every(1));
-
+        yAxisRight.ticks(d3.timeWeek.every(1));
         // Calculate the total height required for the ticks
         totalHeight = ticksCount * tickSpacing;
       }
@@ -326,12 +332,23 @@ function DrawGraphStep() {
         .style("text-anchor", "end")
         .attr("dx", "-0.5em")
         .text((d) => d3.timeFormat("%a %d/%m/%Y")(d));
+
+      g.append("g")
+        .attr("class", "y-axis")
+        .attr("transform", `translate(${containerWidth + margin.right},0)`)
+        .call(yAxisRight)
+        .selectAll("text")
+        .style("text-anchor", "start")
+        .attr("dx", "1em")
+        .text((d) => d3.timeFormat("%a %d/%m/%Y")(d));
     },
     [
+      containerWidth,
       distanceRange,
       endDate,
       endDateObject,
       fromDistance,
+      margin.right,
       margin.top,
       startDate,
       startDateObject,
@@ -860,7 +877,6 @@ function DrawGraphStep() {
     zoom,
     containerWidth,
     containerHeight,
-    shapesData,
   ]);
 
   useEffect(() => {
@@ -918,6 +934,25 @@ function DrawGraphStep() {
         }
       });
   }, [selectedShapes]);
+  useEffect(() => {
+    const filteredActivity = graphData
+      ?.filter((x) => x.critical)
+      .map((e) => e.activityId);
+    d3.selectAll(".activity-rectangle")
+      .transition()
+      .duration(200)
+      .attr("opacity", (d: GraphDataType) => {
+        if (showCritical) {
+          // If a shape name is clicked, set opacity to 0.2 for all shapes except the selected one
+          return filteredActivity.includes(d.activityId) ? 1 : 0.2;
+        } else {
+          // If no shape name is clicked, set opacity to 1 for all shapes
+          return 1;
+        }
+      });
+
+    // Check if any shape name is clicked
+  }, [graphData, showCritical]);
 
   const createLegend = () => {
     let lineStyleAttr: LineStyle = {};
@@ -1234,25 +1269,15 @@ function DrawGraphStep() {
       {graphSettings.loading ? (
         <Spinner />
       ) : (
-        <div className="flex flex-col  w-full dark:bg-body">
-          <div className="flex gap-2">
-            <button
-              // disabled
-              className="focus:outline-none mt-5  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
-              onClick={() => saveAsPdfOrImage("pdf")}
-            >
-              <span className="mr-2">
-                <LockClosedIcon className="w-4 h-4" /> {/* Lock icon */}
-              </span>
-              PDF
-            </button>
-            {/* <button
-          type="button"
-          onClick={() => navigate("/create-project/5")} // Handle going back to the previous step
-          className=" mt-5 bg-gray-400 text-white  hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 flex items-center"
-        >
-          {t("shapesForm.backButton")}
-        </button> */}
+        <div className="flex flex-col  w-full dark:bg-body overflow-scroll">
+          <div className="mx-20">
+            <div className=" mt-2 flex items-center">
+              <Checkbox
+                checked={showCritical}
+                onChange={() => setShowCritical(!showCritical)}
+                label={t("drawGraph.showCritical")}
+              />
+            </div>
             {(isAdmin || canWrite) && (
               <button
                 type="button"
@@ -1262,13 +1287,165 @@ function DrawGraphStep() {
                 {t("activityForm.save")}
               </button>
             )}
+            <Accordion title={t("drawGraph.utilButtons")}>
+              <div className="my-4 flex justify-center gap-2 ">
+                {/* <button
+                  // disabled
+                  className="focus:outline-none mt-5  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
+                  onClick={() => saveAsPdfOrImage("pdf")}
+                >
+                  <span className="mr-2">
+                    <LockClosedIcon className="w-4 h-4" /> 
+                  </span>
+                  PDF
+                </button> */}
+                {/* <button
+          type="button"
+          onClick={() => navigate("/create-project/5")} // Handle going back to the previous step
+          className=" mt-5 bg-gray-400 text-white  hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 flex items-center"
+        >
+          {t("shapesForm.backButton")}
+        </button> */}
+                {/* <button
+                  type="button"
+                  onClick={handleAddComments}
+                  disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+                  className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
+                >
+                  {t("drawGraph.addComments")}
+                </button> */}
 
-            {/* <button
+                {/* <button
         className="focus:outline-none mt-5 text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
         onClick={() => saveAsPdfOrImage("image")}
       >
         Save as image
       </button> */}
+
+                {/* Add the "Back" button */}
+                {/* <button
+        type="button"
+        disabled={!selectedShapeData}
+        className="px-10 py-2 bg-red-400 text-white rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+        onClick={handleEditClick}
+      >
+        {t("importFileForm.delete")}
+      </button> */}
+                <button
+                  type="button"
+                  disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+                  className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
+                  onClick={handleEditClick}
+                >
+                  {t("importFileForm.edit")}
+                </button>
+                <button
+                  type="button"
+                  className="px-10 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
+                  onClick={handleAddClick}
+                  disabled={!canWrite && !isAdmin}
+                >
+                  {t("importFileForm.add")}
+                </button>
+                <button
+                  type="button"
+                  className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+                  onClick={handleDeleteClick}
+                  disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+                >
+                  {t("importFileForm.delete")}
+                </button>
+                <button
+                  type="button"
+                  className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
+                  onClick={handleExportAllClick}
+                  disabled={!canWrite && !isAdmin}
+                >
+                  {/* {"Export All Data"} */}
+                  {t("drawGraph.exportAllData")}
+                </button>
+
+                <button
+                  type="button"
+                  className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
+                  onClick={handleExportGraphClick}
+                  disabled={!canWrite && !isAdmin}
+                >
+                  {/* {"Export Graph Data"} */}
+                  {t("drawGraph.exportGraphData")}
+                </button>
+                <button
+                  type="button"
+                  disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+                  className="px-10 py-2 bg-slate-600 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
+                  onClick={() => setStyleModalOpen(true)}
+                >
+                  {t("drawGraph.changeStyle")}
+                </button>
+              </div>
+            </Accordion>
+
+            <Accordion title={t("drawGraph.activityDetailLabel")}>
+              <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.activityNameLabel")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.activityName}
+                  </div>
+
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.styleLabel")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.style}
+                  </div>
+
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.startDateLabel")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {moment(selectedShapeData?.startDate).format("DD/MM/YYYY")}
+                  </div>
+
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.finishDateLabel")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {moment(selectedShapeData?.finishDate).format("DD/MM/YYYY")}
+                  </div>
+
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.startChainageLabel")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.startChainage}
+                  </div>
+
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.finishChainageLabel")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.finishChainage}
+                  </div>
+
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.calendar")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.calendarName}
+                  </div>
+
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.duration")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.duration}
+                  </div>
+                </div>
+              </div>
+            </Accordion>
           </div>
           {zoomLevel > 1 && (
             <button
@@ -1282,9 +1459,9 @@ function DrawGraphStep() {
             <div className="graph-container">
               <div className="flex items-center border m-4 w-full ">
                 <img
-                  src={logo}
+                  src={graphSettings.projectSettings.clientlogoImg ?? logo}
                   className="h-20 w-40 mr-4"
-                  alt={graphSettings.projectSettings.title}
+                  alt={"Client" + graphSettings.projectSettings.title}
                 />
                 <div className="flex-grow text-center">
                   <p className="text-2xl">
@@ -1321,128 +1498,6 @@ function DrawGraphStep() {
               </div>
             </div>
 
-            <div className="my-4 flex justify-center gap-2 ">
-              {/* Add the "Back" button */}
-              {/* <button
-        type="button"
-        disabled={!selectedShapeData}
-        className="px-10 py-2 bg-red-400 text-white rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
-        onClick={handleEditClick}
-      >
-        {t("importFileForm.delete")}
-      </button> */}
-              <button
-                type="button"
-                disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-                className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
-                onClick={handleEditClick}
-              >
-                {t("importFileForm.edit")}
-              </button>
-              <button
-                type="button"
-                className="px-10 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
-                onClick={handleAddClick}
-                disabled={!canWrite && !isAdmin}
-              >
-                {t("importFileForm.add")}
-              </button>
-              <button
-                type="button"
-                className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
-                onClick={handleDeleteClick}
-                disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-              >
-                {t("importFileForm.delete")}
-              </button>
-              <button
-                type="button"
-                className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
-                onClick={handleExportAllClick}
-                disabled={!canWrite && !isAdmin}
-              >
-                {/* {"Export All Data"} */}
-                {t("drawGraph.exportAllData")}
-              </button>
-
-              <button
-                type="button"
-                className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
-                onClick={handleExportGraphClick}
-                disabled={!canWrite && !isAdmin}
-              >
-                {/* {"Export Graph Data"} */}
-                {t("drawGraph.exportGraphData")}
-              </button>
-              <button
-                type="button"
-                disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-                className="px-10 py-2 bg-slate-600 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
-                onClick={() => setStyleModalOpen(true)}
-              >
-                {t("drawGraph.changeStyle")}
-              </button>
-            </div>
-
-            <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.activityNameLabel")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {selectedShapeData?.activityName}
-                </div>
-
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.styleLabel")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {selectedShapeData?.style}
-                </div>
-
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.startDateLabel")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {moment(selectedShapeData?.startDate).format("DD/MM/YYYY")}
-                </div>
-
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.finishDateLabel")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {moment(selectedShapeData?.finishDate).format("DD/MM/YYYY")}
-                </div>
-
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.startChainageLabel")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {selectedShapeData?.startChainage}
-                </div>
-
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.finishChainageLabel")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {selectedShapeData?.finishChainage}
-                </div>
-
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.calendar")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {selectedShapeData?.calendarName}
-                </div>
-
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.duration")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {selectedShapeData?.duration}
-                </div>
-              </div>
-            </div>
             <div className="flex w-full justify-center items-center mb-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full px-5">
                 {createLegend()}

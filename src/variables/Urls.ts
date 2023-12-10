@@ -52,6 +52,7 @@ export const TrainingSatisfactionFormsUrl =
 export const jobdescriptionsUrl = usedUrl + "/jobdescriptions";
 export const AnnualInterviewsUrl = usedUrl + "/AnnualInterviews";
 export const ProjectsUrl = usedUrl + "/Projects";
+export const CommentsUrl = usedUrl + "/Comments";
 export const ActivitiesUrl = usedUrl + "/Activities";
 
 export const UploadImagesUrl = ImagesUrl + "/UploadImage";

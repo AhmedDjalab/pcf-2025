@@ -37,6 +37,7 @@
   "header.logout": "Déconnexion",
   "projectForm.title": "Titre du projet",
   "projectForm.logo": "Logo",
+  "projectForm.clientCompanyLogo": "Client Logo",
   "projectForm.next": "Suivant",
   "imagePicker.importLogo": "Importer le logo",
   "imagePicker.selectValidImage": "Veuillez sélectionner un fichier image valide (par exemple, JPG, PNG).",
@@ -70,6 +71,7 @@
   "importFileForm.actions": "Actions",
   "importFileForm.add": "Ajouter",
   "importFileForm.SaveFilter": "Enregistrer les filtres",
+  "importFileForm.critical": "Critical",
 
   "shapesForm": {
     "backButton": "Retour",
@@ -155,6 +157,9 @@
     }
   },
   "drawGraph": {
+    "activityDetailLabel": "Détails de l'activité",
+    "utilButtons": "Boutons utilitaires",
+    "showCritical": "Afficher les éléments critiques",
     "activityDetails": {
       "activityNameLabel": "NOM DE L’ACTIVITÉ",
       "styleLabel": "STYLE",
@@ -163,12 +168,13 @@
       "startChainageLabel": " PK DE DÉBUT",
       "finishChainageLabel": "PK DE FIN",
       "calendar": "CALENDRIER",
-      "duration": "DURÉE (Jour)"
+      "duration": "DURÉE (Jour)",
+      "critical": "CRITICAL"
     },
     "changeStyle": "Changer le style",
     "cancelZoomButtonLabel": "Annuler le Zoom",
-    "exportAllData": "Exporter toutes les données",
-    "exportGraphData": "Exporter les données du graphique"
+    "exportAllData": "Exporter les données",
+    "exportGraphData": "Exporter le graph"
   },
   "DrwMultiStepForm": {
     "step1": {
@@ -307,5 +313,15 @@
     "show": "Afficher {{pageSize}}",
     "first": "Premier",
     "last": "Dernier"
+  },
+  "Comments": {
+    "addComments": "Ajouter des commentaires",
+    "pk": "PK",
+    "commentText": "Texte du commentaire",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "hideComments": "Masquer les commentaires",
+    "activityDetailLabel": "Détails de l'activité",
+    "utilButtons": "Boutons utilitaires"
   }
 }

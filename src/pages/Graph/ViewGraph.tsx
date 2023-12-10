@@ -4,11 +4,16 @@ import * as d3 from "d3";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/state";
 import {
+  CommentsType,
   GraphDataType,
   TaskSlot,
   applyFilter,
+  fetchCommentsThunk,
   removeActivity,
+  saveCommentDataThunk,
   saveProjectThunk,
+  updateComment,
+  updateCommentsList,
   updateGraphSettingsValue,
 } from "src/state/slices/graphSlice";
 import texturesData from "src/const/texturesArray";
@@ -35,6 +40,10 @@ import { useAuth } from "src/context/UserContext";
 import { siteName } from "src/variables/Urls";
 import Spinner from "src/components/Spinner";
 import { fetchProjectByIdThunk } from "src/state/slices/graphSlice";
+import CommentsPannel from "src/components/CommentsPannel";
+import Accordion from "src/components/shared/Accordian";
+import { saveComment } from "src/Services/CommentService";
+import Checkbox from "src/components/Checkbox";
 
 export interface ActivityData {
   id: string;
@@ -48,6 +57,15 @@ export interface ActivityData {
 function ViewGraph() {
   const { id } = useParams();
   const { canWrite, isAdmin } = useAuth();
+  const [showCritical, setShowCritical] = useState(false);
+
+  const commentsData = useSelector((state: RootState) => state.graph.comments);
+  console.warn(
+    "🚀 ~ file: ViewGraph.tsx:58 ~ ViewGraph ~ commentsData1:",
+    commentsData
+  );
+
+  // const [commentsData, setCommentsData] = useState(commentsData1);
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   let graphSettings = useSelector((state: RootState) => state.graph);
   let graphData = useSelector(
@@ -62,6 +80,7 @@ function ViewGraph() {
   );
   useEffect(() => {
     dispatch(fetchProjectByIdThunk(id));
+    dispatch(fetchCommentsThunk(id));
   }, [dispatch, id]);
   const fromDistance = useSelector(
     (state: RootState) => state.graph.settings.fromDistance
@@ -95,6 +114,7 @@ function ViewGraph() {
   const [selectedShapes, setSelectedShapes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStyleModalOpen, setStyleModalOpen] = useState(false);
+  const [hideComments, setHideComments] = useState(false);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const textureDefsRef = useRef<SVGSVGElement | null>(null);
@@ -113,6 +133,7 @@ function ViewGraph() {
 
   const [containerWidth, setContainerWidth] = useState(rawcontainerWidth);
   const [containerHeight, setContainerHeight] = useState(height);
+  const [selectedCommentId, setSelectedCommentId] = useState(null);
 
   // State to manage the selected date range
 
@@ -183,7 +204,8 @@ function ViewGraph() {
     return d3
       .scaleLinear()
       .domain([fromDistance, toDistance])
-      .range([10, distanceAxisWidth]);
+      .range([10, distanceAxisWidth])
+      .clamp(true);
   };
 
   useEffect(() => {
@@ -216,6 +238,7 @@ function ViewGraph() {
         .ticks((toDistance - fromDistance) / distanceRange);
 
       let yAxis = d3.axisLeft(yScale);
+      let yAxisRight = d3.axisRight(yScale);
       let tickSpacing = 20;
       let totalHeight = 1 * tickSpacing;
 
@@ -233,6 +256,7 @@ function ViewGraph() {
 
         // Set the tick values
         yAxis.tickValues(ticks);
+        yAxisRight.tickValues(ticks);
 
         // Calculate the total height based on the number of ticks and tickSpacing
         const ticksCount = ticks.length;
@@ -257,7 +281,7 @@ function ViewGraph() {
 
         // Set the tick values
         yAxis.tickValues(ticks);
-
+        yAxisRight.tickValues(ticks);
         // Calculate the total height based on the number of ticks and tickSpacing
         const ticksCount = ticks.length;
         const adjustedTicksCount = Math.max(2, ticksCount); // Ensure a minimum of 2 ticks
@@ -272,6 +296,7 @@ function ViewGraph() {
           new Date(endDate)
         );
         yAxis.ticks(d3.timeWeek.every(1));
+        yAxisRight.tickValues(d3.timeWeek.every(1));
         // this is only for test
         // Calculate the total height required for the ticks
         var ticksHeight = ticksCount * tickSpacing;
@@ -281,7 +306,7 @@ function ViewGraph() {
         const ticksCount = d3.timeDay.count(startDateObject, endDateObject);
 
         yAxis.ticks(d3.timeDay.every(1));
-
+        yAxisRight.tickValues(d3.timeWeek.every(1));
         // Calculate the total height required for the ticks
         totalHeight = ticksCount * tickSpacing;
       }
@@ -304,12 +329,23 @@ function ViewGraph() {
         .style("text-anchor", "end")
         .attr("dx", "-0.5em")
         .text((d) => d3.timeFormat("%a %d/%m/%Y")(d));
+
+      g.append("g")
+        .attr("class", "y-axis")
+        .attr("transform", `translate(${containerWidth + margin.right},0)`)
+        .call(yAxisRight)
+        .selectAll("text")
+        .style("text-anchor", "start")
+        .attr("dx", "1em")
+        .text((d) => d3.timeFormat("%a %d/%m/%Y")(d));
     },
     [
+      containerWidth,
       distanceRange,
       endDate,
       endDateObject,
       fromDistance,
+      margin.right,
       margin.top,
       startDate,
       startDateObject,
@@ -461,8 +497,8 @@ function ViewGraph() {
                   : ""
               );
           } else if (shape.type === "rect") {
-            x1 = Math.min(x1, x2); // Adjust x1 if it's greater than x2
-            y1 = Math.min(y1, y2); // Adjust y1 if it's greater than y2
+            x1 = Math.min(x1, x2);
+            y1 = Math.min(y1, y2);
             x2 = Math.max(x1, x2);
             y2 = Math.max(y1, y2);
             shapeInCanvas
@@ -717,6 +753,7 @@ function ViewGraph() {
     // Append slots to the selected div
     drawTaskSlot(g, xScale, yScale, tooltip, graphSettings.taskSlots, "Task1");
 
+    drawComment(g, xScale, yScale);
     // Create a zoom behavior
     // Set the minimum and maximum scale levels
     zoom
@@ -838,6 +875,7 @@ function ViewGraph() {
     containerWidth,
     containerHeight,
     shapesData,
+    commentsData,
   ]);
 
   useEffect(() => {
@@ -909,12 +947,6 @@ function ViewGraph() {
 
       const textureId = sanitizeClassName(shape.id + textureConfig.id);
 
-      if (shape.type === "line" && shape.name === "Repli de chantier") {
-        console.warn("thisi s chsape ", shape);
-      }
-      if (shape.type === "line" && shape.name === "GC - Elevations") {
-        console.warn("thisi s chsape ", shape);
-      }
       const isSelected = selectedShapes.includes(shape.name);
       const handleLegendItemClick = (shape) => {
         // Toggle the selected shape
@@ -1116,6 +1148,10 @@ function ViewGraph() {
     setStyleModalOpen(false);
     setSelectedShapeData(null);
   };
+  const submitCommentModal = () => {
+    setIsAddingComments(false);
+    setSelectedShapeData(null);
+  };
 
   // export logic
   const handleExportGraphClick = () => {
@@ -1178,9 +1214,137 @@ function ViewGraph() {
     // Export the workbook to an XLSX file
     XLSX.writeFile(workbook, "pcfallData.xlsx");
   };
-  const handleSaveProject = () => {
-    dispatch(saveProjectThunk(user!));
+  // const handleSaveProject = () => {
+  //   dispatch(saveProjectThunk(user!));
+  // };
+
+  //? this is the write text inside the chart logic
+  const [isAddingComments, setIsAddingComments] = useState(false);
+
+  const handleAddComments = () => {
+    setIsAddingComments(true);
   };
+  const drawComment = useCallback(
+    (
+      g: d3.Selection<SVGGElement, unknown, null, undefined>,
+      xScale: d3.ScaleLinear<number, number, never>,
+      yScale: d3.ScaleLinear<number, number, never>
+    ) => {
+      let updatedCommentValue: CommentsType; // Declare it in a higher scope
+      let isDragging = false;
+
+      const drag = d3
+        .drag<SVGTextElement, CommentsType>()
+        .on("start", function (event, d) {
+          d3.select(this).raise().classed("active", true);
+          isDragging = false;
+        })
+        .on("drag", function (event, d) {
+          const newX = Math.round(xScale.invert(event.x));
+          const newY = Math.round(yScale.invert(event.y));
+
+          console.log("newX:", newX);
+          console.log("newY:", newY);
+          // Create a new object with the updated values
+          updatedCommentValue = {
+            ...d,
+            pk: newX,
+            start: newY,
+          };
+
+          // Find the index of the comment in the array
+          const index = commentsData.findIndex(
+            (comment) => comment.id === d.id
+          );
+
+          // Create a new array with the updated comment
+          // const updatedData: CommentsType[] = [...commentsData];
+
+          // updatedData[index] = updatedComment;
+          // setCommentsData(updateCommentsList);
+          dispatch(
+            updateComment({
+              comment: updatedCommentValue,
+              index: index,
+            })
+          );
+          isDragging = true;
+          // Move the text element
+          d3.select(this).attr("x", xScale(newX)).attr("y", yScale(newY));
+        })
+        .on("end", function (event, d) {
+          d3.select(this).classed("active", false);
+          if (isDragging) {
+            saveComment({
+              ...updatedCommentValue,
+              start: new Date(updatedCommentValue.start),
+            });
+          }
+        });
+
+      const startSlot = g
+        .selectAll<SVGTextElement, CommentData>(".comment-text")
+        .data(commentsData);
+
+      // Enter
+      const newComments = startSlot
+        .enter()
+        .append("text")
+        .attr("class", "comment-text")
+
+        .attr("x", (d) => xScale(d.pk))
+        .attr("y", (d) => yScale(new Date(d.start)))
+        .attr("dy", 10)
+        .style("font-size", "14px")
+        .text((d) => d.commentText)
+        .call(drag);
+
+      // Merge and update
+      startSlot
+        .merge(newComments)
+        .attr("x", (d) => xScale(d.pk))
+        .attr("y", (d) => yScale(new Date(d.start)))
+        .text((d) => d.commentText)
+
+        .on("click", function (event, d) {
+          // Your click event code
+          setSelectedCommentId(d);
+          setIsAddingComments(true);
+        });
+      // Exit
+      startSlot.exit().remove();
+    },
+    [commentsData, dispatch]
+  );
+
+  useEffect(() => {
+    if (hideComments) {
+      d3.selectAll(".comment-text").attr("visibility", "hidden");
+    } else {
+      d3.selectAll(".comment-text").attr("visibility", "visible");
+    }
+  }, [hideComments]);
+  //?----------------------------------------------
+
+  useEffect(() => {
+    const filteredActivity = graphData
+      ?.filter((x) => x.critical)
+      .map((e) => e.activityId);
+    d3.selectAll(".activity-rectangle")
+      .transition()
+      .duration(200)
+      .attr("opacity", (d: GraphDataType) => {
+        if (showCritical) {
+          // If a shape name is clicked, set opacity to 0.2 for all shapes except the selected one
+          return filteredActivity.includes(d.activityId) ? 1 : 0.2;
+        } else {
+          // If no shape name is clicked, set opacity to 1 for all shapes
+          return 1;
+        }
+      });
+
+    // Check if any shape name is clicked
+  }, [graphData, showCritical]);
 
   return (
     <DefaultLayout>
@@ -1188,38 +1352,180 @@ function ViewGraph() {
         <Spinner />
       ) : (
         <div className="flex flex-col bg-white dark:bg-body w-full overflow-x-auto">
-          <div className="flex gap-2">
-            <button
-              // disabled
-              className="focus:outline-none mt-5  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
-              onClick={() => saveAsPdfOrImage("pdf")}
-            >
-              <span className="mr-2">
-                <LockClosedIcon className="w-4 h-4" /> {/* Lock icon */}
-              </span>
-              PDF
-            </button>
-            {/* <button
+          <div className="mx-20">
+            <div className=" mt-2 flex items-center">
+              <Checkbox
+                checked={hideComments}
+                onChange={() => setHideComments(!hideComments)}
+                label={t("Comments.hideComments")}
+              />
+            </div>
+            <div className=" mt-2 flex items-center">
+              <Checkbox
+                checked={showCritical}
+                onChange={() => setShowCritical(!showCritical)}
+                label={t("drawGraph.showCritical")}
+              />
+            </div>
+            <Accordion title={t("drawGraph.utilButtons")}>
+              <div className="my-4 flex justify-center gap-2 ">
+                {/* <button
+                  // disabled
+                  className="focus:outline-none mt-5  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
+                  onClick={() => saveAsPdfOrImage("pdf")}
+                >
+                  <span className="mr-2">
+                    <LockClosedIcon className="w-4 h-4" /> 
+                  </span>
+                  PDF
+                </button> */}
+                {/* <button
           type="button"
           onClick={() => navigate("/create-project/5")} // Handle going back to the previous step
           className=" mt-5 bg-gray-400 text-white  hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 flex items-center"
         >
           {t("shapesForm.backButton")}
         </button> */}
-            {/* <button
-              type="button"
-              onClick={handleSaveProject} // Handle going back to the previous step
-              className=" mt-5 bg-gray-400 text-white  hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 flex items-center"
-            >
-              save Project
-            </button> */}
+                <button
+                  type="button"
+                  onClick={handleAddComments}
+                  disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+                  className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
+                >
+                  {t("drawGraph.addComments")}
+                </button>
 
-            {/* <button
+                {/* <button
         className="focus:outline-none mt-5 text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
         onClick={() => saveAsPdfOrImage("image")}
       >
         Save as image
       </button> */}
+
+                {/* Add the "Back" button */}
+                {/* <button
+        type="button"
+        disabled={!selectedShapeData}
+        className="px-10 py-2 bg-red-400 text-white rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+        onClick={handleEditClick}
+      >
+        {t("importFileForm.delete")}
+      </button> */}
+                <button
+                  type="button"
+                  disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+                  className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
+                  onClick={handleEditClick}
+                >
+                  {t("importFileForm.edit")}
+                </button>
+                <button
+                  type="button"
+                  className="px-10 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
+                  onClick={handleAddClick}
+                  disabled={!canWrite && !isAdmin}
+                >
+                  {t("importFileForm.add")}
+                </button>
+                <button
+                  type="button"
+                  className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+                  onClick={handleDeleteClick}
+                  disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+                >
+                  {t("importFileForm.delete")}
+                </button>
+                <button
+                  type="button"
+                  className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
+                  onClick={handleExportAllClick}
+                  disabled={!canWrite && !isAdmin}
+                >
+                  {/* {"Export All Data"} */}
+                  {t("drawGraph.exportAllData")}
+                </button>
+
+                <button
+                  type="button"
+                  className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
+                  onClick={handleExportGraphClick}
+                  disabled={!canWrite && !isAdmin}
+                >
+                  {/* {"Export Graph Data"} */}
+                  {t("drawGraph.exportGraphData")}
+                </button>
+                <button
+                  type="button"
+                  disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+                  className="px-10 py-2 bg-slate-600 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
+                  onClick={() => setStyleModalOpen(true)}
+                >
+                  {t("drawGraph.changeStyle")}
+                </button>
+              </div>
+            </Accordion>
+
+            <Accordion title={t("drawGraph.activityDetailLabel")}>
+              <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.activityNameLabel")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.activityName}
+                  </div>
+
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.styleLabel")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.style}
+                  </div>
+
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.startDateLabel")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {moment(selectedShapeData?.startDate).format("DD/MM/YYYY")}
+                  </div>
+
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.finishDateLabel")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {moment(selectedShapeData?.finishDate).format("DD/MM/YYYY")}
+                  </div>
+
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.startChainageLabel")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.startChainage}
+                  </div>
+
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.finishChainageLabel")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.finishChainage}
+                  </div>
+
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.calendar")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.calendarName}
+                  </div>
+
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.duration")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.duration}
+                  </div>
+                </div>
+              </div>
+            </Accordion>
           </div>
           {zoomLevel > 1 && (
             <button
@@ -1233,9 +1539,9 @@ function ViewGraph() {
             <div className="graph-container">
               <div className="flex items-center border m-4 w-full ">
                 <img
-                  src={logo}
+                  src={graphSettings.projectSettings.clientlogoImg ?? logo}
                   className="h-20 w-40 mr-4"
-                  alt={graphSettings.projectSettings.title}
+                  alt={"Client" + graphSettings.projectSettings.title}
                 />
                 <div className="flex-grow text-center">
                   <p className="text-2xl">
@@ -1272,128 +1578,6 @@ function ViewGraph() {
               </div>
             </div>
 
-            <div className="my-4 flex justify-center gap-2 ">
-              {/* Add the "Back" button */}
-              {/* <button
-        type="button"
-        disabled={!selectedShapeData}
-        className="px-10 py-2 bg-red-400 text-white rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
-        onClick={handleEditClick}
-      >
-        {t("importFileForm.delete")}
-      </button> */}
-              <button
-                type="button"
-                disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-                className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
-                onClick={handleEditClick}
-              >
-                {t("importFileForm.edit")}
-              </button>
-              <button
-                type="button"
-                className="px-10 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
-                onClick={handleAddClick}
-                disabled={!canWrite && !isAdmin}
-              >
-                {t("importFileForm.add")}
-              </button>
-              <button
-                type="button"
-                className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
-                onClick={handleDeleteClick}
-                disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-              >
-                {t("importFileForm.delete")}
-              </button>
-              <button
-                type="button"
-                className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
-                onClick={handleExportAllClick}
-                disabled={!canWrite && !isAdmin}
-              >
-                {/* {"Export All Data"} */}
-                {t("drawGraph.exportAllData")}
-              </button>
-
-              <button
-                type="button"
-                className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
-                onClick={handleExportGraphClick}
-                disabled={!canWrite && !isAdmin}
-              >
-                {/* {"Export Graph Data"} */}
-                {t("drawGraph.exportGraphData")}
-              </button>
-              <button
-                type="button"
-                disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-                className="px-10 py-2 bg-slate-600 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
-                onClick={() => setStyleModalOpen(true)}
-              >
-                {t("drawGraph.changeStyle")}
-              </button>
-            </div>
-
-            <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.activityNameLabel")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {selectedShapeData?.activityName}
-                </div>
-
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.styleLabel")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {selectedShapeData?.style}
-                </div>
-
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.startDateLabel")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {moment(selectedShapeData?.startDate).format("DD/MM/YYYY")}
-                </div>
-
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.finishDateLabel")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {moment(selectedShapeData?.finishDate).format("DD/MM/YYYY")}
-                </div>
-
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.startChainageLabel")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {selectedShapeData?.startChainage}
-                </div>
-
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.finishChainageLabel")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {selectedShapeData?.finishChainage}
-                </div>
-
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.calendar")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {selectedShapeData?.calendarName}
-                </div>
-
-                <div className="border border-gray-700 p-2 bg-slate-500">
-                  {t("drawGraph.activityDetails.duration")}
-                </div>
-                <div className="border border-gray-700 p-2">
-                  {selectedShapeData?.duration}
-                </div>
-              </div>
-            </div>
             <div className="flex w-full justify-center items-center mb-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full px-5">
                 {createLegend()}
@@ -1415,6 +1599,14 @@ function ViewGraph() {
               id={selectedShapeData?.style}
               onSubmit={closeStyleModal}
               handleClose={submitStyleModal}
+            />
+          )}
+          {isAddingComments && (
+            <CommentsPannel
+              editComment={selectedCommentId}
+              onSubmit={closeStyleModal}
+              handleClose={submitCommentModal}
+              yPosition={selectedShapeData?.startDate}
             />
           )}
         </div>

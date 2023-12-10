@@ -69,6 +69,48 @@ export const graphStringsSettings: GraphStringsSetting[] = [
     name: "drawGraph.activityDetails.styleLabel",
     field: "style",
   },
+  {
+    id: 8,
+    name: "drawGraph.activityDetails.criticalLabel",
+    field: "critical",
+  },
+];
+export const graphStringsMSProjectSettings: GraphStringsSetting[] = [
+  {
+    id: 1,
+    name: "ID",
+    field: "id",
+  },
+  {
+    id: 2,
+    name: "drawGraph.activityDetails.activityNameLabel",
+    field: "activityName",
+  },
+  {
+    id: 3,
+    name: "drawGraph.activityDetails.startDateLabel",
+    field: "startDate",
+  },
+  {
+    id: 4,
+    name: "drawGraph.activityDetails.finishDateLabel",
+    field: "finishDate",
+  },
+  {
+    id: 5,
+    name: "drawGraph.activityDetails.startChainageLabel",
+    field: "startChainage",
+  },
+  {
+    id: 6,
+    name: "drawGraph.activityDetails.finishChainageLabel",
+    field: "finishChainage",
+  },
+  {
+    id: 7,
+    name: "drawGraph.activityDetails.styleLabel",
+    field: "style",
+  },
 ];
 
 export const graphStringsXLSXSettings: GraphStringsSetting[] = [
@@ -108,14 +150,19 @@ export const graphStringsXLSXSettings: GraphStringsSetting[] = [
     field: "style",
   },
   {
-    id: 7,
+    id: 8,
     name: "drawGraph.activityDetails.calendar",
     field: "calendarName",
   },
   {
-    id: 7,
+    id: 9,
     name: "drawGraph.activityDetails.duration",
     field: "duration",
+  },
+  {
+    id: 10,
+    name: "drawGraph.activityDetails.criticalLabel",
+    field: "critical",
   },
 ];
 

@@ -47,7 +47,7 @@ function Input({
       <label
         htmlFor={id}
         className={`
-        mb-2 block w-[30%] text-sm font-medium text-gray-900 dark:text-white
+        mb-2 block w-[40%] text-sm font-medium text-gray-900 dark:text-white
          ${errors && errors[name] ? "text-red-700 dark:text-red-500" : ""}
         `}
       >

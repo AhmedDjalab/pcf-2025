@@ -9,6 +9,7 @@ interface ImagePickerProps {
   setFileName: (name: string) => void;
   imageValue?: string | null;
   disabled?: boolean;
+  keyRef: string;
 }
 
 const ImagePicker: React.FC<ImagePickerProps> = ({
@@ -16,6 +17,7 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
   imageValue,
   setFileName,
   disabled,
+  keyRef,
 }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(
     imageValue || null
@@ -96,11 +98,11 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
         accept="image/*"
         onChange={handleImageChange}
         className="hidden"
-        id="imagePickerInput"
+        id={keyRef}
         disabled={disabled}
       />
       <label
-        htmlFor="imagePickerInput"
+        htmlFor={keyRef}
         className="cursor-pointer block p-4 border border-dashed border-gray-300 rounded-lg text-center hover:bg-gray-100"
       >
         {selectedImage ? (

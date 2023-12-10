@@ -5,6 +5,8 @@ export interface Project {
   title: string;
   logoUrl?: string;
   logoUrlId?: string | null;
+  clientLogoUrl?: string;
+  clientLogoId?: string | null;
   fileType?: ProjectFileType;
   companyId: string;
   employeesId?: string[];
@@ -32,6 +34,7 @@ export interface ActivityModel {
   activityStyleId?: string;
   calendar?: string;
   duration?: string;
+  critical?: boolean;
   graphSettingId?: string;
   projectId?: string;
 }

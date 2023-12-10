@@ -32,6 +32,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const [projectTitle, setProjectTitle] = useState("");
 
   const [fileName, setFileName] = useState("");
+  const [clientfileName, setClientFileName] = useState("");
   const [projectFileType, setProjectFileType] = useState(ProjectFileType.XLSX); // Set a default value
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   const { t } = useTranslation();
@@ -56,6 +57,9 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
   // );
   const [selectedImage, setSelectedImage] = useState(
     projectSettings.logoImg ?? ""
+  );
+  const [selectedClientImage, setSelectedClientImage] = useState(
+    projectSettings.clientlogoImg ?? ""
   );
   const [selectedEmployees, setSelectedEmployees] = useState<Options[]>([]);
 
@@ -103,12 +107,18 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
     if (projectSettings) {
       setProjectTitle(projectSettings.title || "");
       setSelectedImage(projectSettings.logoImg || "");
+      setSelectedClientImage(projectSettings.clientlogoImg || "");
     }
   }, [projectSettings]);
 
   const handleImageChange = (img: string | null) => {
     if (img) {
       setSelectedImage(img);
+    }
+  };
+  const handleClientImageChange = (img: string | null) => {
+    if (img) {
+      setSelectedClientImage(img);
     }
   };
 
@@ -125,6 +135,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
     const projectSetting: ProjectSettings = {
       title: projectTitle,
       logoImg: selectedImage,
+      clientlogoImg: selectedClientImage,
       fileType: ProjectFiletypeOptions.find(
         (option) => option.id === projectFileType
       )?.id!,
@@ -169,9 +180,25 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
               {t("projectForm.logo")}
             </label>
             <ImagePicker
+              keyRef="logoimg"
               onChange={handleImageChange}
               imageValue={selectedImage}
               setFileName={(fileName) => setFileName(fileName)}
+              disabled={!canWrite && !isAdmin}
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="projectClientImage"
+              className="block text-gray-700 text-sm font-bold mb-2  dark:text-white"
+            >
+              {t("projectForm.clientCompanyLogo")}
+            </label>
+            <ImagePicker
+              keyRef="clientimg"
+              onChange={handleClientImageChange}
+              imageValue={selectedClientImage}
+              setFileName={(fileName) => setClientFileName(fileName)}
               disabled={!canWrite && !isAdmin}
             />
           </div>

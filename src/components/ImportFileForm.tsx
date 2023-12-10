@@ -453,6 +453,9 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           activity.getElementsByTagName("Finish")[0].textContent;
 
         let duration = activity.getElementsByTagName("Duration")[0].textContent;
+        const criticalString =
+          activity.getElementsByTagName("Critical")[0]?.textContent || "";
+        const critical: boolean = criticalString === "1" ? true : false;
         // Get UDF data based on specific Titles
         let durationNumber = convertDurationToHours(duration ?? "");
 
@@ -487,13 +490,14 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               udfData[field as keyof typeof udfData] !== ""
           )
         ) {
-          console.warn("this is ufdata", udfData);
+          console.warn("this is ufdata", critical);
           graphData.push({
             activityId: activityId,
             activityName,
             startDate,
             finishDate,
             calendarName,
+            critical,
             duration: durationNumber,
             ...udfData,
           });
@@ -1221,6 +1225,18 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       {
         Header: t("importFileForm.activityName"),
         accessor: "activityName",
+      },
+      {
+        Header: t("importFileForm.critical"),
+        accessor: "critical",
+        Cell: ({ cell: { value, row } }: any) => (
+          <input
+            type="checkbox"
+            className="min-w-50 "
+            checked={value}
+            readOnly
+          />
+        ),
       },
       {
         Header: t("importFileForm.startDate"),

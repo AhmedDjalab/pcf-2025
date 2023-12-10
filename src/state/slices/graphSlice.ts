@@ -26,6 +26,10 @@ import { base64ToFile } from "src/Helpers/utils";
 import api from "src/utils/api";
 import { getActivities } from "src/Services/ActivityService";
 import { actions } from "react-table";
+import {
+  getCommentsByProjectId,
+  saveComment,
+} from "src/Services/CommentService";
 
 export interface GraphDataType {
   id?: string;
@@ -39,6 +43,7 @@ export interface GraphDataType {
   styleId?: string;
   calendarName?: string;
   duration?: string;
+  critical?: boolean;
 }
 export interface ShapeType {
   type: "line" | "rect" | "triangle";
@@ -68,6 +73,8 @@ export interface ProjectSettings {
   title: string;
   logoImg?: string;
   logoId?: string;
+  clientlogoImg?: string;
+  clientlogoImgId?: string;
   fileType?: ProjectFileType;
   employees?: Employee[];
   employeesId?: string[];
@@ -88,6 +95,16 @@ export interface ShapesSettings {
   shapesData: ShapeType[];
 }
 
+export interface CommentsType {
+  idNew?: string;
+  id?: string;
+  commentText: string;
+  pk: number;
+  userId: string;
+  start: Date;
+  projectId?: string;
+}
+
 export interface GraphCreateType {
   id?: string;
   projectSettings: ProjectSettings;
@@ -99,6 +116,7 @@ export interface GraphCreateType {
   error?: string;
   rawGraphDataFromFile?: GraphDataType[];
   userDefindSettings?: UdfSetting[];
+  comments?: CommentsType[];
 }
 
 const currentYear = new Date().getFullYear();
@@ -110,6 +128,7 @@ const initialState: GraphCreateType = {
   projectSettings: {
     title: "",
     logoImg: "",
+    clientlogoImg: "",
     fileType: ProjectFileType.XLSX,
     employees: [],
   },
@@ -130,7 +149,27 @@ const initialState: GraphCreateType = {
   loading: false,
   rawGraphDataFromFile: [],
   userDefindSettings: [],
+  comments: [],
 };
+
+export const fetchCommentsThunk = createAsyncThunk(
+  "projectSettings/Comments",
+  async (projectId: string) => {
+    const response = await getCommentsByProjectId({
+      projectId: projectId,
+    });
+
+    return response;
+  }
+);
+export const saveCommentDataThunk = createAsyncThunk(
+  "projectSettings/SaveComment",
+  async (comment: CommentsType) => {
+    const response = await saveComment(comment);
+
+    return response;
+  }
+);
 
 export const fetchEmployees = createAsyncThunk(
   "projectSettings/fetchEmployees",
@@ -214,6 +253,8 @@ export const saveProjectThunk = createAsyncThunk<
       title: state.graph.projectSettings.title,
       logoUrl: state.graph.projectSettings.logoImg,
       logoUrlId: state.graph.projectSettings.logoId,
+      clientLogoUrl: state.graph.projectSettings.clientlogoImg,
+      clientLogoId: state.graph.projectSettings.clientlogoImgId,
       fileType: state.graph.projectSettings.fileType,
       //@ts-ignore
       companyId: getCompanyId(),
@@ -230,6 +271,7 @@ export const saveProjectThunk = createAsyncThunk<
         style: act.style,
         calendar: act.calendarName ?? "",
         duration: act.duration,
+        critical: act.critical,
 
         id: act.id,
       })),
@@ -608,10 +650,48 @@ const GraphSlice = createSlice({
     //     };
     //   }
     // },
+
+    addComment(state, action: PayloadAction<{ comment: CommentsType }>) {
+      state.comments?.push(action.payload.comment);
+    },
+    updateCommentsList(
+      state,
+      action: PayloadAction<{ comments: CommentsType[] }>
+    ) {
+      state.comments = action.payload.comments;
+    },
     setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
     },
+    updateComment(
+      state,
+      action: PayloadAction<{ comment: CommentsType; index: number }>
+    ) {
+      const index = action.payload.index;
+      const comment = action.payload.comment;
+      console.log("🚀 ~ file: graphSlice.ts:641 ~ comment:", index, comment);
 
+      if (state.comments) {
+        state.comments[index] = comment;
+      }
+    },
+    updateCommentById(state, action: PayloadAction<{ comment: CommentsType }>) {
+      const { comment } = action.payload;
+
+      const graphCommentIndex = state.comments?.findIndex(
+        (item) => item.id === comment.id
+      );
+
+      if (graphCommentIndex !== undefined && graphCommentIndex !== -1) {
+        //@ts-ignore
+        state.comments![graphCommentIndex] = comment;
+        //@ts-ignore
+
+        return state;
+      }
+
+      return state;
+    },
     resetStoreState(state) {
       state.settings = { ...initialState.settings };
       state.projectSettings = { ...initialState.projectSettings };
@@ -642,10 +722,6 @@ const GraphSlice = createSlice({
     });
 
     builder.addCase(fetchActivities.fulfilled, (state, action) => {
-      console.warn(
-        "🚀 ~ file: graphSlice.ts:625 ~ builder.addCase ~ state:",
-        state
-      );
       state.loading = false;
       var activities = action.payload?.activities?.map((act) => ({
         id: act.activityId,
@@ -659,9 +735,13 @@ const GraphSlice = createSlice({
         activityName: act.name,
         calendarName: act.calendar,
         duration: act.duration,
+        critical: act.critical,
       }));
       state.settings.graphData = activities ?? [];
-
+      console.warn(
+        "🚀 ~ file: graphSlice.ts:625 ~ builder.addCase ~ state:",
+        activities
+      );
       const {
         fromDate,
         toDate,
@@ -715,6 +795,7 @@ const GraphSlice = createSlice({
         activityName: act.name,
         calendarName: act.calendar ?? "",
         duration: act.duration,
+        critical: act.critical,
       }));
       const projectData: GraphCreateType = {
         id: action.payload.data?.id,
@@ -723,6 +804,8 @@ const GraphSlice = createSlice({
           employeesId: action.payload.data!.employeesId,
           logoImg: action.payload.data!.logoUrl,
           logoId: action.payload.data!.logoUrlId ?? undefined,
+          clientlogoImg: action.payload.data!.clientLogoUrl,
+          clientlogoImgId: action.payload.data!.clientLogoId ?? undefined,
           fileType: action.payload.data!.fileType ?? undefined,
         },
 
@@ -790,6 +873,29 @@ const GraphSlice = createSlice({
     builder.addCase(fetchProjectByIdThunk.rejected, (state) => {
       state.loading = false;
     });
+
+    builder.addCase(fetchCommentsThunk.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(fetchCommentsThunk.fulfilled, (state, action) => {
+      state.comments = action.payload ?? [];
+      state.loading = false;
+    });
+    builder.addCase(fetchCommentsThunk.rejected, (state) => {
+      state.comments = [];
+      state.loading = false;
+    });
+
+    builder.addCase(saveCommentDataThunk.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(saveCommentDataThunk.fulfilled, (state, action) => {
+      state.loading = false;
+    });
+    builder.addCase(saveCommentDataThunk.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    });
   },
 });
 
@@ -810,6 +916,10 @@ export const {
   addGraphDataList,
   applyFilter,
   updateStyleShape,
+  addComment,
+  updateCommentsList,
+  updateComment,
+  updateCommentById,
 } = GraphSlice.actions;
 
 export default GraphSlice.reducer;

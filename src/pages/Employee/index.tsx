@@ -41,7 +41,7 @@ const Employees = () => {
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState<string>("");
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [selectedRow, setSelectedRow] = useState("");
+  const [selectedRow, setSelectedRow] = useState<any>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [edit, setEdit] = useState<Employee | null>(null);
   const { user } = useAuth();
@@ -172,6 +172,7 @@ const Employees = () => {
 
   const handleDeleteEmployee = useMutation({
     mutationFn: async (id: string) => {
+      console.error("🚀 ~ file: index.tsx:175 ~ mutationFn: ~ id:", id);
       await deleteEmployee(id);
     },
     onSuccess: () => {
@@ -181,7 +182,12 @@ const Employees = () => {
     },
   });
   const handleDeleteConfirmation = () => {
-    handleDeleteEmployee.mutate(selectedRow);
+    console.log(
+      "🚀 ~ file: index.tsx:186 ~ handleDeleteConfirmation ~ selectedRow:",
+      selectedRow
+    );
+
+    handleDeleteEmployee.mutate(selectedRow.original["id"]);
     setIsDeleteModalVisible(false);
   };
 

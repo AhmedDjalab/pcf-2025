@@ -37,6 +37,7 @@
   "header.logout": "Logout",
   "projectForm.title": "Project Title",
   "projectForm.logo": "Logo",
+  "projectForm.clientCompanyLogo": "Client Logo",
   "projectForm.next": "Next",
 
   "imagePicker.importLogo": "Import Logo",
@@ -72,6 +73,7 @@
   "importFileForm.actions": "Actions",
   "importFileForm.add": "Add",
   "importFileForm.SaveFilter": "Save Filters",
+  "importFileForm.critical": "Critical",
 
   "shapesForm": {
     "backButton": "Back",
@@ -157,6 +159,9 @@
     "teamLeaderIsRequired": "Team leader is Required."
   },
   "drawGraph": {
+    "activityDetailLabel": "Activity Detail",
+    "utilButtons": "Utility Buttons",
+    "showCritical": "show Critical",
     "activityDetails": {
       "activityNameLabel": "ACTIVITY NAME",
       "styleLabel": "STYLE",
@@ -165,7 +170,8 @@
       "startChainageLabel": " START  CHAINAGE",
       "finishChainageLabel": "END  CHAINAGE",
       "calendar": "Calendar",
-      "duration": "Duration (Day)"
+      "duration": "Duration (Day)",
+      "critical": "CRITICAL"
     },
 
     "changeStyle": "Change Style",
@@ -314,5 +320,13 @@
     "show": "Show {{pageSize}}",
     "first": "First",
     "last": "Last"
+  },
+  "Comments": {
+    "addComments": "Add Comments",
+    "pk": "PK",
+    "commentText": "Comment Text",
+    "save": "Save",
+    "cancel": "Cancel",
+    "hideComments": "Hide Comments"
   }
 }
