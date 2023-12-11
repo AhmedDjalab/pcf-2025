@@ -4,6 +4,7 @@ import translation from "./en/translation.json";
 import translationDE from "./de/translation.json";
 import translationFR from "./fr/translation.json";
 import translationES from "./es/translation.json";
+import translationIT from "./it/translation.json";
 
 export const storedLanguage = localStorage.getItem("language") || "fr";
 
@@ -22,6 +23,9 @@ i18next.use(initReactI18next).init({
     },
     de: {
       translation: translationDE,
+    },
+    it: {
+      translation: translationIT,
     },
   },
   // if you see an error like: "Argument of type 'DefaultTFuncReturn' is not assignable to parameter of type xyz"

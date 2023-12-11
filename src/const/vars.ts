@@ -9,6 +9,7 @@ export var languages = [
   // { code: 'ar', name: 'Arabic', countryCode: 'SA' },
   { code: "fr", name: "French", countryCode: "FR" },
   { code: "de", name: "German", countryCode: "DE" },
+  { code: "it", name: "Italian", countryCode: "IT" },
 ];
 
 export function classNames(...classes: string[]) {

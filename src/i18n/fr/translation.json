@@ -4,6 +4,7 @@
   "language.Spanish": "Espagnol",
   "language.Arabic": "Arabe",
   "language.German": "Allemand",
+  "language.Italian": "Italien",
 
   "stepper.next": "Suivant",
   "stepper.back": "Retour",
@@ -17,11 +18,11 @@
     "googleLoginButton": "Connexion avec Google",
     "errorMessages": {
       "invalidEmail": "Adresse e-mail invalide.",
-      "userNotFound": "Utilisateur non trouvé. Veuillez vérifier votre adresse e-mail.",
-      "wrongPassword": "Mot de passe incorrect. Veuillez réessayer.",
+      "userNotFound": "Utilisateur non trouvé, veuillez vérifier votre adresse e-mail.",
+      "wrongPassword": "Mot de passe incorrect, veuillez réessayer.",
       "userDisabled": "Votre compte a été désactivé.",
-      "invalidLoginCredentials": "Identifiants de connexion invalides. Veuillez vérifier votre e-mail et votre mot de passe.",
-      "defaultError": "Une erreur s'est produite. Veuillez réessayer plus tard."
+      "invalidLoginCredentials": "Identifiants de connexion invalides, veuillez vérifier votre e-mail et votre mot de passe.",
+      "defaultError": "Une erreur s'est produite, veuillez réessayer plus tard."
     },
     "noAccount": "Vous n'avez pas de compte ?",
     "contactUs": "Contactez-nous :",
@@ -36,8 +37,8 @@
   "header.contactEmail": "admin@ientreprize.com",
   "header.logout": "Déconnexion",
   "projectForm.title": "Titre du projet",
-  "projectForm.logo": "Logo",
-  "projectForm.clientCompanyLogo": "Client Logo",
+  "projectForm.logo": "Logo 1",
+  "projectForm.clientCompanyLogo": "Logo 2",
   "projectForm.next": "Suivant",
   "imagePicker.importLogo": "Importer le logo",
   "imagePicker.selectValidImage": "Veuillez sélectionner un fichier image valide (par exemple, JPG, PNG).",
@@ -53,10 +54,10 @@
   "importFileForm.endPk": "Pk de fin",
   "importFileForm.dateRequired": "La date est requise",
   "importFileForm.startDateError": "La date de début est requise",
-  "importFileForm.endDateError": "La date de fin doit être après la date de début",
+  "importFileForm.endDateError": "La date de fin doit être postérieure à la date de début",
   "importFileForm.startDistanceRequired": "La distance de début est requise",
   "importFileForm.endDistanceRequired": "La distance de fin est requise",
-  "importFileForm.selectValidFile": "Veuillez sélectionner un fichier XLSX ou Excel valide.",
+  "importFileForm.selectValidFile": "Veuillez sélectionner un fichier XLSX valide.",
   "importFileForm.calendar": "CALENDRIER",
   "importFileForm.duration": "DURÉE (Jour)",
   "importFileForm.activityStyle": "STYLE DE L’ACTIVITÉ",
@@ -71,7 +72,7 @@
   "importFileForm.actions": "Actions",
   "importFileForm.add": "Ajouter",
   "importFileForm.SaveFilter": "Enregistrer les filtres",
-  "importFileForm.critical": "Critical",
+  "importFileForm.critical": "Critique",
 
   "shapesForm": {
     "backButton": "Retour",
@@ -157,9 +158,11 @@
     }
   },
   "drawGraph": {
+    "addComments": "Ajouter un commentaire",
+
     "activityDetailLabel": "Détails de l'activité",
     "utilButtons": "Boutons utilitaires",
-    "showCritical": "Afficher les éléments critiques",
+    "showCritical": "Afficher les tâches critiques",
     "activityDetails": {
       "activityNameLabel": "NOM DE L’ACTIVITÉ",
       "styleLabel": "STYLE",
@@ -169,12 +172,12 @@
       "finishChainageLabel": "PK DE FIN",
       "calendar": "CALENDRIER",
       "duration": "DURÉE (Jour)",
-      "critical": "CRITICAL"
+      "critical": "CRITIQUE"
     },
     "changeStyle": "Changer le style",
     "cancelZoomButtonLabel": "Annuler le Zoom",
     "exportAllData": "Exporter les données",
-    "exportGraphData": "Exporter le graph"
+    "exportGraphData": "Exporter le graphique"
   },
   "DrwMultiStepForm": {
     "step1": {
@@ -218,7 +221,7 @@
       "startPk": "Le début PK est requis",
       "endPk": "La fin PK est requise",
       "activityStyle": "Le style de l'activité est requis",
-      "endDateMin": "La date de fin doit être supérieure ou égale à la date de début"
+      "endDateMin": "la date de fin doit être postérieure à la date de début"
     }
   },
   "projectForm.fileType": "Type de Fichier",
@@ -227,17 +230,17 @@
     "projects": "Projets",
     "employees": "Salariés",
     "pricing": "Tarification",
-    "aboutUs": "À Propos de Nous",
+    "aboutUs": "À Propos",
     "contact": "Contact :",
     "logout": "Déconnexion",
     "users": "Utilisateurs"
   },
   "employeeList": {
     "Email": "Email",
-    "fullName": "Nom Complet",
+    "fullName": "Nom ",
     "jobTitle": "Titre du Poste",
-    "canRead": "Peut Lire",
-    "canWrite": "Peut Écrire",
+    "canRead": "Accès en lecture",
+    "canWrite": "Accès en écriture",
     "actions": "Actions"
   },
   "projectsList": {
@@ -267,13 +270,13 @@
     }
   },
   "employeeForm": {
-    "addEmployee": "Ajouter un salarié",
-    "editEmployee": "Modifier le salarié",
+    "addEmployee": "Ajouter un utilisateur",
+    "editEmployee": "Modifier l'utilisateur",
     "fullName": "Nom complet",
     "email": "Email",
     "password": "Mot de passe",
-    "canRead": "Peut lire",
-    "canWrite": "Peut écrire",
+    "canRead": "Accès en lecture",
+    "canWrite": "Accès en écriture",
     "save": "Enregistrer",
     "cancel": "Annuler",
     "errors": {
@@ -315,13 +318,13 @@
     "last": "Dernier"
   },
   "Comments": {
-    "addComments": "Ajouter des commentaires",
-    "pk": "PK",
+    "addComments": "Ajouter un commentaire",
+    "pk": "Point d'insertion",
     "commentText": "Texte du commentaire",
     "save": "Enregistrer",
     "cancel": "Annuler",
     "hideComments": "Masquer les commentaires",
     "activityDetailLabel": "Détails de l'activité",
-    "utilButtons": "Boutons utilitaires"
+    "utilButtons": "Barre d'outils"
   }
 }

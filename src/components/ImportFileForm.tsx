@@ -1226,18 +1226,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         Header: t("importFileForm.activityName"),
         accessor: "activityName",
       },
-      {
-        Header: t("importFileForm.critical"),
-        accessor: "critical",
-        Cell: ({ cell: { value, row } }: any) => (
-          <input
-            type="checkbox"
-            className="min-w-50 "
-            checked={value}
-            readOnly
-          />
-        ),
-      },
+
       {
         Header: t("importFileForm.startDate"),
         accessor: "startDate",
@@ -1273,24 +1262,77 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         },
       },
       {
-        Header: t("importFileForm.startPk"),
-        accessor: "startChainage",
-      },
-      {
-        Header: t("importFileForm.calendar"),
-        accessor: "calendarName",
-      },
-      {
         Header: t("importFileForm.duration"),
         accessor: "duration",
-      },
-      {
-        Header: t("importFileForm.endPk"),
-        accessor: "finishChainage",
+        Cell: ({ cell: { value, row } }: any) => (
+          <input
+            type="text"
+            className="min-w-[5rem] focus:outline-none"
+            value={value}
+            readOnly
+          />
+        ),
       },
       {
         Header: t("importFileForm.activityStyle"),
         accessor: "style",
+        Cell: ({ cell: { value, row } }: any) => (
+          <input
+            type="text"
+            className="min-w-[5rem] focus:outline-none"
+            value={value}
+            readOnly
+          />
+        ),
+      },
+      {
+        Header: t("importFileForm.startPk"),
+        accessor: "startChainage",
+        Cell: ({ cell: { value, row } }: any) => (
+          <input
+            type="text"
+            className="min-w-[2rem] focus:outline-none"
+            value={value}
+            readOnly
+          />
+        ),
+      },
+      {
+        Header: t("importFileForm.endPk"),
+        accessor: "finishChainage",
+        Cell: ({ cell: { value, row } }: any) => (
+          <input
+            type="text"
+            className="min-w-[2rem] focus:outline-none"
+            value={value}
+            readOnly
+          />
+        ),
+      },
+      {
+        Header: t("importFileForm.calendar"),
+        accessor: "calendarName",
+        Cell: ({ cell: { value, row } }: any) => (
+          <input
+            type="text"
+            className="min-w-[25rem] focus:outline-none"
+            value={value}
+            readOnly
+          />
+        ),
+      },
+
+      {
+        Header: t("importFileForm.critical"),
+        accessor: "critical",
+        Cell: ({ cell: { value, row } }: any) => (
+          <input
+            type="checkbox"
+            className={`min-w-50 `}
+            checked={value}
+            readOnly
+          />
+        ),
       },
       {
         Header: t("projectsList.actions"),

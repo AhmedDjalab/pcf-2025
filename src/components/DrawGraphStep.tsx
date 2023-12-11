@@ -133,6 +133,7 @@ function DrawGraphStep() {
     distanceRange,
     endDate,
     fromDistance,
+    graphData.length,
     graphSettings.loading,
     startDate,
     timeRange,
@@ -208,7 +209,8 @@ function DrawGraphStep() {
     return d3
       .scaleLinear()
       .domain([fromDistance, toDistance])
-      .range([10, distanceAxisWidth]);
+      .range([10, distanceAxisWidth])
+      .clamp(true);
   };
 
   useEffect(() => {
@@ -1384,6 +1386,58 @@ function DrawGraphStep() {
                 </button>
               </div>
             </Accordion>
+          </div>
+          {zoomLevel > 1 && (
+            <button
+              className="focus:outline-none mt-2 text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
+              onClick={resetZoom}
+            >
+              {t("drawGraph.cancelZoomButtonLabel")}
+            </button>
+          )}
+
+          <div className="flex flex-col w-full " id="graph-container">
+            <div className="graph-container">
+              <div className="flex items-center border m-4 w-full ">
+                <img
+                  src={graphSettings.projectSettings.clientlogoImg ?? logo}
+                  className="h-20 w-40 mr-4"
+                  alt={"Client" + graphSettings.projectSettings.title}
+                />
+                <div className="flex-grow text-center">
+                  <p className="text-2xl">
+                    {graphSettings.projectSettings.title}
+                  </p>
+                </div>
+                <img
+                  src={graphSettings.projectSettings.logoImg}
+                  className="h-20 w-40 object-fill "
+                  alt={graphSettings.projectSettings.title}
+                />
+              </div>
+
+              <div id="tooltip" className="absolute  text-white"></div>
+              <div id="wrapper">
+                <svg
+                  ref={containerSVGRef}
+                  style={{
+                    minHeight: containerHeight,
+                    minWidth: containerWidth,
+                  }}
+                >
+                  <defs>
+                    {/* {patterns.map((pattern) => {
+              return pattern.content(
+                pattern.width,
+                pattern.height,
+                pattern.id
+              );
+            })} */}
+                  </defs>
+                  <g ref={svgRef}></g>
+                </svg>
+              </div>
+            </div>
 
             <Accordion title={t("drawGraph.activityDetailLabel")}>
               <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
@@ -1446,59 +1500,7 @@ function DrawGraphStep() {
                 </div>
               </div>
             </Accordion>
-          </div>
-          {zoomLevel > 1 && (
-            <button
-              className="focus:outline-none mt-2 text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
-              onClick={resetZoom}
-            >
-              {t("drawGraph.cancelZoomButtonLabel")}
-            </button>
-          )}
-          <div className="flex flex-col w-full " id="graph-container">
-            <div className="graph-container">
-              <div className="flex items-center border m-4 w-full ">
-                <img
-                  src={graphSettings.projectSettings.clientlogoImg ?? logo}
-                  className="h-20 w-40 mr-4"
-                  alt={"Client" + graphSettings.projectSettings.title}
-                />
-                <div className="flex-grow text-center">
-                  <p className="text-2xl">
-                    {graphSettings.projectSettings.title}
-                  </p>
-                </div>
-                <img
-                  src={graphSettings.projectSettings.logoImg}
-                  className="h-20 w-40 object-fill "
-                  alt={graphSettings.projectSettings.title}
-                />
-              </div>
-
-              <div id="tooltip" className="absolute  text-white"></div>
-              <div id="wrapper">
-                <svg
-                  ref={containerSVGRef}
-                  style={{
-                    minHeight: containerHeight,
-                    minWidth: containerWidth,
-                  }}
-                >
-                  <defs>
-                    {/* {patterns.map((pattern) => {
-              return pattern.content(
-                pattern.width,
-                pattern.height,
-                pattern.id
-              );
-            })} */}
-                  </defs>
-                  <g ref={svgRef}></g>
-                </svg>
-              </div>
-            </div>
-
-            <div className="flex w-full justify-center items-center mb-2">
+            <div className="flex w-full justify-center items-center my-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full px-5">
                 {createLegend()}
               </div>

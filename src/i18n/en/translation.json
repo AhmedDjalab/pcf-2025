@@ -4,6 +4,7 @@
   "language.Spanish": "Spanish",
   "language.Arabic": "Arabic",
   "language.German": "German",
+  "language.Italian": "Italian",
 
   "stepper.next": "Next",
   "stepper.back": "Back",
@@ -159,6 +160,7 @@
     "teamLeaderIsRequired": "Team leader is Required."
   },
   "drawGraph": {
+    "addComments": "Add Comment",
     "activityDetailLabel": "Activity Detail",
     "utilButtons": "Utility Buttons",
     "showCritical": "show Critical",

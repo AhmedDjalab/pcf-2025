@@ -1,0 +1,331 @@
+{
+  "language.English": "Inglese",
+  "language.French": "Francese",
+  "language.Spanish": "Spagnolo",
+  "language.Arabic": "Arabo",
+  "language.German": "Tedesco",
+  "language.Italian": "Italiano",
+
+  "stepper.next": "Avanti",
+  "stepper.back": "Indietro",
+  "stepper.save": "Salva",
+
+  "login": {
+    "title": "Accesso",
+    "emailLabel": "E-mail",
+    "passwordLabel": "Password",
+    "loginButton": "Accedi",
+    "googleLoginButton": "Accedi con Google",
+    "errorMessages": {
+      "invalidEmail": "Indirizzo email non valido.",
+      "userNotFound": "Utente non trovato, controlla l'indirizzo email.",
+      "wrongPassword": "Password errata, riprova.",
+      "userDisabled": "Il tuo account è stato disabilitato.",
+      "invalidLoginCredentials": "Credenziali di accesso non valide, controlla l'email e la password.",
+      "defaultError": "Si è verificato un errore, riprova più tardi."
+    },
+    "noAccount": "Non hai un account?",
+    "contactUs": "Contattaci:",
+    "adminEmail": "admin@ientreprize.com",
+    "signInHeader": "Accedi"
+  },
+  "common": {
+    "invalidEmail": "Indirizzo email non valido.",
+    "passwordRequirements": "La password deve contenere almeno 8 caratteri e includere almeno 1 lettera minuscola, 1 lettera maiuscola, 1 numero e 1 carattere speciale."
+  },
+  "header.contact": "Contatto:",
+  "header.contactEmail": "admin@ientreprize.com",
+  "header.logout": "Disconnetti",
+  "projectForm.title": "Titolo del progetto",
+  "projectForm.logo": "Logo 1",
+  "projectForm.clientCompanyLogo": "Logo 2",
+  "projectForm.next": "Avanti",
+  "imagePicker.importLogo": "Importa il logo",
+  "imagePicker.selectValidImage": "Seleziona un file immagine valido (ad esempio, JPG, PNG).",
+  "importFileForm.dragOrImport": "Trascina o importa il tuo file",
+  "importFileForm.title": "Importazione del file",
+  "importFileForm.back": "Indietro",
+  "importFileForm.next": "Avanti",
+  "importFileForm.fileInputLabel": "Trascina o importa il tuo file",
+  "importFileForm.startDate": "Inizio",
+  "importFileForm.endDate": "Fine",
+  "importFileForm.timeScale": "Scala temporale",
+  "importFileForm.startPk": "Pk di inizio",
+  "importFileForm.endPk": "Pk di fine",
+  "importFileForm.dateRequired": "La data è richiesta",
+  "importFileForm.startDateError": "La data di inizio è richiesta",
+  "importFileForm.endDateError": "La data di fine deve essere successiva alla data di inizio",
+  "importFileForm.startDistanceRequired": "La distanza di inizio è richiesta",
+  "importFileForm.endDistanceRequired": "La distanza di fine è richiesta",
+  "importFileForm.selectValidFile": "Seleziona un file XLSX valido.",
+  "importFileForm.calendar": "CALENDARIO",
+  "importFileForm.duration": "DURATA (Giorno)",
+  "importFileForm.activityStyle": "STILE DELL'ATTIVITÀ",
+  "importFileForm.activityName": "NOME DELL'ATTIVITÀ",
+  "importFileForm.yearlyOption": "Annuale",
+  "importFileForm.monthlyOption": "Mensile",
+  "importFileForm.weeklyOption": "Settimanale",
+  "importFileForm.dailyOption": "Giornaliero",
+  "importFileForm.distanceRange": "Scala di distanza",
+  "importFileForm.edit": "Modifica",
+  "importFileForm.delete": "Elimina",
+  "importFileForm.actions": "Azioni",
+  "importFileForm.add": "Aggiungi",
+  "importFileForm.SaveFilter": "Salva i filtri",
+  "importFileForm.critical": "Critico",
+
+  "shapesForm": {
+    "backButton": "Indietro",
+    "nextButton": "Avanti",
+    "formatStyle": "FORMATO DELLO STILE",
+    "lineType": "TIPO DI LINEA",
+    "rectangleTriangleType": "TIPO DI RETTANGOLO / TRIANGOLO",
+    "color": "Colore",
+    "styleName": "Nome dello stile",
+    "headers": {
+      "formatStyle": "FORMATO DELLO STILE",
+      "lineType": "TIPO DI LINEA",
+      "rectangleTriangleType": "TIPO DI RETTANGOLO / TRIANGOLO",
+      "color": "Colore",
+      "styleName": "Nome dello stile"
+    },
+    "Triangle": "Triangolo",
+    "Rectangle": "Rettangolo",
+    "Ligne": "Linea"
+  },
+  "validationMessages": {
+    "passwordRequired": "La password è richiesta.",
+    "passwordMinLength": "La password deve contenere almeno 8 caratteri.",
+    "passwordCapitalLetters": "La password deve contenere una o più lettere maiuscole.",
+    "passwordLowercaseLetters": "La password deve contenere una o più lettere minuscole.",
+    "passwordDigits": "La password deve contenere uno o più numeri.",
+    "passwordSpecialCharacters": "La password deve contenere uno o più caratteri speciali.",
+    "passwordNoInvalidCharacters": "La password non deve contenere £, #, “”, né spazi.",
+    "emailAlreadyExists": "L'email esiste già",
+    "teamLeaderNotInEmployees": "Il capo squadra non può essere selezionato come dipendente.",
+    "teamLeaderIsRequired": "Il capo squadra è obbligatorio."
+  },
+  "taskSlotsList": {
+    "addButton": "Aggiungi",
+    "sectionHeaders": {
+      "section1": "Elenco degli slot temporali",
+      "section2": "Azioni"
+    },
+    "tableHeaders": {
+      "name": "NOME DEL TRATTO",
+      "start": "PK DI INIZIO",
+      "end": "PK DI FINE",
+      "actions": "Azioni"
+    },
+    "buttons": {
+      "edit": "Modifica",
+      "delete": "Elimina",
+      "back": "Indietro",
+      "showPlanning": "Mostra la pianificazione"
+    },
+    "popUp": {
+      "addTitle": "Aggiungi uno slot temporale",
+      "editTitle": "Modifica lo slot temporale",
+      "saveButton": "Salva",
+      "cancelButton": "Annulla"
+    }
+  },
+  "taskSlotsPopUp": {
+    "titles": {
+      "add": "Definizione dei limiti",
+      "edit": "Modifica dei limiti"
+    },
+    "labels": {
+      "name": "Nome:",
+      "start": "Pk di inizio:",
+      "end": "Pk di fine:"
+    },
+    "placeholders": {
+      "name": "Inserisci il nome del tratto",
+      "start": "Inserisci il Pk di inizio",
+      "end": "Inserisci il Pk di fine"
+    },
+    "errors": {
+      "required": "Il nome è richiesto",
+      "minDistance": "Il Pk di inizio deve essere maggiore o uguale a {{minDistance}}",
+      "maxDistance": "Il Pk di fine deve essere minore o uguale a {{maxDistance}}",
+      "greaterThanStart": "Il Pk di fine deve essere maggiore del Pk di inizio"
+    },
+    "buttons": {
+      "add": "Aggiungi",
+      "save": "Salva",
+      "cancel": "Annulla"
+    }
+  },
+  "drawGraph": {
+    "addComments": "Aggiungi un commento",
+
+    "activityDetailLabel": "Dettagli dell'attività",
+    "utilButtons": "Pulsanti utilità",
+    "showCritical": "Mostra le attività critiche",
+    "activityDetails": {
+      "activityNameLabel": "NOME DELL'ATTIVITÀ",
+      "styleLabel": "STILE",
+      "startDateLabel": "DATA DI INIZIO",
+      "finishDateLabel": "DATA DI FINE",
+      "startChainageLabel": " PK DI INIZIO",
+      "finishChainageLabel": "PK DI FINE",
+      "calendar": "CALENDARIO",
+      "duration": "DURATA (Giorno)",
+      "critical": "CRITICO"
+    },
+    "changeStyle": "Cambia lo stile",
+    "cancelZoomButtonLabel": "Annulla lo zoom",
+    "exportAllData": "Esporta tutti i dati",
+    "exportGraphData": "Esporta i dati del grafico"
+  },
+  "DrwMultiStepForm": {
+    "step1": {
+      "title": "Intestazione della pianificazione",
+      "description": "Inserisci il titolo e il logo"
+    },
+    "step2": {
+      "title": "Importazione del file Excel",
+      "description": "Trascina o importa il tuo file"
+    },
+    "step3": {
+      "title": "Definizione degli stili",
+      "description": "Definisci lo stile delle attività"
+    },
+    "step4": {
+      "title": "Definizione dei tratti",
+      "description": "Definisci l'inizio e la fine di ogni tratto"
+    },
+    "step5": {
+      "title": "Definizione dei tratti di livello 2",
+      "description": "Definisci l'inizio e la fine di ogni tratto"
+    }
+  },
+
+  "activityForm": {
+    "addActivity": "Aggiungi un'attività",
+    "editActivity": "Modifica l'attività",
+    "activityName": "Nome dell'attività",
+    "startDate": "Data di inizio",
+    "endDate": "Data di fine",
+    "startPk": "Inizio PK",
+    "endPk": "Fine PK",
+    "activityStyle": "Stile dell'attività",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "calendar": "Calendario",
+    "duration": "DURATA (Giorni)",
+    "errors": {
+      "activityName": "Il nome dell'attività è obbligatorio",
+      "startDate": "La data di inizio è obbligatoria",
+      "endDate": "La data di fine è obbligatoria",
+      "startPk": "L'inizio PK è obbligatorio",
+      "endPk": "La fine PK è obbligatoria",
+      "activityStyle": "Lo stile dell'attività è obbligatorio",
+      "endDateMin": "La data di fine deve essere successiva alla data di inizio"
+    }
+  },
+  "projectForm.fileType": "Tipo di File",
+  "header": {
+    "createProject": "Crea un Progetto",
+    "projects": "Progetti",
+    "employees": "Dipendenti",
+    "pricing": "Tariffe",
+    "aboutUs": "Chi siamo",
+    "contact": "Contatto:",
+    "logout": "Disconnetti",
+    "users": "Utenti"
+  },
+  "employeeList": {
+    "Email": "Email",
+    "fullName": "Nome completo",
+    "jobTitle": "Titolo del Lavoro",
+    "canRead": "Accesso in lettura",
+    "canWrite": "Accesso in scrittura",
+    "actions": "Azioni"
+  },
+  "projectsList": {
+    "title": "Titolo",
+    "numEmployees": "Numero di Dipendenti",
+    "actions": "Azioni",
+    "createdAt": "Creato il",
+    "NoDateAvailable": "N/D",
+
+    "LastModifiedAt": "Ultima modifica",
+    "CreatedBy": "Creato da",
+    "ModifiedBy": "Modificato da",
+    "buttons": {
+      "edit": "Modifica",
+      "delete": "Elimina",
+      "viewGraph": "Vedi",
+      "download": "Scarica"
+    }
+  },
+  "graphSettings": {
+    "title": "Impostazioni del Grafico",
+    "numEmployees": "Numero di Dipendenti",
+    "actions": "Azioni",
+    "buttons": {
+      "edit": "Modifica",
+      "delete": "Elimina"
+    }
+  },
+  "employeeForm": {
+    "addEmployee": "Aggiungi un utente",
+    "editEmployee": "Modifica utente",
+    "fullName": "Nome completo",
+    "email": "Email",
+    "password": "Password",
+    "canRead": "Accesso in lettura",
+    "canWrite": "Accesso in scrittura",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "errors": {
+      "fullName": "Il nome completo è obbligatorio",
+      "email": "Email non valida",
+      "password": "La password è obbligatoria",
+      "canRead": "L'autorizzazione di lettura è obbligatoria",
+      "canWrite": "L'autorizzazione di scrittura è obbligatoria",
+      "fullNameMustTwoString": "Il nome completo deve contenere due nomi separati da uno spazio"
+    }
+  },
+
+  "projectFileTypes": {
+    "XLSX": "File Excel - XLSX",
+    "PrimaveraXML": "Primavera P6 - XML",
+    "MicrosoftProject": "Microsoft Project - XML"
+  },
+  "AboutUs": {
+    "description": "iEntrepriZe è una piattaforma collaborativa online che consente di creare programmi ferroviari e condividerli con i membri di un team.",
+    "Allrightsreserved": "Tutti i diritti riservati",
+    "isProductOF": "PCF PLANNING CHEMIN DE FER è un prodotto di iEntrepriZe"
+  },
+  "DynamicTable": {
+    "Search": "Ricerca:",
+    "records": "Record"
+  },
+  "DeleteModal": {
+    "confirmDelete": "Sei sicuro di voler eliminare questo elemento?",
+    "yes": "Sì, sono sicuro",
+    "no": "No, annulla"
+  },
+  "Pagination": {
+    "previous": "Precedente",
+    "next": "Successivo",
+    "page": "Pagina {{pageIndex}} di {{pageCount}}",
+    "itemsPerPage": "Elementi per pagina",
+    "show": "Mostra {{pageSize}}",
+    "first": "Primo",
+    "last": "Ultimo"
+  },
+  "Comments": {
+    "addComments": "Aggiungi un commento",
+    "pk": "Punto di inserimento",
+    "commentText": "Testo del commento",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "hideComments": "Nascondi i commenti",
+    "activityDetailLabel": "Dettagli dell'attività",
+    "utilButtons": "Barra degli strumenti"
+  }
+}
