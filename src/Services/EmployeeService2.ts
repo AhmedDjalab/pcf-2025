@@ -37,7 +37,7 @@ export async function getEmployees({
   try {
     let config = {
       params: {
-        from: fromvalue,
+        page: fromvalue,
         take: takevalue,
         search: search,
         userAdminId: userAdminId,
