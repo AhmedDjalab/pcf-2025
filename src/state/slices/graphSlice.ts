@@ -692,6 +692,7 @@ const GraphSlice = createSlice({
 
       return state;
     },
+
     resetStoreState(state) {
       state.settings = { ...initialState.settings };
       state.projectSettings = { ...initialState.projectSettings };

@@ -42,7 +42,7 @@ import Spinner from "src/components/Spinner";
 import { fetchProjectByIdThunk } from "src/state/slices/graphSlice";
 import CommentsPannel from "src/components/CommentsPannel";
 import Accordion from "src/components/shared/Accordian";
-import { saveComment } from "src/Services/CommentService";
+import { deleteComment, saveComment } from "src/Services/CommentService";
 import Checkbox from "src/components/Checkbox";
 
 export interface ActivityData {
@@ -706,6 +706,139 @@ function ViewGraph() {
     });
   }, [shapesData.shapesData]);
 
+  const drawComment = useCallback(
+    (
+      g: d3.Selection<SVGGElement, unknown, null, undefined>,
+      xScale: d3.ScaleLinear<number, number, never>,
+      yScale: d3.ScaleLinear<number, number, never>
+    ) => {
+      let updatedCommentValue: CommentsType;
+      let isDragging = false;
+
+      const drag = d3
+        .drag<SVGGElement, CommentsType>()
+        .on("start", function (event, d) {
+          d3.select(this).raise().classed("active", true);
+          isDragging = false;
+        })
+        .on("drag", function (event, d) {
+          isDragging = true;
+          const newX = Math.round(xScale.invert(event.x));
+          const newY = Math.round(yScale.invert(event.y));
+
+          updatedCommentValue = {
+            ...d,
+            pk: newX,
+            start: newY,
+          };
+
+          const index = commentsData.findIndex(
+            (comment) => comment.id === d.id
+          );
+
+          dispatch(
+            updateComment({
+              comment: updatedCommentValue,
+              index: index,
+            })
+          );
+
+          d3.select(this).attr(
+            "transform",
+            `translate(${xScale(newX)}, ${yScale(newY)})`
+          );
+        })
+        .on("end", function (event, d) {
+          d3.select(this).classed("active", false);
+          if (isDragging) {
+            saveComment({
+              ...updatedCommentValue,
+              start: new Date(updatedCommentValue.start),
+            });
+          }
+        });
+
+      const startSlot = g
+        .selectAll<SVGGElement, CommentData>(".comment-group")
+        .data(commentsData);
+
+      const newComments = startSlot
+        .enter()
+        .append("g")
+        .attr("class", "comment-group")
+        .attr(
+          "transform",
+          (d) => `translate(${xScale(d.pk)}, ${yScale(new Date(d.start))})`
+        )
+        .style("cursor", "pointer")
+        .on("mouseover", function () {
+          d3.select(this)
+            .select(".delete-button")
+            .style("visibility", "visible");
+        })
+        .on("mouseout", function () {
+          d3.select(this)
+            .select(".delete-button")
+            .style("visibility", "hidden");
+        })
+        .call(drag);
+
+      newComments
+        .append("text")
+        .attr("class", "comment-text")
+        .attr("dy", 10)
+        .style("font-size", "14px")
+        .text((d) => d.commentText);
+
+      newComments
+        .append("text")
+        .attr("class", "delete-button")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("dy", -5)
+        .style("font-size", "12px")
+        .style("fill", "red")
+        .style("visibility", "hidden")
+        .text("X")
+        .on("click", function (event, d) {
+          // Your code to remove the comment (d) goes here
+          if (!isDragging) {
+            deleteComment(d.id).then((re) => {
+              if (re.status === 200) {
+                dispatch(fetchProjectByIdThunk(id));
+                dispatch(fetchCommentsThunk(id));
+              }
+            });
+          }
+        });
+
+      startSlot
+        .merge(newComments)
+        .attr(
+          "transform",
+          (d) => `translate(${xScale(d.pk)}, ${yScale(new Date(d.start))})`
+        )
+        .select(".comment-text")
+        .text((d) => d.commentText)
+        .on("click", function (event, d) {
+          // Your click event code
+          setSelectedCommentId(d);
+          setIsAddingComments(true);
+        });
+
+      startSlot.exit().remove();
+    },
+    [commentsData, dispatch, id]
+  );
+
+  useEffect(() => {
+    if (hideComments) {
+      d3.selectAll(".comment-text").attr("visibility", "hidden");
+    } else {
+      d3.selectAll(".comment-text").attr("visibility", "visible");
+    }
+  }, [hideComments]);
+
   const drawD3Chart = useCallback(() => {
     // Set the height attribute of the parent SVG to fit its children
 
@@ -871,6 +1004,7 @@ function ViewGraph() {
     drawTaskSlot,
     graphSettings.taskSlotsLevelTwo,
     graphSettings.taskSlots,
+    drawComment,
     zoom,
     containerWidth,
     containerHeight,
@@ -1141,6 +1275,14 @@ function ViewGraph() {
     navigate("/refresh");
     navigate(-1);
   };
+  const closeCommentsModal = () => {
+    setIsAddingComments(false);
+    dispatch(fetchProjectByIdThunk(id));
+    dispatch(fetchCommentsThunk(id));
+    setSelectedShapeData(null);
+    navigate("/refresh");
+    navigate(-1);
+  };
 
   const submitStyleModal = () => {
     setStyleModalOpen(false);
@@ -1222,106 +1364,7 @@ function ViewGraph() {
   const handleAddComments = () => {
     setIsAddingComments(true);
   };
-  const drawComment = useCallback(
-    (
-      g: d3.Selection<SVGGElement, unknown, null, undefined>,
-      xScale: d3.ScaleLinear<number, number, never>,
-      yScale: d3.ScaleLinear<number, number, never>
-    ) => {
-      let updatedCommentValue: CommentsType; // Declare it in a higher scope
-      let isDragging = false;
 
-      const drag = d3
-        .drag<SVGTextElement, CommentsType>()
-        .on("start", function (event, d) {
-          d3.select(this).raise().classed("active", true);
-          isDragging = false;
-        })
-        .on("drag", function (event, d) {
-          const newX = Math.round(xScale.invert(event.x));
-          const newY = Math.round(yScale.invert(event.y));
-
-          console.log("newX:", newX);
-          console.log("newY:", newY);
-          // Create a new object with the updated values
-          updatedCommentValue = {
-            ...d,
-            pk: newX,
-            start: newY,
-          };
-
-          // Find the index of the comment in the array
-          const index = commentsData.findIndex(
-            (comment) => comment.id === d.id
-          );
-
-          // Create a new array with the updated comment
-          // const updatedData: CommentsType[] = [...commentsData];
-
-          // updatedData[index] = updatedComment;
-          // setCommentsData(updateCommentsList);
-          dispatch(
-            updateComment({
-              comment: updatedCommentValue,
-              index: index,
-            })
-          );
-          isDragging = true;
-          // Move the text element
-          d3.select(this).attr("x", xScale(newX)).attr("y", yScale(newY));
-        })
-        .on("end", function (event, d) {
-          d3.select(this).classed("active", false);
-          if (isDragging) {
-            saveComment({
-              ...updatedCommentValue,
-              start: new Date(updatedCommentValue.start),
-            });
-          }
-        });
-
-      const startSlot = g
-        .selectAll<SVGTextElement, CommentData>(".comment-text")
-        .data(commentsData);
-
-      // Enter
-      const newComments = startSlot
-        .enter()
-        .append("text")
-        .attr("class", "comment-text")
-
-        .attr("x", (d) => xScale(d.pk))
-        .attr("y", (d) => yScale(new Date(d.start)))
-        .attr("dy", 10)
-        .style("font-size", "14px")
-        .text((d) => d.commentText)
-        .call(drag);
-
-      // Merge and update
-      startSlot
-        .merge(newComments)
-        .attr("x", (d) => xScale(d.pk))
-        .attr("y", (d) => yScale(new Date(d.start)))
-        .text((d) => d.commentText)
-
-        .on("click", function (event, d) {
-          // Your click event code
-          setSelectedCommentId(d);
-          setIsAddingComments(true);
-        });
-      // Exit
-      startSlot.exit().remove();
-    },
-    [commentsData, dispatch]
-  );
-
-  useEffect(() => {
-    if (hideComments) {
-      d3.selectAll(".comment-text").attr("visibility", "hidden");
-    } else {
-      d3.selectAll(".comment-text").attr("visibility", "visible");
-    }
-  }, [hideComments]);
   //?----------------------------------------------
 
   useEffect(() => {
@@ -1602,7 +1645,7 @@ function ViewGraph() {
           {isAddingComments && (
             <CommentsPannel
               editComment={selectedCommentId}
-              onSubmit={closeStyleModal}
+              onSubmit={closeCommentsModal}
               handleClose={submitCommentModal}
               yPosition={selectedShapeData?.startDate}
             />
