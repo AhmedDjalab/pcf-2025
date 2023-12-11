@@ -184,7 +184,6 @@ const Projects = () => {
   } = useQuery({
     queryKey: ["projects", user?.id, pageIndex, pageSize, search],
     queryFn: () => {
-      console.log("this is version erro ", user?.role === UserRoles.Admin);
       if (user?.role === UserRoles.Admin) {
         return getProjects({
           fromvalue: pageIndex,

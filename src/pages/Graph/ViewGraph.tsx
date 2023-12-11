@@ -60,10 +60,6 @@ function ViewGraph() {
   const [showCritical, setShowCritical] = useState(false);
 
   const commentsData = useSelector((state: RootState) => state.graph.comments);
-  console.warn(
-    "🚀 ~ file: ViewGraph.tsx:58 ~ ViewGraph ~ commentsData1:",
-    commentsData
-  );
 
   // const [commentsData, setCommentsData] = useState(commentsData1);
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();

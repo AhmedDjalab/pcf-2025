@@ -98,11 +98,6 @@ function FiltersInputs() {
   });
 
   useEffect(() => {
-    console.warn(
-      "🚀 ~ file: FiltersInputs.tsx:101 ~ useEffect ~ editForm:",
-      editForm
-    );
-
     if (!editForm) {
       dispatch(
         applyFilter({
@@ -117,7 +112,6 @@ function FiltersInputs() {
         })
       );
     } else {
-      console.log("thi is dates", formik.values);
       // dispatch(
       //   saveSettings({
       //     filters: {
@@ -145,7 +139,6 @@ function FiltersInputs() {
       //     })
       //   );
       // }, 1000); // Adjust the delay as needed (e.g., 500 milliseconds)
-
       // return () => {
       //   clearTimeout(timeoutId);
       // };

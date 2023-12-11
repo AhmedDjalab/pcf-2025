@@ -245,7 +245,6 @@ export const saveProjectThunk = createAsyncThunk<
     // Get the current Redux state
 
     const state: RootState = thunkAPI.getState();
-    console.log(" ---statee project data --- ", state);
 
     // Transform the state into the format expected by your backend
     const projectData: Project = {
@@ -312,9 +311,7 @@ export const saveProjectThunk = createAsyncThunk<
       })),
     };
 
-    console.log(" ---backend project data --- ", projectData);
     const response = await saveProject(projectData);
-    console.log("🚀 ~ file: graphSlice.ts:189 ~ > ~ response:", response);
 
     // Handle the response if needed and return the appropriate data
     return { success: true, message: "Project saved successfully" };
@@ -346,7 +343,7 @@ const GraphSlice = createSlice({
     ) {
       const { fromDate, toDate, fromDistance, toDistance } =
         action.payload.filters;
-      console.log("thisi sdat", current(state.rawGraphDataFromFile));
+
       state.settings.fromDate = fromDate;
       state.settings.toDate = toDate;
       state.settings.fromDistance = fromDistance;
@@ -365,7 +362,7 @@ const GraphSlice = createSlice({
         timeRange,
         distanceRange,
       } = action.payload.filters;
-      console.log("thisi sdat", current(state.rawGraphDataFromFile));
+
       state.settings.fromDate = fromDate;
       state.settings.toDate = toDate;
       state.settings.fromDistance = fromDistance;
@@ -432,7 +429,7 @@ const GraphSlice = createSlice({
     ) {
       let shapes: ShapeType[] = [];
       const graphSettingsForm = action.payload.graphSettingsForm;
-      console.log("ts isi state ", state.settings.graphData);
+
       let styles = new Set<string>();
       state.settings.graphData?.forEach((data) => {
         styles.add(data.style);
@@ -611,11 +608,6 @@ const GraphSlice = createSlice({
       const shapeIndex = state.shapes.shapesData.findIndex(
         (item) => item.id === style.id
       );
-      console.log(
-        "🚀 ~ file: graphSlice.ts:276 ~ updateStyleShape ~ shapeIndex:",
-        shapeIndex,
-        state.shapes.shapesData
-      );
 
       if (shapeIndex !== -1) {
         state.shapes.shapesData[shapeIndex] = style;
@@ -669,7 +661,6 @@ const GraphSlice = createSlice({
     ) {
       const index = action.payload.index;
       const comment = action.payload.comment;
-      console.log("🚀 ~ file: graphSlice.ts:641 ~ comment:", index, comment);
 
       if (state.comments) {
         state.comments[index] = comment;
@@ -739,10 +730,7 @@ const GraphSlice = createSlice({
         critical: act.critical,
       }));
       state.settings.graphData = activities ?? [];
-      console.warn(
-        "🚀 ~ file: graphSlice.ts:625 ~ builder.addCase ~ state:",
-        activities
-      );
+
       const {
         fromDate,
         toDate,
@@ -751,7 +739,7 @@ const GraphSlice = createSlice({
         timeRange,
         distanceRange,
       } = action.payload.fitler;
-      console.log("thisi sdat", current(state.rawGraphDataFromFile));
+
       state.settings.fromDate = fromDate.toISOString();
       state.settings.toDate = toDate.toISOString();
       state.settings.fromDistance = fromDistance;
@@ -768,7 +756,6 @@ const GraphSlice = createSlice({
       state.loading = true;
     });
     builder.addCase(fetchEmployees.fulfilled, (state, action) => {
-      console.log("🚀 ~ file: graphSlice.ts:382 ~ .addCase ~ action:", action);
       state.projectSettings.employees = action.payload ?? [];
       state.loading = false;
     });
@@ -782,7 +769,6 @@ const GraphSlice = createSlice({
     builder.addCase(fetchProjectByIdThunk.fulfilled, (state, action) => {
       state.loading = false;
       resetStoreState();
-      console.log("---- this project from backend  ---", action.payload.data);
 
       var activities = action.payload.data?.activities?.map((act) => ({
         id: act.id,

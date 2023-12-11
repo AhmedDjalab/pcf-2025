@@ -98,10 +98,6 @@ const Employees = () => {
   //   );
   // };
   const ActionButtonsCell = useCallback(({ employee }: any) => {
-    console.log(
-      "🚀 ~ file: index.tsx:100 ~ ActionButtonsCell ~ value:",
-      employee
-    );
     return (
       <div className="flex gap-2">
         <button
@@ -172,7 +168,6 @@ const Employees = () => {
 
   const handleDeleteEmployee = useMutation({
     mutationFn: async (id: string) => {
-      console.error("🚀 ~ file: index.tsx:175 ~ mutationFn: ~ id:", id);
       await deleteEmployee(id);
     },
     onSuccess: () => {
@@ -182,11 +177,6 @@ const Employees = () => {
     },
   });
   const handleDeleteConfirmation = () => {
-    console.log(
-      "🚀 ~ file: index.tsx:186 ~ handleDeleteConfirmation ~ selectedRow:",
-      selectedRow
-    );
-
     handleDeleteEmployee.mutate(selectedRow.original["id"]);
     setIsDeleteModalVisible(false);
   };

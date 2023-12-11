@@ -50,9 +50,7 @@ function Login() {
 
       setLoader(false);
       if (loginStatus) navigate("/");
-    } catch (err: any) {
-      console.log("🚀 ~ file: Login.tsx:52 ~ handleLogin ~ err:", err);
-    }
+    } catch (err: any) {}
   };
 
   const handleGoogleLogin = async () => {

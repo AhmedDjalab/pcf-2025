@@ -44,6 +44,6 @@ export async function getActivities({
     const { data } = await api.get(apiEndpoint + "/get", config);
     return data as ActivitesResponse;
   } catch (ex: any) {
-    console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
+    // console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
   }
 }

@@ -3,6 +3,7 @@ import {
   GraphStringsSetting,
   ProjectFileType,
   getOptions,
+  graphPrimaveraSettings,
   graphStringsMSProjectSettings,
   graphStringsSettings,
   graphStringsXLSXSettings,
@@ -34,7 +35,7 @@ function ParameterSelector({
   handleClose,
   onSubmit,
 }: ParameterSelectorProps) {
-  console.log("this is settitng ", udfSettingString);
+  
   const { t } = useTranslation();
   const [selectedPairs, setSelectedPairs] = useState<UdfSetting[]>([]);
   const [isSubmited, setIsSubmited] = useState(false);
@@ -124,6 +125,8 @@ function ParameterSelector({
         ? graphStringsXLSXSettings
         : filetype === ProjectFileType.MicrosoftProject
         ? graphStringsMSProjectSettings
+        : filetype === ProjectFileType.PrimaveraXML
+        ? graphPrimaveraSettings
         : graphStringsSettings;
     return pcfSettings.map((string, index) => (
       <li key={index} className="mb-2 flex items-center">

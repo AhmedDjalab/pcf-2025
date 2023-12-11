@@ -16,7 +16,7 @@ export async function getCommentsByProjectId({
     const { data } = await api.get(CommentsUrl + "/get", config);
     return data as CommentsType[];
   } catch (ex: any) {
-    console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
+    // console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
   }
 }
 
@@ -28,17 +28,17 @@ export async function saveComment(comment: CommentsType) {
       const response = await api.put(CommentsUrl + "/put", body);
       return response;
     } catch (error) {
-      console.log(
-        "🚀 ~ file: CompanyService.ts:83 ~ saveCompany ~ error:",
-        error
-      );
+      // console.log(
+      //   "🚀 ~ file: CompanyService.ts:83 ~ saveCompany ~ error:",
+      //   error
+      // );
     }
   }
   try {
     const response_1 = await api.post(CommentsUrl + "/post", comment);
     return response_1;
   } catch (error_1: any) {
-    console.log(error_1.response);
+    // console.log(error_1.response);
   }
 }
 

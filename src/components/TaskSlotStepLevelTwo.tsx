@@ -56,7 +56,7 @@ const TaskSlotsLevelTwoList = ({
   const handleDeleteClick = (rowId: string) => {
     // Find the index of the row to be deleted
     const rowIndex = formFieldValues.findIndex((row) => row.id === rowId);
-    console.log("thisid ispates errror ", rowIndex);
+    
     if (rowIndex !== -1) {
       // Create a copy of the task slots array without the deleted row
       const updatedTaskSlots = [
@@ -66,7 +66,7 @@ const TaskSlotsLevelTwoList = ({
 
       // Update the state with the new task slots list
       setFormFieldValues(updatedTaskSlots);
-      console.log("thisid ispates errror ");
+   
       // // Dispatch the updated task slots to your Redux store
       dispatch(
         updateTaskSlotsLevelTwoValue({

@@ -63,7 +63,6 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
         }
       })
       .catch((ex) => {
-        console.error("🚀 ~ file: graphSlice.ts:189 ~ > ~ response:", ex);
         return null;
       });
   };

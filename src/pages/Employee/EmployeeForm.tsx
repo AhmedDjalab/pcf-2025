@@ -87,9 +87,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
 
       // After the edit or add operation is successful, you can close the form
       onSubmit();
-    } catch (error) {
-      console.error("Error updating or adding employee: ", error);
-    }
+    } catch (error) {}
   };
   return (
     <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-white bg-opacity-20 dark:bg-gray-700 dark:bg-opacity-20">

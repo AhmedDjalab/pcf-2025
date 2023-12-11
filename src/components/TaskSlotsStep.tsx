@@ -90,10 +90,7 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   };
 
   const handleEditTaskSlot = (data: TaskSlot) => {
-    console.error(
-      "🚀 ~ file: TaskSlotsStep.tsx:93 ~ handleEditTaskSlot ~ data:",
-      data
-    );
+    
     const updatedTaskSlots = formFieldValues.map((taskSlot) =>
       taskSlot.id
         ? taskSlot.id === data.id

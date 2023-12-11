@@ -68,10 +68,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const { id } = useParams();
 
   const editForm = id !== null && id !== "" && id !== undefined;
-  console.log(
-    "🚀 ~ file: ImportFileForm.tsx:47 ~ ImportFileForm ~ editForm:",
-    id
-  );
+
   const currentYear = new Date().getFullYear();
   const nextYear = currentYear + 1;
   const userTimeZone = moment.tz.guess();
@@ -109,10 +106,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       }
       return false;
     });
-    console.warn(
-      "🚀 ~ file: ImportFileForm.tsx:105 ~ filteredData ~ filteredData:",
-      filteredData
-    );
 
     // Apply pagination
     const startIndex = pageIndex * pageSize;
@@ -124,7 +117,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const rawData = useSelector(
     (state: RootState) => state.graph.rawGraphDataFromFile
   );
-  console.error("MyComponent is rendering", rawData); // Add this line
 
   const pageCount = useMemo(() => {
     return Math.ceil((graphSettings.graphData?.length ?? 0) / pageSize);
@@ -175,10 +167,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   };
 
   const handleDeleteClick = (gtId: string) => {
-    console.log(
-      "🚀 ~ file: ImportFileForm.tsx:174 ~ handleDeleteClick ~ gtId:",
-      gtId
-    );
     dispatch(removeActivity({ activityId: gtId }));
   };
   const closeModal = () => {
@@ -404,7 +392,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               udfData[field as keyof typeof udfData] !== ""
           )
         ) {
-          console.warn("this is ufdata", udfData);
           graphData.push({
             activityId: activityId,
             activityName,
@@ -490,7 +477,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               udfData[field as keyof typeof udfData] !== ""
           )
         ) {
-          console.warn("this is ufdata", critical);
           graphData.push({
             activityId: activityId,
             activityName,
@@ -560,7 +546,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       .filter((item) => item !== null) as GraphDataType[];
     // console.warn("this is errors of xlsx data ", graphData);
     //setGraphData(graphData);
-    console.warn("this is errors of xlsx data ", graphData);
 
     dispatch(addGraphDataList({ graphData: graphData }));
     formik.setFieldValue("graphData", graphData);
@@ -594,7 +579,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       header: 1,
     });
 
-    console.log("this is erors ", parsedData);
     const headers = parsedData[0].map((header: any) => header.toString());
     setUserDefinedSettings(() => headers);
 
@@ -802,19 +786,13 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       try {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlData, "text/xml");
-        console.log(
-          "🚀 ~ file: ImportFileForm.tsx:781 ~ returnnewPromise ~ UDFTypes:",
-          xmlDoc
-        );
+
         const UDFTypes =
           xmlDoc.getElementsByTagName("ExtendedAttributes")[0]?.children ?? [];
         const project = xmlDoc.getElementsByTagName("Project")[0];
         const calendars =
           xmlDoc.getElementsByTagName("Calendars")[0].children ?? [];
-        console.log(
-          "🚀 ~ file: ImportFileForm.tsx:802 ~ returnnewPromise ~ calendars:",
-          calendars
-        );
+
         const minutesPerDay =
           xmlDoc.getElementsByTagName("MinutesPerDay")[0].textContent;
         const calendarArray: any[] = [];
@@ -835,18 +813,11 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
           calendarArray.push(calendarData);
           setCalendarData(calendarArray);
-          console.log(
-            "🚀 ~ file: ImportFileForm.tsx:818 ~ returnnewPromise ~ calendarData:",
-            calendarData
-          );
         }
         const udfArray: any[] = [];
         for (let j = 0; j < UDFTypes.length; j++) {
           const UDFType = UDFTypes[j];
-          console.log(
-            "🚀 ~ file: ImportFileForm.tsx:804 ~ returnnewPromise ~ UDFTypes[j]:",
-            UDFTypes[j]
-          );
+          
           const udfId =
             UDFType.getElementsByTagName("FieldID")[0]?.textContent ?? "";
 
@@ -870,7 +841,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         resolve(xmlDoc);
       } catch (error) {
         reject(error);
-        console.error("error ", error);
+       
       }
     });
   };

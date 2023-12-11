@@ -9,7 +9,6 @@ import { IsAuth, useAuth } from "src/context/UserContext";
 function DefaultLayout({ children }: any) {
   const token: any = IsAuth();
   const { user } = useAuth();
-  console.log("🚀 ~ file: DefaultLayout.tsx:12 ~ DefaultLayout ~ user:", user);
   return (
     <>
       {token ? (

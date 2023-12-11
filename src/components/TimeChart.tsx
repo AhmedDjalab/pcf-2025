@@ -169,13 +169,6 @@ const ConstructionGraph = ({ data }) => {
       const shapeOffset = shape.node().getBoundingClientRect();
       const shapeX = shapeOffset.left + shapeOffset.width / 2 + window.scrollX;
       const shapeY = shapeOffset.top + shapeOffset.height / 2 + window.scrollY;
-      console.log(
-        "🚀 ~ file: TimeChart.tsx:154 ~ data.forEach ~ shapeX:",
-        shapeX,
-        shapeY,
-        rowX,
-        rowY
-      );
 
       svg
         .append("line")

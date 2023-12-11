@@ -13,6 +13,7 @@ import EmployeeForm from "src/pages/Employee/EmployeeForm";
 import { IsAuth, useAuth } from "src/context/UserContext";
 import ViewGraph from "src/pages/Graph/ViewGraph";
 import AboutUs from "src/components/AboutUs";
+import ErrorPage from "src/pages/ErrorPage";
 
 const AppRoutes = () => {
   const isLogged = IsAuth();
@@ -34,6 +35,8 @@ const AppRoutes = () => {
         <Route path="/graph" element={<DrawGraphStep />} />
         <Route path="/graph/:id" element={<DrawGraphStep />} />
         <Route path="/view-graph/:id" element={<ViewGraph />} />
+
+        <Route path="/error" element={<ErrorPage />} />
       </Routes>
     </Router>
   );

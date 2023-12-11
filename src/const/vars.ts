@@ -76,27 +76,69 @@ export const graphStringsSettings: GraphStringsSetting[] = [
     field: "critical",
   },
 ];
+export const graphPrimaveraSettings: GraphStringsSetting[] = [
+  // {
+  //   id: 1,
+  //   name: "ID",
+  //   field: "id",
+  // },
+  // {
+  //   id: 2,
+  //   name: "drawGraph.activityDetails.activityNameLabel",
+  //   field: "activityName",
+  // },
+  // {
+  //   id: 3,
+  //   name: "drawGraph.activityDetails.startDateLabel",
+  //   field: "startDate",
+  // },
+  // {
+  //   id: 4,
+  //   name: "drawGraph.activityDetails.finishDateLabel",
+  //   field: "finishDate",
+  // },
+  {
+    id: 5,
+    name: "drawGraph.activityDetails.startChainageLabel",
+    field: "startChainage",
+  },
+  {
+    id: 6,
+    name: "drawGraph.activityDetails.finishChainageLabel",
+    field: "finishChainage",
+  },
+  {
+    id: 7,
+    name: "drawGraph.activityDetails.styleLabel",
+    field: "style",
+  },
+  {
+    id: 8,
+    name: "importFileForm.critical",
+    field: "critical",
+  },
+];
 export const graphStringsMSProjectSettings: GraphStringsSetting[] = [
-  {
-    id: 1,
-    name: "ID",
-    field: "id",
-  },
-  {
-    id: 2,
-    name: "drawGraph.activityDetails.activityNameLabel",
-    field: "activityName",
-  },
-  {
-    id: 3,
-    name: "drawGraph.activityDetails.startDateLabel",
-    field: "startDate",
-  },
-  {
-    id: 4,
-    name: "drawGraph.activityDetails.finishDateLabel",
-    field: "finishDate",
-  },
+  // {
+  //   id: 1,
+  //   name: "ID",
+  //   field: "id",
+  // },
+  // {
+  //   id: 2,
+  //   name: "drawGraph.activityDetails.activityNameLabel",
+  //   field: "activityName",
+  // },
+  // {
+  //   id: 3,
+  //   name: "drawGraph.activityDetails.startDateLabel",
+  //   field: "startDate",
+  // },
+  // {
+  //   id: 4,
+  //   name: "drawGraph.activityDetails.finishDateLabel",
+  //   field: "finishDate",
+  // },
   {
     id: 5,
     name: "drawGraph.activityDetails.startChainageLabel",
@@ -115,26 +157,26 @@ export const graphStringsMSProjectSettings: GraphStringsSetting[] = [
 ];
 
 export const graphStringsXLSXSettings: GraphStringsSetting[] = [
-  {
-    id: 1,
-    name: "ID",
-    field: "id",
-  },
-  {
-    id: 2,
-    name: "drawGraph.activityDetails.activityNameLabel",
-    field: "activityName",
-  },
-  {
-    id: 3,
-    name: "drawGraph.activityDetails.startDateLabel",
-    field: "startDate",
-  },
-  {
-    id: 4,
-    name: "drawGraph.activityDetails.finishDateLabel",
-    field: "finishDate",
-  },
+  // {
+  //   id: 1,
+  //   name: "ID",
+  //   field: "id",
+  // },
+  // {
+  //   id: 2,
+  //   name: "drawGraph.activityDetails.activityNameLabel",
+  //   field: "activityName",
+  // },
+  // {
+  //   id: 3,
+  //   name: "drawGraph.activityDetails.startDateLabel",
+  //   field: "startDate",
+  // },
+  // {
+  //   id: 4,
+  //   name: "drawGraph.activityDetails.finishDateLabel",
+  //   field: "finishDate",
+  // },
   {
     id: 5,
     name: "drawGraph.activityDetails.startChainageLabel",
@@ -162,7 +204,7 @@ export const graphStringsXLSXSettings: GraphStringsSetting[] = [
   },
   {
     id: 10,
-    name: "drawGraph.activityDetails.criticalLabel",
+    name: "importFileForm.critical",
     field: "critical",
   },
 ];
@@ -204,11 +246,6 @@ export const getOptions = (
     ];
   }
   if (filetype === ProjectFileType.PrimaveraXML) {
-    console.error(
-      "🚀 ~ file: ParmeterSelector.tsx:172 ~ getOptions ~ filetype:",
-      udfSettingString
-    );
-
     let udfs = (udfSettingString as MsProjectOption[]).map((ud, index) => ({
       name: ud.alias,
       id: ud.udfId,

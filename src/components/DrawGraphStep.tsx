@@ -335,14 +335,14 @@ function DrawGraphStep() {
         .attr("dx", "-0.5em")
         .text((d) => d3.timeFormat("%a %d/%m/%Y")(d));
 
-      g.append("g")
-        .attr("class", "y-axis")
-        .attr("transform", `translate(${containerWidth + margin.right},0)`)
-        .call(yAxisRight)
-        .selectAll("text")
-        .style("text-anchor", "start")
-        .attr("dx", "1em")
-        .text((d) => d3.timeFormat("%a %d/%m/%Y")(d));
+      // g.append("g")
+      //   .attr("class", "y-axis")
+      //   .attr("transform", `translate(${containerWidth + margin.right},0)`)
+      //   .call(yAxisRight)
+      //   .selectAll("text")
+      //   .style("text-anchor", "start")
+      //   .attr("dx", "1em")
+      //   .text((d) => d3.timeFormat("%a %d/%m/%Y")(d));
     },
     [
       containerWidth,
