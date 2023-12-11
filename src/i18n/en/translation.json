@@ -37,8 +37,8 @@
   "header.contactEmail": "admin@ientreprize.com",
   "header.logout": "Logout",
   "projectForm.title": "Project Title",
-  "projectForm.logo": "Logo",
-  "projectForm.clientCompanyLogo": "Client Logo",
+  "projectForm.logo": "Logo 1",
+  "projectForm.clientCompanyLogo": "Logo 2",
   "projectForm.next": "Next",
 
   "imagePicker.importLogo": "Import Logo",

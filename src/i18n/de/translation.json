@@ -4,27 +4,28 @@
   "language.Spanish": "Spanisch",
   "language.Arabic": "Arabisch",
   "language.German": "Deutsch",
+  "language.Italian": "Italienisch",
 
   "stepper.next": "Weiter",
   "stepper.back": "Zurück",
   "stepper.save": "Speichern",
 
   "login": {
-    "title": "Anmelden",
+    "title": "Anmeldung",
     "emailLabel": "E-Mail",
     "passwordLabel": "Passwort",
     "loginButton": "Anmelden",
-    "googleLoginButton": "Mit Google anmelden",
+    "googleLoginButton": "Anmeldung mit Google",
     "errorMessages": {
       "invalidEmail": "Ungültige E-Mail-Adresse.",
-      "userNotFound": "Benutzer nicht gefunden. Bitte überprüfen Sie Ihre E-Mail-Adresse.",
-      "wrongPassword": "Falsches Passwort. Bitte versuchen Sie es erneut.",
+      "userNotFound": "Benutzer nicht gefunden, bitte überprüfen Sie Ihre E-Mail-Adresse.",
+      "wrongPassword": "Falsches Passwort, bitte versuchen Sie es erneut.",
       "userDisabled": "Ihr Konto wurde deaktiviert.",
-      "invalidLoginCredentials": "Ungültige Anmeldedaten. Bitte überprüfen Sie Ihre E-Mail und Ihr Passwort.",
-      "defaultError": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut."
+      "invalidLoginCredentials": "Ungültige Anmeldeinformationen, bitte überprüfen Sie Ihre E-Mail und Ihr Passwort.",
+      "defaultError": "Ein Fehler ist aufgetreten, bitte versuchen Sie es später erneut."
     },
     "noAccount": "Sie haben noch kein Konto?",
-    "contactUs": "Kontaktieren Sie uns:",
+    "contactUs": "Kontaktiere uns:",
     "adminEmail": "admin@ientreprize.com",
     "signInHeader": "Anmelden"
   },
@@ -36,12 +37,13 @@
   "header.contactEmail": "admin@ientreprize.com",
   "header.logout": "Abmelden",
   "projectForm.title": "Projekttitel",
-  "projectForm.logo": "Logo",
+  "projectForm.logo": "Logo 1",
+  "projectForm.clientCompanyLogo": "Logo 2",
   "projectForm.next": "Weiter",
   "imagePicker.importLogo": "Logo importieren",
-  "imagePicker.selectValidImage": "Bitte wählen Sie eine gültige Bilddatei (z. B. JPG, PNG).",
+  "imagePicker.selectValidImage": "Bitte wählen Sie eine gültige Bilddatei (z. B. JPG, PNG) aus.",
   "importFileForm.dragOrImport": "Ziehen Sie Ihre Datei hierhin oder importieren Sie sie",
-  "importFileForm.title": "Excel-Datei importieren",
+  "importFileForm.title": "Datei importieren",
   "importFileForm.back": "Zurück",
   "importFileForm.next": "Weiter",
   "importFileForm.fileInputLabel": "Ziehen Sie Ihre Datei hierhin oder importieren Sie sie",
@@ -50,36 +52,38 @@
   "importFileForm.timeScale": "Zeitskala",
   "importFileForm.startPk": "Start-PK",
   "importFileForm.endPk": "End-PK",
-  "importFileForm.dateRequired": "Datum ist erforderlich",
-  "importFileForm.startDateError": "Das Startdatum ist erforderlich",
-  "importFileForm.endDateError": "Das Enddatum muss nach dem Startdatum liegen",
-  "importFileForm.startDistanceRequired": "Der Startabstand ist erforderlich",
-  "importFileForm.endDistanceRequired": "Der Endabstand ist erforderlich",
-  "importFileForm.selectValidFile": "Bitte wählen Sie eine gültige XLSX- oder Excel-Datei aus.",
-
-  "importFileForm.activityStyle": "AKTIVITÄTSSTIL",
-  "importFileForm.activityName": "AKTIVITÄTSNAME",
+  "importFileForm.dateRequired": "Datum erforderlich",
+  "importFileForm.startDateError": "Startdatum erforderlich",
+  "importFileForm.endDateError": "Enddatum muss nach dem Startdatum liegen",
+  "importFileForm.startDistanceRequired": "Startdistanz erforderlich",
+  "importFileForm.endDistanceRequired": "Enddistanz erforderlich",
+  "importFileForm.selectValidFile": "Bitte wählen Sie eine gültige XLSX-Datei aus.",
+  "importFileForm.calendar": "KALENDER",
+  "importFileForm.duration": "DAUER (Tage)",
+  "importFileForm.activityStyle": "AKTIVITÄTENSTIL",
+  "importFileForm.activityName": "AKTIVITÄTENNAME",
   "importFileForm.yearlyOption": "Jährlich",
   "importFileForm.monthlyOption": "Monatlich",
   "importFileForm.weeklyOption": "Wöchentlich",
   "importFileForm.dailyOption": "Täglich",
-  "importFileForm.distanceRange": "Entfernungsbereich",
+  "importFileForm.distanceRange": "Distanzbereich",
   "importFileForm.edit": "Bearbeiten",
   "importFileForm.delete": "Löschen",
   "importFileForm.actions": "Aktionen",
   "importFileForm.add": "Hinzufügen",
   "importFileForm.SaveFilter": "Filter speichern",
+  "importFileForm.critical": "Kritisch",
 
   "shapesForm": {
     "backButton": "Zurück",
     "nextButton": "Weiter",
-    "formatStyle": "FORMATSTIL",
+    "formatStyle": "FORMAT DES STILS",
     "lineType": "LINIENTYP",
     "rectangleTriangleType": "RECHTECK- / DREIECKSTYP",
     "color": "Farbe",
     "styleName": "Stilname",
     "headers": {
-      "formatStyle": "FORMATSTIL",
+      "formatStyle": "FORMAT DES STILS",
       "lineType": "LINIENTYP",
       "rectangleTriangleType": "RECHTECK- / DREIECKSTYP",
       "color": "Farbe",
@@ -89,16 +93,28 @@
     "Rectangle": "Rechteck",
     "Ligne": "Linie"
   },
+  "validationMessages": {
+    "passwordRequired": "Passwort erforderlich.",
+    "passwordMinLength": "Das Passwort muss mindestens 8 Zeichen lang sein.",
+    "passwordCapitalLetters": "Das Passwort muss einen oder mehrere Großbuchstaben enthalten.",
+    "passwordLowercaseLetters": "Das Passwort muss einen oder mehrere Kleinbuchstaben enthalten.",
+    "passwordDigits": "Das Passwort muss eine oder mehrere Zahlen enthalten.",
+    "passwordSpecialCharacters": "Das Passwort muss ein oder mehrere Sonderzeichen enthalten.",
+    "passwordNoInvalidCharacters": "Das Passwort darf keine £, #, „“, oder Leerzeichen enthalten.",
+    "emailAlreadyExists": "Die E-Mail existiert bereits",
+    "teamLeaderNotInEmployees": "Der Teamleiter kann nicht als Mitarbeiter ausgewählt werden.",
+    "teamLeaderIsRequired": "Der Teamleiter ist erforderlich."
+  },
   "taskSlotsList": {
     "addButton": "Hinzufügen",
     "sectionHeaders": {
-      "section1": "Liste der Zeitfenster",
+      "section1": "Liste der Zeitschlitze",
       "section2": "Aktionen"
     },
     "tableHeaders": {
-      "name": "NAME DES SEGMENTS",
+      "name": "NAME DES ABSCHNITTS",
       "start": "START-PK",
-      "end": "ENDE-PK",
+      "end": "END-PK",
       "actions": "Aktionen"
     },
     "buttons": {
@@ -108,15 +124,15 @@
       "showPlanning": "Planung anzeigen"
     },
     "popUp": {
-      "addTitle": "Zeitfenster hinzufügen",
-      "editTitle": "Zeitfenster bearbeiten",
+      "addTitle": "Zeitschlitz hinzufügen",
+      "editTitle": "Zeitschlitz bearbeiten",
       "saveButton": "Speichern",
       "cancelButton": "Abbrechen"
     }
   },
   "taskSlotsPopUp": {
     "titles": {
-      "add": "Grenzen festlegen",
+      "add": "Definition der Grenzen",
       "edit": "Grenzen bearbeiten"
     },
     "labels": {
@@ -125,77 +141,87 @@
       "end": "End-PK:"
     },
     "placeholders": {
-      "name": "Segmentnamen eingeben",
-      "start": "Start-PK eingeben",
-      "end": "End-PK eingeben"
+      "name": "Geben Sie den Namen des Abschnitts ein",
+      "start": "Geben Sie den Start-PK ein",
+      "end": "Geben Sie den End-PK ein"
     },
     "errors": {
-      "required": "Dieses Feld ist erforderlich",
-      "minDistance": "Wert muss größer oder gleich Mindestabstand sein",
-      "maxDistance": "Wert muss kleiner oder gleich Höchstabstand sein",
-      "greaterThanStart": "End-PK muss größer als Start-PK sein"
+      "required": "Der Name ist erforderlich",
+      "minDistance": "Der Start-PK muss größer oder gleich {{minDistance}} sein",
+      "maxDistance": "Der Start-PK muss kleiner oder gleich {{maxDistance}} sein",
+      "greaterThanStart": "Der End-PK muss größer als der Start-PK sein"
     },
     "buttons": {
       "add": "Hinzufügen",
       "save": "Speichern",
-      "cancel": "Abbrechen"
+      "cancel": "Verlassen"
     }
   },
   "drawGraph": {
+    "addComments": "Kommentar hinzufügen",
+
+    "activityDetailLabel": "Aktivitätsdetails",
+    "utilButtons": "Dienstprogrammknöpfe",
+    "showCritical": "Kritische Aufgaben anzeigen",
     "activityDetails": {
-      "activityNameLabel": "NAME DER AKTIVITÄT",
+      "activityNameLabel": "AKTIVITÄTENNAME",
       "styleLabel": "STIL",
       "startDateLabel": "STARTDATUM",
       "finishDateLabel": "ENDDATUM",
       "startChainageLabel": " START-PK",
-      "finishChainageLabel": "ENDE-PK"
+      "finishChainageLabel": "END-PK",
+      "calendar": "KALENDER",
+      "duration": "DAUER (Tage)",
+      "critical": "KRITISCH"
     },
     "changeStyle": "Stil ändern",
     "cancelZoomButtonLabel": "Zoom abbrechen",
-    "exportAllData": "Exportar todos los datos",
-    "exportGraphData": "Exportar datos del gráfico"
+    "exportAllData": "Alle Daten exportieren",
+    "exportGraphData": "Grafik exportieren"
   },
   "DrwMultiStepForm": {
     "step1": {
       "title": "Kopfzeile der Planung",
-      "description": "Geben Sie den Titel und das Logo ein"
+      "description": "Geben Sie Titel & Logo ein"
     },
     "step2": {
-      "title": "Importieren Sie die Excel-Datei",
-      "description": "Ziehen Sie Ihre Datei hierhin oder importieren Sie sie"
+      "title": "Excel-Datei importieren",
+      "description": "Ziehen oder importieren Sie Ihre Datei"
     },
     "step3": {
-      "title": "Stildefinition",
+      "title": "Stile definieren",
       "description": "Definieren Sie den Stil der Aktivitäten"
     },
     "step4": {
-      "title": "Definition der Segmente",
-      "description": "Definieren Sie den Start und das Ende jedes Segments"
+      "title": "Abschnitte definieren",
+      "description": "Definieren Sie den Start und das Ende jedes Abschnitts"
     },
     "step5": {
-      "title": "Definition von Level-2-Segmenten",
-      "description": "Definieren Sie den Anfang und das Ende jedes Segments"
+      "title": "Abschnitte der Stufe 2 definieren",
+      "description": "Definieren Sie den Start und das Ende jedes Abschnitts"
     }
   },
   "activityForm": {
     "addActivity": "Aktivität hinzufügen",
     "editActivity": "Aktivität bearbeiten",
-    "activityName": "Aktivitätsname",
+    "activityName": "Aktivitätenname",
     "startDate": "Startdatum",
     "endDate": "Enddatum",
     "startPk": "Start-PK",
     "endPk": "End-PK",
-    "activityStyle": "Aktivitätsstil",
+    "activityStyle": "Stil der Aktivität",
     "save": "Speichern",
     "cancel": "Abbrechen",
+    "calendar": "Kalender",
+    "duration": "DAUER (Tage)",
     "errors": {
-      "activityName": "Der Aktivitätsname ist erforderlich",
+      "activityName": "Der Aktivitätenname ist erforderlich",
       "startDate": "Das Startdatum ist erforderlich",
       "endDate": "Das Enddatum ist erforderlich",
       "startPk": "Der Start-PK ist erforderlich",
       "endPk": "Der End-PK ist erforderlich",
-      "activityStyle": "Der Aktivitätsstil ist erforderlich",
-      "endDateMin": "Das Enddatum muss größer oder gleich dem Startdatum sein"
+      "activityStyle": "Der Stil der Aktivität ist erforderlich",
+      "endDateMin": "Das Enddatum muss nach dem Startdatum liegen"
     }
   },
   "projectForm.fileType": "Dateityp",
@@ -210,10 +236,11 @@
     "users": "Benutzer"
   },
   "employeeList": {
+    "Email": "E-Mail",
     "fullName": "Vollständiger Name",
     "jobTitle": "Berufsbezeichnung",
-    "canRead": "Lesen erlauben",
-    "canWrite": "Schreiben erlauben",
+    "canRead": "Leserechte",
+    "canWrite": "Schreibrechte",
     "actions": "Aktionen"
   },
   "projectsList": {
@@ -221,35 +248,30 @@
     "numEmployees": "Anzahl der Mitarbeiter",
     "actions": "Aktionen",
     "createdAt": "Erstellt am",
+    "NoDateAvailable": "N/V",
+
     "LastModifiedAt": "Zuletzt geändert am",
     "CreatedBy": "Erstellt von",
     "ModifiedBy": "Geändert von",
-    "NoDateAvailable": "N/A",
-
     "buttons": {
       "edit": "Bearbeiten",
       "delete": "Löschen",
-      "viewGraph": "Ansicht",
+      "viewGraph": "Anzeigen",
       "download": "Herunterladen"
     }
   },
   "graphSettings": {
-    "title": "Diagrammeinstellungen",
-    "numEmployees": "Number of Employees",
-    "actions": "Actions",
+    "title": "Grafikeinstellungen",
+    "numEmployees": "Anzahl der Mitarbeiter",
+    "actions": "Aktionen",
     "buttons": {
-      "edit": "Edit",
-      "delete": "Delete"
+      "edit": "Bearbeiten",
+      "delete": "Löschen"
     }
   },
-  "projectFileTypes": {
-    "XLSX": "Excel-Datei - XLSX",
-    "PrimaveraXML": "Primavera P6 - XML",
-    "MicrosoftProject": "Microsoft Project - XML"
-  },
   "employeeForm": {
-    "addEmployee": "Mitarbeiter hinzufügen",
-    "editEmployee": "Mitarbeiter bearbeiten",
+    "addEmployee": "Benutzer hinzufügen",
+    "editEmployee": "Benutzer bearbeiten",
     "fullName": "Vollständiger Name",
     "email": "E-Mail",
     "password": "Passwort",
@@ -258,25 +280,31 @@
     "save": "Speichern",
     "cancel": "Abbrechen",
     "errors": {
-      "fullName": "Vollständiger Name ist erforderlich",
+      "fullName": "Der vollständige Name ist erforderlich",
       "email": "Ungültige E-Mail-Adresse",
-      "password": "Passwort ist erforderlich",
-      "canRead": "Leseberechtigung ist erforderlich",
-      "canWrite": "Schreibberechtigung ist erforderlich",
-      "fullNameMustTwoString": "Der vollständige Name sollte aus zwei Namen bestehen, getrennt durch ein Leerzeichen"
+      "password": "Das Passwort ist erforderlich",
+      "canRead": "Leserechte sind erforderlich",
+      "canWrite": "Schreibrechte sind erforderlich",
+      "fullNameMustTwoString": "Der vollständige Name muss zwei Namen durch ein Leerzeichen getrennt enthalten"
     }
   },
+
+  "projectFileTypes": {
+    "XLSX": "Excel-Datei - XLSX",
+    "PrimaveraXML": "Primavera P6 - XML",
+    "MicrosoftProject": "Microsoft Project - XML"
+  },
   "AboutUs": {
-    "description": "iEntrepriZe ist eine Online-Kollaborationsplattform, die es ermöglicht, Fahrpläne für Eisenbahnen zu erstellen und mit Teammitgliedern zu teilen.",
+    "description": "iEntrepriZe ist eine Online-Kollaborationsplattform, die es ermöglicht, Schienennetzpläne zu erstellen und sie mit Teammitgliedern zu teilen.",
     "Allrightsreserved": "Alle Rechte vorbehalten",
-    "isProductOF": "PCF EISENBAHNPLANUNG ist ein Produkt von iEntrepriZe"
+    "isProductOF": "PCF PLANNING CHEMIN DE FER ist ein Produkt von iEntrepriZe"
   },
   "DynamicTable": {
     "Search": "Suche:",
     "records": "Datensätze"
   },
   "DeleteModal": {
-    "confirmDelete": "Möchten Sie diesen Eintrag wirklich löschen?",
+    "confirmDelete": "Sind Sie sicher, dass Sie dieses Element löschen möchten?",
     "yes": "Ja, ich bin sicher",
     "no": "Nein, abbrechen"
   },
@@ -284,9 +312,19 @@
     "previous": "Zurück",
     "next": "Weiter",
     "page": "Seite {{pageIndex}} von {{pageCount}}",
-    "itemsPerPage": "Einträge pro Seite",
+    "itemsPerPage": "Artikel pro Seite",
     "show": "Zeige {{pageSize}}",
-    "first": "Erste",
-    "last": "Letzte"
+    "first": "Erster",
+    "last": "Letzter"
+  },
+  "Comments": {
+    "addComments": "Kommentar hinzufügen",
+    "pk": "Einfügepunkt",
+    "commentText": "Kommentartext",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "hideComments": "Kommentare ausblenden",
+    "activityDetailLabel": "Aktivitätsdetails",
+    "utilButtons": "Symbolleiste"
   }
 }

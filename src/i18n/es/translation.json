@@ -18,14 +18,14 @@
     "googleLoginButton": "Iniciar sesión con Google",
     "errorMessages": {
       "invalidEmail": "Correo electrónico no válido.",
-      "userNotFound": "Usuario no encontrado, por favor verifique su correo electrónico.",
-      "wrongPassword": "Contraseña incorrecta, por favor inténtelo de nuevo.",
-      "userDisabled": "Su cuenta ha sido desactivada.",
-      "invalidLoginCredentials": "Credenciales de inicio de sesión no válidas, por favor verifique su correo electrónico y contraseña.",
-      "defaultError": "Se produjo un error, por favor inténtelo de nuevo más tarde."
+      "userNotFound": "Usuario no encontrado, por favor verifica tu dirección de correo electrónico.",
+      "wrongPassword": "Contraseña incorrecta, por favor inténtalo de nuevo.",
+      "userDisabled": "Tu cuenta ha sido desactivada.",
+      "invalidLoginCredentials": "Credenciales de inicio de sesión no válidas, por favor verifica tu correo electrónico y contraseña.",
+      "defaultError": "Se ha producido un error, por favor inténtalo de nuevo más tarde."
     },
     "noAccount": "¿No tienes una cuenta?",
-    "contactUs": "Contáctenos:",
+    "contactUs": "Contáctanos:",
     "adminEmail": "admin@ientreprize.com",
     "signInHeader": "Iniciar sesión"
   },
@@ -33,7 +33,7 @@
     "invalidEmail": "Correo electrónico no válido.",
     "passwordRequirements": "La contraseña debe tener al menos 8 caracteres e incluir al menos 1 letra minúscula, 1 letra mayúscula, 1 número y 1 carácter especial."
   },
-  "header.contact": "Contacto: ",
+  "header.contact": "Contacto:",
   "header.contactEmail": "admin@ientreprize.com",
   "header.logout": "Cerrar sesión",
   "projectForm.title": "Título del proyecto",
@@ -41,23 +41,23 @@
   "projectForm.clientCompanyLogo": "Logo 2",
   "projectForm.next": "Siguiente",
   "imagePicker.importLogo": "Importar logo",
-  "imagePicker.selectValidImage": "Por favor, seleccione un archivo de imagen válido (por ejemplo, JPG, PNG).",
-  "importFileForm.dragOrImport": "Arrastre o importe su archivo",
+  "imagePicker.selectValidImage": "Por favor, selecciona un archivo de imagen válido (por ejemplo, JPG, PNG).",
+  "importFileForm.dragOrImport": "Arrastra o importa tu archivo",
   "importFileForm.title": "Importación de archivo",
   "importFileForm.back": "Regresar",
   "importFileForm.next": "Siguiente",
-  "importFileForm.fileInputLabel": "Arrastre o importe su archivo",
+  "importFileForm.fileInputLabel": "Arrastra o importa tu archivo",
   "importFileForm.startDate": "Inicio",
   "importFileForm.endDate": "Fin",
   "importFileForm.timeScale": "Escala de tiempo",
-  "importFileForm.startPk": "Inicio PK",
-  "importFileForm.endPk": "Fin PK",
+  "importFileForm.startPk": "Pk de inicio",
+  "importFileForm.endPk": "Pk de fin",
   "importFileForm.dateRequired": "Se requiere la fecha",
   "importFileForm.startDateError": "Se requiere la fecha de inicio",
   "importFileForm.endDateError": "La fecha de fin debe ser posterior a la fecha de inicio",
   "importFileForm.startDistanceRequired": "Se requiere la distancia de inicio",
   "importFileForm.endDistanceRequired": "Se requiere la distancia de fin",
-  "importFileForm.selectValidFile": "Por favor, seleccione un archivo XLSX válido.",
+  "importFileForm.selectValidFile": "Por favor, selecciona un archivo XLSX válido.",
   "importFileForm.calendar": "CALENDARIO",
   "importFileForm.duration": "DURACIÓN (Día)",
   "importFileForm.activityStyle": "ESTILO DE LA ACTIVIDAD",
@@ -102,19 +102,19 @@
     "passwordSpecialCharacters": "La contraseña debe contener uno o más caracteres especiales.",
     "passwordNoInvalidCharacters": "La contraseña no debe contener £, #, “”, ni espacios.",
     "emailAlreadyExists": "El correo electrónico ya existe",
-    "teamLeaderNotInEmployees": "El líder de equipo no puede ser seleccionado como empleado.",
-    "teamLeaderIsRequired": "Se requiere el líder de equipo."
+    "teamLeaderNotInEmployees": "El líder del equipo no puede ser seleccionado como empleado.",
+    "teamLeaderIsRequired": "Se requiere el líder del equipo."
   },
   "taskSlotsList": {
     "addButton": "Agregar",
     "sectionHeaders": {
-      "section1": "Lista de ranuras de tiempo",
+      "section1": "Lista de franjas horarias",
       "section2": "Acciones"
     },
     "tableHeaders": {
       "name": "NOMBRE DE TRAMO",
-      "start": "INICIO PK",
-      "end": "FIN PK",
+      "start": "PK DE INICIO",
+      "end": "PK DE FIN",
       "actions": "Acciones"
     },
     "buttons": {
@@ -124,8 +124,8 @@
       "showPlanning": "Mostrar la planificación"
     },
     "popUp": {
-      "addTitle": "Agregar ranura de tiempo",
-      "editTitle": "Editar ranura de tiempo",
+      "addTitle": "Agregar franja horaria",
+      "editTitle": "Editar franja horaria",
       "saveButton": "Guardar",
       "cancelButton": "Cancelar"
     }
@@ -137,19 +137,19 @@
     },
     "labels": {
       "name": "Nombre:",
-      "start": "Inicio PK:",
-      "end": "Fin PK:"
+      "start": "PK de inicio:",
+      "end": "PK de fin:"
     },
     "placeholders": {
-      "name": "Ingrese el nombre del tramo",
-      "start": "Ingrese el inicio PK",
-      "end": "Ingrese el fin PK"
+      "name": "Ingresa el nombre del tramo",
+      "start": "Ingresa el PK de inicio",
+      "end": "Ingresa el PK de fin"
     },
     "errors": {
       "required": "Se requiere el nombre",
-      "minDistance": "El inicio PK debe ser mayor o igual a {{minDistance}}",
-      "maxDistance": "El inicio PK debe ser menor o igual a {{maxDistance}}",
-      "greaterThanStart": "El fin PK debe ser mayor al inicio PK"
+      "minDistance": "El PK de inicio debe ser mayor o igual a {{minDistance}}",
+      "maxDistance": "El PK de inicio debe ser menor o igual a {{maxDistance}}",
+      "greaterThanStart": "El PK de fin debe ser mayor que el PK de inicio"
     },
     "buttons": {
       "add": "Agregar",
@@ -168,8 +168,8 @@
       "styleLabel": "ESTILO",
       "startDateLabel": "FECHA DE INICIO",
       "finishDateLabel": "FECHA DE FIN",
-      "startChainageLabel": "INICIO PK",
-      "finishChainageLabel": "FIN PK",
+      "startChainageLabel": "PK DE INICIO",
+      "finishChainageLabel": "PK DE FIN",
       "calendar": "CALENDARIO",
       "duration": "DURACIÓN (Día)",
       "critical": "CRÍTICO"
@@ -177,28 +177,28 @@
     "changeStyle": "Cambiar estilo",
     "cancelZoomButtonLabel": "Cancelar zoom",
     "exportAllData": "Exportar todos los datos",
-    "exportGraphData": "Exportar datos del gráfico"
+    "exportGraphData": "Exportar gráfico"
   },
   "DrwMultiStepForm": {
     "step1": {
       "title": "Encabezado de la planificación",
-      "description": "Ingrese el título y el logo"
+      "description": "Ingresa el título y el logo"
     },
     "step2": {
       "title": "Importación del archivo Excel",
-      "description": "Arrastre o importe su archivo"
+      "description": "Arrastra o importa tu archivo"
     },
     "step3": {
       "title": "Definición de estilos",
-      "description": "Defina el estilo de las actividades"
+      "description": "Define el estilo de las actividades"
     },
     "step4": {
       "title": "Definición de tramos",
-      "description": "Defina el inicio y fin de cada tramo"
+      "description": "Define el inicio y fin de cada tramo"
     },
     "step5": {
       "title": "Definición de tramos de nivel 2",
-      "description": "Defina el inicio y fin de cada tramo"
+      "description": "Define el inicio y fin de cada tramo"
     }
   },
   "activityForm": {
@@ -229,7 +229,7 @@
     "createProject": "Crear un proyecto",
     "projects": "Proyectos",
     "employees": "Empleados",
-    "pricing": "Tarifas",
+    "pricing": "Precios",
     "aboutUs": "Acerca de nosotros",
     "contact": "Contacto:",
     "logout": "Cerrar sesión",
@@ -238,9 +238,9 @@
   "employeeList": {
     "Email": "Correo electrónico",
     "fullName": "Nombre completo",
-    "jobTitle": "Título del trabajo",
-    "canRead": "Acceso en lectura",
-    "canWrite": "Acceso en escritura",
+    "jobTitle": "Título del puesto",
+    "canRead": "Acceso de lectura",
+    "canWrite": "Acceso de escritura",
     "actions": "Acciones"
   },
   "projectsList": {
@@ -260,49 +260,50 @@
       "download": "Descargar"
     }
   },
-
   "graphSettings": {
-    "title": "Configuración de gráficos",
-    "numEmployees": "Number of Employees",
-    "actions": "Actions",
+    "title": "Configuración del gráfico",
+    "numEmployees": "Número de empleados",
+    "actions": "Acciones",
     "buttons": {
-      "edit": "Edit",
-      "delete": "Delete"
+      "edit": "Editar",
+      "delete": "Eliminar"
     }
   },
+  "employeeForm": {
+    "addEmployee": "Agregar empleado",
+    "editEmployee": "Editar empleado",
+    "fullName": "Nombre completo",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "canRead": "Acceso de lectura",
+    "canWrite": "Acceso de escritura",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "errors": {
+      "fullName": "Se requiere el nombre completo",
+      "email": "Correo electrónico no válido",
+      "password": "Se requiere la contraseña",
+      "canRead": "Se requiere permiso de lectura",
+      "canWrite": "Se requiere permiso de escritura",
+      "fullNameMustTwoString": "El nombre completo debe contener dos nombres separados por un espacio"
+    }
+  },
+
   "projectFileTypes": {
-    "XLSX": "Archivo de Excel - XLSX",
+    "XLSX": "Archivo Excel - XLSX",
     "PrimaveraXML": "Primavera P6 - XML",
     "MicrosoftProject": "Microsoft Project - XML"
   },
-  "employeeForm": {
-    "addEmployee": "Mitarbeiter hinzufügen",
-    "editEmployee": "Mitarbeiter bearbeiten",
-    "fullName": "Vollständiger Name",
-    "email": "E-Mail",
-    "password": "Passwort",
-    "canRead": "Leserechte",
-    "canWrite": "Schreibrechte",
-    "save": "Speichern",
-    "cancel": "Abbrechen",
-    "errors": {
-      "fullName": "Vollständiger Name ist erforderlich",
-      "email": "Ungültige E-Mail-Adresse",
-      "password": "Passwort ist erforderlich",
-      "canRead": "Leseberechtigung ist erforderlich",
-      "canWrite": "Schreibberechtigung ist erforderlich",
-      "fullNameMustTwoString": "Der vollständige Name sollte aus zwei Namen bestehen, getrennt durch ein Leerzeichen"
-    }
-  },
   "AboutUs": {
-    "description": "iEntrepriZe es una plataforma colaborativa en línea que permite construir horarios de ferrocarril y compartirlos con los miembros del equipo.",
+    "description": "iEntrepriZe es una plataforma colaborativa en línea que permite construir programaciones de vías férreas y compartirlas con los miembros de un equipo.",
     "Allrightsreserved": "Todos los derechos reservados",
-    "isProductOF": "PCF PLANIFICACIÓN DE FERROCARRIL es un producto de iEntrepriZe"
+    "isProductOF": "PCF PLANNING CHEMIN DE FER es un producto de iEntrepriZe"
   },
   "DynamicTable": {
     "Search": "Buscar:",
     "records": "Registros"
   },
+
   "DeleteModal": {
     "confirmDelete": "¿Estás seguro de que quieres eliminar este elemento?",
     "yes": "Sí, estoy seguro",
@@ -312,9 +313,19 @@
     "previous": "Anterior",
     "next": "Siguiente",
     "page": "Página {{pageIndex}} de {{pageCount}}",
-    "itemsPerPage": "Elementos por página",
+    "itemsPerPage": "Artículos por página",
     "show": "Mostrar {{pageSize}}",
-    "first": "Primera",
-    "last": "Última"
+    "first": "Primero",
+    "last": "Último"
+  },
+  "Comments": {
+    "addComments": "Agregar un comentario",
+    "pk": "Punto de inserción",
+    "commentText": "Texto del comentario",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "hideComments": "Ocultar comentarios",
+    "activityDetailLabel": "Detalles de la actividad",
+    "utilButtons": "Botones de utilidad"
   }
 }
