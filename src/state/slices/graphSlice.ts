@@ -40,6 +40,7 @@ import {
 } from "src/Services/CommentService";
 import { getAllActivityStyles } from "src/Services/ActivityStylesService";
 import { getAllTaskSlot } from "src/Services/TaskSlotsService";
+import { TableCellsIcon } from "@heroicons/react/24/solid";
 
 export interface GraphDataType {
   id?: string;

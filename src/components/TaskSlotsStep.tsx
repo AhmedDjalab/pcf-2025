@@ -11,7 +11,7 @@ import {
 } from "../state/slices/graphSlice";
 import { MultiStepFormProps } from "./DrawGraphForm";
 import { v4 as uuidv4 } from "uuid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "src/context/UserContext";
 import { DocumentDuplicateIcon } from "@heroicons/react/24/solid";
@@ -33,6 +33,8 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   const taskSlots: TaskSlot[] = useSelector(
     (state: RootState) => state.graph.taskSlots
   );
+
+  const { id } = useParams();
   const [formFieldValues, setFormFieldValues] = useState(taskSlots);
 
   useEffect(() => {
@@ -136,37 +138,39 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   };
   return (
     <div className="h-[100vh]">
-      <div className="flex w-full justify-center items-center gap-5">
-        <Dropdown
-          id="projectId"
-          name="projectId"
-          label={t("projectForm.title")}
-          onChange={(e) => {
-            setSelectedProject(e.currentTarget.value);
-          }}
-          value={selectedProject}
-          optionValue="id"
-          optionLabel="label"
-          className="  rounded-lg border border-gray-300 bg-gray-50  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-          options={projectOptions ?? []}
-        />
-        <button
-          className="focus:outline-none mt-10  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
-          onClick={() => {
-            dispatch(
-              fetchAllTaskSlotByProjectId({
-                projectId: selectedProject,
-                level: 1,
-              })
-            );
-          }}
-        >
-          <span className="mr-2">
-            <DocumentDuplicateIcon className="w-4 h-4" />
-          </span>
-          {t("projectSelection.copy")}
-        </button>
-      </div>
+      {!id && (
+        <div className="flex w-full justify-center items-center gap-5">
+          <Dropdown
+            id="projectId"
+            name="projectId"
+            label={t("projectForm.title")}
+            onChange={(e) => {
+              setSelectedProject(e.currentTarget.value);
+            }}
+            value={selectedProject}
+            optionValue="id"
+            optionLabel="label"
+            className="  rounded-lg border border-gray-300 bg-gray-50  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            options={projectOptions ?? []}
+          />
+          <button
+            className="focus:outline-none mt-10  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
+            onClick={() => {
+              dispatch(
+                fetchAllTaskSlotByProjectId({
+                  projectId: selectedProject,
+                  level: 1,
+                })
+              );
+            }}
+          >
+            <span className="mr-2">
+              <DocumentDuplicateIcon className="w-4 h-4" />
+            </span>
+            {t("projectSelection.copy")}
+          </button>
+        </div>
+      )}
       <div className="my-4 flex justify-start items-start   ">
         <button
           disabled={!canWrite && !isAdmin}
