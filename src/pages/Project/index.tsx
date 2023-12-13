@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import DefaultLayout from "src/components/DefaultLayout";
 import { RootState } from "src/state";
 import * as XLSX from "xlsx";
@@ -35,6 +35,7 @@ import DeleteConfirmationModal from "src/components/shared/DeleteConfirmationMod
 import Pagination from "src/components/shared/Pagination";
 import moment from "moment-timezone";
 import { Cell, Column, Row } from "react-table";
+import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 
 const exampleProjects = [
   {
@@ -64,6 +65,8 @@ const Projects = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
+
   const ActionButtonsCell = ({ value }: any) => {
     return (
       <div className="flex gap-2">
@@ -78,8 +81,7 @@ const Projects = () => {
           to={`/create-project/${value}`}
           hidden={!canWrite && !isAdmin}
           onClick={() => {
-            persistor.purge();
-            resetStoreState();
+            dispatch(resetStoreState());
           }}
           className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover-bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
         >
@@ -256,8 +258,7 @@ const Projects = () => {
   };
   const handlePurgeAndNavigate = async () => {
     try {
-      // After purging, you can reset the store state if needed
-      resetStoreState();
+      dispatch(resetStoreState());
 
       // Now, navigate to the desired location
       navigate("/create-project");

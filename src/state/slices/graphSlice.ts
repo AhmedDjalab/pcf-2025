@@ -749,6 +749,7 @@ const GraphSlice = createSlice({
       };
 
       state.loading = false;
+      return state;
     },
   },
   extraReducers: (builder) => {
