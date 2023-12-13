@@ -326,5 +326,6 @@
     "hideComments": "Masquer les commentaires",
     "activityDetailLabel": "Détails de l'activité",
     "utilButtons": "Barre d'outils"
-  }
+  },
+  "projectSelection.copy": "Copier"
 }

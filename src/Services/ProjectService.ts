@@ -2,6 +2,7 @@ import { ProjectsUrl } from "src/variables/Urls";
 import api from "src/utils/api";
 import { getCompanyId, getCurrentUser } from "./AuthService";
 import { Project } from "src/types/Project";
+import { ProjectOption } from "src/state/slices/graphSlice";
 
 export interface ProjectsResponse {
   projects: Project[];
@@ -17,6 +18,21 @@ export interface PaginatingParmas {
   employeeId?: string;
   userAdminId?: string;
 }
+
+export async function getBriefProjects() {
+  try {
+    let config = {
+      params: {
+        companyId: getCompanyId(),
+      },
+    };
+    const { data } = await api.get(apiEndpoint + "/GetAllBrief", config);
+    return data as ProjectOption[];
+  } catch (ex: any) {
+    console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
+  }
+}
+
 export async function getProjects({
   fromvalue = 0,
   takevalue = 0,

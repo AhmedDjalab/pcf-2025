@@ -9,7 +9,12 @@ import {
   Row,
 } from "react-table";
 import { RootState } from "../state";
-import { ShapeType, updateShapesValue } from "../state/slices/graphSlice";
+import {
+  ProjectOption,
+  ShapeType,
+  fetchAllStyleByProjectId,
+  updateShapesValue,
+} from "../state/slices/graphSlice";
 import CirclePicker, { HexColorPicker } from "react-colorful";
 import { MultiStepFormProps } from "./DrawGraphForm";
 import { PopoverColorPicker } from "./PopoverColorPicker";
@@ -21,10 +26,15 @@ import texturesData from "../const/texturesArray";
 import { lineStyles } from "../const/linesArray";
 import LineStylePicker from "./LineStylePicker";
 import { animateScroll as scroll } from "react-scroll";
-import { ArrowUpCircleIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowUpCircleIcon,
+  DocumentDuplicateIcon,
+} from "@heroicons/react/24/solid";
 import { BackToTopHeightSize } from "../const/vars";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "src/context/UserContext";
+import Dropdown from "./DropDown";
+import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 // Import the ShapeType interface
 const shapeTypes = [
   { value: "line", text: "Ligne" },
@@ -34,9 +44,13 @@ const shapeTypes = [
 type LineType = "line" | "rect" | "triangle";
 function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
   const { user, canWrite, isAdmin } = useAuth();
-
+  const projectOptions: ProjectOption[] | undefined = useSelector(
+    (state: RootState) => state.graph.projectOptions
+  );
   const graphSettings = useSelector((state: RootState) => state.graph.shapes);
-  const dispatch = useDispatch();
+
+  const [selectedProject, setSelectedProject] = useState("");
+  const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   const [rowColors, setRowColors] = useState<{ [key: string]: string }>({});
   const [showBackToTopButton, setShowBackToTopButton] = useState(false);
   const { t } = useTranslation();
@@ -63,6 +77,10 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
   const [shapesList, setShapesList] = useState<ShapeType[]>(
     graphSettings.shapesData
   );
+
+  useEffect(() => {
+    setShapesList(graphSettings.shapesData);
+  }, [graphSettings.shapesData]);
 
   const columns: Column<ShapeType>[] = React.useMemo(
     () => [
@@ -199,7 +217,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
         ),
       },
     ],
-    [shapesList, t]
+    [canWrite, isAdmin, shapesList, t]
   );
 
   // Create a table instance
@@ -238,6 +256,32 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
 
   return (
     <div className="relative h-[100vh]  overflow-x-auto">
+      <div className="flex w-full justify-center items-center gap-5">
+        <Dropdown
+          id="projectId"
+          name="projectId"
+          label={t("projectForm.title")}
+          onChange={(e) => {
+            setSelectedProject(e.currentTarget.value);
+          }}
+          value={selectedProject}
+          optionValue="id"
+          optionLabel="label"
+          className="  rounded-lg border border-gray-300 bg-gray-50  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+          options={projectOptions ?? []}
+        />
+        <button
+          className="focus:outline-none mt-10  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
+          onClick={() => {
+            dispatch(fetchAllStyleByProjectId(selectedProject));
+          }}
+        >
+          <span className="mr-2">
+            <DocumentDuplicateIcon className="w-4 h-4" />
+          </span>
+          {t("projectSelection.copy")}
+        </button>
+      </div>
       <div className="my-4 flex justify-between ">
         <button
           type="button"

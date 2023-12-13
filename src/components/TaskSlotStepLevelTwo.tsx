@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TaskSlotsPopUp from "./TaskSlotsPopUp";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../state";
 import {
+  ProjectOption,
   TaskSlot,
+  fetchAllTaskSlotByProjectId,
   saveProjectThunk,
   updateTaskSlotsLevelTwoValue,
   updateTaskSlotsValue,
@@ -14,6 +16,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import { useAuth } from "src/context/UserContext";
+import { DocumentDuplicateIcon } from "@heroicons/react/24/solid";
+import Dropdown from "./DropDown";
 
 const TaskSlotsLevelTwoList = ({
   setCurrentStep,
@@ -29,10 +33,18 @@ const TaskSlotsLevelTwoList = ({
   const taskSlots: TaskSlot[] = useSelector(
     (state: RootState) => state.graph.taskSlotsLevelTwo
   );
+  const [selectedProject, setSelectedProject] = useState("");
 
+  const projectOptions: ProjectOption[] | undefined = useSelector(
+    (state: RootState) => state.graph.projectOptions
+  );
   const { canWrite, isAdmin } = useAuth();
 
   const [formFieldValues, setFormFieldValues] = useState(taskSlots);
+
+  useEffect(() => {
+    setFormFieldValues(taskSlots);
+  }, [taskSlots]);
 
   const minDistance: number = useSelector(
     (state: RootState) => state.graph.settings.fromDistance
@@ -56,7 +68,7 @@ const TaskSlotsLevelTwoList = ({
   const handleDeleteClick = (rowId: string) => {
     // Find the index of the row to be deleted
     const rowIndex = formFieldValues.findIndex((row) => row.id === rowId);
-    
+
     if (rowIndex !== -1) {
       // Create a copy of the task slots array without the deleted row
       const updatedTaskSlots = [
@@ -66,7 +78,7 @@ const TaskSlotsLevelTwoList = ({
 
       // Update the state with the new task slots list
       setFormFieldValues(updatedTaskSlots);
-   
+
       // // Dispatch the updated task slots to your Redux store
       dispatch(
         updateTaskSlotsLevelTwoValue({
@@ -131,6 +143,37 @@ const TaskSlotsLevelTwoList = ({
   };
   return (
     <div className="h-[100vh]">
+      <div className="flex w-full justify-center items-center gap-5">
+        <Dropdown
+          id="projectId"
+          name="projectId"
+          label={t("projectForm.title")}
+          onChange={(e) => {
+            setSelectedProject(e.currentTarget.value);
+          }}
+          value={selectedProject}
+          optionValue="id"
+          optionLabel="label"
+          className="  rounded-lg border border-gray-300 bg-gray-50  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+          options={projectOptions ?? []}
+        />
+        <button
+          className="focus:outline-none mt-10  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
+          onClick={() => {
+            dispatch(
+              fetchAllTaskSlotByProjectId({
+                projectId: selectedProject,
+                level: 2,
+              })
+            );
+          }}
+        >
+          <span className="mr-2">
+            <DocumentDuplicateIcon className="w-4 h-4" />
+          </span>
+          {t("projectSelection.copy")}
+        </button>
+      </div>
       <button
         disabled={!canWrite && !isAdmin}
         onClick={handleAddClick}

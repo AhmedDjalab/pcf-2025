@@ -326,5 +326,6 @@
     "hideComments": "Kommentare ausblenden",
     "activityDetailLabel": "Aktivitätsdetails",
     "utilButtons": "Symbolleiste"
-  }
+  },
+  "projectSelection.copy": "Kopieren"
 }

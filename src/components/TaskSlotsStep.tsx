@@ -1,13 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TaskSlotsPopUp from "./TaskSlotsPopUp";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../state";
-import { TaskSlot, updateTaskSlotsValue } from "../state/slices/graphSlice";
+import {
+  ProjectOption,
+  TaskSlot,
+  fetchAllStyleByProjectId,
+  fetchAllTaskSlotByProjectId,
+  updateTaskSlotsValue,
+} from "../state/slices/graphSlice";
 import { MultiStepFormProps } from "./DrawGraphForm";
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "src/context/UserContext";
+import { DocumentDuplicateIcon } from "@heroicons/react/24/solid";
+import Dropdown from "./DropDown";
+import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 
 const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,12 +24,20 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   const [isNew, setIsNew] = useState(false);
   const { t } = useTranslation();
   const { user, canWrite, isAdmin } = useAuth();
-
+  const [selectedProject, setSelectedProject] = useState("");
+  const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
+  const projectOptions: ProjectOption[] | undefined = useSelector(
+    (state: RootState) => state.graph.projectOptions
+  );
   const navigate = useNavigate();
   const taskSlots: TaskSlot[] = useSelector(
     (state: RootState) => state.graph.taskSlots
   );
   const [formFieldValues, setFormFieldValues] = useState(taskSlots);
+
+  useEffect(() => {
+    setFormFieldValues(taskSlots);
+  }, [taskSlots]);
 
   const minDistance: number = useSelector(
     (state: RootState) => state.graph.settings.fromDistance
@@ -28,7 +45,6 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   const maxDistance: number = useSelector(
     (state: RootState) => state.graph.settings.toDistance
   );
-  const dispatch = useDispatch();
 
   const handleAddClick = () => {
     setIsNew(true);
@@ -90,7 +106,6 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   };
 
   const handleEditTaskSlot = (data: TaskSlot) => {
-    
     const updatedTaskSlots = formFieldValues.map((taskSlot) =>
       taskSlot.id
         ? taskSlot.id === data.id
@@ -121,6 +136,37 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   };
   return (
     <div className="h-[100vh]">
+      <div className="flex w-full justify-center items-center gap-5">
+        <Dropdown
+          id="projectId"
+          name="projectId"
+          label={t("projectForm.title")}
+          onChange={(e) => {
+            setSelectedProject(e.currentTarget.value);
+          }}
+          value={selectedProject}
+          optionValue="id"
+          optionLabel="label"
+          className="  rounded-lg border border-gray-300 bg-gray-50  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+          options={projectOptions ?? []}
+        />
+        <button
+          className="focus:outline-none mt-10  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
+          onClick={() => {
+            dispatch(
+              fetchAllTaskSlotByProjectId({
+                projectId: selectedProject,
+                level: 1,
+              })
+            );
+          }}
+        >
+          <span className="mr-2">
+            <DocumentDuplicateIcon className="w-4 h-4" />
+          </span>
+          {t("projectSelection.copy")}
+        </button>
+      </div>
       <div className="my-4 flex justify-start items-start   ">
         <button
           disabled={!canWrite && !isAdmin}

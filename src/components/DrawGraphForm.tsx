@@ -14,6 +14,7 @@ import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import { RootState } from "src/state";
 import {
   applyFilter,
+  fetchAllProjectsOptions,
   fetchProjectByIdThunk,
 } from "src/state/slices/graphSlice";
 
@@ -36,7 +37,10 @@ export const DrawGraphForm = () => {
       dispatch(fetchProjectByIdThunk(id));
     }
   }, [dispatch, id]);
-
+  //? fetch all project options
+  useEffect(() => {
+    dispatch(fetchAllProjectsOptions());
+  }, [dispatch]);
   const steps = [
     {
       stepNumber: 1,

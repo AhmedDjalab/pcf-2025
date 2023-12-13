@@ -54,6 +54,8 @@ export const AnnualInterviewsUrl = usedUrl + "/AnnualInterviews";
 export const ProjectsUrl = usedUrl + "/Projects";
 export const CommentsUrl = usedUrl + "/Comments";
 export const ActivitiesUrl = usedUrl + "/Activities";
+export const TaskSlotsUrl = usedUrl + "/TaskSlots";
+export const ActivityStylesUrl = usedUrl + "/ActivityStyles";
 
 export const UploadImagesUrl = ImagesUrl + "/UploadImage";
 export const HubUrl = siteName + "/notificationHub";

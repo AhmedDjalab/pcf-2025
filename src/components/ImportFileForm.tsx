@@ -13,6 +13,7 @@ import {
   UdfSetting,
   addGraphDataList,
   applyFilter,
+  fetchAllProjectsOptions,
   removeActivity,
   resetStoreState,
   updateGraphSettingsValue,
@@ -817,7 +818,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         const udfArray: any[] = [];
         for (let j = 0; j < UDFTypes.length; j++) {
           const UDFType = UDFTypes[j];
-          
+
           const udfId =
             UDFType.getElementsByTagName("FieldID")[0]?.textContent ?? "";
 
@@ -841,7 +842,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         resolve(xmlDoc);
       } catch (error) {
         reject(error);
-       
       }
     });
   };

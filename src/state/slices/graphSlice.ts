@@ -12,12 +12,20 @@ import { Employee, getEmployees } from "src/Services/EmployeeService2";
 import { User } from "src/types/user";
 import {
   ActivityModel,
+  ActivityStyleModel,
   filterTypes,
   GraphSettingModel,
   Project,
+  TaskSlotModel,
 } from "src/types/Project";
 import { RootState } from "../store";
-import { getGraph, getProject, saveProject } from "src/Services/ProjectService";
+import {
+  getBriefProjects,
+  getGraph,
+  getProject,
+  getProjects,
+  saveProject,
+} from "src/Services/ProjectService";
 import { getCompanyId } from "src/Services/AuthService";
 import axios from "axios";
 import { UploadImagesUrl } from "src/variables/Urls";
@@ -30,6 +38,8 @@ import {
   getCommentsByProjectId,
   saveComment,
 } from "src/Services/CommentService";
+import { getAllActivityStyles } from "src/Services/ActivityStylesService";
+import { getAllTaskSlot } from "src/Services/TaskSlotsService";
 
 export interface GraphDataType {
   id?: string;
@@ -105,6 +115,10 @@ export interface CommentsType {
   projectId?: string;
 }
 
+export interface ProjectOption {
+  id: string;
+  label: string;
+}
 export interface GraphCreateType {
   id?: string;
   projectSettings: ProjectSettings;
@@ -117,6 +131,7 @@ export interface GraphCreateType {
   rawGraphDataFromFile?: GraphDataType[];
   userDefindSettings?: UdfSetting[];
   comments?: CommentsType[];
+  projectOptions?: ProjectOption[];
 }
 
 const currentYear = new Date().getFullYear();
@@ -150,6 +165,7 @@ const initialState: GraphCreateType = {
   rawGraphDataFromFile: [],
   userDefindSettings: [],
   comments: [],
+  projectOptions: [],
 };
 
 export const fetchCommentsThunk = createAsyncThunk(
@@ -182,6 +198,43 @@ export const fetchEmployees = createAsyncThunk(
     });
 
     return response?.employees; // Assuming your API returns an object with an 'employees' property
+  }
+);
+export const fetchAllProjectsOptions = createAsyncThunk(
+  "projectSettings/getAllProjectOptions",
+  async () => {
+    const response = await getBriefProjects();
+
+    if (response) {
+      return { success: true, data: response };
+    } else {
+      return { success: false, message: response };
+    }
+  }
+);
+
+export const fetchAllStyleByProjectId = createAsyncThunk(
+  "projectSettings/getAllStyleByProjectId",
+  async (projectId: string) => {
+    const response = await getAllActivityStyles({ projectId });
+
+    if (response) {
+      return { success: true, data: response };
+    } else {
+      return { success: false, message: response };
+    }
+  }
+);
+export const fetchAllTaskSlotByProjectId = createAsyncThunk(
+  "projectSettings/getAllTaskSlotsByProjectId",
+  async ({ projectId, level }: { projectId: string; level: number }) => {
+    const response = await getAllTaskSlot({ projectId, level });
+
+    if (response) {
+      return { success: true, data: response };
+    } else {
+      return { success: false, message: response };
+    }
   }
 );
 export interface AcitivityFetchProp {
@@ -880,6 +933,81 @@ const GraphSlice = createSlice({
       state.loading = false;
     });
     builder.addCase(saveCommentDataThunk.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    });
+    builder.addCase(fetchAllProjectsOptions.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(fetchAllProjectsOptions.fulfilled, (state, action) => {
+      state.loading = false;
+      state.projectOptions = action.payload.data;
+    });
+    builder.addCase(fetchAllProjectsOptions.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    });
+    builder.addCase(fetchAllStyleByProjectId.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(fetchAllStyleByProjectId.fulfilled, (state, action) => {
+      state.loading = false;
+      // ?update the styles
+      var newStyles: ActivityStyleModel[] | undefined = action.payload.data;
+      var styles = state.shapes.shapesData.map((s) => {
+        if (newStyles) {
+          var matchedStyle = newStyles.find((x) => x.name === s.name);
+          console.warn(
+            "🚀 ~ file: graphSlice.ts:960 ~ styles ~ matchedStyle:",
+            matchedStyle
+          );
+
+          if (matchedStyle) {
+            // Copy specific attributes from ActivityStyleModel to ShapeType
+            s.color = matchedStyle.color;
+            s.lineType = matchedStyle.lineStyleType;
+            s.backgroundTexture = matchedStyle.backgroundTextureType;
+            s.type = matchedStyle.shapeType;
+          }
+        }
+        return s;
+      });
+
+      state.shapes.shapesData = [...styles];
+    });
+    builder.addCase(fetchAllStyleByProjectId.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    });
+    builder.addCase(fetchAllTaskSlotByProjectId.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(fetchAllTaskSlotByProjectId.fulfilled, (state, action) => {
+      state.loading = false;
+      // ?update the task slots
+      var level = action.meta.arg.level;
+      if (level === 1) {
+        state.taskSlots =
+          action.payload.data?.map((taskSlot) => ({
+            start: taskSlot.start,
+            end: taskSlot.end,
+            name: taskSlot.name,
+            level: 1,
+            idnew: taskSlot.id!,
+          })) ?? [];
+      } else {
+        state.taskSlotsLevelTwo =
+          action.payload.data?.map((taskSlot) => ({
+            start: taskSlot.start,
+            end: taskSlot.end,
+            name: taskSlot.name,
+            level: 2,
+            idnew: taskSlot.id!,
+          })) ?? [];
+      }
+      // const taskSlotData : TaskSlotModel[] = action.payload.data ;
+    });
+    builder.addCase(fetchAllTaskSlotByProjectId.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message;
     });

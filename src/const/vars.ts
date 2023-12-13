@@ -157,26 +157,26 @@ export const graphStringsMSProjectSettings: GraphStringsSetting[] = [
 ];
 
 export const graphStringsXLSXSettings: GraphStringsSetting[] = [
-  // {
-  //   id: 1,
-  //   name: "ID",
-  //   field: "id",
-  // },
-  // {
-  //   id: 2,
-  //   name: "drawGraph.activityDetails.activityNameLabel",
-  //   field: "activityName",
-  // },
-  // {
-  //   id: 3,
-  //   name: "drawGraph.activityDetails.startDateLabel",
-  //   field: "startDate",
-  // },
-  // {
-  //   id: 4,
-  //   name: "drawGraph.activityDetails.finishDateLabel",
-  //   field: "finishDate",
-  // },
+  {
+    id: 1,
+    name: "ID",
+    field: "id",
+  },
+  {
+    id: 2,
+    name: "drawGraph.activityDetails.activityNameLabel",
+    field: "activityName",
+  },
+  {
+    id: 3,
+    name: "drawGraph.activityDetails.startDateLabel",
+    field: "startDate",
+  },
+  {
+    id: 4,
+    name: "drawGraph.activityDetails.finishDateLabel",
+    field: "finishDate",
+  },
   {
     id: 5,
     name: "drawGraph.activityDetails.startChainageLabel",

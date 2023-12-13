@@ -35,7 +35,6 @@ function ParameterSelector({
   handleClose,
   onSubmit,
 }: ParameterSelectorProps) {
-  
   const { t } = useTranslation();
   const [selectedPairs, setSelectedPairs] = useState<UdfSetting[]>([]);
   const [isSubmited, setIsSubmited] = useState(false);
