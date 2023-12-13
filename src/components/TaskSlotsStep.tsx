@@ -35,7 +35,7 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   );
 
   const { id } = useParams();
-  const [formFieldValues, setFormFieldValues] = useState(taskSlots);
+  const [formFieldValues, setFormFieldValues] = useState<TaskSlot[]>([]);
 
   useEffect(() => {
     setFormFieldValues(taskSlots ?? []);
@@ -198,7 +198,7 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
           </tr>
         </thead>
         <tbody>
-          {formFieldValues.map((row) => (
+          {formFieldValues?.map((row) => (
             <tr key={row.id}>
               <td className="whitespace-nowrap px-6 py-4">{row.name}</td>
               <td className="whitespace-nowrap px-6 py-4">{row.start}</td>

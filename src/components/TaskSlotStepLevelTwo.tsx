@@ -202,7 +202,7 @@ const TaskSlotsLevelTwoList = ({
           </tr>
         </thead>
         <tbody>
-          {formFieldValues.map((row) => (
+          {formFieldValues?.map((row) => (
             <tr key={row.id}>
               <td className="whitespace-nowrap px-6 py-4">{row.name}</td>
               <td className="whitespace-nowrap px-6 py-4">{row.start}</td>
