@@ -309,7 +309,8 @@ function ViewGraph() {
 
       yScale.range([margin.top, totalHeight]);
       setContainerHeight(totalHeight + margin.top);
-      g.append("g")
+      const xAxisElement = g
+        .append("g")
         .attr("class", "x-axis")
         .attr("transform", `translate(0, ${totalHeight})`)
         .call(xAxis)
@@ -326,9 +327,17 @@ function ViewGraph() {
         .attr("dx", "-0.5em")
         .text((d) => d3.timeFormat("%a %d/%m/%Y")(d));
 
+      // Set the margin for the right y-axis
+
+      const containerWidth2 = svgRef.current?.getBoundingClientRect().width;
+
+      // Calculate the position for the right y-axis
+      const yAxisRightPosition = containerWidth2;
+
+      // Append the right y-axis using the calculated position
       g.append("g")
         .attr("class", "y-axis")
-        .attr("transform", `translate(${containerWidth + margin.right},0)`)
+        .attr("transform", `translate(${yAxisRightPosition}, 0)`)
         .call(yAxisRight)
         .selectAll("text")
         .style("text-anchor", "start")
