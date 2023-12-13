@@ -43,7 +43,7 @@ const TaskSlotsLevelTwoList = ({
   const [formFieldValues, setFormFieldValues] = useState(taskSlots);
 
   useEffect(() => {
-    setFormFieldValues(taskSlots);
+    setFormFieldValues(taskSlots ?? []);
   }, [taskSlots]);
 
   const minDistance: number = useSelector(
