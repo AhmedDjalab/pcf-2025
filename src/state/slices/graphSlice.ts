@@ -114,6 +114,9 @@ export interface CommentsType {
   userId: string;
   start: Date;
   projectId?: string;
+  commentorUserEmail?: string;
+  createdDate?: Date;
+  updateAt?: Date;
 }
 
 export interface ProjectOption {

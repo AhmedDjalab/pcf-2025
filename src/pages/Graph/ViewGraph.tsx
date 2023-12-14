@@ -786,11 +786,13 @@ function ViewGraph() {
           d3.select(this)
             .select(".delete-button")
             .style("visibility", "visible");
+          d3.select(this).select(".rect-info").style("visibility", "visible");
         })
         .on("mouseout", function () {
           d3.select(this)
             .select(".delete-button")
             .style("visibility", "hidden");
+          d3.select(this).select(".rect-info").style("visibility", "hidden");
         })
         .call(drag);
 
@@ -822,7 +824,47 @@ function ViewGraph() {
             });
           }
         });
+      // Add a rect element for the email and creation date
+      newComments
 
+        .append("rect")
+        .style("visibility", "hidden")
+        .attr("class", "rect-info")
+        .attr("x", 15) // Adjust the distance from the "X" icon
+        .attr("y", -15) // Adjust the vertical position
+        .attr("width", 250) // Adjust the width of the rectangle
+        .attr("height", 40)
+        .attr("rx", 10) // Adjust the horizontal radius for rounded corners
+        .attr("ry", 10)
+
+        // Adjust the height of the rectangle
+        .style("fill", "#FF6F91"); // You can change the background color
+
+      // Add text for email
+      newComments
+        .append("text")
+        .attr("x", 20) // Adjust the distance from the "X" icon
+        .attr("y", 5)
+        .attr("dy", -5)
+
+        .style("fill", "#ffffff")
+        .style("font-size", "12px") // Adjust the font size
+        .text(function (d) {
+          return "Email: " + d.commentorUserEmail; // Assuming that the comment data has a property called 'email'
+        });
+
+      // Add text for creation date
+      newComments
+        .append("text")
+        .attr("x", 20) // Adjust the distance from the "X" icon
+        .attr("y", 20) // Adjust the vertical position
+        .attr("dy", -5)
+        .style("fill", "#ffffff")
+        .style("font-size", "12px") // Adjust the font size
+        .text(function (d) {
+          var formated = moment(d.createdDate).format("DD/MM/YYYY hh:mm");
+          return "Date: " + formated; // Assuming that the comment data has a property called 'creationDate'
+        });
       startSlot
         .merge(newComments)
         .attr(
