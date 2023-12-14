@@ -327,6 +327,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           dataObject["activityId"] = textValue;
         } else if (setting.pcfField === "style") {
           dataObject[setting.pcfField] = textValue;
+        } else if (setting.pcfField === "critical") {
+          dataObject[setting.pcfField] = textValue === "Yes" ? true : false;
         }
       }
     }

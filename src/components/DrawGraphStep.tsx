@@ -318,13 +318,18 @@ function DrawGraphStep() {
 
       yScale.range([margin.top, totalHeight]);
       setContainerHeight(totalHeight + margin.top);
-      g.append("g")
+      const xAxisElement = g
+        .append("g")
         .attr("class", "x-axis")
         .attr("transform", `translate(0, ${totalHeight})`)
         .call(xAxis)
         .selectAll("text")
-        .style("text-anchor", "middle")
-        .attr("dy", "1em");
+        .style("text-anchor", "end") // Align text to the end of the label
+        .attr("dy", "1em")
+        .attr("transform", function () {
+          return "translate(-12, 4)rotate(-80)";
+        })
+        .style("font-size", "12px");
 
       g.append("g")
         .attr("class", "y-axis")
@@ -343,6 +348,24 @@ function DrawGraphStep() {
       //   .style("text-anchor", "start")
       //   .attr("dx", "1em")
       //   .text((d) => d3.timeFormat("%a %d/%m/%Y")(d));
+
+      // Set the margin for the right y-axis
+
+      const containerWidth2 = containerWidth;
+
+      // Calculate the position for the right y-axis
+      const yAxisRightPosition =
+        containerWidth2 - margin.left - margin.right - 90;
+
+      // Append the right y-axis using the calculated position
+      g.append("g")
+        .attr("class", "y-axis")
+        .attr("transform", `translate(${yAxisRightPosition}, 0)`)
+        .call(yAxisRight)
+        .selectAll("text")
+        .style("text-anchor", "start")
+        .attr("dx", "1em")
+        .text((d) => d3.timeFormat("%a %d/%m/%Y")(d));
     },
     [
       containerWidth,
@@ -350,6 +373,7 @@ function DrawGraphStep() {
       endDate,
       endDateObject,
       fromDistance,
+      margin.left,
       margin.right,
       margin.top,
       startDate,
@@ -722,12 +746,13 @@ function DrawGraphStep() {
 
     const tooltip = d3.select("#tooltip");
 
-    const distanceAxisWidth =
-      50 * ((toDistance - fromDistance) / distanceRange) < window.innerWidth
-        ? window.innerWidth
-        : 50 * ((toDistance - fromDistance) / distanceRange);
+    // const distanceAxisWidth =
+    //   50 * ((toDistance - fromDistance) / distanceRange) < window.innerWidth
+    //     ? window.innerWidth
+    //     : 50 * ((toDistance - fromDistance) / distanceRange);
+    const distanceAxisWidth = containerWidth - margin.right - margin.left - 100;
 
-    setContainerWidth(distanceAxisWidth);
+    // setContainerWidth(distanceAxisWidth);
     const xScale = DrawXScale(distanceAxisWidth);
 
     const yScale = d3.scaleTime().domain([startDateObject, endDateObject]);

@@ -1448,7 +1448,7 @@ function ViewGraph() {
                 <button
                   type="button"
                   onClick={handleAddComments}
-                  disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+                  disabled={!selectedShapeData}
                   className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
                 >
                   {t("drawGraph.addComments")}
