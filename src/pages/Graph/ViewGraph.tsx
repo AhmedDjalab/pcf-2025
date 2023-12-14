@@ -787,12 +787,24 @@ function ViewGraph() {
             .select(".delete-button")
             .style("visibility", "visible");
           d3.select(this).select(".rect-info").style("visibility", "visible");
+          d3.select(this)
+            .select(".rect-info-email")
+            .style("visibility", "visible");
+          d3.select(this)
+            .select(".rect-info-date")
+            .style("visibility", "visible");
         })
         .on("mouseout", function () {
           d3.select(this)
             .select(".delete-button")
             .style("visibility", "hidden");
           d3.select(this).select(".rect-info").style("visibility", "hidden");
+          d3.select(this)
+            .select(".rect-info-email")
+            .style("visibility", "visible");
+          d3.select(this)
+            .select(".rect-info-date")
+            .style("visibility", "visible");
         })
         .call(drag);
 
@@ -801,6 +813,7 @@ function ViewGraph() {
         .attr("class", "comment-text")
         .attr("dy", 10)
         .style("font-size", "14px")
+
         .text((d) => d.commentText);
 
       newComments
@@ -826,12 +839,11 @@ function ViewGraph() {
         });
       // Add a rect element for the email and creation date
       newComments
-
         .append("rect")
         .style("visibility", "hidden")
         .attr("class", "rect-info")
         .attr("x", 15) // Adjust the distance from the "X" icon
-        .attr("y", -15) // Adjust the vertical position
+        .attr("y", 25) // Adjust the vertical position
         .attr("width", 250) // Adjust the width of the rectangle
         .attr("height", 40)
         .attr("rx", 10) // Adjust the horizontal radius for rounded corners
@@ -843,10 +855,11 @@ function ViewGraph() {
       // Add text for email
       newComments
         .append("text")
+        .attr("class", "rect-info-email")
         .attr("x", 20) // Adjust the distance from the "X" icon
         .attr("y", 5)
-        .attr("dy", -5)
-
+        .attr("dy", 35)
+        .style("visibility", "hidden")
         .style("fill", "#ffffff")
         .style("font-size", "12px") // Adjust the font size
         .text(function (d) {
@@ -856,8 +869,10 @@ function ViewGraph() {
       // Add text for creation date
       newComments
         .append("text")
+        .attr("class", "rect-info-date")
+        .style("visibility", "hidden")
         .attr("x", 20) // Adjust the distance from the "X" icon
-        .attr("y", 20) // Adjust the vertical position
+        .attr("y", 65) // Adjust the vertical position
         .attr("dy", -5)
         .style("fill", "#ffffff")
         .style("font-size", "12px") // Adjust the font size
