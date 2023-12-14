@@ -17,7 +17,7 @@ import {
   updateGraphSettingsValue,
 } from "src/state/slices/graphSlice";
 import texturesData from "src/const/texturesArray";
-import moment from "moment";
+
 import jsPDF from "jspdf";
 import domtoimage from "dom-to-image";
 import logo from "src/assets/Logo/logo.png";
@@ -44,7 +44,7 @@ import CommentsPannel from "src/components/CommentsPannel";
 import Accordion from "src/components/shared/Accordian";
 import { deleteComment, saveComment } from "src/Services/CommentService";
 import Checkbox from "src/components/Checkbox";
-
+import moment from "moment-timezone";
 export interface ActivityData {
   id: string;
   activityName: string;
@@ -55,6 +55,8 @@ export interface ActivityData {
   style: string; // Shape type (line, rectangle, circle, triangle, etc.)
 }
 function ViewGraph() {
+  const userTimeZone = moment.tz.guess();
+  const timeZoneString = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const { id } = useParams();
   const { canWrite, isAdmin } = useAuth();
   const [showCritical, setShowCritical] = useState(false);
@@ -877,7 +879,9 @@ function ViewGraph() {
         .style("fill", "#ffffff")
         .style("font-size", "12px") // Adjust the font size
         .text(function (d) {
-          var formated = moment(d.createdDate).format("DD/MM/YYYY hh:mm");
+          var formated = moment(d.createdDate)
+            .tz(userTimeZone)
+            .format("YYYY-MM-DD HH:mm");
           return "Date: " + formated; // Assuming that the comment data has a property called 'creationDate'
         });
       startSlot
