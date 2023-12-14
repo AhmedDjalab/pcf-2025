@@ -315,8 +315,12 @@ function ViewGraph() {
         .attr("transform", `translate(0, ${totalHeight})`)
         .call(xAxis)
         .selectAll("text")
-        .style("text-anchor", "middle")
-        .attr("dy", "1em");
+        .style("text-anchor", "end") // Align text to the end of the label
+        .attr("dy", "1em")
+        .attr("transform", function () {
+          return "translate(-12, 4)rotate(-80)";
+        })
+        .style("font-size", "12px");
 
       g.append("g")
         .attr("class", "y-axis")
@@ -329,10 +333,11 @@ function ViewGraph() {
 
       // Set the margin for the right y-axis
 
-      const containerWidth2 = svgRef.current?.getBoundingClientRect().width;
+      const containerWidth2 = containerWidth;
 
       // Calculate the position for the right y-axis
-      const yAxisRightPosition = containerWidth2;
+      const yAxisRightPosition =
+        containerWidth2 - margin.left - margin.right - 90;
 
       // Append the right y-axis using the calculated position
       g.append("g")
@@ -350,6 +355,7 @@ function ViewGraph() {
       endDate,
       endDateObject,
       fromDistance,
+      margin.left,
       margin.right,
       margin.top,
       startDate,
@@ -854,12 +860,13 @@ function ViewGraph() {
 
     const tooltip = d3.select("#tooltip");
 
-    const distanceAxisWidth =
-      50 * ((toDistance - fromDistance) / distanceRange) < window.innerWidth
-        ? window.innerWidth
-        : 50 * ((toDistance - fromDistance) / distanceRange);
+    // const distanceAxisWidth =
+    //   50 * ((toDistance - fromDistance) / distanceRange) < window.innerWidth
+    //     ? window.innerWidth
+    //     : 50 * ((toDistance - fromDistance) / distanceRange);
 
-    setContainerWidth(distanceAxisWidth);
+    const distanceAxisWidth = containerWidth - margin.right - margin.left - 100;
+    // setContainerWidth(distanceAxisWidth);
     const xScale = DrawXScale(distanceAxisWidth);
 
     const yScale = d3.scaleTime().domain([startDateObject, endDateObject]);
@@ -922,7 +929,7 @@ function ViewGraph() {
       const currentScale = transform.k;
 
       // Define your minimum scale (you can adjust this)
-      const minScale = 1;
+      const minScale = -10;
 
       // Restrict zooming out beyond the minimum scale
       if (currentScale < minScale) {
@@ -946,9 +953,13 @@ function ViewGraph() {
     svg.on("wheel", (event) => {
       if (event.shiftKey) {
         event.preventDefault();
+        console.log(
+          "🚀 ~ file: ViewGraph.tsx:952 ~ svg.on ~ event.deltaY :",
+          event.deltaY
+        );
 
         // Calculate the zoom scale based on the mousewheel direction
-        const scale = event.deltaY > 0 ? 1.2 : 1 / 1.2;
+        const scale = event.deltaY > 0 ? 1.2 : -5;
 
         // Get the current mouse position
         const svgPoint = d3.pointer(event)[0];
