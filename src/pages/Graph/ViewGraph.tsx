@@ -795,6 +795,8 @@ function ViewGraph() {
           d3.select(this)
             .select(".rect-info-date")
             .style("visibility", "visible");
+          d3.select(this).select(".rect-info-email").style("display", "block");
+          d3.select(this).select(".rect-info-date").style("display", "block");
         })
         .on("mouseout", function () {
           d3.select(this)
@@ -807,6 +809,8 @@ function ViewGraph() {
           d3.select(this)
             .select(".rect-info-date")
             .style("visibility", "visible");
+          d3.select(this).select(".rect-info-email").style("display", "none");
+          d3.select(this).select(".rect-info-date").style("display", "none");
         })
         .call(drag);
 
@@ -827,6 +831,7 @@ function ViewGraph() {
         .style("font-size", "12px")
         .style("fill", "red")
         .style("visibility", "hidden")
+
         .text("X")
         .on("click", function (event, d) {
           // Your code to remove the comment (d) goes here
@@ -862,6 +867,7 @@ function ViewGraph() {
         .attr("y", 5)
         .attr("dy", 35)
         .style("visibility", "hidden")
+        .style("display", "none")
         .style("fill", "#ffffff")
         .style("font-size", "12px") // Adjust the font size
         .text(function (d) {
@@ -873,6 +879,7 @@ function ViewGraph() {
         .append("text")
         .attr("class", "rect-info-date")
         .style("visibility", "hidden")
+        .style("display", "none")
         .attr("x", 20) // Adjust the distance from the "X" icon
         .attr("y", 65) // Adjust the vertical position
         .attr("dy", -5)
