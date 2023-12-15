@@ -154,7 +154,7 @@ const Header = () => {
                 </span>
               </div>
               {popupVisible && (
-                <div className="absolute text-black right-0 mt-2 bg-white text-black-500 text-sm px-4 py-2 rounded-lg shadow-lg">
+                <div className="absolute z-50 text-black right-0 mt-2 bg-white text-black-500 text-sm px-4 py-2 rounded-lg shadow-lg">
                   <p className="mb-2 font-semibold">{user.email}</p>
                   <button
                     onClick={() => {
