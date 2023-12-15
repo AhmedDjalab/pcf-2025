@@ -37,6 +37,7 @@
   "header.contactEmail": "admin@ientreprize.com",
   "header.logout": "Disconnetti",
   "projectForm.title": "Titolo del progetto",
+  "projectForm.project": "Progetto",
   "projectForm.logo": "Logo 1",
   "projectForm.clientCompanyLogo": "Logo 2",
   "projectForm.next": "Avanti",
@@ -226,6 +227,7 @@
     }
   },
   "projectForm.fileType": "Tipo di File",
+
   "header": {
     "createProject": "Crea un Progetto",
     "projects": "Progetti",
@@ -326,6 +328,7 @@
     "cancel": "Annulla",
     "hideComments": "Nascondi i commenti",
     "activityDetailLabel": "Dettagli dell'attività",
-    "utilButtons": "Barra degli strumenti"
+    "utilButtons": "Barra degli strumenti",
+    "selectOption": "Selezionare"
   }
 }

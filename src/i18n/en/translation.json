@@ -37,6 +37,7 @@
   "header.contactEmail": "admin@ientreprize.com",
   "header.logout": "Logout",
   "projectForm.title": "Project Title",
+  "projectForm.project": "Project",
   "projectForm.logo": "Logo 1",
   "projectForm.clientCompanyLogo": "Logo 2",
   "projectForm.next": "Next",
@@ -332,5 +333,6 @@
     "hideComments": "Hide Comments"
   },
 
-  "projectSelection.copy": "Copy"
+  "projectSelection.copy": "Copy",
+  "selectOption": "Select"
 }

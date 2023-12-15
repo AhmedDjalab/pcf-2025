@@ -148,7 +148,8 @@ const TaskSlotsLevelTwoList = ({
           <Dropdown
             id="projectId"
             name="projectId"
-            label={t("projectForm.title")}
+            label={t("projectForm.project")}
+            labelClassName="w-[40%]"
             onChange={(e) => {
               setSelectedProject(e.currentTarget.value);
             }}

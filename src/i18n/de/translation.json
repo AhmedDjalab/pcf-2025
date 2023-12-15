@@ -37,6 +37,7 @@
   "header.contactEmail": "admin@ientreprize.com",
   "header.logout": "Abmelden",
   "projectForm.title": "Projekttitel",
+  "projectForm.project": "Projekt",
   "projectForm.logo": "Logo 1",
   "projectForm.clientCompanyLogo": "Logo 2",
   "projectForm.next": "Weiter",
@@ -327,5 +328,6 @@
     "activityDetailLabel": "Aktivitätsdetails",
     "utilButtons": "Symbolleiste"
   },
-  "projectSelection.copy": "Kopieren"
+  "projectSelection.copy": "Kopieren",
+  "selectOption": "Auswählen"
 }

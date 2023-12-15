@@ -1,6 +1,6 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { classNames } from "src/const/vars";
+import { classNames } from "./shared/Utils";
 
 interface Option {
   id: number;
@@ -14,12 +14,12 @@ interface DropdownProps extends React.InputHTMLAttributes<HTMLSelectElement> {
   optionLabel?: string;
   defaultValue?: any;
   value?: any;
-  onChangeData?: (e: ChangeEvent<HTMLSelectElement>, id: string) => void;
+  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
   error?: string | undefined; // Add the 'error' prop for Formik/Yup error messages
 
   labelDir?: "inLine" | "Above";
   containerClass?: string;
-  setSelectedShapeId?: Function;
+  labelClassName?: string;
 }
 
 const Dropdown = ({
@@ -31,22 +31,22 @@ const Dropdown = ({
   optionLabel,
   defaultValue,
   labelDir = "Above",
-  onChangeData,
   containerClass,
-  setSelectedShapeId,
+  labelClassName,
   error, // Add the 'error' prop here
   ...rest
 }: DropdownProps) => {
   const { t } = useTranslation();
-  let selectedOption: any;
+  let selectedOption;
   if (value && options) {
     selectedOption = options.find(
       (option) => option[optionValue ?? "id"] === value
     );
-  } else {
-    selectedOption = options[0];
   }
-
+  const selectDefaultLabel = useMemo(
+    () => <option value="">{t("selectOption")}</option>,
+    [t]
+  );
   const selectedValue = selectedOption
     ? selectedOption[optionValue ?? "id"]
     : "";
@@ -62,15 +62,18 @@ const Dropdown = ({
     >
       <label
         htmlFor={rest.id}
-        className={`
-        mb-2 block w-[30%] text-sm font-medium
+        className={classNames(
+          labelClassName ?? "",
+          `
+        mb-2 block w-[30%] pl-3 text-sm font-medium
      
         ${
           error
             ? "border-red-500 text-red-700 dark:text-red-500"
             : "text-gray-900 dark:text-white"
         }
-        `}
+        `
+        )}
       >
         {label}
       </label>
@@ -83,8 +86,7 @@ const Dropdown = ({
         `}
         value={value}
       >
-        <option value="">Select an option</option>
-
+        {selectDefaultLabel}
         {options.map((option) => (
           <option key={option.id} value={option[optionValue ?? "id"]}>
             {option[optionLabel ?? "name"]}

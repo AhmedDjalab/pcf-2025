@@ -37,6 +37,8 @@
   "header.contactEmail": "admin@ientreprize.com",
   "header.logout": "Cerrar sesión",
   "projectForm.title": "Título del proyecto",
+  "projectForm.project": "Proyecto",
+
   "projectForm.logo": "Logo 1",
   "projectForm.clientCompanyLogo": "Logo 2",
   "projectForm.next": "Siguiente",
@@ -328,5 +330,6 @@
     "activityDetailLabel": "Detalles de la actividad",
     "utilButtons": "Botones de utilidad"
   },
-  "projectSelection.copy": "Copiar"
+  "projectSelection.copy": "Copiar",
+  "selectOption": "Seleccionar"
 }
