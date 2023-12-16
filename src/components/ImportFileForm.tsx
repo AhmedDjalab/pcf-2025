@@ -11,6 +11,8 @@ import * as XLSX from "xlsx";
 import {
   GraphDataType,
   UdfSetting,
+  addDataDate,
+  addFileName,
   addGraphDataList,
   applyFilter,
   fetchAllProjectsOptions,
@@ -55,6 +57,7 @@ import { useMutation } from "@tanstack/react-query";
 import { persistor } from "src/App";
 import { deleteProject } from "src/Services/ProjectService";
 import { updateDelete } from "typescript";
+import ProjectSettingForm from "./ProjectSettingForm";
 export type FormValues = {
   fromDate: Date;
   toDate: Date;
@@ -93,6 +96,9 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const graphSettings = useSelector((state: RootState) => state.graph.settings);
   const fileType = useSelector(
     (state: RootState) => state.graph.projectSettings.fileType
+  );
+  const fileName = useSelector(
+    (state: RootState) => state.graph.projectSettings.fileName
   );
 
   const graphDataTable = useMemo(() => {
@@ -351,7 +357,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
     if (project) {
       const activities = project.getElementsByTagName("Activity");
-
+      const DataDate = project.getElementsByTagName("DataDate")[0].textContent;
+      dispatch(addDataDate({ dataDate: DataDate }));
       setLoading(true);
       for (let i = 0; i < activities.length; i++) {
         const activity = activities[i];
@@ -431,7 +438,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       // if (sumary) {
       //   return;
       // }
+      const DataDate =
+        project.getElementsByTagName("StatusDate")[0].textContent;
 
+      dispatch(addDataDate({ dataDate: DataDate }));
       for (let i = 0; i < activities.length; i++) {
         const activity = activities[i];
 
@@ -631,6 +641,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     }
 
     const fileName = file.name;
+    dispatch(addFileName({ fileName: fileName }));
     const fileExtension = fileName.split(".").pop()?.toLowerCase();
 
     if (fileExtension !== "xlsx") {
@@ -663,6 +674,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const handlePrimaveraXMLFile = async (file: File) => {
     const fileName = file.name;
     const fileExtension = fileName.split(".").pop()?.toLowerCase();
+
+    dispatch(addFileName({ fileName: fileName }));
     //setGraphData([]);
     if (fileExtension !== "xml") {
       // Show an alert for an invalid file format
@@ -752,6 +765,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     const fileName = file.name;
     const fileExtension = fileName.split(".").pop()?.toLowerCase();
 
+    dispatch(addFileName({ fileName: fileName }));
     if (fileExtension !== "xml") {
       // Show an alert for an invalid file format
       alert(
@@ -1208,13 +1222,21 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           const dateValue = moment.utc(value);
 
           if (dateValue.format("YYYY-MM-DD") === "0001-01-01") {
-            return <div>{t("projectsList.NoDateAvailable")}</div>;
+            return (
+              <div className="dark:bg-boxdark-2 dark:text-bodydark">
+                {t("projectsList.NoDateAvailable")}
+              </div>
+            );
           }
 
           const formattedValue = dateValue
             .tz(userTimeZone)
             .format("DD/MM/YYYY");
-          return <div>{formattedValue}</div>;
+          return (
+            <div className="dark:bg-boxdark-2 dark:text-bodydark">
+              {formattedValue}
+            </div>
+          );
         },
       },
       {
@@ -1225,13 +1247,21 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           const dateValue = moment.utc(value);
 
           if (dateValue.format("YYYY-MM-DD") === "0001-01-01") {
-            return <div>{t("projectsList.NoDateAvailable")}</div>;
+            return (
+              <div className="dark:bg-boxdark-2 dark:text-bodydark">
+                {t("projectsList.NoDateAvailable")}
+              </div>
+            );
           }
 
           const formattedValue = dateValue
             .tz(userTimeZone)
             .format("DD/MM/YYYY");
-          return <div>{formattedValue}</div>;
+          return (
+            <div className="dark:bg-boxdark-2 dark:text-bodydark">
+              {formattedValue}
+            </div>
+          );
         },
       },
       {
@@ -1240,7 +1270,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         Cell: ({ cell: { value, row } }: any) => (
           <input
             type="text"
-            className="min-w-[5rem] focus:outline-none"
+            className="min-w-[5rem] focus:outline-none dark:bg-boxdark-2 dark:text-bodydark"
             value={value}
             readOnly
           />
@@ -1252,7 +1282,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         Cell: ({ cell: { value, row } }: any) => (
           <input
             type="text"
-            className="min-w-[5rem] focus:outline-none"
+            className="min-w-[5rem] focus:outline-none dark:bg-boxdark-2 dark:text-bodydark"
             value={value}
             readOnly
           />
@@ -1264,7 +1294,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         Cell: ({ cell: { value, row } }: any) => (
           <input
             type="text"
-            className="min-w-[2rem] focus:outline-none"
+            className="min-w-[2rem] focus:outline-none dark:bg-boxdark-2 dark:text-bodydark"
             value={value}
             readOnly
           />
@@ -1276,7 +1306,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         Cell: ({ cell: { value, row } }: any) => (
           <input
             type="text"
-            className="min-w-[2rem] focus:outline-none"
+            className="min-w-[2rem] focus:outline-none dark:bg-boxdark-2 dark:text-bodydark"
             value={value}
             readOnly
           />
@@ -1288,7 +1318,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         Cell: ({ cell: { value, row } }: any) => (
           <input
             type="text"
-            className="min-w-[25rem] focus:outline-none"
+            className="min-w-[25rem] focus:outline-none dark:bg-boxdark-2 dark:text-bodydark"
             value={value}
             readOnly
           />
@@ -1336,9 +1366,12 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       {loading ? (
         <Spinner />
       ) : (
-        <label className=" relative dark:bg-boxdark  flex justify-center items-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
+        <label className=" relative dark:bg-boxdark  flex justify-center items-center w-full h-40 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
           {editForm ? (
-            fileSvgIcons()
+            <div className="flex flex-col ">
+              {fileSvgIcons()}
+              <span className="text-center font-semibold">{fileName}</span>
+            </div>
           ) : (
             <>
               <span className="flex items-center space-x-2">

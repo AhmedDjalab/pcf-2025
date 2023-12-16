@@ -19,7 +19,9 @@ export interface Project {
   CreatedAt?: Date;
   ModifierName?: string;
   CreatorName?: string;
+  dataDate?: Date;
   userId?: string;
+  fileName?: string;
 }
 
 export interface ActivityModel {
@@ -40,6 +42,7 @@ export interface ActivityModel {
 }
 
 export interface ActivityStyleModel {
+  id?: string;
   name: string;
   color: string;
   backgroundTextureType: string;

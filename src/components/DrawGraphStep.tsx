@@ -398,7 +398,7 @@ function DrawGraphStep() {
       shapes
         .enter()
         .append((d) => {
-          let shape = shapesData.shapesData.find((x) => x.id === d.style)!;
+          let shape = shapesData.shapesData.find((x) => x.name === d.style)!;
 
           if (shape && shape.type === "line") {
             return document.createElementNS(
@@ -421,11 +421,12 @@ function DrawGraphStep() {
             "circle"
           );
         })
+        .merge(shapes)
         .attr("class", "activity-rectangle")
         .each(function (d: GraphDataType) {
           const defs = svg.select("defs");
           const shapeInCanvas = d3.select(this);
-          let shape = shapesData.shapesData.find((x) => x.id === d.style)!;
+          let shape = shapesData.shapesData.find((x) => x.name === d.style)!;
 
           if (!shape) {
             return;
@@ -485,7 +486,7 @@ function DrawGraphStep() {
                 markersConfig[lineStyleAttr.markerEndName];
               const endArrowMarker = defs
                 .append("marker")
-                .attr("id", `${markerConfig.id}${shape.id}`)
+                .attr("id", `${markerConfig.id}${shape.name}`)
                 .attr("viewBox", markerConfig.config.viewBox)
                 .attr("markerWidth", markerConfig.config.markerWidth)
                 .attr("markerHeight", markerConfig.config.markerHeight)
@@ -509,11 +510,11 @@ function DrawGraphStep() {
 
               .attr(
                 "marker-end",
-                `url(#${lineStyleAttr.markerEndId}${shape.id})`
+                `url(#${lineStyleAttr.markerEndId}${shape.name})`
               )
               .attr(
                 "marker-start",
-                `url(#${lineStyleAttr.markerStartId}${shape.id})`
+                `url(#${lineStyleAttr.markerStartId}${shape.name})`
               )
               .attr("stroke", shapeStroke)
               .attr("stroke-width", () =>
@@ -552,10 +553,10 @@ function DrawGraphStep() {
           }
           let textureId = "";
           if (textureConfig) {
-            textureId = sanitizeClassName(shape.id + textureConfig.id);
+            textureId = sanitizeClassName(shape.name + textureConfig.id);
 
             // svg.call(
-            //   textureConfig?.configuration.id(shape.id).stroke(shapeStroke)
+            //   textureConfig?.configuration.id(shape.name).stroke(shapeStroke)
             // );
             shapeInCanvas.style(
               "fill",
@@ -569,6 +570,7 @@ function DrawGraphStep() {
               // Show the tooltip and position it
               tooltip.style("display", "block");
               tooltip.style("padding", "10px");
+              tooltip.style("z-index", "50");
               tooltip.style("background-color", shape.color);
               tooltip.style("left", event.pageX + "px");
               tooltip.style("top", event.pageY + "px");
@@ -729,7 +731,7 @@ function DrawGraphStep() {
 
       if (selectedTexture) {
         const optionTexture = selectedTexture.configuration
-          .id(sanitizeClassName(shape.id + selectedTexture.id))
+          .id(sanitizeClassName(shape.name + selectedTexture.id))
           .stroke(shape.color);
         svgTexture.call(optionTexture);
       }
@@ -888,28 +890,26 @@ function DrawGraphStep() {
       d3.zoomIdentity.translate(0, 0).scale(1).translate(margin.left, 0) // Adjust based on your margin: ;
     );
   }, [
-    toDistance,
-    fromDistance,
-    distanceRange,
+    containerWidth,
+    margin.right,
+    margin.left,
+    margin.top,
     DrawXScale,
     startDateObject,
     endDateObject,
-    margin.left,
-    margin.top,
     drawAxises,
     drawShapes,
     drawTaskSlot,
     graphSettings.taskSlotsLevelTwo,
     graphSettings.taskSlots,
     zoom,
-    containerWidth,
     containerHeight,
   ]);
 
   useEffect(() => {
     drawD3Chart();
     // Gray border
-  }, [graphData]);
+  }, [graphData, shapesData]);
 
   // const createTexture = async (shape, shapeElement) => {
   //   // Check if there's a texture defined for the shape
@@ -992,7 +992,7 @@ function DrawGraphStep() {
         (x) => x.id === shape.backgroundTexture
       );
 
-      const textureId = sanitizeClassName(shape.id + textureConfig.id);
+      const textureId = sanitizeClassName(shape.name + textureConfig.id);
 
       // const handleMouseOver = () => {
       //   // Select all shapes and fade them out except the one being hovered over
@@ -1036,7 +1036,7 @@ function DrawGraphStep() {
       // }
       return (
         <div
-          key={shape.id + index}
+          key={shape.name + index}
           className="legend-item"
           // onMouseOver={handleMouseOver}
           // onMouseOut={handleMouseOut}
@@ -1051,8 +1051,8 @@ function DrawGraphStep() {
                   x2="30"
                   y2="10"
                   stroke={shape.color}
-                  markerEnd={`url(#${lineStyleAttr.markerEndId}${shape.id})`}
-                  markerStart={`url(#${lineStyleAttr.markerStartId}${shape.id})`}
+                  markerEnd={`url(#${lineStyleAttr.markerEndId}${shape.name})`}
+                  markerStart={`url(#${lineStyleAttr.markerStartId}${shape.name})`}
                   strokeWidth={
                     lineStyleAttr.style
                       ? lineStyleAttr.style["stroke-width"]
@@ -1216,8 +1216,6 @@ function DrawGraphStep() {
   const closeStyleModal = () => {
     setStyleModalOpen(false);
     setSelectedShapeData(null);
-    navigate("/refresh");
-    navigate(-1);
   };
 
   const submitStyleModal = () => {
@@ -1314,7 +1312,10 @@ function DrawGraphStep() {
                 {t("activityForm.save")}
               </button>
             )}
-            <Accordion title={t("drawGraph.utilButtons")}>
+            <Accordion
+              title={t("drawGraph.utilButtons")}
+              isOpenTrigger={selectedShapeData}
+            >
               <div className="my-4 flex justify-center gap-2 ">
                 {/* <button
                   // disabled
@@ -1404,7 +1405,7 @@ function DrawGraphStep() {
                 <button
                   type="button"
                   disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-                  className="px-10 py-2 bg-slate-600 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
+                  className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
                   onClick={() => setStyleModalOpen(true)}
                 >
                   {t("drawGraph.changeStyle")}
@@ -1432,6 +1433,14 @@ function DrawGraphStep() {
                 <div className="flex-grow text-center">
                   <p className="text-2xl">
                     {graphSettings.projectSettings.title}
+                  </p>
+                  <p className="text-lg">
+                    DataDate:
+                    <span className="text-orange-600">
+                      {` ${moment(
+                        graphSettings.projectSettings.dataDate
+                      ).format("DD/MM/YYYY HH:mm")}`}
+                    </span>
                   </p>
                 </div>
                 <img
@@ -1544,8 +1553,8 @@ function DrawGraphStep() {
           {isStyleModalOpen && (
             <StyleForm
               id={selectedShapeData?.style}
-              onSubmit={closeStyleModal}
-              handleClose={submitStyleModal}
+              onSubmit={submitStyleModal}
+              handleClose={closeStyleModal}
             />
           )}
         </div>

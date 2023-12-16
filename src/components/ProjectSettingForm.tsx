@@ -33,7 +33,17 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
   const [fileName, setFileName] = useState("");
   const [clientfileName, setClientFileName] = useState("");
+  const fileType = useSelector(
+    (state: RootState) => state.graph.projectSettings.fileType
+  );
   const [projectFileType, setProjectFileType] = useState(ProjectFileType.XLSX); // Set a default value
+
+  useEffect(() => {
+    if (fileType) {
+      setProjectFileType(fileType);
+    }
+  }, [fileType]);
+
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   const { t } = useTranslation();
 
@@ -141,7 +151,6 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
       )?.id!,
       employeesId: selectedEmployees.map((x) => x.value),
       file: selectedImage,
-      fileName: fileName,
     };
     dispatch(updateProjectSettingsValue({ projectSettings: projectSetting }));
     setCurrentStep((step) => step + 1);

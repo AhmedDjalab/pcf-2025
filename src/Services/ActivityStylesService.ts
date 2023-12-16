@@ -25,3 +25,25 @@ export async function getAllActivityStyles({ projectId }: PaginatingParmas) {
     console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
   }
 }
+
+export async function saveActivityStyle(activityStyle: ActivityStyleModel) {
+  if (activityStyle.id) {
+    const body = { ...activityStyle };
+
+    try {
+      const response = await api.put(apiEndpoint + "/put", body);
+      return response;
+    } catch (error) {
+      console.log(
+        "🚀 ~ file: CompanyService.ts:83 ~ saveCompany ~ error:",
+        error
+      );
+    }
+  }
+  try {
+    const response_1 = await api.post(apiEndpoint + "/post", activityStyle);
+    return response_1;
+  } catch (error_1: any) {
+    console.log(error_1.response);
+  }
+}

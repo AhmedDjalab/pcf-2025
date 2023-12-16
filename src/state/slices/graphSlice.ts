@@ -91,6 +91,7 @@ export interface ProjectSettings {
   employeesId?: string[];
   file?: string;
   fileName?: string;
+  dataDate?: Date;
 }
 export interface GraphSetting {
   graphData?: GraphDataType[];
@@ -312,6 +313,8 @@ export const saveProjectThunk = createAsyncThunk<
       clientLogoUrl: state.graph.projectSettings.clientlogoImg,
       clientLogoId: state.graph.projectSettings.clientlogoImgId,
       fileType: state.graph.projectSettings.fileType,
+      fileName: state.graph.projectSettings.fileName,
+      dataDate: state.graph.projectSettings.dataDate,
       //@ts-ignore
       companyId: getCompanyId(),
       userId: user.id,
@@ -390,7 +393,7 @@ const GraphSlice = createSlice({
       action: PayloadAction<{ projectSettings: ProjectSettings }>
     ) {
       const projectSettings = action.payload.projectSettings;
-      state.projectSettings = { ...projectSettings };
+      state.projectSettings = { ...state.projectSettings, ...projectSettings };
       state.userDefindSettings = [];
     },
 
@@ -455,7 +458,7 @@ const GraphSlice = createSlice({
 
       shapes = uniqueStyles.map((style, index) => {
         const existingShape = state.shapes.shapesData.find(
-          (shape) => shape.id === style
+          (shape) => shape.name === style
         );
 
         if (existingShape) {
@@ -741,6 +744,19 @@ const GraphSlice = createSlice({
       return state;
     },
 
+    addDataDate(state, action: PayloadAction<{ dataDate: string | null }>) {
+      state.projectSettings.dataDate = action.payload.dataDate
+        ? new Date(action.payload.dataDate + "Z")
+        : undefined;
+    },
+    addFileName(state, action: PayloadAction<{ fileName: string }>) {
+      console.warn(
+        "🚀 ~ file: graphSlice.ts:753 ~ addFileName ~ fileName:",
+        action.payload.fileName
+      );
+      state.projectSettings.fileName = action.payload.fileName;
+    },
+
     resetStoreState(state) {
       state.settings = { ...initialState.settings };
       state.projectSettings = { ...initialState.projectSettings };
@@ -852,6 +868,8 @@ const GraphSlice = createSlice({
           clientlogoImg: action.payload.data!.clientLogoUrl,
           clientlogoImgId: action.payload.data!.clientLogoId ?? undefined,
           fileType: action.payload.data!.fileType ?? undefined,
+          fileName: action.payload.data!.fileName ?? undefined,
+          dataDate: action.payload.data!.dataDate ?? undefined,
         },
 
         rawGraphDataFromFile: activities,
@@ -885,7 +903,7 @@ const GraphSlice = createSlice({
               lineType: shape.lineStyleType,
               type: shape.shapeType,
               activityId: [],
-              id: shape.name,
+              id: shape.id!,
             })) ?? [],
         },
         taskSlots:
@@ -1020,6 +1038,8 @@ const GraphSlice = createSlice({
 });
 
 export const {
+  addFileName,
+  addDataDate,
   saveSettings,
   updateShapes,
   updateProjectSettingsValue,

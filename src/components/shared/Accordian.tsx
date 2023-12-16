@@ -1,7 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const Accordion = ({ title, children }: any) => {
+export interface AccordionProps {
+  title: string;
+  children: React.ReactNode;
+  isOpenTrigger: boolean;
+}
+const Accordion = ({ title, children, isOpenTrigger }: AccordionProps) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    setIsOpen(isOpenTrigger);
+  }, [isOpenTrigger]);
 
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
