@@ -54,15 +54,18 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
     finishChainage: Yup.number()
       .required(t("taskSlotsPopUp.errors.required"))
       .min(minDistance, t("taskSlotsPopUp.errors.minDistance", { minDistance }))
-      .max(maxDistance, t("taskSlotsPopUp.errors.maxDistance", { maxDistance }))
-      .test(
-        "is-greater-than-start",
-        t("taskSlotsPopUp.errors.greaterThanStart"),
-        function (finishChainage) {
-          const start = this.parent.startChainage;
-          return finishChainage > start;
-        }
+      .max(
+        maxDistance,
+        t("taskSlotsPopUp.errors.maxDistance", { maxDistance })
       ),
+    // .test(
+    //   "is-greater-than-start",
+    //   t("taskSlotsPopUp.errors.greaterThanStart"),
+    //   function (finishChainage) {
+    //     const start = this.parent.startChainage;
+    //     return finishChainage > start;
+    //   }
+    // ),
     style: Yup.string().required("activityForm.errors.activityStyle"),
   });
 

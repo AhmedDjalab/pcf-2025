@@ -549,7 +549,7 @@ const GraphSlice = createSlice({
     ) {
       var newActivity: GraphDataType = {
         ...action.payload.activity,
-        id: "pcf_" + uuidv4().split("-")[0],
+        activityId: "pcf_" + uuidv4().split("-")[0],
       };
 
       //state.settings.graphData.unshift();

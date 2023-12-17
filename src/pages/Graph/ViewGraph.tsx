@@ -514,16 +514,19 @@ function ViewGraph() {
                   : ""
               );
           } else if (shape.type === "rect") {
-            x1 = Math.min(x1, x2);
-            y1 = Math.min(y1, y2);
-            x2 = Math.max(x1, x2);
-            y2 = Math.max(y1, y2);
+            //!error is here , don't froget writes soultion for this
+
+            // x1 = Math.min(x1, x2);
+            // y1 = Math.min(y1, y2);
+            // x2 = Math.max(x1, x2);
+            // y2 = Math.max(y1, y2);
+
             shapeInCanvas
-              .attr("x", x1)
+              .attr("x", d.finishChainage < d.startChainage ? x2 : x1)
               .attr("y", y1)
               .attr("stroke", shapeStroke)
 
-              .attr("width", x2 - x1)
+              .attr("width", Math.abs(x2 - x1))
               .attr("height", y2 - y1);
           } else if (shape.type === "triangle") {
             // Define the points for the triangle (adjust as needed)
