@@ -1425,72 +1425,50 @@ function ViewGraph() {
   };
   const A4_WIDTH_MM = 270; // A4 width in millimeters
   const A4_HEIGHT_MM = 297; // A4 height in millimeters
-
-  const saveAsPdfOrImage = (format) => {
+  const saveAsPdfOrImage = (format: "pdf" | "image") => {
     const svgContainer = document.getElementById("graph-container");
-    // Save the current zoom transform
-    //drawD3Chart();
 
-    // Calculate the dimensions in pixels based on the user's device DPI
-    const dpi = window.devicePixelRatio || 1; // Get the device DPI
-
-    const pageWidthPx = Math.floor((A4_WIDTH_MM * dpi) / 25.4); // Convert mm to pixels
+    const dpi = window.devicePixelRatio || 1;
+    const pageWidthPx = Math.floor((A4_WIDTH_MM * dpi) / 25.4);
     const pageHeightPx = Math.floor((A4_HEIGHT_MM * dpi) / 25.4);
 
-    // // Adjust the chart container's dimensions using CSS
-    // svgContainer.style.width = `${pageWidthPx}px`;
-    // svgContainer.style.height = `${pageHeightPx}px`;
+    if (format === "pdf") {
+      const pdf = new jsPDF("portrait", "mm", [A4_WIDTH_MM, A4_HEIGHT_MM]);
 
-    domtoimage
-      .toPng(svgContainer, {
-        width: pageWidthPx,
-        height: pageHeightPx,
-      })
-      .then((dataUrl) => {
-        if (format === "pdf") {
-          // Create a PDF document with A4 dimensions minus margins
-          const pdf = new jsPDF("portrait", "mm", [A4_WIDTH_MM, A4_HEIGHT_MM]); // Subtract 4 cm from both width and height
+      // Clone the SVG container to avoid modifying the original
+      const clonedSvg = svgContainer.cloneNode(true);
 
-          const imgWidth = A4_WIDTH_MM; // Width without margins
-          const imgHeight = A4_HEIGHT_MM; // Height without margins
-          const xPosition = 10; // 1 cm left margin
-          const yPosition = 10; // 1 cm top margin
+      // Fetch external stylesheets and inject them into the SVG
+      const styleSheets = Array.from(document.styleSheets);
 
-          pdf.addImage(
-            dataUrl,
-            "PNG",
-            xPosition,
-            yPosition,
-            imgWidth,
-            imgHeight
-          );
-          pdf.save("graph.pdf");
-        } else if (format === "image") {
-          // Create a new SVG element with a white background
-          const svgWithWhiteBackground = document.createElement("div");
-          svgWithWhiteBackground.style.backgroundColor = "white";
-          svgWithWhiteBackground.appendChild(svgContainer.cloneNode(true));
+      const fetchStyles = async (url: string) => {
+        try {
+          const response = await fetch(url);
+          const cssText = await response.text();
 
-          // Convert the modified SVG to an image
-          domtoimage
-            .toPng(svgWithWhiteBackground, {
-              width: pageWidthPx,
-              height: pageHeightPx,
-            })
-            .then((whiteBgDataUrl) => {
-              const image = new Image();
-              image.src = whiteBgDataUrl;
+          const styleElement = document.createElement("style");
+          styleElement.textContent = cssText;
+          clonedSvg.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error fetching stylesheet:", error);
+        }
+      };
 
-              // Create a link element for downloading the image
-              const downloadLink = document.createElement("a");
-              downloadLink.href = whiteBgDataUrl;
-              downloadLink.download = "graph.png"; // Specify the file name here
-
-              // Trigger a click event on the link to initiate the download
-              downloadLink.click();
-            });
+      styleSheets.forEach((styleSheet) => {
+        if (styleSheet.href) {
+          fetchStyles(styleSheet.href);
         }
       });
+
+      // Convert the SVG to XML string
+      const svgXml = new XMLSerializer().serializeToString(clonedSvg);
+
+      // Embed the SVG XML into the PDF
+      pdf.text(svgXml, 10, 10);
+
+      // Save the PDF
+      pdf.save("graph.pdf");
+    }
   };
 
   useEffect(() => {
@@ -1594,31 +1572,52 @@ function ViewGraph() {
   };
   const handleExportAllClick = () => {
     const worksheet = XLSX.utils.json_to_sheet(
-      rawData.map(({ styleId, ...rest }) => rest) // Exclude styleID
+      rawData.map(({ styleId, id, ...rest }) => rest) // Exclude styleID
     );
 
-    // Format the headers to uppercase
-    worksheet["A1"].v = "ID";
-    worksheet["B1"].v = "ACTIVITY NAME";
-    worksheet["C1"].v = "START DATE";
-    worksheet["D1"].v = "FINISH DATE";
-    worksheet["E1"].v = "START CHAINAGE";
-    worksheet["F1"].v = "FINISH CHAINAGE";
-    worksheet["G1"].v = "STYLE";
+    // Define the column headers dynamically based on object keys
+    const headers = Object.keys(
+      rawData.map(({ styleId, id, ...rest }) => rest)[0]
+    );
+
+    // Set column headers
+    headers.forEach((header, index) => {
+      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: index });
+      const headerCell = worksheet[cellAddress] || {};
+      headerCell.v = header.toUpperCase();
+      worksheet[cellAddress] = headerCell;
+    });
 
     // Iterate through the data and trim field values
     for (let i = 2; i <= rawData.length + 1; i++) {
-      worksheet["A" + i].v = (worksheet["A" + i].v || "").trim();
-      worksheet["B" + i].v = (worksheet["B" + i].v || "").trim();
+      const row = i - 1;
 
-      worksheet["G" + i].v = (worksheet["G" + i].v || "").trim();
+      // Iterate through the columns dynamically
+      headers.forEach((col, index) => {
+        const cellAddress = `${XLSX.utils.encode_col(index)}${i}`;
+        const cell = worksheet[cellAddress] || {};
+        console.log(
+          "🚀 ~ file: ViewGraph.tsx:1619 ~ headers.forEach ~ cell:",
+          cell
+        );
+
+        // cell.v = (cell.v || "").trim();
+
+        // Trim values for all columns
+
+        // Format date values if applicable
+        if (rawData[row - 1][col] instanceof Date) {
+          cell.t = "d";
+          cell.z = "yyyy-mm-dd";
+        }
+
+        worksheet[cellAddress] = cell;
+      });
     }
 
     // Create a new workbook and add the worksheet to it
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Graph Data");
-
-    // Export the workbook to an XLSX file
 
     // Export the workbook to an XLSX file
     XLSX.writeFile(workbook, "pcfallData.xlsx");
@@ -1752,23 +1751,23 @@ function ViewGraph() {
                 </button>
                 <button
                   type="button"
-                  className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
+                  className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-300 disabled:bg-gray-600"
                   onClick={handleExportAllClick}
                   disabled={!canWrite && !isAdmin}
                 >
                   {/* {"Export All Data"} */}
                   {t("drawGraph.exportAllData")}
                 </button>
-
-                <button
+                {/* <button
                   type="button"
-                  className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
-                  onClick={handleExportGraphClick}
+                  className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+                  onClick={(e: any) => saveAsPdfOrImage("pdf")}
                   disabled={!canWrite && !isAdmin}
                 >
-                  {/* {"Export Graph Data"} */}
-                  {t("drawGraph.exportGraphData")}
-                </button>
+                  {/* {"Export All Data"} */}
+                  {/* PDF
+                </button>  */}
+
                 <button
                   type="button"
                   disabled={!selectedShapeData || (!canWrite && !isAdmin)}

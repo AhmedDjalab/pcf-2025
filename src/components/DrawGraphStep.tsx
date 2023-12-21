@@ -1152,30 +1152,6 @@ function DrawGraphStep() {
             imgHeight
           );
           pdf.save("graph.pdf");
-        } else if (format === "image") {
-          // Create a new SVG element with a white background
-          const svgWithWhiteBackground = document.createElement("div");
-          svgWithWhiteBackground.style.backgroundColor = "white";
-          svgWithWhiteBackground.appendChild(svgContainer.cloneNode(true));
-
-          // Convert the modified SVG to an image
-          domtoimage
-            .toPng(svgWithWhiteBackground, {
-              width: pageWidthPx,
-              height: pageHeightPx,
-            })
-            .then((whiteBgDataUrl) => {
-              const image = new Image();
-              image.src = whiteBgDataUrl;
-
-              // Create a link element for downloading the image
-              const downloadLink = document.createElement("a");
-              downloadLink.href = whiteBgDataUrl;
-              downloadLink.download = "graph.png"; // Specify the file name here
-
-              // Trigger a click event on the link to initiate the download
-              downloadLink.click();
-            });
         }
       });
   };
@@ -1237,6 +1213,9 @@ function DrawGraphStep() {
     worksheet["E1"].v = "START CHAINAGE";
     worksheet["F1"].v = "FINISH CHAINAGE";
     worksheet["G1"].v = "STYLE";
+    worksheet["H1"].v = "CALENDAR";
+    worksheet["I1"].v = "DURATION";
+    worksheet["J1"].v = "CRITICAL";
 
     // Iterate through the data and trim field values
     for (let i = 2; i <= graphData.length + 1; i++) {
@@ -1266,6 +1245,9 @@ function DrawGraphStep() {
     worksheet["E1"].v = "START CHAINAGE";
     worksheet["F1"].v = "FINISH CHAINAGE";
     worksheet["G1"].v = "STYLE";
+    worksheet["H1"].v = "CALENDAR";
+    worksheet["I1"].v = "DURATION";
+    worksheet["J1"].v = "CRITICAL";
 
     // Iterate through the data and trim field values
     for (let i = 2; i <= rawData.length + 1; i++) {
@@ -1389,19 +1371,9 @@ function DrawGraphStep() {
                   onClick={handleExportAllClick}
                   disabled={!canWrite && !isAdmin}
                 >
-                  {/* {"Export All Data"} */}
                   {t("drawGraph.exportAllData")}
                 </button>
 
-                <button
-                  type="button"
-                  className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
-                  onClick={handleExportGraphClick}
-                  disabled={!canWrite && !isAdmin}
-                >
-                  {/* {"Export Graph Data"} */}
-                  {t("drawGraph.exportGraphData")}
-                </button>
                 <button
                   type="button"
                   disabled={!selectedShapeData || (!canWrite && !isAdmin)}
