@@ -296,9 +296,12 @@
     "MicrosoftProject": "Microsoft Project - XML"
   },
   "AboutUs": {
-    "description": "iEntrepriZe est une plateforme collaborative en ligne qui permet de bâtir des plannings chemin de fer et les partager avec les membres d’une équipe.",
-    "Allrightsreserved": "Tous droits réservés",
-    "isProductOF": "PCF PLANNING CHEMIN DE FER est un produit de iEntrepriZe"
+    "welcomingMessage": "Bienvenue dans l'Univers de iEntrepriZe - Votre Allié en Gestion de Projet!",
+    "description": "Découvrez notre plateforme collaborative en ligne, iEntrepriZe, conçue pour simplifier la création et le partage de plannings chemin de fer au sein de votre équipe.  ",
+    "Allrightsreserved": "© 2023 iEntrepriZe. Tous droits réservés.",
+    "isProductOF": "PCF Planning Chemin de Fer : Un produit innovant d'iEntrepriZe.",
+    "Contact": "Contact :",
+    "Explore": "Explorez notre Plateforme :"
   },
   "DynamicTable": {
     "Search": "Rechercher :",

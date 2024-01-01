@@ -298,9 +298,12 @@
     "MicrosoftProject": "Microsoft Project - XML"
   },
   "AboutUs": {
-    "description": "iEntrepriZe è una piattaforma collaborativa online che consente di creare programmi ferroviari e condividerli con i membri di un team.",
-    "Allrightsreserved": "Tutti i diritti riservati",
-    "isProductOF": "PCF PLANNING CHEMIN DE FER è un prodotto di iEntrepriZe"
+    "welcomingMessage": "Benvenuti nel mondo di iEntrepriZe - Il vostro alleato nella gestione dei progetti!",
+    "description": "Esplorate la nostra piattaforma collaborativa online, iEntrepriZe, progettata per semplificare la creazione e la condivisione di programmi temporali e di posizione all'interno del vostro team.",
+    "Allrightsreserved": "© 2023 iEntrepriZe. Tutti i diritti riservati.",
+    "isProductOF": "PCF Time Location Scheduling: Un prodotto innovativo di iEntrepriZe.",
+    "Contact": "Contatto:",
+    "Explore": "Esplorate la nostra piattaforma:"
   },
   "DynamicTable": {
     "Search": "Ricerca:",

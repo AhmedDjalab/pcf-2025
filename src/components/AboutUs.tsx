@@ -21,9 +21,11 @@ const AboutUs: React.FC = () => {
       <div className=" dark:bg-boxdark  h-screen flex flex-col items-center justify-center space-y-8">
         <div className="flex space-x-4 my-10">
           <img src={logo} alt="PCF" className="h-40 w-80" />
-          <img src={companyLogo} alt="Logo 2" className="h-40 w-100" />
+          <img src={companyLogo} alt="Logo 2" className="h-40 w-80" />
         </div>
-
+        <p className="text-center dark:text-white text-gray-500 ">
+          {t("AboutUs.welcomingMessage")}
+        </p>
         <p className="text-center dark:text-white text-gray-500 ">
           {t("AboutUs.description")}
         </p>
@@ -34,11 +36,13 @@ const AboutUs: React.FC = () => {
         </span>
         <div className="flex space-x-4 items-center">
           <EnvelopeIcon className="h-8 w-8 text-blue-600" />
+          <span>{t("AboutUs.Contact")}</span>
           <span className="text-blue-600">admin@ientreprize.com</span>
         </div>
 
         <div className="flex space-x-4 items-center">
           <GlobeAltIcon className="h-8 w-8 text-blue-600" />
+          <span>{t("AboutUs.Explore")}</span>
           <span className="text-blue-600">
             <a
               href="https://www.ientreprize.com"

@@ -301,9 +301,12 @@
   },
 
   "AboutUs": {
-    "description": "iEntrepriZe is an online collaborative platform that allows building railroad schedules and sharing them with team members.",
-    "Allrightsreserved": "All rights reserved",
-    "isProductOF": "PCF RAILWAY PLANNING is a product of iEntrepriZe"
+    "welcomingMessage": "Welcome to the World of iEntrepriZe - Your Project Management Ally!",
+    "description": "Explore our collaborative online platform, iEntrepriZe, designed to simplify the creation and sharing of time location schedules within your team.   ",
+    "Allrightsreserved": "© 2023 iEntrepriZe. All rights reserved.",
+    "isProductOF": "PCF Time Location Scheduling: An innovative product from iEntrepriZe.",
+    "Contact": "Contact :",
+    "Explore": "Explorez notre Plateforme :"
   },
 
   "DynamicTable": {
