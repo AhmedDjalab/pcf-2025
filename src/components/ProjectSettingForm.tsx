@@ -24,7 +24,7 @@ import { base64ToFile } from "src/Helpers/utils";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { siteName } from "src/variables/Urls";
 
-interface Options {
+export interface Options {
   label: string;
   value: string;
 }
@@ -107,6 +107,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
       }) ?? []
     );
   }, [employeeData, projectSettings.employeesId]);
+
   useEffect(() => {
     if (isSuccess && employeeData) {
       setSelectedEmployees(selectedEmployeesData);

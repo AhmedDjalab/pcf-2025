@@ -56,6 +56,7 @@ export const CommentsUrl = usedUrl + "/Comments";
 export const ActivitiesUrl = usedUrl + "/Activities";
 export const TaskSlotsUrl = usedUrl + "/TaskSlots";
 export const ActivityStylesUrl = usedUrl + "/ActivityStyles";
+export const ProjectEmployeesUrl = usedUrl + "/ProjectEmployees";
 
 export const UploadImagesUrl = ImagesUrl + "/UploadImage";
 export const HubUrl = siteName + "/notificationHub";
