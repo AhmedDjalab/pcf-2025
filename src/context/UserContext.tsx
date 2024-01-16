@@ -79,19 +79,21 @@ export const AuthProvider = ({ children }: any) => {
       let licenses = await getLicenseByUserId(userId, roleName);
       if (!licenses || !licenses?.isValidLicense) {
         toast.error("your License has Been expired please call the support ");
-        // window.location.href = '/auth/login';
+        //window.location.href = "/auth/login";
+        secureLocalStorage.removeItem(tokenKeys);
+        return false;
+      } else {
+        secureLocalStorage.setItem(tokenKeys, userData.token);
+        secureLocalStorage.setItem(LicenseKey, licenses!.id);
+        secureLocalStorage.setItem(CompanyKey, licenses!.companyId);
+        secureLocalStorage.setItem(AuthUserKey, JSON.stringify(userData));
+        setUser(userData);
+        window.location.href = "/";
+        return true;
       }
 
       // get the list of module types
-      secureLocalStorage.setItem(tokenKeys, userData.token);
-      secureLocalStorage.setItem(LicenseKey, licenses!.id);
-      secureLocalStorage.setItem(CompanyKey, licenses!.companyId);
-      secureLocalStorage.setItem(AuthUserKey, JSON.stringify(userData));
 
-      setUser(userData);
-      window.location.href = "/";
-
-      return true;
       //return true;
     } catch (err) {
       return false;
