@@ -23,6 +23,8 @@ import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import { base64ToFile } from "src/Helpers/utils";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { siteName } from "src/variables/Urls";
+import { editEmployee } from "src/Services/EmployeeService";
+import { useParams } from "react-router-dom";
 
 export interface Options {
   label: string;
@@ -30,6 +32,7 @@ export interface Options {
 }
 const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const [projectTitle, setProjectTitle] = useState("");
+  const { id } = useParams();
 
   const [fileName, setFileName] = useState("");
   const [clientfileName, setClientFileName] = useState("");
@@ -252,7 +255,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
               <Select
                 id="employees"
                 name="employees"
-                isDisabled={!canWrite && !isAdmin}
+                isDisabled={(!canWrite && !isAdmin) || id !== undefined}
                 classNames={{
                   control: () => `block w-full rounded-lg border
                     border-gray-300   text-sm
