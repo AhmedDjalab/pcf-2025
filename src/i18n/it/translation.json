@@ -332,6 +332,7 @@
     "hideComments": "Nascondi i commenti",
     "activityDetailLabel": "Dettagli dell'attività",
     "utilButtons": "Barra degli strumenti",
-    "selectOption": "Selezionare"
+    "selectOption": "Selezionare",
+    "showCommentsDetails": "Mostra dettagli dei commenti"
   }
 }

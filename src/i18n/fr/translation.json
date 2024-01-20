@@ -329,7 +329,8 @@
     "cancel": "Annuler",
     "hideComments": "Masquer les commentaires",
     "activityDetailLabel": "Détails de l'activité",
-    "utilButtons": "Barre d'outils"
+    "utilButtons": "Barre d'outils",
+    "showCommentsDetails": "Afficher les détails des commentaires"
   },
   "projectSelection.copy": "Copier",
   "selectOption": "Sélectionner"

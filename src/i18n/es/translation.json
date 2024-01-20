@@ -331,7 +331,8 @@
     "cancel": "Cancelar",
     "hideComments": "Ocultar comentarios",
     "activityDetailLabel": "Detalles de la actividad",
-    "utilButtons": "Botones de utilidad"
+    "utilButtons": "Botones de utilidad",
+    "showCommentsDetails": "Mostrar detalles de los comentarios"
   },
   "projectSelection.copy": "Copiar",
   "selectOption": "Seleccionar"

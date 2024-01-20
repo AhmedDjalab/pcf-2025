@@ -124,6 +124,7 @@ function ViewGraph() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStyleModalOpen, setStyleModalOpen] = useState(false);
   const [hideComments, setHideComments] = useState(false);
+  const [commentsDetails, setCommentsDetails] = useState(false);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const textureDefsRef = useRef<SVGSVGElement | null>(null);
@@ -1191,6 +1192,26 @@ function ViewGraph() {
     }
   }, [hideComments]);
 
+  useEffect(() => {
+    //commentText.style("visibility", commentsDetails ? "visible" : "hidden");
+
+    if (commentsDetails) {
+      // Your logic to show details
+      d3.selectAll(".delete-button").style("visibility", "visible");
+      d3.selectAll(".rect-info").style("visibility", "visible");
+      d3.selectAll(".rect-info-email").style("visibility", "visible");
+      d3.selectAll(".rect-info-date").style("visibility", "visible");
+      d3.selectAll(".rect-info-email").style("display", "block");
+      d3.selectAll(".rect-info-date").style("display", "block");
+    } else {
+      d3.selectAll(".delete-button").style("visibility", "hidden");
+      d3.selectAll(".rect-info").style("visibility", "hidden");
+      d3.selectAll(".rect-info-email").style("visibility", "hidden");
+      d3.selectAll(".rect-info-date").style("visibility", "hidden");
+      d3.selectAll(".rect-info-email").style("display", "block");
+      d3.selectAll(".rect-info-date").style("display", "block");
+    }
+  }, [commentsDetails]);
   const drawD3Chart = useCallback(() => {
     // Set the height attribute of the parent SVG to fit its children
 
@@ -1786,6 +1807,13 @@ function ViewGraph() {
                   checked={hideComments}
                   onChange={() => setHideComments(!hideComments)}
                   label={t("Comments.hideComments")}
+                />
+              </div>
+              <div className=" mt-2 flex items-center">
+                <Checkbox
+                  checked={commentsDetails}
+                  onChange={() => setCommentsDetails(!commentsDetails)}
+                  label={t("Comments.showCommentsDetails")}
                 />
               </div>
               <div className=" mt-2 flex items-center">

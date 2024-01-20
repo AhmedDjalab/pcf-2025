@@ -329,7 +329,8 @@
     "cancel": "Abbrechen",
     "hideComments": "Kommentare ausblenden",
     "activityDetailLabel": "Aktivitätsdetails",
-    "utilButtons": "Symbolleiste"
+    "utilButtons": "Symbolleiste",
+    "showCommentsDetails": "Kommentardetails anzeigen"
   },
   "projectSelection.copy": "Kopieren",
   "selectOption": "Auswählen"
