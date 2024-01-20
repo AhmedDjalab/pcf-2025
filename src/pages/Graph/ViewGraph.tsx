@@ -636,7 +636,7 @@ function ViewGraph() {
                     (d1x - m[0]) ** 2 + (d1y - m[1]) ** 2
                   );
                   if (
-                    distance <= 32 &&
+                    distance <= 100 &&
                     !uniqueShapes.some((sh) => sh.activityId === d1.activityId)
                   ) {
                     // Add unique IDs to the set
@@ -668,7 +668,7 @@ function ViewGraph() {
               setTimeout(function () {
                 // Hide the tooltip after the delay
                 tooltip.style("display", "none");
-              }, 15000);
+              }, 30000);
             })
 
             .on("click", function (event, d) {
