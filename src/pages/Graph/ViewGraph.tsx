@@ -1,5 +1,12 @@
 //@ts-nocheck
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import * as d3 from "d3";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/state";
@@ -18,6 +25,7 @@ import {
   updateGraphSettingsValue,
 } from "src/state/slices/graphSlice";
 import texturesData from "src/const/texturesArray";
+import { renderToStaticMarkup } from "react-dom/server";
 
 import jsPDF from "jspdf";
 import domtoimage from "dom-to-image";
@@ -158,44 +166,96 @@ function ViewGraph() {
     return key.replace(/[^a-zA-Z0-9-_]/g, "-");
   };
 
+  // useLayoutEffect(() => {
+  //   const closeButton = document.getElementById("closeTooltipButton");
+  //   if (closeButton === null) return;
+  //   const closeTooltipOnClick = () => {
+  //     console.log("it iscalling ");
+  //     // Close the tooltip when the button is clicked
+  //     const tooltip = d3.select("#tooltip");
+  //     tooltip.style("display", "none");
+  //   };
+
+  //   // Attach the click event listener
+  //   closeButton.addEventListener("click", closeTooltipOnClick);
+
+  //   // Clean up the event listener when the component unmounts
+  //   return () => {
+  //     closeButton.removeEventListener("click", closeTooltipOnClick);
+  //   };
+  // }, []);
+  window.closeTooltip = () => {
+    const tooltip = d3.select("#tooltip");
+    tooltip.style("display", "none");
+  };
+  window.handleTooltipClick = (event) => {
+    const activityId = event.currentTarget.getAttribute("data-activity-id");
+    const activity = graphData?.filter((x) => x.activityId === activityId)[0];
+    if (activity) {
+      setSelectedShapeData(activity as ActivityData);
+    }
+  };
   const generateTooltipContent = useCallback(
-    (data: GraphDataType) => {
-      return `
-        <strong>ID:</strong> ${data.activityId}<br>
-        <strong>${t("drawGraph.activityDetails.activityNameLabel")}:</strong> ${
-        data.activityName
-      }<br>
-        <strong>${t(
-          "drawGraph.activityDetails.startDateLabel"
-        )}:</strong> ${moment(data.startDate).format("DD/MM/YYYY")}<br>
-        <strong>${t(
-          "drawGraph.activityDetails.finishDateLabel"
-        )}:</strong> ${moment(data.finishDate).format("DD/MM/YYYY")}        
-        <br>
-        <strong>${t("drawGraph.activityDetails.duration")}:</strong> ${
-        data.duration
-      }
-      <br>
-      <strong>${t("drawGraph.activityDetails.calendar")}:</strong> ${
-        data.calendarName
-      }  
-      <br/>
-        <strong>${t(
-          "drawGraph.activityDetails.startChainageLabel"
-        )}:</strong> ${data.startChainage}
-        <br>
-        <strong>${t(
-          "drawGraph.activityDetails.finishChainageLabel"
-        )}:</strong> ${data.finishChainage}
-        <br>
-        <strong>${t("drawGraph.activityDetails.styleLabel")}:</strong> ${
-        data.style
-      }
-       
+    (
+      dataArray: GraphDataType[],
+      tooltip: d3.Selection<d3.BaseType, unknown, HTMLElement, any>
+    ) => {
+      const closeButton = `
+
+      
+        <button style="background-color: transparent; position: absolute;  top: 5px; right: 5px; cursor: pointer;"  onClick="closeTooltip()">X</button>
       `;
+
+      const content = dataArray
+        .map((data, index) => {
+          const shape = shapesData.shapesData.find(
+            (x) => x.name === data.style
+          );
+          const color = shape ? shape.color : "black"; // Default color if not found
+
+          return `
+            <div key="${index}"   onClick="handleTooltipClick(event)" data-activity-id="${
+            data.activityId
+          }" style="padding: 5px; ${
+            index < dataArray.length - 1
+              ? "border-bottom: 1px dotted #ccc;"
+              : ""
+          } background-color: ${color};">
+              <strong>ID:</strong> ${data.activityId}<br>
+              <strong>${t(
+                "drawGraph.activityDetails.activityNameLabel"
+              )}:</strong> ${data.activityName}<br>
+              <strong>${t(
+                "drawGraph.activityDetails.startDateLabel"
+              )}:</strong> ${moment(data.startDate).format("DD/MM/YYYY")}<br>
+              <strong>${t(
+                "drawGraph.activityDetails.finishDateLabel"
+              )}:</strong> ${moment(data.finishDate).format("DD/MM/YYYY")}<br>
+              <strong>${t("drawGraph.activityDetails.duration")}:</strong> ${
+            data.duration
+          }<br>
+              <strong>${t("drawGraph.activityDetails.calendar")}:</strong> ${
+            data.calendarName
+          }<br/>
+              <strong>${t(
+                "drawGraph.activityDetails.startChainageLabel"
+              )}:</strong> ${data.startChainage}<br>
+              <strong>${t(
+                "drawGraph.activityDetails.finishChainageLabel"
+              )}:</strong> ${data.finishChainage}<br>
+              <strong>${t("drawGraph.activityDetails.styleLabel")}:</strong> ${
+            data.style
+          }
+            </div>
+          `;
+        })
+        .join("");
+
+      return `<div style=" position: relative; max-height: 300px; overflow-y: auto; ">${closeButton}${content}</div>`;
     },
-    [t]
+    [t, shapesData]
   );
+
   // const handleDateChange = (dates) => {
   //   const [start, end] = dates;
   //   setStartDate(start);
@@ -556,21 +616,59 @@ function ViewGraph() {
           shapeInCanvas.attr("id", `shape-${(d as GraphDataType).id}`);
 
           shapeInCanvas
-            .on("mouseover", function (event: MouseEvent, d: unknown) {
-              // Show the tooltip and position it
+            .on("mouseover", function (event: MouseEvent, d: GraphDataType) {
+              event.stopPropagation();
+              var m = d3.pointer(event);
+              var txt = "X: " + d;
+
+              // Create a Set to store unique IDs of selected shapes
+              var uniqueShapes = [d];
+
+              // Iterate over all shapes to get their coordinates
+              shapes.enter().each(function (d1) {
+                // Exclude the current shape
+                if (d.activityId !== d1.activityId) {
+                  // Check distance
+                  var d1x = xScale(d1.startChainage);
+                  var d1y = yScale(new Date(d1.startDate));
+
+                  var distance = Math.sqrt(
+                    (d1x - m[0]) ** 2 + (d1y - m[1]) ** 2
+                  );
+                  if (
+                    distance <= 32 &&
+                    !uniqueShapes.some((sh) => sh.activityId === d1.activityId)
+                  ) {
+                    // Add unique IDs to the set
+                    uniqueShapes.push(d1);
+                  }
+                }
+              });
+
+              // Display tooltip
               tooltip.style("display", "block");
               tooltip.style("padding", "10px");
               tooltip.style("z-index", "50");
-              tooltip.style("background-color", shape.color);
               tooltip.style("left", event.pageX + "px");
               tooltip.style("top", event.pageY + "px");
 
+              // Filter the shapes selection based on unique IDs
+              // var tooltipShapes = shapes.enter().filter(function (d) {
+              //   return uniqueShapes.some(
+              //     (shape) => shape.activityId === d.activityId
+              //   );
+              // });
+              console.error("this is data ", uniqueShapes);
               // Display shape data in the tooltip
-              tooltip.html(generateTooltipContent(d as GraphDataType));
+              tooltip.html(generateTooltipContent(uniqueShapes));
             })
+
             .on("mouseout", function () {
               // Hide the tooltip on mouseout
-              tooltip.style("display", "none");
+              setTimeout(function () {
+                // Hide the tooltip after the delay
+                tooltip.style("display", "none");
+              }, 15000);
             })
 
             .on("click", function (event, d) {
@@ -1196,10 +1294,6 @@ function ViewGraph() {
     svg.on("wheel", (event) => {
       if (event.shiftKey) {
         event.preventDefault();
-        console.log(
-          "🚀 ~ file: ViewGraph.tsx:952 ~ svg.on ~ event.deltaY :",
-          event.deltaY
-        );
 
         // Calculate the zoom scale based on the mousewheel direction
         const scale = event.deltaY > 0 ? 1.2 : 1;
@@ -1295,23 +1389,47 @@ function ViewGraph() {
   }, [callTextureData, shapesData.shapesData, textureDefsRef]);
 
   const resetZoom = useCallback(() => {
-    // const svg = d3.select(svgRef.current); // Ensure svgRef.current is defined
-    // const g = svg.select("g"); // Adjust the selector to match your chart structure
+    if (svgRef.current) {
+      const svg = d3.select(svgRef.current);
+      const g = svg.select("g");
 
-    // if (g) {
-    //   // Reset the zoom transform to its initial state
-    //   g.transition().duration(500).call(zoom().transform, zoomIdentity);
-    // }
-    drawD3Chart();
-  }, [drawD3Chart]);
+      // g.transition()
+      //   .duration(750)
+      //   .call(
+      //     zoom.transform,
+      //     d3.zoomIdentity,
+      //     d3.zoomTransform(svg.node()).invert([containerWidth, containerHeight])
+      //   );
+      // console.log("svgRef.current:", svgRef.current);
+      // console.log("g:", g);
+
+      // if (svgRef.current && g) {
+      //   console.log("ths is working ", zoom);
+      //   setZoomLevel(1);
+      //   g.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+      // }
+      if (selectedShapes.length > 0) {
+        setSelectedShapes([]);
+      }
+      drawD3Chart();
+    }
+  }, [drawD3Chart, selectedShapes.length]);
 
   useEffect(() => {
     // Check if any shape name is clicked
     const isShapeNameClicked = selectedShapes.length > 0;
 
     d3.selectAll(".activity-rectangle")
+      .style("z-index", (d: GraphDataType) => {
+        // If a shape name is clicked, enable pointer events only for selected shapes
+        // Otherwise, enable pointer events for all shapes
+        return isShapeNameClicked && !selectedShapes.includes(d.style)
+          ? "z-0"
+          : "z-1000";
+      })
       .transition()
       .duration(200)
+
       .attr("opacity", (d: GraphDataType) => {
         if (isShapeNameClicked) {
           // If a shape name is clicked, set opacity to 0.2 for all shapes except the selected one
@@ -1765,7 +1883,7 @@ function ViewGraph() {
                   disabled={!canWrite && !isAdmin}
                 >
                   {/* {"Export All Data"} */}
-                  {/* PDF
+                {/* PDF
                 </button>  */}
 
                 <button

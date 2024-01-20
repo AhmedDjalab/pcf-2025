@@ -7,7 +7,8 @@ import { usedUrl } from "src/variables/Urls";
 import { getJwt } from "src/Services/AuthService";
 
 const api = axios.create({
-  baseURL: usedUrl, // Replace this with your API base URL
+  baseURL: usedUrl,
+  // Replace this with your API base URL
 });
 
 // Add request interceptor to include the Authorization header if the token is available

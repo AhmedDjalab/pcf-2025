@@ -117,16 +117,16 @@ export async function getProject(projectId: string) {
 }
 
 export async function saveProject(project: Project) {
-  console.log(
-    "🚀 ~ file: ProjectService.ts:82 ~ saveProject ~ project:",
-    project
-  );
+  const headers = {
+    "Content-Encoding": "gzip", // Set the Content-Encoding header to indicate gzip compression
+    "Content-Type": "application/json", // Set the Content-Type header
+  };
 
   if (project.id) {
     const body = { ...project };
 
     try {
-      const response = await api.put(apiEndpoint + "/put", body);
+      const response = await api.put(apiEndpoint + "/put", body, { headers });
       return response;
     } catch (error) {
       console.log(
@@ -137,7 +137,9 @@ export async function saveProject(project: Project) {
   }
   try {
     console.log("this is project", project);
-    const response_1 = await api.post(apiEndpoint + "/post", project);
+    const response_1 = await api.post(apiEndpoint + "/post", project, {
+      headers,
+    });
     return response_1;
   } catch (error_1: any) {
     console.log(error_1.response);
