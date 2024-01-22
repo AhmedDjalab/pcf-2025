@@ -616,86 +616,147 @@ function ViewGraph() {
           }
           shapeInCanvas.attr("id", `shape-${(d as GraphDataType).id}`);
 
-          shapeInCanvas
-            .on("mouseover", function (event: MouseEvent, d: GraphDataType) {
-              event.stopPropagation();
-              var m = d3.pointer(event);
-              var txt = "X: " + d;
+          shapeInCanvas.on(
+            "mouseover",
+            function (event: MouseEvent, d: GraphDataType) {
+              // event.stopPropagation();
+              // var m = d3.pointer(event);
+              // var txt = "X: " + d;
+              // // Create a Set to store unique IDs of selected shapes
+              // var uniqueShapes = [d];
+              // // Iterate over all shapes to get their coordinates
+              // shapes.enter().each(function (d1) {
+              //   // Exclude the current shape
+              //   if (d.activityId !== d1.activityId) {
+              //     // Check distance
+              //     var d1x = xScale(d1.startChainage);
+              //     var d1x2 = xScale(d1.finishChainage);
+              //     var dx = xScale(d.startChainage);
+              //     var dx2 = xScale(d.finishChainage);
+              //     // var d1y = yScale(new Date(d1.startDate));
+              //     var xOverlap = d1x >= dx && d1x2 <= dx2;
+              //     // Check if the activity is within the specified x-axis range and not already in uniqueShapes
+              //     if (
+              //       xOverlap &&
+              //       !uniqueShapes.some((sh) => sh.activityId === d1.activityId)
+              //     ) {
+              //       uniqueShapes.push(d1);
+              //     }
+              //     // var distance = Math.sqrt(
+              //     //   (d1x - m[0]) ** 2 + (d1y - m[1]) ** 2
+              //     // );
+              //     // var distance = Math.sqrt(Math.abs(d1y - m[1])) ** 2;
+              //     // if (
+              //     //   d1x >= dx &&
+              //     //   d1x2 <= dx2 &&
+              //     //   !uniqueShapes.some((sh) => sh.activityId === d1.activityId)
+              //     // ) {
+              //     //   uniqueShapes.push(d1);
+              //     // }
+              //     // if (
+              //     //   distance <= 5 &&
+              //     //   !uniqueShapes.some((sh) => sh.activityId === d1.activityId)
+              //     // ) {
+              //     //   // Add unique IDs to the set
+              //     //   uniqueShapes.push(d1);
+              //     // }
+              //   }
+            }
+          );
 
-              // Create a Set to store unique IDs of selected shapes
-              var uniqueShapes = [d];
+          // // Display tooltip
+          // tooltip.style("display", "block");
+          // tooltip.style("padding", "10px");
+          // tooltip.style("z-index", "50");
+          // tooltip.style("left", event.pageX + "px");
+          // tooltip.style("top", event.pageY + "px");
 
-              // Iterate over all shapes to get their coordinates
-              shapes.enter().each(function (d1) {
-                // Exclude the current shape
-                if (d.activityId !== d1.activityId) {
-                  // Check distance
-                  var d1x = xScale(d1.startChainage);
-                  var d1x2 = xScale(d1.finishChainage);
-                  var dx = xScale(d.startChainage);
-                  var dx2 = xScale(d.finishChainage);
-                  // var d1y = yScale(new Date(d1.startDate));
+          // // Filter the shapes selection based on unique IDs
+          // // var tooltipShapes = shapes.enter().filter(function (d) {
+          // //   return uniqueShapes.some(
+          // //     (shape) => shape.activityId === d.activityId
+          // //   );
+          // // });
+          // console.error("this is data ", uniqueShapes);
+          // // Display shape data in the tooltip
+          // tooltip.html(generateTooltipContent(uniqueShapes));
+        })
 
-                  var xOverlap = d1x >= dx && d1x2 <= dx2;
+        .on("mouseout", function () {
+          // Hide the tooltip on mouseout
+          setTimeout(function () {
+            // Hide the tooltip after the delay
+            tooltip.style("display", "none");
+          }, 30000);
+        })
 
-                  // Check if the activity is within the specified x-axis range and not already in uniqueShapes
-                  if (
-                    xOverlap &&
-                    !uniqueShapes.some((sh) => sh.activityId === d1.activityId)
-                  ) {
-                    uniqueShapes.push(d1);
-                  }
-                  // var distance = Math.sqrt(
-                  //   (d1x - m[0]) ** 2 + (d1y - m[1]) ** 2
-                  // );
-                  // var distance = Math.sqrt(Math.abs(d1y - m[1])) ** 2;
+        .on("click", function (event, d) {
+          event.stopPropagation();
+          var m = d3.pointer(event);
+          var txt = "X: " + d;
 
-                  // if (
-                  //   d1x >= dx &&
-                  //   d1x2 <= dx2 &&
-                  //   !uniqueShapes.some((sh) => sh.activityId === d1.activityId)
-                  // ) {
-                  //   uniqueShapes.push(d1);
-                  // }
-                  // if (
-                  //   distance <= 5 &&
-                  //   !uniqueShapes.some((sh) => sh.activityId === d1.activityId)
-                  // ) {
-                  //   // Add unique IDs to the set
-                  //   uniqueShapes.push(d1);
-                  // }
-                }
-              });
+          // Create a Set to store unique IDs of selected shapes
+          var uniqueShapes = [d];
 
-              // Display tooltip
-              tooltip.style("display", "block");
-              tooltip.style("padding", "10px");
-              tooltip.style("z-index", "50");
-              tooltip.style("left", event.pageX + "px");
-              tooltip.style("top", event.pageY + "px");
+          // Iterate over all shapes to get their coordinates
+          shapes.enter().each(function (d1) {
+            // Exclude the current shape
+            if (d.activityId !== d1.activityId) {
+              // Check distance
+              var d1x = xScale(d1.startChainage);
+              var d1x2 = xScale(d1.finishChainage);
+              var dx = xScale(d.startChainage);
+              var dx2 = xScale(d.finishChainage);
+              // var d1y = yScale(new Date(d1.startDate));
 
-              // Filter the shapes selection based on unique IDs
-              // var tooltipShapes = shapes.enter().filter(function (d) {
-              //   return uniqueShapes.some(
-              //     (shape) => shape.activityId === d.activityId
-              //   );
-              // });
-              console.error("this is data ", uniqueShapes);
-              // Display shape data in the tooltip
-              tooltip.html(generateTooltipContent(uniqueShapes));
-            })
+              var xOverlap = d1x >= dx && d1x2 <= dx2;
 
-            .on("mouseout", function () {
-              // Hide the tooltip on mouseout
-              setTimeout(function () {
-                // Hide the tooltip after the delay
-                tooltip.style("display", "none");
-              }, 30000);
-            })
+              // Check if the activity is within the specified x-axis range and not already in uniqueShapes
+              if (
+                xOverlap &&
+                !uniqueShapes.some((sh) => sh.activityId === d1.activityId)
+              ) {
+                uniqueShapes.push(d1);
+              }
+              // var distance = Math.sqrt(
+              //   (d1x - m[0]) ** 2 + (d1y - m[1]) ** 2
+              // );
+              // var distance = Math.sqrt(Math.abs(d1y - m[1])) ** 2;
 
-            .on("click", function (event, d) {
-              setSelectedShapeData(d as ActivityData);
-            });
+              // if (
+              //   d1x >= dx &&
+              //   d1x2 <= dx2 &&
+              //   !uniqueShapes.some((sh) => sh.activityId === d1.activityId)
+              // ) {
+              //   uniqueShapes.push(d1);
+              // }
+              // if (
+              //   distance <= 5 &&
+              //   !uniqueShapes.some((sh) => sh.activityId === d1.activityId)
+              // ) {
+              //   // Add unique IDs to the set
+              //   uniqueShapes.push(d1);
+              // }
+            }
+
+            // // Display tooltip
+            tooltip.style("display", "block");
+            tooltip.style("padding", "10px");
+            tooltip.style("z-index", "50");
+            tooltip.style("left", event.pageX + "px");
+            tooltip.style("top", event.pageY + "px");
+
+            // // Filter the shapes selection based on unique IDs
+            // // var tooltipShapes = shapes.enter().filter(function (d) {
+            // //   return uniqueShapes.some(
+            // //     (shape) => shape.activityId === d.activityId
+            // //   );
+            // // });
+            // console.error("this is data ", uniqueShapes);
+            // // Display shape data in the tooltip
+            tooltip.html(generateTooltipContent(uniqueShapes));
+            setSelectedShapeData(d as ActivityData);
+          });
         });
 
       // // ?update selection
