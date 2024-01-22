@@ -330,7 +330,7 @@
     "hideComments": "Masquer les commentaires",
     "activityDetailLabel": "Détails de l'activité",
     "utilButtons": "Barre d'outils",
-    "showCommentsDetails": "Afficher les détails des commentaires"
+    "showCommentsDetails": "Afficher l’auteur des commentaires"
   },
   "projectSelection.copy": "Copier",
   "selectOption": "Sélectionner"

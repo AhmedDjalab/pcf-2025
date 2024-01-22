@@ -631,18 +631,39 @@ function ViewGraph() {
                 if (d.activityId !== d1.activityId) {
                   // Check distance
                   var d1x = xScale(d1.startChainage);
-                  var d1y = yScale(new Date(d1.startDate));
+                  var d1x2 = xScale(d1.finishChainage);
+                  var dx = xScale(d.startChainage);
+                  var dx2 = xScale(d.finishChainage);
+                  // var d1y = yScale(new Date(d1.startDate));
 
-                  var distance = Math.sqrt(
-                    (d1x - m[0]) ** 2 + (d1y - m[1]) ** 2
-                  );
+                  var xOverlap = d1x >= dx && d1x2 <= dx2;
+
+                  // Check if the activity is within the specified x-axis range and not already in uniqueShapes
                   if (
-                    distance <= 100 &&
+                    xOverlap &&
                     !uniqueShapes.some((sh) => sh.activityId === d1.activityId)
                   ) {
-                    // Add unique IDs to the set
                     uniqueShapes.push(d1);
                   }
+                  // var distance = Math.sqrt(
+                  //   (d1x - m[0]) ** 2 + (d1y - m[1]) ** 2
+                  // );
+                  // var distance = Math.sqrt(Math.abs(d1y - m[1])) ** 2;
+
+                  // if (
+                  //   d1x >= dx &&
+                  //   d1x2 <= dx2 &&
+                  //   !uniqueShapes.some((sh) => sh.activityId === d1.activityId)
+                  // ) {
+                  //   uniqueShapes.push(d1);
+                  // }
+                  // if (
+                  //   distance <= 5 &&
+                  //   !uniqueShapes.some((sh) => sh.activityId === d1.activityId)
+                  // ) {
+                  //   // Add unique IDs to the set
+                  //   uniqueShapes.push(d1);
+                  // }
                 }
               });
 
