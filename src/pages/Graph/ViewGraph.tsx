@@ -54,8 +54,10 @@ import Accordion from "src/components/shared/Accordian";
 import { deleteComment, saveComment } from "src/Services/CommentService";
 import Checkbox from "src/components/Checkbox";
 import moment from "moment-timezone";
-import { ActivityStyleModel } from "src/types/Project";
+import { ActivityModel, ActivityStyleModel } from "src/types/Project";
 import { saveActivityStyle } from "src/Services/ActivityStylesService";
+import { getActivitiesByActivityId } from "src/Services/ActivityService";
+import { useQuery } from "@tanstack/react-query";
 export interface ActivityData {
   id: string;
   activityName: string;
@@ -144,6 +146,7 @@ function ViewGraph() {
   const [containerWidth, setContainerWidth] = useState(rawcontainerWidth);
   const [containerHeight, setContainerHeight] = useState(height);
   const [selectedCommentId, setSelectedCommentId] = useState(null);
+  const [selectedActivityTooltip, setSelectedActivityTooltip] = useState(null);
 
   // State to manage the selected date range
 
@@ -167,6 +170,26 @@ function ViewGraph() {
     return key.replace(/[^a-zA-Z0-9-_]/g, "-");
   };
 
+  //? this is the tooltip query
+
+  const { data: activitiesData, refetch: refetchActivities } = useQuery({
+    queryKey: ["acitivtiesTooltio", selectedActivityTooltip?.id],
+    queryFn: async () =>
+      await getActivitiesByActivityId({
+        projectId: id,
+        activityId: selectedActivityTooltip.id,
+      }),
+
+    refetchOnWindowFocus: false,
+    staleTime: 6000,
+    enabled: false,
+  });
+
+  // useEffect(() => {
+  //   if (selectedActivityTooltip) {
+  //     refetchActivities();
+  //   }
+  // }, [selectedActivityTooltip, refetchActivities]);
   // useLayoutEffect(() => {
   //   const closeButton = document.getElementById("closeTooltipButton");
   //   if (closeButton === null) return;
@@ -198,7 +221,7 @@ function ViewGraph() {
   };
   const generateTooltipContent = useCallback(
     (
-      dataArray: GraphDataType[],
+      dataArray: ActivityModel[],
       tooltip: d3.Selection<d3.BaseType, unknown, HTMLElement, any>
     ) => {
       const closeButton = `
@@ -225,25 +248,25 @@ function ViewGraph() {
               <strong>ID:</strong> ${data.activityId}<br>
               <strong>${t(
                 "drawGraph.activityDetails.activityNameLabel"
-              )}:</strong> ${data.activityName}<br>
+              )}:</strong> ${data.name}<br>
               <strong>${t(
                 "drawGraph.activityDetails.startDateLabel"
-              )}:</strong> ${moment(data.startDate).format("DD/MM/YYYY")}<br>
+              )}:</strong> ${moment(data.start).format("DD/MM/YYYY")}<br>
               <strong>${t(
                 "drawGraph.activityDetails.finishDateLabel"
-              )}:</strong> ${moment(data.finishDate).format("DD/MM/YYYY")}<br>
+              )}:</strong> ${moment(data.finish).format("DD/MM/YYYY")}<br>
               <strong>${t("drawGraph.activityDetails.duration")}:</strong> ${
             data.duration
           }<br>
               <strong>${t("drawGraph.activityDetails.calendar")}:</strong> ${
-            data.calendarName
+            data.calendar
           }<br/>
               <strong>${t(
                 "drawGraph.activityDetails.startChainageLabel"
-              )}:</strong> ${data.startChainage}<br>
+              )}:</strong> ${data.startPk}<br>
               <strong>${t(
                 "drawGraph.activityDetails.finishChainageLabel"
-              )}:</strong> ${data.finishChainage}<br>
+              )}:</strong> ${data.endPk}<br>
               <strong>${t("drawGraph.activityDetails.styleLabel")}:</strong> ${
             data.style
           }
@@ -252,7 +275,7 @@ function ViewGraph() {
         })
         .join("");
 
-      return `<div style=" position: relative; max-height: 300px; overflow-y: auto; ">${closeButton}${content}</div>`;
+      return `<div style=" position: relative; max-height: 300px; overflow-y: auto; margin:0px; padding:0px ">${closeButton}${content}</div>`;
     },
     [t, shapesData]
   );
@@ -618,23 +641,21 @@ function ViewGraph() {
 
           shapeInCanvas
             .on("mouseover", function (event: MouseEvent, d: GraphDataType) {
-              tooltip.style("display", "block");
-              tooltip.style("padding", "10px");
-              tooltip.style("z-index", "50");
-              tooltip.style("background-color", shape.color);
-              tooltip.style("left", event.pageX + "px");
-              tooltip.style("top", event.pageY + "px");
-              var uniqueShapes = [d];
-
-              // Display shape data in the tooltip
-              tooltip.html(generateTooltipContent(uniqueShapes));
+              // tooltip.style("display", "block");
+              // tooltip.style("padding", "10px");
+              // tooltip.style("z-index", "50");
+              // tooltip.style("background-color", shape.color);
+              // tooltip.style("left", event.pageX + "px");
+              // tooltip.style("top", event.pageY + "px");
+              // setSelectedActivityTooltip(d as ActivityData);
+              // var uniqueShapes = [activitiesData.activities];
+              // // Display shape data in the tooltip
+              // tooltip.html(generateTooltipContent(activitiesData.activities));
               // event.stopPropagation();
               // var m = d3.pointer(event);
               // var txt = "X: " + d;
-
               // // Create a Set to store unique IDs of selected shapes
               // var uniqueShapes = [d];
-
               // // Iterate over all shapes to get their coordinates
               // shapes.enter().each(function (d1) {
               //   // Exclude the current shape
@@ -645,9 +666,7 @@ function ViewGraph() {
               //     var dx = xScale(d.startChainage);
               //     var dx2 = xScale(d.finishChainage);
               //     // var d1y = yScale(new Date(d1.startDate));
-
               //     var xOverlap = d1x >= dx && d1x2 <= dx2;
-
               //     // Check if the activity is within the specified x-axis range and not already in uniqueShapes
               //     if (
               //       xOverlap &&
@@ -659,7 +678,6 @@ function ViewGraph() {
               //     //   (d1x - m[0]) ** 2 + (d1y - m[1]) ** 2
               //     // );
               //     // var distance = Math.sqrt(Math.abs(d1y - m[1])) ** 2;
-
               //     // if (
               //     //   d1x >= dx &&
               //     //   d1x2 <= dx2 &&
@@ -676,14 +694,12 @@ function ViewGraph() {
               //     // }
               //   }
               // });
-
               // // Display tooltip
               // tooltip.style("display", "block");
               // tooltip.style("padding", "10px");
               // tooltip.style("z-index", "50");
               // tooltip.style("left", event.pageX + "px");
               // tooltip.style("top", event.pageY + "px");
-
               // // Filter the shapes selection based on unique IDs
               // // var tooltipShapes = shapes.enter().filter(function (d) {
               // //   return uniqueShapes.some(
@@ -697,14 +713,37 @@ function ViewGraph() {
 
             .on("mouseout", function () {
               // Hide the tooltip on mouseout
-              setTimeout(function () {
-                // Hide the tooltip after the delay
-                tooltip.style("display", "none");
-              }, 30000);
+              // setTimeout(function () {
+              //   // Hide the tooltip after the delay
+              //   tooltip.style("display", "none");
+              // }, 30000);
             })
 
-            .on("click", function (event, d) {
+            .on("click", async function (event, d) {
+              tooltip.style("display", "block");
+              tooltip.style("padding", "0px");
+              tooltip.style("z-index", "50");
+              tooltip.style("background-color", shape.color);
+              tooltip.style("left", event.pageX + "px");
+              tooltip.style("top", event.pageY + "px");
               setSelectedShapeData(d as ActivityData);
+              // setSelectedActivityTooltip(d as ActivityData);
+              // Fetch activities data if not available
+              try {
+                const fetchedActivitiesData = await getActivitiesByActivityId({
+                  projectId: id,
+                  activityId: (d as ActivityData).id,
+                });
+
+                if (fetchedActivitiesData?.activities) {
+                  tooltip.html(
+                    generateTooltipContent(fetchedActivitiesData.activities)
+                  );
+                }
+              } catch (error) {
+                console.error("Error fetching activities:", error);
+                // Handle error if needed
+              }
             });
         });
 
@@ -882,6 +921,7 @@ function ViewGraph() {
       fromDistance,
       generateTooltipContent,
       graphData,
+      id,
       shapesData.shapesData,
       startDateObject,
       toDistance,

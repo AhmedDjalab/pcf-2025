@@ -17,6 +17,8 @@ export interface PaginatingParmas extends filterTypes {
   fromvalue?: number;
   search?: string;
   projectId?: string;
+  orderAsc?: boolean;
+  activityId?: string;
 }
 export async function getActivities({
   fromvalue = 0,
@@ -42,6 +44,29 @@ export async function getActivities({
       },
     };
     const { data } = await api.get(apiEndpoint + "/get", config);
+    return data as ActivitesResponse;
+  } catch (ex: any) {
+    // console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
+  }
+}
+
+export async function getActivitiesByActivityId({
+  takevalue,
+  projectId,
+  activityId,
+  orderAsc,
+}: PaginatingParmas) {
+  try {
+    let config = {
+      params: {
+        take: takevalue,
+        projectId: projectId,
+        activityId: activityId,
+        orderAsc: orderAsc,
+      },
+    };
+    const { data } = await api.get(apiEndpoint + "/GetByActivityId", config);
+    console.warn("🚀 ~ data:", data);
     return data as ActivitesResponse;
   } catch (ex: any) {
     // console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
