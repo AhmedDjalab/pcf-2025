@@ -226,11 +226,8 @@ function ViewGraph() {
       tooltip: d3.Selection<d3.BaseType, unknown, HTMLElement, any>
     ) => {
       const closeButton = `
-
-      
-        <button style="background-color: transparent; position: absolute;  top: 5px; right: 5px; cursor: pointer;"  onClick="closeTooltip()">X</button>
-      `;
-
+      <button style="background-color: transparent; position: absolute; top: 5px; right: 5px; cursor: pointer; z-index: 1;" onClick="closeTooltip()">X</button>
+  `;
       const content = dataArray
         .map((data, index) => {
           const shape = shapesData.shapesData.find(
@@ -252,10 +249,10 @@ function ViewGraph() {
               )}:</strong> ${data.name}<br>
               <strong>${t(
                 "drawGraph.activityDetails.startDateLabel"
-              )}:</strong> ${moment(data.start).format("DD/MM/YYYY")}<br>
+              )}:</strong> ${moment(data.startDate).format("DD/MM/YYYY")}<br>
               <strong>${t(
                 "drawGraph.activityDetails.finishDateLabel"
-              )}:</strong> ${moment(data.finish).format("DD/MM/YYYY")}<br>
+              )}:</strong> ${moment(data.endDate).format("DD/MM/YYYY")}<br>
               <strong>${t("drawGraph.activityDetails.duration")}:</strong> ${
             data.duration
           }<br>
@@ -289,10 +286,16 @@ function ViewGraph() {
       //   }
       // }
 
-      return `<div id="tooltipContainer" style="position: relative; max-height: 300px; overflow-y: auto; margin: 0; padding: 0;">
-          ${closeButton}
+      return `
+      <div  style="position: relative; max-height: 300px; overflow-y: auto; margin: 0; padding: 0;">
+      ${closeButton}
+      <div id="tooltipContainer"  style="overflow-y: auto; max-height: 300px; padding-right: 0px;"> <!-- Adjust padding-right to accommodate the close button width -->
           ${content}
-        </div>`;
+      </div>
+  </div>
+     
+        
+        `;
     },
     [t, shapesData]
   );
