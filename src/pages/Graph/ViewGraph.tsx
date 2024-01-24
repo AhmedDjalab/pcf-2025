@@ -73,7 +73,8 @@ function ViewGraph() {
   const { id } = useParams();
   const { canWrite, isAdmin } = useAuth();
   const [showCritical, setShowCritical] = useState(false);
-
+  const [scrollToActivityId, setScrollToActivityId] = useState(1);
+  const tooltipContainerRef = useRef(null);
   const commentsData = useSelector((state: RootState) => state.graph.comments);
 
   // const [commentsData, setCommentsData] = useState(commentsData1);
@@ -275,11 +276,47 @@ function ViewGraph() {
         })
         .join("");
 
-      return `<div style=" position: relative; max-height: 300px; overflow-y: auto; margin:0px; padding:0px ">${closeButton}${content}</div>`;
+      // Check if scrollToIndex is provided and the container ref is available
+      // if (scrollToIndex !== null && tooltipContainerRef.current) {
+      //   // Scroll to the desired index
+      //   const scrollToElement =
+      //     tooltipContainerRef.current.children[scrollToIndex];
+      //   if (scrollToElement) {
+      //     scrollToElement.scrollIntoView({
+      //       behavior: "smooth",
+      //       block: "start",
+      //     });
+      //   }
+      // }
+
+      return `<div id="tooltipContainer" style="position: relative; max-height: 300px; overflow-y: auto; margin: 0; padding: 0;">
+          ${closeButton}
+          ${content}
+        </div>`;
     },
     [t, shapesData]
   );
 
+  useEffect(() => {
+    // Check if scrollToActivityId is provided and the container ref is available
+    const tooltipContainer = document.getElementById("tooltipContainer");
+
+    if (scrollToActivityId && tooltipContainer) {
+      // Find the element with the matching data-activity-id attribute
+      const scrollToElement = Array.from(tooltipContainer.children).find(
+        (element) =>
+          element.getAttribute("data-activity-id") === scrollToActivityId
+      );
+
+      if (scrollToElement) {
+        // Scroll to the desired element
+        scrollToElement.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }
+  }, [scrollToActivityId]);
   // const handleDateChange = (dates) => {
   //   const [start, end] = dates;
   //   setStartDate(start);
@@ -737,8 +774,9 @@ function ViewGraph() {
 
                 if (fetchedActivitiesData?.activities) {
                   tooltip.html(
-                    generateTooltipContent(fetchedActivitiesData.activities)
+                    generateTooltipContent(fetchedActivitiesData.activities, 3)
                   );
+                  setScrollToActivityId((d as ActivityData).activityId);
                 }
               } catch (error) {
                 console.error("Error fetching activities:", error);

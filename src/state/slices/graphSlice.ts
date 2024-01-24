@@ -788,7 +788,9 @@ const GraphSlice = createSlice({
     });
 
     builder.addCase(fetchActivities.fulfilled, (state, action) => {
+      console.log("🚀 ~ builder.addCase ~ fetchActivities:", fetchActivities);
       state.loading = false;
+
       var activities = action.payload?.activities?.map((act) => ({
         id: act.activityId,
         styleId: act.style,

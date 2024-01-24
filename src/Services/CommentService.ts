@@ -16,6 +16,7 @@ export async function getCommentsByProjectId({
     const { data } = await api.get(CommentsUrl + "/get", config);
     return data as CommentsType[];
   } catch (ex: any) {
+    throw ex;
     // console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
   }
 }
