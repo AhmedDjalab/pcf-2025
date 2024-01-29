@@ -72,7 +72,6 @@ const Projects = () => {
 
   const ActionButtonsCell = ({ value, row }: any) => {
     const employeesId = row.original["employeesId"];
-    console.log("🚀 ~ ActionButtonsCell ~ employeesId:", employeesId);
 
     return (
       <div className="flex gap-2">

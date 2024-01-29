@@ -1847,10 +1847,6 @@ function ViewGraph() {
       headers.forEach((col, index) => {
         const cellAddress = `${XLSX.utils.encode_col(index)}${i}`;
         const cell = worksheet[cellAddress] || {};
-        console.log(
-          "🚀 ~ file: ViewGraph.tsx:1619 ~ headers.forEach ~ cell:",
-          cell
-        );
 
         // cell.v = (cell.v || "").trim();
 

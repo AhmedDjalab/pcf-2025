@@ -750,10 +750,6 @@ const GraphSlice = createSlice({
         : undefined;
     },
     addFileName(state, action: PayloadAction<{ fileName: string }>) {
-      console.warn(
-        "🚀 ~ file: graphSlice.ts:753 ~ addFileName ~ fileName:",
-        action.payload.fileName
-      );
       state.projectSettings.fileName = action.payload.fileName;
     },
 
@@ -788,7 +784,6 @@ const GraphSlice = createSlice({
     });
 
     builder.addCase(fetchActivities.fulfilled, (state, action) => {
-      console.log("🚀 ~ builder.addCase ~ fetchActivities:", fetchActivities);
       state.loading = false;
 
       var activities = action.payload?.activities?.map((act) => ({
@@ -982,10 +977,6 @@ const GraphSlice = createSlice({
       var styles = state.shapes.shapesData.map((s) => {
         if (newStyles) {
           var matchedStyle = newStyles.find((x) => x.name === s.name);
-          console.warn(
-            "🚀 ~ file: graphSlice.ts:960 ~ styles ~ matchedStyle:",
-            matchedStyle
-          );
 
           if (matchedStyle) {
             // Copy specific attributes from ActivityStyleModel to ShapeType

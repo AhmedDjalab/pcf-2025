@@ -8,10 +8,7 @@ export interface PaginatingParmas {
   projectId?: string;
 }
 export async function getAllActivityStyles({ projectId }: PaginatingParmas) {
-  console.error(
-    "🚀 ~ file: ActivityStylesService.ts:11 ~ getAllActivityStyles ~ projectId:",
-    projectId
-  );
+  
 
   try {
     let config = {

@@ -66,7 +66,6 @@ export async function getActivitiesByActivityId({
       },
     };
     const { data } = await api.get(apiEndpoint + "/GetByActivityId", config);
-    console.warn("🚀 ~ data:", data);
     return data as ActivitesResponse;
   } catch (ex: any) {
     // console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
