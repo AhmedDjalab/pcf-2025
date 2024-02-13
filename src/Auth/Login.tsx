@@ -11,6 +11,7 @@ import { FirebaseError } from "firebase/app";
 import logo from "../assets/Logo/logo.png";
 import { useTranslation } from "react-i18next";
 import { loginWithMicrosoft } from "src/Services/AuthService";
+import { ExternalLoginUrl } from "src/variables/Urls";
 
 function Login() {
   const navigate = useNavigate();
@@ -66,13 +67,23 @@ function Login() {
       CommonError(error);
     }
   };
+
+  const handleMicrosoftLogin = () => {
+    // Replace with your actual backend API URL
+    const backendUrl = "https://localhost:44366/api/Accounts/ExternalLogin";
+
+    // Redirect the user to the backend Microsoft login endpoint
+    window.location.href = `${ExternalLoginUrl}?provider=Microsoft&returnUrl=${encodeURIComponent(
+      "/"
+    )}`;
+  };
   const handleMicrsoftLogin = async () => {
     setLoader(true);
 
     try {
       const { request, data } = await loginWithMicrosoft();
       if (request) {
-        window.location.href = request.responseURL;
+        //window.location.href = request.responseURL;
       }
     } catch (error: any) {
       CommonError(error);
@@ -203,9 +214,9 @@ function Login() {
                 </div>
               </form>
 
-              {/* <button onClick={handleMicrsoftLogin}>
+              <button onClick={handleMicrsoftLogin}>
                 Login With microsoft
-              </button> */}
+              </button>
               <div className="flex items-center justify-center space-x-2 text-center">
                 <div className="text-sm text-gray-500 dark:text-gray-400">
                   <p>{t("login.noAccount")}</p>

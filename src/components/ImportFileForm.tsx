@@ -107,6 +107,12 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
     const filteredData = graphSettings.graphData?.filter((item) => {
       const id: string = item.activityId;
+      console.log(
+        "🚀 ~ filteredData ~ item.activityId:",
+        item.activityId,
+        typeof item.activityId
+      );
+
       if (!uniqueIds.has(id) && id.includes(search)) {
         uniqueIds.add(id);
         return true;
@@ -546,7 +552,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             } else {
               // Handle other fields
               if (setting.pcfField === "id") {
-                dataObject["activityId"] = value;
+                dataObject["activityId"] = value.toString();
               } else {
                 if (setting.pcfField === "critical") {
                   const critical: boolean = value == "1" ? true : false;
