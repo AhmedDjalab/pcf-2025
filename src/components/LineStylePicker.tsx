@@ -3,7 +3,10 @@ import useClickOutside from "../hooks/useClickOutside";
 import * as d3 from "d3";
 import { LineStyle } from "../const/linesArray";
 import { default as TypeList } from "./LineStyle";
-import { markersConfig } from "../const/markerAndPatternsConfig";
+import {
+  markersConfig,
+  patternsConfig,
+} from "../const/markerAndPatternsConfig";
 import { useAuth } from "src/context/UserContext";
 
 export interface ILineStylePickerProps {
@@ -79,6 +82,15 @@ const LineStylePicker = ({
                 marker.id + sanitizeClassName(rowId)
               );
             })}
+            {Object.keys(patternsConfig).map((key: any) => {
+              // @ts-ignore
+              const pattern = patternsConfig[key];
+
+              return pattern.content(
+                color,
+                pattern.id + sanitizeClassName(rowId)
+              );
+            })}
           </defs>
 
           <line
@@ -87,8 +99,10 @@ const LineStylePicker = ({
             x2={width - 5}
             y2={height - 10}
             stroke={
-              selectedLineStyle.patternUrl
-                ? `url(#${selectedLineStyle.patternUrl})`
+              selectedLineStyle.patternId
+                ? `url(#${
+                    selectedLineStyle.patternId + sanitizeClassName(rowId)
+                  })`
                 : color
             }
             strokeWidth={
@@ -133,14 +147,26 @@ const LineStylePicker = ({
                 onClick={() => handleLineStyleClick(lineStyle)}
               >
                 <svg width={width} height={height}>
+                  {/* <defs>
+                    {Object.keys(patternsConfig).map((key: any) => {
+                      // @ts-ignore
+                      const pattern = patternsConfig[key];
+
+                      return pattern.content(
+                        pattern.id + sanitizeClassName(rowId)
+                      );
+                    })}
+                  </defs> */}
                   <line
                     x1={startOffset}
                     y1={height - 10}
                     x2={width - 5}
                     y2={height - 10}
                     stroke={
-                      lineStyle.patternUrl
-                        ? `url(#${lineStyle.patternUrl})`
+                      lineStyle.patternId
+                        ? `url(#${
+                            lineStyle.patternId + sanitizeClassName(rowId)
+                          })`
                         : color
                     }
                     strokeWidth={

@@ -25,6 +25,7 @@ import {
   MarkerConfig,
   PatternConfig,
   markersConfig,
+  patternsConfig,
 } from "../const/markerAndPatternsConfig";
 import { useTranslation } from "react-i18next";
 import ActivityTableForm from "./ActivityTableForm";
@@ -37,7 +38,7 @@ import { siteName } from "src/variables/Urls";
 import Spinner from "./Spinner";
 import Accordion from "./shared/Accordian";
 import Checkbox from "./Checkbox";
-
+import ReactDOM from "react-dom";
 export interface ActivityData {
   id: string;
   activityName: string;
@@ -424,7 +425,8 @@ function DrawGraphStep() {
         .merge(shapes)
         .attr("class", "activity-rectangle")
         .each(function (d: GraphDataType) {
-          const defs = svg.select("defs");
+          const contianer = d3.select(containerSVGRef.current);
+          const defs = contianer.select("defs");
           const shapeInCanvas = d3.select(this);
           let shape = shapesData.shapesData.find((x) => x.name === d.style)!;
 
@@ -461,13 +463,68 @@ function DrawGraphStep() {
                 lineStyles.find((x) => x.id === shape.lineType) || {};
             }
 
+            if (
+              lineStyleAttr.patternUrl &&
+              lineStyleAttr.patternId &&
+              lineStyleAttr.patternUrl !== "" &&
+              lineStyleAttr.patternId !== ""
+            ) {
+              // pattern
+
+              const pattern: PatternConfig =
+                patternsConfig[lineStyleAttr.patternUrl];
+              console.warn(
+                "🚀 ~ pattern:",
+                lineStyleAttr,
+                lineStyleAttr.patternUrl
+              );
+
+              const patternDef = defs
+                .append("pattern")
+                .attr("id", `${pattern.id}-${shape.name.replace(/ +/g, "")}`)
+                .attr("width", pattern.width)
+                .attr("height", pattern.height)
+                .attr("patternUnits", pattern.patternUnits)
+                .attr("fill", pattern.fill);
+
+              if (pattern.patternFillType === "Path") {
+                patternDef
+                  .append("path")
+                  .attr("d", pattern.d)
+                  .attr("fill", shapeStroke);
+              } else {
+                patternDef
+                  .append("line")
+                  .attr("x1", pattern.x1)
+                  .attr("x2", pattern.x2)
+                  .attr("y1", pattern.y1)
+                  .attr("y2", pattern.y2)
+                  .attr("stroke", 1)
+                  .attr("fill", shapeStroke);
+              }
+
+              // patternDef
+              //   .append("path")
+              //   .attr("d", markerConfig.config.d)
+              //   .attr("fill", shapeStroke);
+              //}
+              // patternDef.append(() =>
+              //   pattern.content(
+              //     shapeStroke,
+              //     `${id}-${shape.name.replace(/ +/g, "")}`
+              //   )
+              // );
+            }
             if (lineStyleAttr.markerStartName) {
               // addding markers to the defs
               const markerConfig: MarkerConfig =
                 markersConfig[lineStyleAttr.markerStartName];
               const endArrowMarker = defs
                 .append("marker")
-                .attr("id", `${markerConfig.id}${textureConfig.id}`)
+                .attr(
+                  "id",
+                  `${markerConfig.id}-${shape.name.replace(/ +/g, "")}`
+                )
                 .attr("viewBox", markerConfig.config.viewBox)
                 .attr("markerWidth", markerConfig.config.markerWidth)
                 .attr("markerHeight", markerConfig.config.markerHeight)
@@ -486,7 +543,10 @@ function DrawGraphStep() {
                 markersConfig[lineStyleAttr.markerEndName];
               const endArrowMarker = defs
                 .append("marker")
-                .attr("id", `${markerConfig.id}${shape.name}`)
+                .attr(
+                  "id",
+                  `${markerConfig.id}-${shape.name.replace(/ +/g, "")}`
+                )
                 .attr("viewBox", markerConfig.config.viewBox)
                 .attr("markerWidth", markerConfig.config.markerWidth)
                 .attr("markerHeight", markerConfig.config.markerHeight)
@@ -510,13 +570,34 @@ function DrawGraphStep() {
 
               .attr(
                 "marker-end",
-                `url(#${lineStyleAttr.markerEndId}${shape.name})`
+                `url(#${lineStyleAttr.markerEndId}-${shape.name.replace(
+                  / +/g,
+                  ""
+                )})`
               )
               .attr(
                 "marker-start",
-                `url(#${lineStyleAttr.markerStartId}${shape.name})`
+                `url(#${lineStyleAttr.markerStartId}-${shape.name.replace(
+                  / +/g,
+                  ""
+                )})`
               )
-              .attr("stroke", shapeStroke)
+              // stroke={
+              //   selectedLineStyle.patternId
+              //     ? `url(#${
+              //         selectedLineStyle.patternId + sanitizeClassName(rowId)
+              //       })`
+              //     : color
+              // }
+              .attr(
+                "stroke",
+                lineStyleAttr.patternId
+                  ? `url(#${lineStyleAttr.patternId}-${shape.name.replace(
+                      / +/g,
+                      ""
+                    )})`
+                  : shapeStroke
+              )
               .attr("stroke-width", () =>
                 lineStyleAttr.style ? lineStyleAttr.style["stroke-width"] : 2
               )
@@ -1051,8 +1132,12 @@ function DrawGraphStep() {
                   x2="30"
                   y2="10"
                   stroke={shape.color}
-                  markerEnd={`url(#${lineStyleAttr.markerEndId}${shape.name})`}
-                  markerStart={`url(#${lineStyleAttr.markerStartId}${shape.name})`}
+                  markerEnd={`url(#${
+                    lineStyleAttr.markerEndId
+                  }-${shape.name.replace(/ +/g, "")})`}
+                  markerStart={`url(#${
+                    lineStyleAttr.markerStartId
+                  }-${shape.name.replace(/ +/g, "")})`}
                   strokeWidth={
                     lineStyleAttr.style
                       ? lineStyleAttr.style["stroke-width"]
@@ -1433,12 +1518,12 @@ function DrawGraphStep() {
                 >
                   <defs>
                     {/* {patterns.map((pattern) => {
-              return pattern.content(
-                pattern.width,
-                pattern.height,
-                pattern.id
-              );
-            })} */}
+                      return pattern.content(
+                        pattern.width,
+                        pattern.height,
+                        pattern.id
+                      );
+                    })} */}
                   </defs>
                   <g ref={svgRef}></g>
                 </svg>

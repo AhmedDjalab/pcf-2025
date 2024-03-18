@@ -123,6 +123,117 @@ export const lineStyles: LineStyle[] = [
     markerEndName: "arrowEnd",
     markerStartName: "arrowStart",
   },
+
+  // {
+  //   name: "customPattern",
+  //   id: "wave-pattern1",
+  //   patternUrl: "customPattern",
+  //   style: {
+  //     "stroke-width": "5",
+  //   },
+  //   patternId: "wave-pattern1", // Reference to the pattern id in patternsConfig
+  // },
+  // {
+  //   name: "Line13Pattern",
+  //   id: "line-pattern13",
+  //   patternUrl: "Line13Pattern",
+  //   style: {
+  //     "stroke-width": "5",
+  //   },
+  //   patternId: "line-pattern13", // Reference to the pattern id in patternsConfig
+  // },
+  // {
+  //   name: "Line16Pattern",
+  //   id: "line-pattern16",
+  //   patternUrl: "Line16Pattern",
+  //   style: {
+  //     "stroke-width": "10",
+  //   },
+  //   patternId: "line-pattern16", // Reference to the pattern id in patternsConfig
+  // },
+  // // {
+  // //   name: "dashed-pattern5",
+  // //   id: "dashed-pattern5",
+  // //   patternUrl: "dashed-pattern5",
+  // //   style: {
+  // //     "stroke-width": "2",
+  // //     "stroke-dasharray": "15, 10, 5",
+  // //   },
+  // //   patternId: "dashed-pattern5", // Reference to the pattern id in patternsConfig
+  // // },
+  // {
+  //   name: "CirclePattern",
+  //   id: "circle-pattern5",
+  //   patternUrl: "CirclePattern",
+  //   style: {
+  //     "stroke-width": "5",
+  //   },
+  //   patternId: "circle-pattern5", // Reference to the pattern id in patternsConfig
+  // },
+  // {
+  //   name: "horizentalLinePattern",
+  //   id: "hline-pattern5",
+  //   patternUrl: "horizentalLinePattern",
+  //   style: {
+  //     "stroke-width": "5",
+  //   },
+  //   patternId: "hline-pattern5", // Reference to the pattern id in patternsConfig
+  // },
+  // {
+  //   name: "horizentalDashedLinePattern",
+  //   id: "hdashedline-pattern5",
+  //   patternUrl: "horizentalDashedLinePattern",
+  //   style: {
+  //     "stroke-width": "6",
+  //   },
+  //   patternId: "hdashedline-pattern5", // Reference to the pattern id in patternsConfig
+  // },
+  // {
+  //   name: "verticalLinePattern",
+  //   id: "vline-pattern5",
+  //   patternUrl: "verticalLinePattern",
+  //   style: {
+  //     "stroke-width": "10",
+  //   },
+  //   patternId: "vline-pattern5", // Reference to the pattern id in patternsConfig
+  // },
+  // {
+  //   name: "verticalLineLeftPattern",
+  //   id: "vlline-pattern5",
+  //   patternUrl: "verticalLineLeftPattern",
+  //   style: {
+  //     "stroke-width": "10",
+  //   },
+  //   patternId: "vlline-pattern5", // Reference to the pattern id in patternsConfig
+  // },
+  // {
+  //   name: "verticalLineRightPattern",
+  //   id: "vrline-pattern5",
+  //   patternUrl: "verticalLineRightPattern",
+  //   style: {
+  //     "stroke-width": "10",
+  //   },
+  //   patternId: "vrline-pattern5", // Reference to the pattern id in patternsConfig
+  // },
+  // {
+  //   name: "vlineFilledLeftPattern",
+  //   id: "vlineLFilled-pattern5",
+  //   patternUrl: "vlineFilledLeftPattern",
+  //   style: {
+  //     "stroke-width": "10",
+  //   },
+  //   patternId: "vlineLFilled-pattern5", // Reference to the pattern id in patternsConfig
+  // },
+  // {
+  //   name: "vlineFilledRightPattern",
+  //   id: "vlineRFilled-pattern5",
+  //   patternUrl: "vlineFilledRightPattern",
+  //   style: {
+  //     "stroke-width": "10",
+  //   },
+  //   patternId: "vlineRFilled-pattern5", // Reference to the pattern id in patternsConfig
+  // },
+
   // {
   //   name: "bracket  Line",
   //   id: "bracket-start-marker",
