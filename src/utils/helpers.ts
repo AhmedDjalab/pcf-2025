@@ -1,20 +1,22 @@
 // utils/dateUtils.ts
 
+import moment from "moment";
+
 export function formatDateToYYYYMMDD(date: Date): string {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 export function generateEmployeePassword(email: string): string {
-  const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
-  const numbers = '0123456789';
-  const specialChars = '!@#$%^&*()-_=+[]{}|;:,.<>?';
+  const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+  const numbers = "0123456789";
+  const specialChars = "!@#$%^&*()-_=+[]{}|;:,.<>?";
 
   const passwordLength = 12; // You can adjust this length according to your requirements
-  let generatedPassword = '';
-  let charset = '';
+  let generatedPassword = "";
+  let charset = "";
 
   // Generate a unique seed value from the email
   let seed = 0;
@@ -47,4 +49,8 @@ export function generateEmployeePassword(email: string): string {
 export function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
+}
+
+export function AsUTC(date: Date | null | undefined): Date | null {
+  return moment(date).utcOffset(0, true).startOf("day").toDate();
 }

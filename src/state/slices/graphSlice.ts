@@ -41,6 +41,7 @@ import {
 import { getAllActivityStyles } from "src/Services/ActivityStylesService";
 import { getAllTaskSlot } from "src/Services/TaskSlotsService";
 import { TableCellsIcon } from "@heroicons/react/24/solid";
+import { AsUTC } from "src/utils/helpers";
 
 export interface GraphDataType {
   id?: string;
@@ -335,8 +336,8 @@ export const saveProjectThunk = createAsyncThunk<
         id: act.id,
       })),
       graphSettings: {
-        fromDate: new Date(state.graph.settings.fromDate),
-        toDate: new Date(state.graph.settings.toDate),
+        fromDate: AsUTC(new Date(state.graph.settings.fromDate))!,
+        toDate: AsUTC(new Date(state.graph.settings.toDate))!,
         fromDistance: state.graph.settings.fromDistance,
         toDistance: state.graph.settings.toDistance,
         distanceRange: state.graph.settings.distanceRange,
