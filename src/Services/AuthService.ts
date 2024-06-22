@@ -55,18 +55,17 @@ export async function login(email: string, password: string) {
 
 export async function loginWithMicrosoft() {
   const provider = "Microsoft";
-  const url = "/";
-  return await api
-    .post(ExternalLoginUrl, {
-      provider: provider,
-      returnUrl: url,
-    })
-    .then((responce) => {
-      return responce;
-    })
-    .catch((error) => {
-      return error;
-    });
+  const returnUrl = "/";
+  try {
+    const response = await api.post(ExternalLoginUrl, { provider, returnUrl });
+    if (response.data && response.data.Url) {
+      window.location.href = response.data.Url;
+    } else {
+      console.error("No redirect URL found in the response.");
+    }
+  } catch (error) {
+    console.error("Error initiating login:", error);
+  }
 }
 // export function sendSms(number) {
 //   return http.post(apiEndpoint + '/sendSmsCode', {

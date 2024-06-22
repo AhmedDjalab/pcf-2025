@@ -90,6 +90,7 @@ export async function getEmployee(employeeId: string) {
 }
 
 export async function saveEmployee(employee: Employee) {
+  console.warn("🚀🚀🚀🚀 ~ saveEmployee ~ employee:", employee);
   if (employee.id) {
     const body = { ...employee };
 

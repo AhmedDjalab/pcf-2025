@@ -81,10 +81,11 @@ function Login() {
     setLoader(true);
 
     try {
-      const { request, data } = await loginWithMicrosoft();
-      if (request) {
-        //window.location.href = request.responseURL;
-      }
+      // const { request, data } =
+      await loginWithMicrosoft();
+      // if (request) {
+      //   //window.location.href = request.responseURL;
+      // }
     } catch (error: any) {
       CommonError(error);
     }

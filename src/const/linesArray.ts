@@ -224,16 +224,25 @@ export const lineStyles: LineStyle[] = [
   //   },
   //   patternId: "vlineLFilled-pattern5", // Reference to the pattern id in patternsConfig
   // },
-  // {
-  //   name: "vlineFilledRightPattern",
-  //   id: "vlineRFilled-pattern5",
-  //   patternUrl: "vlineFilledRightPattern",
-  //   style: {
-  //     "stroke-width": "10",
-  //   },
-  //   patternId: "vlineRFilled-pattern5", // Reference to the pattern id in patternsConfig
-  // },
+  {
+    name: "LinePattern1",
+    id: "line-pattern1",
+    patternUrl: "line-pattern1",
+    style: {
+      "stroke-width": "10",
+    },
+    patternId: "line-pattern1", // Reference to the pattern id in patternsConfig
+  },
 
+  {
+    name: "LinePattern3",
+    id: "line-pattern3",
+    patternUrl: "line-pattern3",
+    style: {
+      "stroke-width": "10",
+    },
+    patternId: "line-pattern3", // Reference to the pattern id in patternsConfig
+  },
   // {
   //   name: "bracket  Line",
   //   id: "bracket-start-marker",

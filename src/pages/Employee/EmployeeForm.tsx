@@ -80,6 +80,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
         userAdminId: user?.id!,
         //@ts-ignore
         companyId: companyId,
+        id: initialValues?.id ?? undefined,
       };
       // If initialValues is not provided, it's an add operation
       // You can call your addEmployee function from your EmployeeService

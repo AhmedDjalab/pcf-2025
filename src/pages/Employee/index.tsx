@@ -71,6 +71,7 @@ const Employees = () => {
   };
 
   const handleEditClick = (grT: Employee) => {
+    console.warn("🚀 ~ handleEditClick ~ grT:", grT);
     setEdit(grT);
     setIsModalOpen(true);
   };

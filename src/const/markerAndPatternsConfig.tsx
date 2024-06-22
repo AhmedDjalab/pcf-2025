@@ -487,4 +487,417 @@ export const patternsConfig: PatternConfig = {
       </pattern>
     ),
   },
+  LinePattern1: {
+    id: "line-pattern1",
+    width: 6.0,
+    patternFillType: "Line",
+    height: 1,
+    name: "LinePattern1",
+    x1: "0",
+    y1: "0.5",
+    x2: "6.00",
+    y2: "0.5",
+    patternUnits: "userSpaceOnUse",
+    fill: "#000000",
+    content: (color?: string, id?: string) => (
+      <pattern id={id} width="6.00" height="1" patternUnits="userSpaceOnUse">
+        <line
+          x1="0"
+          y1="0.5"
+          x2="6.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="10"
+        />
+      </pattern>
+    ),
+  },
+  LinePattern2: {
+    id: "line-pattern2",
+    width: 6.0,
+    patternFillType: "Line",
+    height: 1,
+    name: "LinePattern2",
+    x1: "0",
+    y1: "0.5",
+    x2: "6.00",
+    y2: "0.5",
+    patternUnits: "userSpaceOnUse",
+    fill: "#000000",
+    content: (color?: string, id?: string) => (
+      <pattern id={id} width="6.00" height="1" patternUnits="userSpaceOnUse">
+        <line
+          x1="0"
+          y1="0.5"
+          x2="3.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="5"
+        />
+        <line
+          x1="3.00"
+          y1="0.5"
+          x2="6.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="1"
+        />
+      </pattern>
+    ),
+  },
+  LinePattern3: {
+    id: "line-pattern3",
+    width: 6.0,
+    patternFillType: "Line",
+    height: 1,
+    name: "LinePattern3",
+    x1: "0",
+    y1: "0.5",
+    x2: "6.00",
+    y2: "0.5",
+    patternUnits: "userSpaceOnUse",
+    fill: "#000000",
+    content: (color?: string, id?: string) => (
+      <pattern id={id} width="6.00" height="1" patternUnits="userSpaceOnUse">
+        <line
+          x1="0"
+          y1="0.25"
+          x2="6.00"
+          y2="0.25"
+          stroke={color}
+          strokeWidth="2"
+        />
+        <line
+          x1="0"
+          y1="0.75"
+          x2="6.00"
+          y2="0.75"
+          stroke={color}
+          strokeWidth="2"
+        />
+      </pattern>
+    ),
+  },
+  LinePattern4: {
+    id: "line-pattern4",
+    width: 6.0,
+    patternFillType: "Line",
+    height: 1,
+    name: "LinePattern4",
+    x1: "0",
+    y1: "0.5",
+    x2: "6.00",
+    y2: "0.5",
+    patternUnits: "userSpaceOnUse",
+    fill: "#000000",
+    content: (color?: string, id?: string) => (
+      <pattern id={id} width="6.00" height="1" patternUnits="userSpaceOnUse">
+        <line
+          x1="0"
+          y1="0.5"
+          x2="6.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="3"
+          strokeDasharray="2,2"
+        />
+      </pattern>
+    ),
+  },
+  LinePattern5: {
+    id: "line-pattern5",
+    width: 6.0,
+    patternFillType: "Line",
+    height: 1,
+    name: "LinePattern5",
+    x1: "0",
+    y1: "0.5",
+    x2: "6.00",
+    y2: "0.5",
+    patternUnits: "userSpaceOnUse",
+    fill: "#000000",
+    content: (color?: string, id?: string) => (
+      <pattern id={id} width="6.00" height="1" patternUnits="userSpaceOnUse">
+        <line
+          x1="0"
+          y1="0.25"
+          x2="6.00"
+          y2="0.25"
+          stroke={color}
+          strokeWidth="2"
+          strokeDasharray="1,3"
+        />
+        <line
+          x1="0"
+          y1="0.75"
+          x2="6.00"
+          y2="0.75"
+          stroke={color}
+          strokeWidth="2"
+          strokeDasharray="1,3"
+        />
+      </pattern>
+    ),
+  },
+  LinePattern6: {
+    id: "line-pattern6",
+    width: 6.0,
+    patternFillType: "Line",
+    height: 1,
+    name: "LinePattern6",
+    x1: "0",
+    y1: "0.5",
+    x2: "6.00",
+    y2: "0.5",
+    patternUnits: "userSpaceOnUse",
+    fill: "#000000",
+    content: (color?: string, id?: string) => (
+      <pattern id={id} width="6.00" height="1" patternUnits="userSpaceOnUse">
+        <line
+          x1="0"
+          y1="0.5"
+          x2="2.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="4"
+        />
+        <line
+          x1="2.00"
+          y1="0.5"
+          x2="4.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="1"
+        />
+        <line
+          x1="4.00"
+          y1="0.5"
+          x2="6.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="4"
+        />
+      </pattern>
+    ),
+  },
+  LinePattern7: {
+    id: "line-pattern7",
+    width: 6.0,
+    patternFillType: "Line",
+    height: 1,
+    name: "LinePattern7",
+    x1: "0",
+    y1: "0.5",
+    x2: "6.00",
+    y2: "0.5",
+    patternUnits: "userSpaceOnUse",
+    fill: "#000000",
+    content: (color?: string, id?: string) => (
+      <pattern id={id} width="6.00" height="1" patternUnits="userSpaceOnUse">
+        <line
+          x1="0"
+          y1="0.5"
+          x2="6.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="3"
+          strokeDasharray="5,1"
+        />
+      </pattern>
+    ),
+  },
+  LinePattern8: {
+    id: "line-pattern8",
+    width: 6.0,
+    patternFillType: "Line",
+    height: 1,
+    name: "LinePattern8",
+    x1: "0",
+    y1: "0.5",
+    x2: "6.00",
+    y2: "0.5",
+    patternUnits: "userSpaceOnUse",
+    fill: "#000000",
+    content: (color?: string, id?: string) => (
+      <pattern id={id} width="6.00" height="1" patternUnits="userSpaceOnUse">
+        <line
+          x1="0"
+          y1="0.5"
+          x2="3.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="6"
+        />
+        <line
+          x1="3.00"
+          y1="0.5"
+          x2="6.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="2"
+        />
+      </pattern>
+    ),
+  },
+  LinePattern9: {
+    id: "line-pattern9",
+    width: 6.0,
+    patternFillType: "Line",
+    height: 1,
+    name: "LinePattern9",
+    x1: "0",
+    y1: "0.5",
+    x2: "6.00",
+    y2: "0.5",
+    patternUnits: "userSpaceOnUse",
+    fill: "#000000",
+    content: (color?: string, id?: string) => (
+      <pattern id={id} width="6.00" height="1" patternUnits="userSpaceOnUse">
+        <line
+          x1="0"
+          y1="0.5"
+          x2="6.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="2"
+          strokeDasharray="0.5,4.5"
+        />
+      </pattern>
+    ),
+  },
+  LinePattern10: {
+    id: "line-pattern10",
+    width: 6.0,
+    patternFillType: "Line",
+    height: 1,
+    name: "LinePattern10",
+    x1: "0",
+    y1: "0.5",
+    x2: "6.00",
+    y2: "0.5",
+    patternUnits: "userSpaceOnUse",
+    fill: "#000000",
+    content: (color?: string, id?: string) => (
+      <pattern id={id} width="6.00" height="1" patternUnits="userSpaceOnUse">
+        <line
+          x1="0"
+          y1="0.25"
+          x2="6.00"
+          y2="0.25"
+          stroke={color}
+          strokeWidth="1"
+        />
+        <line
+          x1="0"
+          y1="0.75"
+          x2="6.00"
+          y2="0.75"
+          stroke={color}
+          strokeWidth="1"
+        />
+      </pattern>
+    ),
+  },
+  LinePattern11: {
+    id: "line-pattern11",
+    width: 6.0,
+    patternFillType: "Line",
+    height: 1,
+    name: "LinePattern11",
+    x1: "0",
+    y1: "0.5",
+    x2: "6.00",
+    y2: "0.5",
+    patternUnits: "userSpaceOnUse",
+    fill: "#000000",
+    content: (color?: string, id?: string) => (
+      <pattern id={id} width="6.00" height="1" patternUnits="userSpaceOnUse">
+        <line
+          x1="0"
+          y1="0.5"
+          x2="2.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="8"
+        />
+        <line
+          x1="2.00"
+          y1="0.5"
+          x2="4.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="2"
+        />
+        <line
+          x1="4.00"
+          y1="0.5"
+          x2="6.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="8"
+        />
+      </pattern>
+    ),
+  },
+  LinePattern12: {
+    id: "line-pattern12",
+    width: 6.0,
+    patternFillType: "Line",
+    height: 1,
+    name: "LinePattern12",
+    x1: "0",
+    y1: "0.5",
+    x2: "6.00",
+    y2: "0.5",
+    patternUnits: "userSpaceOnUse",
+    fill: "#000000",
+    content: (color?: string, id?: string) => (
+      <pattern id={id} width="6.00" height="1" patternUnits="userSpaceOnUse">
+        <line
+          x1="0"
+          y1="0.5"
+          x2="6.00"
+          y2="0.5"
+          stroke={color}
+          strokeWidth="4"
+          strokeDasharray="1,1"
+        />
+      </pattern>
+    ),
+  },
+  LinePattern13: {
+    id: "line-pattern13",
+    width: 6.0,
+    patternFillType: "Line",
+    height: 1,
+    name: "LinePattern13",
+    x1: "0",
+    y1: "0.5",
+    x2: "6.00",
+    y2: "0.5",
+    patternUnits: "userSpaceOnUse",
+    fill: "#000000",
+    content: (color?: string, id?: string) => (
+      <pattern id={id} width="6.00" height="1" patternUnits="userSpaceOnUse">
+        <line
+          x1="0"
+          y1="0.25"
+          x2="6.00"
+          y2="0.25"
+          stroke={color}
+          strokeWidth="2"
+          strokeDasharray="2,3"
+        />
+        <line
+          x1="0"
+          y1="0.75"
+          x2="6.00"
+          y2="0.75"
+          stroke={color}
+          strokeWidth="2"
+          strokeDasharray="2,3"
+        />
+      </pattern>
+    ),
+  },
 };
