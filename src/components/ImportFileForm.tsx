@@ -445,15 +445,17 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       //   return;
       // }
       const DataDate =
-        project.getElementsByTagName("StatusDate")[0].textContent;
+        project.getElementsByTagName("StatusDate")[0]?.textContent ??
+        moment(new Date()).format("DD/MM/YYYY");
 
       dispatch(addDataDate({ dataDate: DataDate }));
       for (let i = 0; i < activities.length; i++) {
         const activity = activities[i];
 
         const activityId = activity.getElementsByTagName("ID")[0].textContent;
+
         const activityName =
-          activity.getElementsByTagName("Name")[0].textContent;
+          activity.getElementsByTagName("Name")[0]?.textContent ?? activityId;
         const startDate = activity.getElementsByTagName("Start")[0].textContent;
         const finishDate =
           activity.getElementsByTagName("Finish")[0].textContent;

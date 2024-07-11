@@ -61,7 +61,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "startHttps": "set HTTPS=true&&react-scripts start"
+    "startHttps": "set HTTPS=true&&react-scripts start",
+    "startHttpsCA": "set HTTPS=true&&set SSL_CRT_FILE=C:/Windows/System32/ca.crt&&set SSL_KEY_FILE=C:/Windows/System32/ca.key&&react-scripts start"
   },
   "eslintConfig": {
     "extends": [
