@@ -173,7 +173,10 @@
       "finishChainageLabel": "PK DE FIN",
       "calendar": "CALENDRIER",
       "duration": "DURÉE (Jour)",
-      "critical": "CRITIQUE"
+      "critical": "CRITIQUE",
+      "quantity": "QUANTITÉ",
+      "productionRate": "TAUX DE PRODUCTION",
+      "workShops": "ATELIERS"
     },
     "changeStyle": "Changer le style",
     "cancelZoomButtonLabel": "Annuler le Zoom",
@@ -215,6 +218,9 @@
     "cancel": "Annuler",
     "calendar": "Calendrier",
     "duration": "DURÉE (Jour)",
+    "quantity": "QUANTITÉ",
+    "productionRate": "TAUX DE PRODUCTION",
+    "workShops": "ATELIERS",
     "errors": {
       "activityName": "Le nom de l'activité est requis",
       "startDate": "La date de début est requise",
@@ -333,5 +339,10 @@
     "showCommentsDetails": "Afficher l’auteur des commentaires"
   },
   "projectSelection.copy": "Copier",
-  "selectOption": "Sélectionner"
+  "selectOption": "Sélectionner",
+  "importFileForm": {
+    "quantity": "Quantité",
+    "ProductionRate": "Taux de production",
+    "workShops": "Ateliers"
+  }
 }

@@ -44,20 +44,20 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
 
       .required("activityForm.errors.endDate"),
 
-    startChainage: Yup.number()
-      .required(t("taskSlotsPopUp.errors.required"))
-      .min(minDistance, t("taskSlotsPopUp.errors.minDistance", { minDistance }))
-      .max(
-        maxDistance,
-        t("taskSlotsPopUp.errors.maxDistance", { maxDistance })
-      ),
-    finishChainage: Yup.number()
-      .required(t("taskSlotsPopUp.errors.required"))
-      .min(minDistance, t("taskSlotsPopUp.errors.minDistance", { minDistance }))
-      .max(
-        maxDistance,
-        t("taskSlotsPopUp.errors.maxDistance", { maxDistance })
-      ),
+    // startChainage: Yup.number()
+    //   .required(t("taskSlotsPopUp.errors.required"))
+    //   .min(minDistance, t("taskSlotsPopUp.errors.minDistance", { minDistance }))
+    //   .max(
+    //     maxDistance,
+    //     t("taskSlotsPopUp.errors.maxDistance", { maxDistance })
+    //   ),
+    // finishChainage: Yup.number()
+    //   .required(t("taskSlotsPopUp.errors.required"))
+    //   .min(minDistance, t("taskSlotsPopUp.errors.minDistance", { minDistance }))
+    //   .max(
+    //     maxDistance,
+    //     t("taskSlotsPopUp.errors.maxDistance", { maxDistance })
+    //   ),
     // .test(
     //   "is-greater-than-start",
     //   t("taskSlotsPopUp.errors.greaterThanStart"),
@@ -109,6 +109,9 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
               style: "",
               activityId: "",
               styleId: "",
+              quantity: 0,
+              productionRate: 0,
+              workShops: 0,
             }
           }
           onSubmit={handleSubmitData}
@@ -226,6 +229,40 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
                   errors={errors}
                 />
               </div>
+              <div className="mb-4">
+                <Input
+                  id="quantity"
+                  type="number"
+                  name="quantity"
+                  label={t("activityForm.quantity")}
+                  onChange={handleChange}
+                  value={values.quantity}
+                  errors={errors}
+                />
+              </div>
+              <div className="mb-4">
+                <Input
+                  id="productionRate"
+                  type="number"
+                  name="productionRate"
+                  label={t("activityForm.productionRate")}
+                  onChange={handleChange}
+                  value={values.productionRate}
+                  errors={errors}
+                />
+              </div>
+              <div className="mb-4">
+                <Input
+                  id="workShops"
+                  type="number"
+                  name="workShops"
+                  label={t("activityForm.workShops")}
+                  onChange={handleChange}
+                  value={values.workShops}
+                  errors={errors}
+                />
+              </div>
+
               <div className="mb-4">
                 {shapesData.length > 0 ? (
                   <Dropdown

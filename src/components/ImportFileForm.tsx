@@ -1346,9 +1346,30 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           <input
             type="checkbox"
             className={`min-w-50 `}
-            checked={value}
+            value={value}
             readOnly
           />
+        ),
+      },
+      {
+        Header: t("importFileForm.quantity"),
+        accessor: "quantity",
+        Cell: ({ cell: { value, row } }: any) => (
+          <input type="number" className={`min-w-50 `} value={value} readOnly />
+        ),
+      },
+      {
+        Header: t("importFileForm.ProductionRate"),
+        accessor: "productionRate",
+        Cell: ({ cell: { value, row } }: any) => (
+          <input type="number" className={`min-w-50 `} value={value} readOnly />
+        ),
+      },
+      {
+        Header: t("importFileForm.workShops"),
+        accessor: "workShops",
+        Cell: ({ cell: { value, row } }: any) => (
+          <input type="number" className={`min-w-50 `} value={value} readOnly />
         ),
       },
       {

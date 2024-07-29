@@ -39,6 +39,9 @@ export interface ActivityModel {
   critical?: boolean;
   graphSettingId?: string;
   projectId?: string;
+  quantity?: number;
+  productionRate?: number;
+  workShops?: number;
 }
 
 export interface ActivityStyleModel {

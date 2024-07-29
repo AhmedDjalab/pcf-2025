@@ -299,6 +299,19 @@ function ViewGraph() {
               <strong>${t(
                 "drawGraph.activityDetails.finishDateLabel"
               )}:</strong> ${moment(data.endDate).format("DD/MM/YYYY")}<br>
+             
+               <strong>${t("drawGraph.activityDetails.quantity")}:</strong> ${
+            data.quantity
+          }
+          <br>
+             <strong>${t("drawGraph.activityDetails.productionRate")}:</strong> ${
+            data.productionRate
+          }
+               <br>
+             <strong>${t("drawGraph.activityDetails.workShops")}:</strong> ${
+            data.workShops
+          }
+          <br>
               <strong>${t("drawGraph.activityDetails.duration")}:</strong> ${
             data.duration
           }<br>
@@ -314,6 +327,8 @@ function ViewGraph() {
               <strong>${t("drawGraph.activityDetails.styleLabel")}:</strong> ${
             data.style
           }
+
+
             </div>
           `;
         })
@@ -2288,6 +2303,21 @@ function ViewGraph() {
                   </div>
                   <div className="border border-gray-700 p-2">
                     {selectedShapeData?.duration}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.quantity}
+                  </div>
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.productionRate")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.productionRate}
+                  </div>
+                  <div className="border border-gray-700 p-2 bg-slate-500">
+                    {t("drawGraph.activityDetails.workShops")}
+                  </div>
+                  <div className="border border-gray-700 p-2">
+                    {selectedShapeData?.workShops}
                   </div>
                 </div>
               </div>

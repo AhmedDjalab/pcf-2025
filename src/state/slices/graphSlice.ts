@@ -56,6 +56,9 @@ export interface GraphDataType {
   calendarName?: string;
   duration?: string;
   critical?: boolean;
+  quantity?: number;
+  productionRate?: number;
+  workShops?: number;
 }
 export interface ShapeType {
   type: "line" | "rect" | "triangle";
@@ -332,7 +335,9 @@ export const saveProjectThunk = createAsyncThunk<
         calendar: act.calendarName ?? "",
         duration: act.duration,
         critical: act.critical,
-
+        quantity: act.quantity,
+        productionRate: act.productionRate,
+        workShops: act.workShops,
         id: act.id,
       })),
       graphSettings: {
@@ -800,6 +805,9 @@ const GraphSlice = createSlice({
         calendarName: act.calendar,
         duration: act.duration,
         critical: act.critical,
+        quantity: act.quantity,
+        productionRate: act.productionRate,
+        workShops: act.workShops,
       }));
       state.settings.graphData = activities ?? [];
 
@@ -855,6 +863,9 @@ const GraphSlice = createSlice({
         calendarName: act.calendar ?? "",
         duration: act.duration,
         critical: act.critical,
+        quantity: act.quantity,
+        productionRate: act.productionRate,
+        workShops: act.workShops,
       }));
       const projectData: GraphCreateType = {
         id: action.payload.data?.id,
