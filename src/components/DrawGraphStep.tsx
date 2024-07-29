@@ -39,6 +39,8 @@ import Spinner from "./Spinner";
 import Accordion from "./shared/Accordian";
 import Checkbox from "./Checkbox";
 import ReactDOM from "react-dom";
+import HypothesisModal from "./HypothesesModal";
+import { EditButton } from "./shared/Button";
 export interface ActivityData {
   id: string;
   activityName: string;
@@ -51,6 +53,7 @@ export interface ActivityData {
 function DrawGraphStep() {
   const { id } = useParams();
   const { user, canWrite, isAdmin } = useAuth();
+  const [showHypothesis, setShowHypothesis] = useState(false);
 
   let graphSettings = useSelector((state: RootState) => state.graph);
   let graphData = useSelector(
@@ -1383,15 +1386,23 @@ function DrawGraphStep() {
                 label={t("drawGraph.showCritical")}
               />
             </div>
-            {(isAdmin || canWrite) && (
-              <button
-                type="button"
-                onClick={handleSaveProject} // Handle going back to the previous step
-                className=" mt-5 bg-blue-400 text-white  hover:bg-blue-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 flex items-center"
-              >
-                {t("activityForm.save")}
-              </button>
-            )}
+
+            <div className="flex justify-between items-center">
+              {(isAdmin || canWrite) && (
+                <button
+                  type="button"
+                  onClick={handleSaveProject} // Handle going back to the previous step
+                  className=" mt-5 bg-blue-400 text-white  hover:bg-blue-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 flex items-center"
+                >
+                  {t("activityForm.save")}
+                </button>
+              )}
+              <div className="  flex float-right">
+                <EditButton onClick={() => setShowHypothesis(true)}>
+                  {t("drawGraph.Hypothesis")}
+                </EditButton>
+              </div>
+            </div>
             <Accordion
               title={t("drawGraph.utilButtons")}
               isOpenTrigger={selectedShapeData}
@@ -1636,6 +1647,16 @@ function DrawGraphStep() {
               handleClose={closeModal}
               minDistance={parseFloat(fromDistance)}
               maxDistance={parseFloat(toDistance)}
+            />
+          )}
+
+          {showHypothesis && (
+            <HypothesisModal
+              hypothesisDescriptions={
+                graphSettings.projectSettings.hypothesisDescriptions
+              }
+              onSubmit={(e) => {}}
+              handleClose={() => setShowHypothesis(false)}
             />
           )}
           {isStyleModalOpen && (

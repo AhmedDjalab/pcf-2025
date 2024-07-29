@@ -22,6 +22,7 @@ export interface Project {
   dataDate?: Date;
   userId?: string;
   fileName?: string;
+  hypothesisDescriptions?: string;
 }
 
 export interface ActivityModel {

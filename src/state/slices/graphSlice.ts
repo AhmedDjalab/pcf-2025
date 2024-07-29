@@ -96,6 +96,7 @@ export interface ProjectSettings {
   file?: string;
   fileName?: string;
   dataDate?: Date;
+  hypothesisDescriptions?: string;
 }
 export interface GraphSetting {
   graphData?: GraphDataType[];
@@ -319,6 +320,9 @@ export const saveProjectThunk = createAsyncThunk<
       fileType: state.graph.projectSettings.fileType,
       fileName: state.graph.projectSettings.fileName,
       dataDate: state.graph.projectSettings.dataDate,
+      hypothesisDescriptions:
+        state.graph.projectSettings.hypothesisDescriptions,
+
       //@ts-ignore
       companyId: getCompanyId(),
       userId: user.id,
@@ -758,6 +762,15 @@ const GraphSlice = createSlice({
     addFileName(state, action: PayloadAction<{ fileName: string }>) {
       state.projectSettings.fileName = action.payload.fileName;
     },
+    addHypothesis(
+      state,
+      action: PayloadAction<{ hypothesisDescriptions: string }>
+    ) {
+      state.projectSettings.hypothesisDescriptions =
+        action.payload.hypothesisDescriptions;
+    },
+
+    ///? fetch cases
 
     resetStoreState(state) {
       state.settings = { ...initialState.settings };
@@ -879,6 +892,8 @@ const GraphSlice = createSlice({
           fileType: action.payload.data!.fileType ?? undefined,
           fileName: action.payload.data!.fileName ?? undefined,
           dataDate: action.payload.data!.dataDate ?? undefined,
+          hypothesisDescriptions:
+            action.payload.data?.hypothesisDescriptions ?? undefined,
         },
 
         rawGraphDataFromFile: activities,
@@ -1065,6 +1080,7 @@ export const {
   updateCommentsList,
   updateComment,
   updateCommentById,
+  addHypothesis,
 } = GraphSlice.actions;
 
 export default GraphSlice.reducer;

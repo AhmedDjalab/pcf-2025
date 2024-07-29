@@ -58,6 +58,8 @@ import { ActivityModel, ActivityStyleModel } from "src/types/Project";
 import { saveActivityStyle } from "src/Services/ActivityStylesService";
 import { getActivitiesByActivityId } from "src/Services/ActivityService";
 import { useQuery } from "@tanstack/react-query";
+import { EditButton } from "src/components/shared/Button";
+import HypothesisModal from "src/components/HypothesesModal";
 export interface ActivityData {
   id: string;
   activityName: string;
@@ -72,6 +74,8 @@ function ViewGraph() {
   const timeZoneString = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const { id } = useParams();
   const { canWrite, isAdmin } = useAuth();
+
+  const [showHypothesis, setShowHypothesis] = useState(false);
   const [showCritical, setShowCritical] = useState(false);
   const [scrollToActivityId, setScrollToActivityId] = useState(1);
   const tooltipContainerRef = useRef(null);
@@ -304,9 +308,9 @@ function ViewGraph() {
             data.quantity
           }
           <br>
-             <strong>${t("drawGraph.activityDetails.productionRate")}:</strong> ${
-            data.productionRate
-          }
+             <strong>${t(
+               "drawGraph.activityDetails.productionRate"
+             )}:</strong> ${data.productionRate}
                <br>
              <strong>${t("drawGraph.activityDetails.workShops")}:</strong> ${
             data.workShops
@@ -2057,6 +2061,11 @@ function ViewGraph() {
     // Check if any shape name is clicked
   }, [graphData, showCritical]);
 
+  const handleSaveProject = async () => {
+    await dispatch(saveProjectThunk(user!));
+    navigate("/projects");
+  };
+
   return (
     <DefaultLayout>
       {graphSettings.loading ? (
@@ -2086,7 +2095,22 @@ function ViewGraph() {
                   label={t("drawGraph.showCritical")}
                 />
               </div>
+
+              <div className=" mt-2 flex items-center">
+                <EditButton onClick={() => setShowHypothesis(true)}>
+                  {t("drawGraph.Hypothesis")}
+                </EditButton>
+              </div>
             </div>
+            {(isAdmin || canWrite) && (
+              <button
+                type="button"
+                onClick={handleSaveProject} // Handle going back to the previous step
+                className=" mt-5 bg-blue-400 text-white  hover:bg-blue-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 flex items-center"
+              >
+                {t("activityForm.save")}
+              </button>
+            )}
             <Accordion
               title={t("drawGraph.utilButtons")}
               isOpenTrigger={selectedShapeData}
@@ -2351,6 +2375,15 @@ function ViewGraph() {
               onSubmit={closeCommentsModal}
               handleClose={submitCommentModal}
               yPosition={selectedShapeData?.startDate}
+            />
+          )}
+          {showHypothesis && (
+            <HypothesisModal
+              hypothesisDescriptions={
+                graphSettings.projectSettings.hypothesisDescriptions
+              }
+              onSubmit={(e) => {}}
+              handleClose={() => setShowHypothesis(false)}
             />
           )}
         </div>

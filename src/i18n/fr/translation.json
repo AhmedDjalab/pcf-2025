@@ -160,7 +160,7 @@
   },
   "drawGraph": {
     "addComments": "Ajouter un commentaire",
-
+    "Hypothesis": "Hypothèse",
     "activityDetailLabel": "Détails de l'activité",
     "utilButtons": "Boutons utilitaires",
     "showCritical": "Afficher les tâches critiques",
@@ -344,5 +344,12 @@
     "quantity": "Quantité",
     "ProductionRate": "Taux de production",
     "workShops": "Ateliers"
+  },
+  "hypothesisModal": {
+    "title": "Hypothèse",
+    "hypothesisTitle": "Titre de l'Hypothèse",
+    "hypothesisDescriptions": "Descriptions de l'Hypothèse",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
   }
 }

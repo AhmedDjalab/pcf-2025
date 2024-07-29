@@ -26,3 +26,5 @@ declare module "uuid";
 declare module "textures";
 declare module "react-scroll";
 declare module "tailwind-datepicker-react";
+declare module "draftjs-to-html";
+declare module "html-to-draftjs";
