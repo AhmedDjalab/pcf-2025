@@ -341,6 +341,12 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           dataObject[setting.pcfField] = textValue;
         } else if (setting.pcfField === "critical") {
           dataObject[setting.pcfField] = textValue === "Yes" ? true : false;
+        } else if (
+          setting.pcfField === "workShops" ||
+          setting.pcfField === "productionRate" ||
+          setting.pcfField === "quantity"
+        ) {
+          dataObject[setting.pcfField] = parseFloat(textValue);
         }
       }
     }

@@ -2095,22 +2095,32 @@ function ViewGraph() {
                   label={t("drawGraph.showCritical")}
                 />
               </div>
-
-              <div className=" mt-2 flex items-center">
-                <EditButton onClick={() => setShowHypothesis(true)}>
-                  {t("drawGraph.Hypothesis")}
-                </EditButton>
-              </div>
             </div>
-            {(isAdmin || canWrite) && (
+            <div className=" mt-2 flex items-center gap-5 ">
+              {(isAdmin || canWrite) && (
+                <button
+                  type="button"
+                  onClick={handleSaveProject} // Handle going back to the previous step
+                  className=" mt-5 bg-blue-400 text-white 
+                   hover:bg-blue-500 focus:outline-none 
+                   focus:ring focus:ring-gray-300 disabled:bg-blue-600 
+                   font-medium rounded-lg text-sm px-5 py-2.5 mb-2 "
+                >
+                  {t("activityForm.save")}
+                </button>
+              )}
+
               <button
                 type="button"
-                onClick={handleSaveProject} // Handle going back to the previous step
-                className=" mt-5 bg-blue-400 text-white  hover:bg-blue-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 flex items-center"
+                onClick={() => setShowHypothesis(true)}
+                className=" mt-5 bg-green-400 text-white 
+                   hover:bg-green-500 focus:outline-none 
+                   focus:ring focus:ring-gray-300 disabled:bg-green-600 
+                   font-medium rounded-lg text-sm px-5 py-2.5 mb-2 "
               >
-                {t("activityForm.save")}
+                {t("drawGraph.Hypothesis")}
               </button>
-            )}
+            </div>
             <Accordion
               title={t("drawGraph.utilButtons")}
               isOpenTrigger={selectedShapeData}

@@ -157,7 +157,10 @@ const HypothesisModal: React.FC<HypothesisModalProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="mb-2 mr-2 rounded-lg border border-primary-700 px-5 py-2.5 text-center text-sm font-medium text-primary-700 hover:bg-primary-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-primary-300 dark:border-primary-500 dark:text-primary-500 dark:hover:bg-primary-600 dark:hover:text-white dark:focus:ring-primary-800"
+                  className=" mt-5 bg-blue-400 text-white 
+                  hover:bg-blue-500 focus:outline-none 
+                  focus:ring focus:ring-gray-300 disabled:bg-blue-600 
+                  font-medium rounded-lg text-sm px-5 py-2.5 mb-2 "
                 >
                   {t("hypothesisModal.save")}
                 </button>

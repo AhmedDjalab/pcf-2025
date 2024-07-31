@@ -117,6 +117,21 @@ export const graphPrimaveraSettings: GraphStringsSetting[] = [
     name: "importFileForm.critical",
     field: "critical",
   },
+  {
+    id: 9,
+    name: "importFileForm.quantity",
+    field: "quantity",
+  },
+  {
+    id: 10,
+    name: "importFileForm.ProductionRate",
+    field: "productionRate",
+  },
+  {
+    id: 11,
+    name: "importFileForm.workShops",
+    field: "workShops",
+  },
 ];
 export const graphStringsMSProjectSettings: GraphStringsSetting[] = [
   // {
@@ -153,6 +168,26 @@ export const graphStringsMSProjectSettings: GraphStringsSetting[] = [
     id: 7,
     name: "drawGraph.activityDetails.styleLabel",
     field: "style",
+  },
+  {
+    id: 8,
+    name: "importFileForm.critical",
+    field: "critical",
+  },
+  {
+    id: 9,
+    name: "importFileForm.quantity",
+    field: "quantity",
+  },
+  {
+    id: 10,
+    name: "importFileForm.ProductionRate",
+    field: "productionRate",
+  },
+  {
+    id: 11,
+    name: "importFileForm.workShops",
+    field: "workShops",
   },
 ];
 
@@ -206,6 +241,21 @@ export const graphStringsXLSXSettings: GraphStringsSetting[] = [
     id: 10,
     name: "importFileForm.critical",
     field: "critical",
+  },
+  {
+    id: 11,
+    name: "importFileForm.quantity",
+    field: "quantity",
+  },
+  {
+    id: 12,
+    name: "importFileForm.ProductionRate",
+    field: "productionRate",
+  },
+  {
+    id: 13,
+    name: "importFileForm.workShops",
+    field: "workShops",
   },
 ];
 
