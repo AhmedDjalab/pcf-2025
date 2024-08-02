@@ -114,19 +114,50 @@ export interface PatternConfig {
     content: (id?: string, width?: any, height?: any) => any;
   };
 }
-
+export type ShapeConfig =
+  | {
+      type: "rect";
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      fill: string;
+    }
+  | { type: "circle"; cx: number; cy: number; r: number; fill: string }
+  | {
+      type: "ellipse";
+      cx: number;
+      cy: number;
+      rx: number;
+      ry: number;
+      fill: string;
+    }
+  | { type: "path"; d: string; fill: string };
 export type MarkerConfig = {
   id: string;
   markerUnits: string;
+  markerType?: "path" | "rect" | "circle" | "ellipse";
   config: {
     viewBox: string;
     markerWidth: number;
     markerHeight: number;
     refX: number;
     refY: number;
+    x?: number;
+    y?: number;
+    cx?: number;
+    cy?: number;
+    r?: number;
+    ry?: number;
+    rx?: number;
+    width?: number;
+    height?: number;
+    stroke?: string;
+    strokeWidth?: number;
     orient: string;
-    markerUnits: string;
+    markerUnits?: string;
     d?: string;
+    shapes?: ShapeConfig[];
   };
   content: (color?: string, id?: string) => JSX.Element;
 };
@@ -213,6 +244,539 @@ export const markersConfig: MarkersConfig = {
           `}
         />
       </marker>
+    ),
+  },
+
+  circle: {
+    id: "circle-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "circle",
+    config: {
+      viewBox: "0 0 10 10",
+      markerWidth: 4,
+      markerHeight: 4,
+      refX: 5,
+      refY: 5,
+      orient: "auto",
+      cx: 5, // Center X for the circle
+      cy: 5, // Center Y for the circle
+      r: 3, // Radius for the circle
+    },
+    content: (color = "black", id = "circle-marker") => (
+      <marker key={id} id={id} {...markersConfig.circle.config} fill={color}>
+        <circle cx="5" cy="5" r="3" width="6" height="6" />
+      </marker>
+    ),
+  },
+  square: {
+    id: "square-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "rect",
+    config: {
+      viewBox: "0 0 10 10",
+      markerWidth: 3,
+      markerHeight: 3,
+      refX: 5,
+      refY: 5,
+      orient: "auto",
+      x: 2, // X coordinate for the top-left corner of the rect
+      y: 2, // Y coordinate for the top-left corner of the rect
+      width: 6, // Width of the rect
+      height: 6, // Height of the rect
+    },
+    content: (color = "black", id = "square-marker") => (
+      <marker key={id} id={id} {...markersConfig.square.config} fill={color}>
+        <rect x="2" y="2" width="6" height="6" />
+      </marker>
+    ),
+  },
+  diamond: {
+    id: "diamond-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "path",
+    config: {
+      viewBox: "0 0 10 10",
+      markerWidth: 4,
+      markerHeight: 4,
+      refX: 5,
+      refY: 5,
+      orient: "auto",
+      d: "M 5 0 L 10 5 L 5 10 L 0 5 z", // Path data for the diamond shape
+    },
+    content: (color = "black", id = "diamond-marker") => (
+      <marker key={id} id={id} {...markersConfig.diamond.config} fill={color}>
+        <path d="M 5 0 L 10 5 L 5 10 L 0 5 z" />
+      </marker>
+    ),
+  },
+  cross: {
+    id: "cross-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "path",
+    config: {
+      viewBox: "0 0 10 10",
+      markerWidth: 8,
+      markerHeight: 8,
+      refX: 5,
+      refY: 5,
+      orient: "auto",
+      d: "M 2 5 L 8 5 M 5 2 L 5 8", // Path data for the cross shape
+      stroke: "black",
+      strokeWidth: 2,
+    },
+    content: (color = "black", id = "cross-marker") => (
+      <marker key={id} id={id} {...markersConfig.cross.config} fill={color}>
+        <path d="M 2 5 L 8 5 M 5 2 L 5 8" stroke={color} strokeWidth="2" />
+      </marker>
+    ),
+  },
+  hexagon: {
+    id: "hexagon-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "path",
+    config: {
+      viewBox: "0 0 10 10",
+      markerWidth: 3,
+      markerHeight: 3,
+      refX: 5,
+      refY: 5,
+      orient: "auto",
+      d: "M 5 0 L 9 2.5 L 9 7.5 L 5 10 L 1 7.5 L 1 2.5 z", // Hexagon shape
+    },
+    content: (color = "black", id = "hexagon-marker") => (
+      <marker key={id} id={id} {...markersConfig.hexagon.config} fill={color}>
+        <path d="M 5 0 L 9 2.5 L 9 7.5 L 5 10 L 1 7.5 L 1 2.5 z" />
+      </marker>
+    ),
+  },
+  pentagon: {
+    id: "pentagon-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "path",
+    config: {
+      viewBox: "0 0 10 10",
+      markerWidth: 3,
+      markerHeight: 3,
+      refX: 5,
+      refY: 5,
+      orient: "auto",
+      d: "M 5 0 L 9 4 L 7 10 L 3 10 L 1 4 z", // Pentagon shape
+    },
+    content: (color = "black", id = "pentagon-marker") => (
+      <marker key={id} id={id} {...markersConfig.pentagon.config} fill={color}>
+        <path d="M 5 0 L 9 4 L 7 10 L 3 10 L 1 4 z" />
+      </marker>
+    ),
+  },
+  burst: {
+    id: "burst-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "path",
+    config: {
+      viewBox: "0 0 10 10",
+      markerWidth: 3,
+      markerHeight: 3,
+      refX: 6,
+      refY: 5,
+      orient: "auto",
+      d: "M 5 0 L 6 3 L 10 4 L 7 6 L 8 10 L 5 8 L 2 10 L 3 6 L 0 4 L 4 3 z", // Star-like burst shape
+    },
+    content: (color = "black", id = "burst-marker") => (
+      <marker key={id} id={id} {...markersConfig.burst.config} fill={color}>
+        <path d="M 5 0 L 6 3 L 10 4 L 7 6 L 8 10 L 5 8 L 2 10 L 3 6 L 0 4 L 4 3 z" />
+      </marker>
+    ),
+  },
+
+  // ellipse: {
+  //   id: "ellipse-marker",
+  //   markerUnits: "userSpaceOnUse",
+  //   markerType: "ellipse",
+  //   config: {
+  //     viewBox: "0 0 10 10",
+  //     markerWidth: 3,
+  //     markerHeight: 3,
+  //     refX: 5,
+  //     refY: 5,
+  //     orient: "auto",
+  //     cx: 5, // Center X for the ellipse
+  //     cy: 5, // Center Y for the ellipse
+  //     rx: 5, // Radius X for the ellipse
+  //     ry: 5, // Radius Y for the ellipse
+  //   },
+  //   content: (color = "black", id = "ellipse-marker") => (
+  //     <marker key={id} id={id} {...markersConfig.ellipse.config} fill={color}>
+  //       <ellipse cx="5" cy="5" rx="3" ry="5" />
+  //     </marker>
+  //   ),
+  // },
+
+  bolt: {
+    id: "bolt-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "path",
+    config: {
+      viewBox: "0 0 10 10",
+      markerWidth: 3,
+      markerHeight: 3,
+      refX: 5,
+      refY: 5,
+      orient: "auto",
+      d: "M 2 0 L 8 0 L 5 5 L 8 10 L 2 10 L 5 5 z", // Bolt shape
+    },
+    content: (color = "black", id = "bolt-marker") => (
+      <marker key={id} id={id} {...markersConfig.bolt.config} fill={color}>
+        <path d="M 2 0 L 8 0 L 5 5 L 8 10 L 2 10 L 5 5 z" />
+      </marker>
+    ),
+  },
+  t: {
+    id: "t-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "path",
+    config: {
+      viewBox: "0 0 10 10",
+      markerWidth: 5,
+      markerHeight: 5,
+      refX: 5,
+      refY: 5,
+      orient: "auto",
+      d: "M 0 5 L 10 5 M 5 0 L 5 10", // T shape
+    },
+    content: (color = "black", id = "t-marker") => (
+      <marker key={id} id={id} {...markersConfig.t.config} fill={color}>
+        <path d="M 0 5 L 10 5 M 5 0 L 5 10" />
+      </marker>
+    ),
+  },
+
+  // swirl: {
+  //   id: "swirl-marker",
+  //   markerUnits: "userSpaceOnUse",
+  //   markerType: "path",
+  //   config: {
+  //     viewBox: "0 0 10 10",
+  //     markerWidth: 3,
+  //     markerHeight: 3,
+  //     refX: 5,
+  //     refY: 5,
+  //     orient: "auto",
+  //     d: "M5,1 C7,1 9,3 9,5 C9,7 7,9 5,9 C3,9 1,7 1,5 C1,3 3,1 5,1 Z", // Swirl shape
+  //   },
+  //   content: (color = "black", id = "swirl-marker") => (
+  //     <marker key={id} id={id} {...markersConfig.swirl.config} fill={color}>
+  //       <path d="M5,1 C7,1 9,3 9,5 C9,7 7,9 5,9 C3,9 1,7 1,5 C1,3 3,1 5,1 Z" />
+  //     </marker>
+  //   ),
+  // },
+  // infinity: {
+  //   id: "infinity-marker",
+  //   markerUnits: "userSpaceOnUse",
+  //   markerType: "path",
+  //   config: {
+  //     viewBox: "0 0 10 10",
+  //     markerWidth: 5,
+  //     markerHeight: 5,
+  //     refX: 5,
+  //     refY: 5,
+  //     orient: "auto",
+  //     d: "M2,5 C2,3 4,3 5,5 C6,7 8,7 8,5 C8,3 6,3 5,5 C4,7 2,7 2,5 Z", // Infinity shape
+  //   },
+  //   content: (color = "black", id = "infinity-marker") => (
+  //     <marker key={id} id={id} {...markersConfig.infinity.config} fill={color}>
+  //       <path d="M2,5 C2,3 4,3 5,5 C6,7 8,7 8,5 C8,3 6,3 5,5 C4,7 2,7 2,5 Z" />
+  //     </marker>
+  //   ),
+  // },
+  doubleLineTriangle: {
+    id: "double-line-triangle-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "path",
+    config: {
+      viewBox: "0 0 14 14",
+      markerWidth: 4,
+      markerHeight: 4,
+      refX: 8,
+      refY: 8,
+      orient: "auto",
+      d: "M2,2 L6,2 L8,6 L6,10 L2,10 L0,6 z M4,4 L8,4 L10,8 L8,12 L4,12 L2,8 z", // Double-line with repeating triangle shapes
+    },
+    content: (color = "black", id = "double-line-triangle-marker") => (
+      <marker
+        key={id}
+        id={id}
+        {...markersConfig.doubleLineTriangle.config}
+        fill={color}
+      >
+        <path d="M2,2 L6,2 L8,6 L6,10 L2,10 L0,6 z M4,4 L8,4 L10,8 L8,12 L4,12 L2,8 z" />
+      </marker>
+    ),
+  },
+
+  geometricFusion: {
+    id: "geometric-fusion-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "path",
+    config: {
+      viewBox: "0 0 12 12",
+      markerWidth: 5,
+      markerHeight: 5,
+      refX: 6,
+      refY: 6,
+      orient: "auto",
+      d: `
+        M6,1
+        L8,3
+        L7,5
+        L9,6
+        L6,9
+        L3,6
+        L5,5
+        L4,3
+        Z
+        M6,4
+        L7,5
+        L5,5
+        Z
+      `, // Geometric fusion with overlapping shapes
+    },
+    content: (color = "black", id = "geometric-fusion-marker") => (
+      <marker
+        key={id}
+        id={id}
+        {...markersConfig.geometricFusion.config}
+        fill={color}
+      >
+        <path d={markersConfig.geometricFusion.config.d} />
+      </marker>
+    ),
+  },
+
+  diagonalSlash: {
+    id: "diagonal-slash-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "path",
+    config: {
+      viewBox: "0 0 10 10",
+      markerWidth: 3,
+      markerHeight: 3,
+      refX: 5,
+      refY: 5,
+      orient: "auto",
+      d: `
+        M0,0
+        L10,10
+        M0,10
+        L10,0
+        M2,0
+        L8,10
+        M2,10
+        L8,0
+        M4,0
+        L6,10
+        M4,10
+        L6,0
+      `, // Diagonal slashes pattern
+    },
+    content: (color = "black", id = "diagonal-slash-marker") => (
+      <marker
+        key={id}
+        id={id}
+        {...markersConfig.diagonalSlash.config}
+        stroke={color}
+        strokeWidth="1"
+      >
+        <path d={markersConfig.diagonalSlash.config.d} />
+      </marker>
+    ),
+  },
+  backslash: {
+    id: "backslash-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "path",
+    config: {
+      viewBox: "0 0 10 10",
+      markerWidth: 3,
+      markerHeight: 3,
+      refX: 5,
+      refY: 5,
+      orient: "auto",
+      d: `
+        M0,0
+        L10,10
+        M0,1
+        L9,10
+        M0,2
+        L8,10
+        M0,3
+        L7,10
+        M0,4
+        L6,10
+      `, // Backslashes pattern
+    },
+    content: (color = "black", id = "backslash-marker") => (
+      <marker
+        key={id}
+        id={id}
+        {...markersConfig.backslash.config}
+        stroke={color}
+        strokeWidth="1"
+      >
+        <path d={markersConfig.backslash.config.d} />
+      </marker>
+    ),
+  },
+  equalLines: {
+    id: "equal-lines-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "path",
+    config: {
+      viewBox: "0 0 10 10",
+      markerWidth: 5,
+      markerHeight: 5,
+      refX: 5,
+      refY: 5,
+      orient: "auto",
+      d: `
+        M0,4
+        L10,4
+        M0,6
+        L10,6
+      `, // Equal lines pattern
+    },
+    content: (color = "black", id = "equal-lines-marker") => (
+      <marker
+        key={id}
+        id={id}
+        {...markersConfig.equalLines.config}
+        stroke={color}
+        strokeWidth="1"
+      >
+        <path d={markersConfig.equalLines.config.d} />
+      </marker>
+    ),
+  },
+
+  stripedRect: {
+    id: "striped-rect-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "rect",
+    config: {
+      viewBox: "0 0 10 10",
+      markerWidth: 5,
+      markerHeight: 5,
+      refX: 2.5,
+      refY: 2.5,
+      orient: "auto",
+      shapes: [
+        { type: "rect", x: 0, y: 0, width: 5, height: 5, fill: "black" },
+        { type: "rect", x: 0, y: 1, width: 5, height: 1, fill: "white" },
+        { type: "rect", x: 0, y: 3, width: 5, height: 1, fill: "white" },
+      ],
+    },
+    content: (color = "black", id = "striped-rect-marker") => {
+      const { shapes, ...config } = markersConfig.stripedRect.config;
+      console.log("🚀 ~ shapes:", shapes);
+
+      return (
+        <marker
+          key={id}
+          id={id}
+          viewBox={config.viewBox}
+          markerWidth={config.markerWidth}
+          markerHeight={config.markerHeight}
+          refX={config.refX}
+          refY={config.refY}
+          orient={config.orient}
+          //markerUnits={config.markerUnits || "userSpaceOnUse"}
+          fill={color}
+        >
+          {shapes!.map((shape, index) => {
+            switch (shape.type) {
+              case "rect":
+                return (
+                  <rect
+                    key={index}
+                    x={shape.x}
+                    y={shape.y}
+                    width={shape.width}
+                    height={shape.height}
+                    fill={shape.fill}
+                  />
+                );
+              case "circle":
+                return (
+                  <circle
+                    key={index}
+                    cx={shape.cx}
+                    cy={shape.cy}
+                    r={shape.r}
+                    fill={shape.fill}
+                  />
+                );
+              case "path":
+                return <path key={index} d={shape.d} fill={shape.fill} />;
+              default:
+                return null;
+            }
+          })}
+        </marker>
+      );
+    },
+  },
+
+  checkerboard: {
+    id: "checkerboard-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "rect",
+    config: {
+      viewBox: "0 0 10 10",
+      markerWidth: 4,
+      markerHeight: 4,
+      refX: 2.5,
+      refY: 2.5,
+      orient: "auto",
+      x: 0,
+      y: 0,
+      width: 5,
+      height: 5,
+    },
+    content: (color = "black", id = "checkerboard-marker") => (
+      <marker
+        key={id}
+        id={id}
+        {...markersConfig.checkerboard.config}
+        fill={color}
+      >
+        <path
+          d="M0 0h2.5v2.5H0zM2.5 2.5h2.5v2.5H2.5zM2.5 0h2.5v2.5H2.5zM0 2.5h2.5v2.5H0z"
+          fill={color}
+        />
+      </marker>
+    ),
+  },
+
+  sun: {
+    id: "sun-marker",
+    markerUnits: "userSpaceOnUse",
+    markerType: "path",
+    config: {
+      viewBox: "0 0 24 24",
+      markerWidth: 12,
+      markerHeight: 12,
+      refX: 12,
+      refY: 12,
+      orient: "auto",
+      d: "M12 4a8 8 0 1 1 0 16a8 8 0 0 1 0-16zm0-2v2m0 16v2m-6-6h-2m16 0h2m-5-5l-1.4-1.4m-8.2 8.2L5 13m14.2-1.4l-1.4 1.4m-8.2-8.2L5 11",
+    },
+    content: (color = "yellow", id = "sun-marker") => (
+      <marker
+        key={id}
+        id={id}
+        {...markersConfig.sun.config}
+        stroke={color}
+        strokeWidth="2"
+      />
     ),
   },
 };

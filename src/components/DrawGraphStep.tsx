@@ -420,7 +420,7 @@ function DrawGraphStep() {
           if (shape && shape.type === "line") {
             return document.createElementNS(
               "http://www.w3.org/2000/svg",
-              "line"
+              "polyline"
             );
           } else if (shape && shape.type === "rect") {
             return document.createElementNS(
@@ -473,12 +473,21 @@ function DrawGraphStep() {
           );
           let shapeStroke = shape.color;
           if (shape.type === "line") {
+            // var width = Math.abs(x2 - x1);
+            // var height = y2 - y1;
+
+            const points = [];
+            const segmentLength = 10;
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const length = Math.sqrt(dx * dx + dy * dy); // Length of the line segment
+            const numSegments = Math.ceil(length / segmentLength); // Number of segments
             let lineStyleAttr: LineStyle;
             if (shape.lineType !== "") {
               lineStyleAttr =
                 lineStyles.find((x) => x.id === shape.lineType) || {};
             }
-
+            //? Pattern Defs
             if (
               lineStyleAttr.patternUrl &&
               lineStyleAttr.patternId &&
@@ -531,11 +540,14 @@ function DrawGraphStep() {
               //   )
               // );
             }
+
+            //? markers defs
             if (lineStyleAttr.markerStartName) {
               // addding markers to the defs
               const markerConfig: MarkerConfig =
                 markersConfig[lineStyleAttr.markerStartName];
-              const endArrowMarker = defs
+
+              const startMarker = defs
                 .append("marker")
                 .attr(
                   "id",
@@ -547,17 +559,48 @@ function DrawGraphStep() {
                 .attr("refX", markerConfig.config.refX)
                 .attr("refY", markerConfig.config.refY)
                 .attr("orient", markerConfig.config.orient);
+              // Handle shapes manually
 
-              endArrowMarker
-                .append("path")
-                .attr("d", markerConfig.config.d)
-                .attr("fill", shapeStroke);
+              if (
+                markerConfig.markerType &&
+                markerConfig.markerType !== "path"
+              ) {
+                startMarker
+                  .append(markerConfig.markerType)
+                  .attr("x", markerConfig.config.x)
+                  .attr("fill", shapeStroke)
+
+                  .attr("y", markerConfig.config.y)
+                  .attr("width", markerConfig.config.width)
+                  .attr("height", markerConfig.config.height)
+                  .attr("cx", markerConfig.config.cx)
+                  .attr("cy", markerConfig.config.cy)
+                  .attr("r", markerConfig.config.r)
+                  .attr("refX", markerConfig.config.refX)
+
+                  .attr("refY", markerConfig.config.refY);
+              } else {
+                startMarker
+                  .append(markerConfig.markerType ?? "path")
+                  .attr("d", markerConfig.config.d)
+                  .attr("y", markerConfig.config.y)
+                  .attr("width", markerConfig.config.width)
+                  .attr("height", markerConfig.config.height)
+                  .attr("cx", markerConfig.config.cx)
+                  .attr("cy", markerConfig.config.cy)
+                  .attr("r", markerConfig.config.r)
+                  .attr("refX", markerConfig.config.refX)
+
+                  .attr("refY", markerConfig.config.refY)
+                  .attr("fill", shapeStroke);
+              }
             }
             if (lineStyleAttr.markerEndName) {
               // addding markers to the defs
               const markerConfig: MarkerConfig =
                 markersConfig[lineStyleAttr.markerEndName];
-              const endArrowMarker = defs
+
+              const endMarker = defs
                 .append("marker")
                 .attr(
                   "id",
@@ -572,13 +615,58 @@ function DrawGraphStep() {
                 .attr("stroke", "context-stroke")
                 .attr("fill", "context-fill");
 
-              endArrowMarker
-                .append("path")
-                .attr("d", markerConfig.config.d)
-                .attr("fill", shapeStroke);
-            }
+              if (
+                markerConfig.markerType &&
+                markerConfig.markerType !== "path"
+              ) {
+                endMarker
+                  .append(markerConfig.markerType)
+                  .attr("x", markerConfig.config.x)
+                  .attr("fill", shapeStroke)
 
+                  .attr("y", markerConfig.config.y)
+                  .attr("width", markerConfig.config.width)
+                  .attr("height", markerConfig.config.height)
+                  .attr("cx", markerConfig.config.cx)
+                  .attr("cy", markerConfig.config.cy)
+                  .attr("r", markerConfig.config.r)
+                  .attr("refX", markerConfig.config.refX)
+
+                  .attr("refY", markerConfig.config.refY);
+              } else {
+                endMarker
+                  .append(markerConfig.markerType ?? "path")
+                  .attr("d", markerConfig.config.d)
+                  .attr("y", markerConfig.config.y)
+                  .attr("width", markerConfig.config.width)
+                  .attr("height", markerConfig.config.height)
+                  .attr("cx", markerConfig.config.cx)
+                  .attr("cy", markerConfig.config.cy)
+                  .attr("r", markerConfig.config.r)
+                  .attr("refX", markerConfig.config.refX)
+
+                  .attr("refY", markerConfig.config.refY)
+                  .attr("fill", shapeStroke);
+              }
+            }
+            if (lineStyleAttr.markerMidId) {
+              for (let i = 0; i <= numSegments; i++) {
+                const t = i / numSegments; // Parameter ranging from 0 to 1
+                const x = x1 + t * dx; // Interpolated x coordinate
+                const y = y1 + t * dy; // Interpolated y coordinate
+                points.push(`${x},${y}`);
+              }
+
+              // Ensure the last point is included to close the line
+              // if (points[points.length - 1] !== `${x2},${y2}`) {
+              //   points.push(`${x2},${y2}`);
+              // }
+              console.log("🚀 ~ points:", points, x1, x2, y1, y2);
+            } else {
+              points.push([x1, y1], [x2, y2]);
+            }
             shapeInCanvas
+              .attr("points", points.join(" "))
               .attr("x1", x1)
               .attr("x2", x2)
               .attr("y1", y1)
@@ -594,6 +682,13 @@ function DrawGraphStep() {
               .attr(
                 "marker-start",
                 `url(#${lineStyleAttr.markerStartId}-${shape.name.replace(
+                  / +/g,
+                  ""
+                )})`
+              )
+              .attr(
+                "marker-mid",
+                `url(#${lineStyleAttr.markerMidId}-${shape.name.replace(
                   / +/g,
                   ""
                 )})`
@@ -1079,8 +1174,14 @@ function DrawGraphStep() {
   }, [graphData, showCritical]);
 
   const createLegend = () => {
-    let lineStyleAttr: LineStyle = {};
+    let lineStyleAttr = {};
 
+    const selectedLinepoints = [];
+    const segmentLength = 5;
+    for (let x = 5; x < 40 - 5; x += segmentLength) {
+      selectedLinepoints.push(`${x},${20 - 10}`);
+    }
+    selectedLinepoints.push(`${40 - 5},${20 - 10}`);
     return shapesData.shapesData.map((shape, index) => {
       if (shape.lineType !== "") {
         lineStyleAttr = lineStyles.find((x) => x.id === shape.lineType) || {};
@@ -1091,28 +1192,6 @@ function DrawGraphStep() {
 
       const textureId = sanitizeClassName(shape.name + textureConfig.id);
 
-      // const handleMouseOver = () => {
-      //   // Select all shapes and fade them out except the one being hovered over
-      //   d3.selectAll(".activity-rectangle")
-      //     .transition()
-      //     .duration(200)
-      //     .attr("opacity", (d: GraphDataType) => {
-      //       console.log("this is ", d.style, shape.name);
-      //       if (d.style) {
-      //         return d.style.trim() === shape.name.trim() ? 1 : 0.2;
-      //       } else {
-      //         return 1;
-      //       }
-      //     });
-      // };
-
-      // const handleMouseOut = () => {
-      //   // Restore opacity for all shapes
-      //   d3.selectAll(".activity-rectangle")
-      //     .transition()
-      //     .duration(200)
-      //     .attr("opacity", 1);
-      // };
       const isSelected = selectedShapes.includes(shape.name);
       const handleLegendItemClick = (shape) => {
         // Toggle the selected shape
@@ -1125,15 +1204,9 @@ function DrawGraphStep() {
         }
       };
 
-      // if (shape.type === "line" && shape.name === "Repli de chantier") {
-      //   console.warn("thisi s chsape ", shape);
-      // }
-      // if (shape.type === "line" && shape.name === "GC - Elevations") {
-      //   console.warn("thisi s chsape ", shape);
-      // }
       return (
         <div
-          key={shape.name + index}
+          key={index}
           className="legend-item"
           // onMouseOver={handleMouseOver}
           // onMouseOut={handleMouseOut}
@@ -1142,18 +1215,31 @@ function DrawGraphStep() {
           <div className="shape-container">
             {shape.type === "line" && (
               <svg width="40" height="20">
-                <line
+                <defs>
+                  {Object.keys(markersConfig).map((key) => {
+                    const marker = markersConfig[key];
+                    return marker.content(
+                      shape.color,
+                      marker.id + sanitizeClassName(shape.name)
+                    );
+                  })}
+                </defs>
+                <polyline
                   x1="10"
                   y1="10"
                   x2="30"
                   y2="10"
+                  points={selectedLinepoints.join(" ")}
                   stroke={shape.color}
                   markerEnd={`url(#${
                     lineStyleAttr.markerEndId
-                  }-${shape.name.replace(/ +/g, "")})`}
+                  }${sanitizeClassName(shape.name)})`}
                   markerStart={`url(#${
                     lineStyleAttr.markerStartId
-                  }-${shape.name.replace(/ +/g, "")})`}
+                  }${sanitizeClassName(shape.name)})`}
+                  markerMid={`url(#${
+                    lineStyleAttr.markerMidId
+                  }${sanitizeClassName(shape.name)})`}
                   strokeWidth={
                     lineStyleAttr.style
                       ? lineStyleAttr.style["stroke-width"]
@@ -1192,7 +1278,6 @@ function DrawGraphStep() {
             )}
             {shape.type === "circle" && (
               <svg width="40" height="20">
-                <defs ref={textureDefsRef}></defs>
                 <circle cx="20" cy="10" r="8" fill={shape.color} />
               </svg>
             )}

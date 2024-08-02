@@ -72,9 +72,24 @@ export const graphStringsSettings: GraphStringsSetting[] = [
   },
   {
     id: 8,
-    name: "drawGraph.activityDetails.criticalLabel",
-    field: "critical",
+    name: "importFileForm.quantity",
+    field: "quantity",
   },
+  {
+    id: 9,
+    name: "importFileForm.ProductionRate",
+    field: "productionRate",
+  },
+  {
+    id: 10,
+    name: "importFileForm.workShops",
+    field: "workShops",
+  },
+  // {
+  //   id: 8,
+  //   name: "drawGraph.activityDetails.criticalLabel",
+  //   field: "critical",
+  // },
 ];
 export const graphPrimaveraSettings: GraphStringsSetting[] = [
   // {
@@ -237,23 +252,23 @@ export const graphStringsXLSXSettings: GraphStringsSetting[] = [
     name: "drawGraph.activityDetails.duration",
     field: "duration",
   },
+  // {
+  //   id: 10,
+  //   name: "importFileForm.critical",
+  //   field: "critical",
+  // },
   {
     id: 10,
-    name: "importFileForm.critical",
-    field: "critical",
-  },
-  {
-    id: 11,
     name: "importFileForm.quantity",
     field: "quantity",
   },
   {
-    id: 12,
+    id: 11,
     name: "importFileForm.ProductionRate",
     field: "productionRate",
   },
   {
-    id: 13,
+    id: 12,
     name: "importFileForm.workShops",
     field: "workShops",
   },

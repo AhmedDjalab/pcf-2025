@@ -39,6 +39,12 @@ const LineStylePicker = ({
   const popover = useRef(null);
   const { user, canWrite, isAdmin } = useAuth();
 
+  const selectedLinepoints = [];
+  const segmentLength = 10;
+  for (let x = startOffset; x < width - 5; x += segmentLength) {
+    selectedLinepoints.push(`${x},${height - 10}`);
+  }
+  selectedLinepoints.push(`${width - 5},${height - 10}`);
   const [isOpen, setIsOpen] = useState(false);
 
   const close = useCallback(() => setIsOpen(false), []);
@@ -93,7 +99,8 @@ const LineStylePicker = ({
             })}
           </defs>
 
-          <line
+          <polyline
+            points={selectedLinepoints.join(" ")}
             x1={startOffset}
             y1={height - 10}
             x2={width - 5}
@@ -129,6 +136,13 @@ const LineStylePicker = ({
                   })`
                 : undefined
             }
+            markerMid={
+              selectedLineStyle.markerMidId
+                ? `url(#${
+                    selectedLineStyle.markerMidId + sanitizeClassName(rowId)
+                  })`
+                : undefined
+            }
           />
         </svg>
       </div>
@@ -136,18 +150,27 @@ const LineStylePicker = ({
       {isOpen && (
         <div className="absolute z-20 shadow-[0_6px_12px_rgba(0,0,0,0.15)] rounded-[9px] left-0 top-[calc(100%_+_2px)] dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
           <div className="flex flex-col max-h-[150px] overflow-y-scroll px-4 justify-start bg-white p-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-            {lineStyles.map((lineStyle: LineStyle) => (
-              <div
-                key={lineStyle.id}
-                className={`cursor-pointer w-full rounded-lg border-[3px] border-solid border-transparent dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 ${
-                  selectedLineStyle.id === lineStyle.id
-                    ? "border-blue-500" // Highlight selected style
-                    : ""
-                }`}
-                onClick={() => handleLineStyleClick(lineStyle)}
-              >
-                <svg width={width} height={height}>
-                  {/* <defs>
+            {lineStyles.map((lineStyle: LineStyle) => {
+              // Define points for the polyline
+              const points = [];
+              const segmentLength = 10;
+              for (let x = startOffset; x < width - 5; x += segmentLength) {
+                points.push(`${x},${height - 10}`);
+              }
+              points.push(`${width - 5},${height - 10}`);
+
+              return (
+                <div
+                  key={lineStyle.id}
+                  className={`cursor-pointer w-full rounded-lg border-[3px] border-solid border-transparent dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 ${
+                    selectedLineStyle.id === lineStyle.id
+                      ? "border-blue-500" // Highlight selected style
+                      : ""
+                  }`}
+                  onClick={() => handleLineStyleClick(lineStyle)}
+                >
+                  <svg width={width} height={height}>
+                    {/* <defs>
                     {Object.keys(patternsConfig).map((key: any) => {
                       // @ts-ignore
                       const pattern = patternsConfig[key];
@@ -157,45 +180,54 @@ const LineStylePicker = ({
                       );
                     })}
                   </defs> */}
-                  <line
-                    x1={startOffset}
-                    y1={height - 10}
-                    x2={width - 5}
-                    y2={height - 10}
-                    stroke={
-                      lineStyle.patternId
-                        ? `url(#${
-                            lineStyle.patternId + sanitizeClassName(rowId)
-                          })`
-                        : color
-                    }
-                    strokeWidth={
-                      lineStyle.style ? lineStyle.style["stroke-width"] : "4"
-                    }
-                    strokeDasharray={
-                      lineStyle.style
-                        ? lineStyle.style["stroke-dasharray"]
-                        : "0"
-                    }
-                    markerEnd={
-                      lineStyle.markerEndId
-                        ? `url(#${
-                            lineStyle.markerEndId + sanitizeClassName(rowId)
-                          })`
-                        : undefined
-                    }
-                    markerStart={
-                      lineStyle.markerStartId
-                        ? `url(#${
-                            lineStyle.markerStartId + sanitizeClassName(rowId)
-                          })`
-                        : undefined
-                    }
-                    //stroke={`url(#${lineStyle.patternUrl})`}
-                  />
-                </svg>
-              </div>
-            ))}
+                    <polyline
+                      points={points.join(" ")}
+                      // x1={startOffset}
+                      // y1={height - 10}
+                      // x2={width - 5}
+                      // y2={height - 10}
+                      stroke={
+                        lineStyle.patternId
+                          ? `url(#${
+                              lineStyle.patternId + sanitizeClassName(rowId)
+                            })`
+                          : color
+                      }
+                      strokeWidth={
+                        lineStyle.style ? lineStyle.style["stroke-width"] : "4"
+                      }
+                      strokeDasharray={
+                        lineStyle.style
+                          ? lineStyle.style["stroke-dasharray"]
+                          : "0"
+                      }
+                      markerEnd={
+                        lineStyle.markerEndId
+                          ? `url(#${
+                              lineStyle.markerEndId + sanitizeClassName(rowId)
+                            })`
+                          : undefined
+                      }
+                      markerStart={
+                        lineStyle.markerStartId
+                          ? `url(#${
+                              lineStyle.markerStartId + sanitizeClassName(rowId)
+                            })`
+                          : undefined
+                      }
+                      markerMid={
+                        lineStyle.markerMidId
+                          ? `url(#${
+                              lineStyle.markerMidId + sanitizeClassName(rowId)
+                            })`
+                          : undefined
+                      }
+                      //stroke={`url(#${lineStyle.patternUrl})`}
+                    />
+                  </svg>
+                </div>
+              );
+            })}
             {/* <div className="w-40 h-[150px] flex flex-col justify-between">
               <TypeList style="solid" />
               <TypeList style="dotted" />
