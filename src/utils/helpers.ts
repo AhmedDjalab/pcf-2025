@@ -54,3 +54,37 @@ export function isValidEmail(email: string): boolean {
 export function AsUTC(date: Date | null | undefined): Date | null {
   return moment(date).utcOffset(0, true).startOf("day").toDate();
 }
+
+// const A4_WIDTH_MM = 210; // A4 width in millimeters
+// const A4_HEIGHT_MM = 297; // A4 height in millimeters
+
+// const saveAsPdfOrImage = async (format) => {
+//   const svgContainer = document.getElementById("graph-container");
+//   format = "image";
+//   if (!svgContainer) {
+//     console.error("SVG container not found");
+//     return;
+//   }
+
+//   try {
+//     await new Promise((resolve) => setTimeout(resolve, 1000));
+
+//     const canvas = await html2canvas(svgContainer, { useCORS: true });
+//     const dataURL = canvas.toDataURL(`image/${format}`, 1.0);
+
+//     if (format === "pdf") {
+//       const pdf = new jsPDF("portrait", "mm", [210, 297]); // A4 size in mm
+//       const imgWidth = 210;
+//       const imgHeight = (canvas.height * imgWidth) / canvas.width;
+//       pdf.addImage(dataURL, "PNG", 0, 0, imgWidth, imgHeight);
+//       pdf.save("graph.pdf");
+//     } else if (format === "image") {
+//       const link = document.createElement("a");
+//       link.href = dataURL;
+//       link.download = "graph.png";
+//       link.click();
+//     }
+//   } catch (error) {
+//     console.error("Error capturing SVG:", error);
+//   }
+// };

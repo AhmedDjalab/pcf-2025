@@ -60,6 +60,9 @@ import { getActivitiesByActivityId } from "src/Services/ActivityService";
 import { useQuery } from "@tanstack/react-query";
 import { EditButton } from "src/components/shared/Button";
 import HypothesisModal from "src/components/HypothesesModal";
+import html2canvas from "html2canvas";
+import LegendComponent from "src/components/Legends";
+import api from "src/utils/api";
 export interface ActivityData {
   id: string;
   activityName: string;
@@ -79,6 +82,7 @@ function ViewGraph() {
   const [showCritical, setShowCritical] = useState(false);
   const [scrollToActivityId, setScrollToActivityId] = useState(1);
   const tooltipContainerRef = useRef(null);
+  const textureLegendDefsRef = useRef(null);
   const commentsData = useSelector((state: RootState) => state.graph.comments);
 
   // const [commentsData, setCommentsData] = useState(commentsData1);
@@ -169,6 +173,7 @@ function ViewGraph() {
   );
   const [graphSize, setGraphSize] = useState(graphData.length);
   const shapesData = useSelector((state: RootState) => state.graph.shapes);
+
   const [transform, setTransform] = useState({ k: 1, x: 0, y: 0 });
   const [zoomLevel, setZoomLevel] = useState(1);
   const [zoomAttr, setZoomAttr] = useState({});
@@ -416,6 +421,49 @@ function ViewGraph() {
     };
   }, [startDateObject, endDateObject]);
 
+  const defineMarkers = (defs, shapeStroke) => {
+    markersConfig.forEach((markerConfig) => {
+      const marker = defs
+        .append("marker")
+        .attr("id", markerConfig.id)
+        .attr("viewBox", markerConfig.config.viewBox)
+        .attr("markerWidth", markerConfig.config.markerWidth)
+        .attr("markerHeight", markerConfig.config.markerHeight)
+        .attr("refX", markerConfig.config.refX)
+        .attr("refY", markerConfig.config.refY)
+        .attr("orient", markerConfig.config.orient)
+        .attr("stroke", "context-stroke")
+        .attr("fill", "context-fill");
+
+      if (markerConfig.markerType && markerConfig.markerType !== "path") {
+        marker
+          .append(markerConfig.markerType)
+          .attr("x", markerConfig.config.x)
+          .attr("fill", shapeStroke)
+          .attr("y", markerConfig.config.y)
+          .attr("width", markerConfig.config.width)
+          .attr("height", markerConfig.config.height)
+          .attr("cx", markerConfig.config.cx)
+          .attr("cy", markerConfig.config.cy)
+          .attr("r", markerConfig.config.r)
+          .attr("refX", markerConfig.config.refX)
+          .attr("refY", markerConfig.config.refY);
+      } else {
+        marker
+          .append(markerConfig.markerType ?? "path")
+          .attr("d", markerConfig.config.d)
+          .attr("y", markerConfig.config.y)
+          .attr("width", markerConfig.config.width)
+          .attr("height", markerConfig.config.height)
+          .attr("cx", markerConfig.config.cx)
+          .attr("cy", markerConfig.config.cy)
+          .attr("r", markerConfig.config.r)
+          .attr("refX", markerConfig.config.refX)
+          .attr("refY", markerConfig.config.refY)
+          .attr("fill", shapeStroke);
+      }
+    });
+  };
   //? drawing D3 graph
   const drawAxises = useCallback(
     (
@@ -659,11 +707,6 @@ function ViewGraph() {
 
               const pattern: PatternConfig =
                 patternsConfig[lineStyleAttr.patternUrl];
-              console.warn(
-                "🚀 ~ pattern:",
-                lineStyleAttr,
-                lineStyleAttr.patternUrl
-              );
 
               const patternDef = defs
                 .append("pattern")
@@ -703,113 +746,113 @@ function ViewGraph() {
             }
 
             //? markers defs
-            if (lineStyleAttr.markerStartName) {
-              // addding markers to the defs
-              const markerConfig: MarkerConfig =
-                markersConfig[lineStyleAttr.markerStartName];
+            // if (lineStyleAttr.markerStartName) {
+            //   // addding markers to the defs
+            //   const markerConfig: MarkerConfig =
+            //     markersConfig[lineStyleAttr.markerStartName];
 
-              const startMarker = defs
-                .append("marker")
-                .attr(
-                  "id",
-                  `${markerConfig.id}-${shape.name.replace(/ +/g, "")}`
-                )
-                .attr("viewBox", markerConfig.config.viewBox)
-                .attr("markerWidth", markerConfig.config.markerWidth)
-                .attr("markerHeight", markerConfig.config.markerHeight)
-                .attr("refX", markerConfig.config.refX)
-                .attr("refY", markerConfig.config.refY)
-                .attr("orient", markerConfig.config.orient);
-              // Handle shapes manually
+            //   const startMarker = defs
+            //     .append("marker")
+            //     .attr(
+            //       "id",
+            //       `${markerConfig.id}-${shape.name.replace(/ +/g, "")}`
+            //     )
+            //     .attr("viewBox", markerConfig.config.viewBox)
+            //     .attr("markerWidth", markerConfig.config.markerWidth)
+            //     .attr("markerHeight", markerConfig.config.markerHeight)
+            //     .attr("refX", markerConfig.config.refX)
+            //     .attr("refY", markerConfig.config.refY)
+            //     .attr("orient", markerConfig.config.orient);
+            //   // Handle shapes manually
 
-              if (
-                markerConfig.markerType &&
-                markerConfig.markerType !== "path"
-              ) {
-                startMarker
-                  .append(markerConfig.markerType)
-                  .attr("x", markerConfig.config.x)
-                  .attr("fill", shapeStroke)
+            //   if (
+            //     markerConfig.markerType &&
+            //     markerConfig.markerType !== "path"
+            //   ) {
+            //     startMarker
+            //       .append(markerConfig.markerType)
+            //       .attr("x", markerConfig.config.x)
+            //       .attr("fill", shapeStroke)
 
-                  .attr("y", markerConfig.config.y)
-                  .attr("width", markerConfig.config.width)
-                  .attr("height", markerConfig.config.height)
-                  .attr("cx", markerConfig.config.cx)
-                  .attr("cy", markerConfig.config.cy)
-                  .attr("r", markerConfig.config.r)
-                  .attr("refX", markerConfig.config.refX)
+            //       .attr("y", markerConfig.config.y)
+            //       .attr("width", markerConfig.config.width)
+            //       .attr("height", markerConfig.config.height)
+            //       .attr("cx", markerConfig.config.cx)
+            //       .attr("cy", markerConfig.config.cy)
+            //       .attr("r", markerConfig.config.r)
+            //       .attr("refX", markerConfig.config.refX)
 
-                  .attr("refY", markerConfig.config.refY);
-              } else {
-                startMarker
-                  .append(markerConfig.markerType ?? "path")
-                  .attr("d", markerConfig.config.d)
-                  .attr("y", markerConfig.config.y)
-                  .attr("width", markerConfig.config.width)
-                  .attr("height", markerConfig.config.height)
-                  .attr("cx", markerConfig.config.cx)
-                  .attr("cy", markerConfig.config.cy)
-                  .attr("r", markerConfig.config.r)
-                  .attr("refX", markerConfig.config.refX)
+            //       .attr("refY", markerConfig.config.refY);
+            //   } else {
+            //     startMarker
+            //       .append(markerConfig.markerType ?? "path")
+            //       .attr("d", markerConfig.config.d)
+            //       .attr("y", markerConfig.config.y)
+            //       .attr("width", markerConfig.config.width)
+            //       .attr("height", markerConfig.config.height)
+            //       .attr("cx", markerConfig.config.cx)
+            //       .attr("cy", markerConfig.config.cy)
+            //       .attr("r", markerConfig.config.r)
+            //       .attr("refX", markerConfig.config.refX)
 
-                  .attr("refY", markerConfig.config.refY)
-                  .attr("fill", shapeStroke);
-              }
-            }
-            if (lineStyleAttr.markerEndName) {
-              // addding markers to the defs
-              const markerConfig: MarkerConfig =
-                markersConfig[lineStyleAttr.markerEndName];
+            //       .attr("refY", markerConfig.config.refY)
+            //       .attr("fill", shapeStroke);
+            //   }
+            // }
+            // if (lineStyleAttr.markerEndName) {
+            //   // addding markers to the defs
+            //   const markerConfig: MarkerConfig =
+            //     markersConfig[lineStyleAttr.markerEndName];
 
-              const endMarker = defs
-                .append("marker")
-                .attr(
-                  "id",
-                  `${markerConfig.id}-${shape.name.replace(/ +/g, "")}`
-                )
-                .attr("viewBox", markerConfig.config.viewBox)
-                .attr("markerWidth", markerConfig.config.markerWidth)
-                .attr("markerHeight", markerConfig.config.markerHeight)
-                .attr("refX", markerConfig.config.refX)
-                .attr("refY", markerConfig.config.refY)
-                .attr("orient", markerConfig.config.orient)
-                .attr("stroke", "context-stroke")
-                .attr("fill", "context-fill");
+            //   const endMarker = defs
+            //     .append("marker")
+            //     .attr(
+            //       "id",
+            //       `${markerConfig.id}-${shape.name.replace(/ +/g, "")}`
+            //     )
+            //     .attr("viewBox", markerConfig.config.viewBox)
+            //     .attr("markerWidth", markerConfig.config.markerWidth)
+            //     .attr("markerHeight", markerConfig.config.markerHeight)
+            //     .attr("refX", markerConfig.config.refX)
+            //     .attr("refY", markerConfig.config.refY)
+            //     .attr("orient", markerConfig.config.orient)
+            //     .attr("stroke", "context-stroke")
+            //     .attr("fill", "context-fill");
 
-              if (
-                markerConfig.markerType &&
-                markerConfig.markerType !== "path"
-              ) {
-                endMarker
-                  .append(markerConfig.markerType)
-                  .attr("x", markerConfig.config.x)
-                  .attr("fill", shapeStroke)
+            //   if (
+            //     markerConfig.markerType &&
+            //     markerConfig.markerType !== "path"
+            //   ) {
+            //     endMarker
+            //       .append(markerConfig.markerType)
+            //       .attr("x", markerConfig.config.x)
+            //       .attr("fill", shapeStroke)
 
-                  .attr("y", markerConfig.config.y)
-                  .attr("width", markerConfig.config.width)
-                  .attr("height", markerConfig.config.height)
-                  .attr("cx", markerConfig.config.cx)
-                  .attr("cy", markerConfig.config.cy)
-                  .attr("r", markerConfig.config.r)
-                  .attr("refX", markerConfig.config.refX)
+            //       .attr("y", markerConfig.config.y)
+            //       .attr("width", markerConfig.config.width)
+            //       .attr("height", markerConfig.config.height)
+            //       .attr("cx", markerConfig.config.cx)
+            //       .attr("cy", markerConfig.config.cy)
+            //       .attr("r", markerConfig.config.r)
+            //       .attr("refX", markerConfig.config.refX)
 
-                  .attr("refY", markerConfig.config.refY);
-              } else {
-                endMarker
-                  .append(markerConfig.markerType ?? "path")
-                  .attr("d", markerConfig.config.d)
-                  .attr("y", markerConfig.config.y)
-                  .attr("width", markerConfig.config.width)
-                  .attr("height", markerConfig.config.height)
-                  .attr("cx", markerConfig.config.cx)
-                  .attr("cy", markerConfig.config.cy)
-                  .attr("r", markerConfig.config.r)
-                  .attr("refX", markerConfig.config.refX)
+            //       .attr("refY", markerConfig.config.refY);
+            //   } else {
+            //     endMarker
+            //       .append(markerConfig.markerType ?? "path")
+            //       .attr("d", markerConfig.config.d)
+            //       .attr("y", markerConfig.config.y)
+            //       .attr("width", markerConfig.config.width)
+            //       .attr("height", markerConfig.config.height)
+            //       .attr("cx", markerConfig.config.cx)
+            //       .attr("cy", markerConfig.config.cy)
+            //       .attr("r", markerConfig.config.r)
+            //       .attr("refX", markerConfig.config.refX)
 
-                  .attr("refY", markerConfig.config.refY)
-                  .attr("fill", shapeStroke);
-              }
-            }
+            //       .attr("refY", markerConfig.config.refY)
+            //       .attr("fill", shapeStroke);
+            //   }
+            // }
             if (lineStyleAttr.markerMidId) {
               for (let i = 0; i <= numSegments; i++) {
                 const t = i / numSegments; // Parameter ranging from 0 to 1
@@ -822,7 +865,6 @@ function ViewGraph() {
               // if (points[points.length - 1] !== `${x2},${y2}`) {
               //   points.push(`${x2},${y2}`);
               // }
-              console.log("🚀 ~ points:", points, x1, x2, y1, y2);
             } else {
               points.push([x1, y1], [x2, y2]);
             }
@@ -835,23 +877,20 @@ function ViewGraph() {
 
               .attr(
                 "marker-end",
-                `url(#${lineStyleAttr.markerEndId}-${shape.name.replace(
-                  / +/g,
-                  ""
+                `url(#${lineStyleAttr.markerEndId}-${sanitizeClassName(
+                  shape.name
                 )})`
               )
               .attr(
                 "marker-start",
-                `url(#${lineStyleAttr.markerStartId}-${shape.name.replace(
-                  / +/g,
-                  ""
+                `url(#${lineStyleAttr.markerStartId}-${sanitizeClassName(
+                  shape.name
                 )})`
               )
               .attr(
                 "marker-mid",
-                `url(#${lineStyleAttr.markerMidId}-${shape.name.replace(
-                  / +/g,
-                  ""
+                `url(#${lineStyleAttr.markerMidId}-${sanitizeClassName(
+                  shape.name
                 )})`
               )
               // stroke={
@@ -910,10 +949,8 @@ function ViewGraph() {
           let textureId = "";
           if (textureConfig) {
             textureId = sanitizeClassName(shape.name + textureConfig.id);
-
-            // svg.call(
-            //   textureConfig?.configuration.id(shape.name).stroke(shapeStroke)
-            // );
+            //const svgTexture = d3.select(textureDefsRef.current!);
+            // svgTexture.call(textureConfig?.configuration.id(textureId));
             shapeInCanvas.style(
               "fill",
               textureConfig?.configuration.id(textureId).url()
@@ -1344,6 +1381,97 @@ function ViewGraph() {
           .stroke(shape.color);
         svgTexture.call(optionTexture);
       }
+
+      // add markers
+      const shapeStroke = shape.color;
+      if (shape.lineType !== "") {
+        let lineStyleAttr =
+          lineStyles.find((x) => x.id === shape.lineType) || {};
+
+        if (lineStyleAttr.markerStartName) {
+          const markerConfig = markersConfig[lineStyleAttr.markerStartName];
+          const startMarker = svgTexture
+            .append("marker")
+            .attr("id", `${markerConfig.id}-${sanitizeClassName(shape.name)}`)
+            .attr("viewBox", markerConfig.config.viewBox)
+            .attr("markerWidth", markerConfig.config.markerWidth)
+            .attr("markerHeight", markerConfig.config.markerHeight)
+            .attr("refX", markerConfig.config.refX)
+            .attr("refY", markerConfig.config.refY)
+            .attr("orient", markerConfig.config.orient);
+
+          if (markerConfig.markerType && markerConfig.markerType !== "path") {
+            startMarker
+              .append(markerConfig.markerType)
+              .attr("x", markerConfig.config.x)
+              .attr("fill", shapeStroke)
+              .attr("y", markerConfig.config.y)
+              .attr("width", markerConfig.config.width)
+              .attr("height", markerConfig.config.height)
+              .attr("cx", markerConfig.config.cx)
+              .attr("cy", markerConfig.config.cy)
+              .attr("r", markerConfig.config.r)
+              .attr("refX", markerConfig.config.refX)
+              .attr("refY", markerConfig.config.refY);
+          } else {
+            startMarker
+              .append(markerConfig.markerType ?? "path")
+              .attr("d", markerConfig.config.d)
+              .attr("y", markerConfig.config.y)
+              .attr("width", markerConfig.config.width)
+              .attr("height", markerConfig.config.height)
+              .attr("cx", markerConfig.config.cx)
+              .attr("cy", markerConfig.config.cy)
+              .attr("r", markerConfig.config.r)
+              .attr("refX", markerConfig.config.refX)
+              .attr("refY", markerConfig.config.refY)
+              .attr("fill", shapeStroke);
+          }
+        }
+
+        if (lineStyleAttr.markerEndName) {
+          const markerConfig = markersConfig[lineStyleAttr.markerEndName];
+          const endMarker = svgTexture
+            .append("marker")
+            .attr("id", `${markerConfig.id}-${sanitizeClassName(shape.name)}`)
+            .attr("viewBox", markerConfig.config.viewBox)
+            .attr("markerWidth", markerConfig.config.markerWidth)
+            .attr("markerHeight", markerConfig.config.markerHeight)
+            .attr("refX", markerConfig.config.refX)
+            .attr("refY", markerConfig.config.refY)
+            .attr("orient", markerConfig.config.orient)
+            .attr("stroke", "context-stroke")
+            .attr("fill", "context-fill");
+
+          if (markerConfig.markerType && markerConfig.markerType !== "path") {
+            endMarker
+              .append(markerConfig.markerType)
+              .attr("x", markerConfig.config.x)
+              .attr("fill", shapeStroke)
+              .attr("y", markerConfig.config.y)
+              .attr("width", markerConfig.config.width)
+              .attr("height", markerConfig.config.height)
+              .attr("cx", markerConfig.config.cx)
+              .attr("cy", markerConfig.config.cy)
+              .attr("r", markerConfig.config.r)
+              .attr("refX", markerConfig.config.refX)
+              .attr("refY", markerConfig.config.refY);
+          } else {
+            endMarker
+              .append(markerConfig.markerType ?? "path")
+              .attr("d", markerConfig.config.d)
+              .attr("y", markerConfig.config.y)
+              .attr("width", markerConfig.config.width)
+              .attr("height", markerConfig.config.height)
+              .attr("cx", markerConfig.config.cx)
+              .attr("cy", markerConfig.config.cy)
+              .attr("r", markerConfig.config.r)
+              .attr("refX", markerConfig.config.refX)
+              .attr("refY", markerConfig.config.refY)
+              .attr("fill", shapeStroke);
+          }
+        }
+      }
     });
   }, [shapesData.shapesData]);
 
@@ -1352,7 +1480,6 @@ function ViewGraph() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const getColor = (userId: string) => {
-    console.log("🚀 ~ getColor ~ userId:", userId);
     if (!userColors.has(userId)) {
       userColors.set(userId, colors[colorIndex % colors.length]);
       colorIndex++;
@@ -1828,8 +1955,12 @@ function ViewGraph() {
       });
   }, [selectedShapes]);
 
+  // useEffect(() => {
+  //   CopyTexturesToLegend();
+  // }, [texturesData, shapesData.shapesData]);
   const createLegend = () => {
-    let lineStyleAttr = {};
+    let lineStyleAttr: LineStyle = {};
+    let startConfig, endConfig, simpleConfig;
 
     const selectedLinepoints = [];
     const segmentLength = 5;
@@ -1840,6 +1971,13 @@ function ViewGraph() {
     return shapesData.shapesData.map((shape, index) => {
       if (shape.lineType !== "") {
         lineStyleAttr = lineStyles.find((x) => x.id === shape.lineType) || {};
+
+        if (lineStyleAttr["markerStartName"]) {
+          startConfig = markersConfig[lineStyleAttr["markerStartName"]] ?? null;
+        }
+        if (lineStyleAttr["markerStartName"]) {
+          endConfig = markersConfig[lineStyleAttr["markerEndName"]] ?? null;
+        }
       }
       const textureConfig = texturesData.find(
         (x) => x.id === shape.backgroundTexture
@@ -1847,7 +1985,35 @@ function ViewGraph() {
 
       const textureId = sanitizeClassName(shape.name + textureConfig.id);
 
+      // call Texture once
+
+      const svgTexture = d3.select(textureLegendDefsRef.current!);
+
+      if (
+        textureConfig &&
+        (shape.type === "rect" || shape.type === "triangle")
+      ) {
+        const existingTexture = svgTexture.select(`#${textureId}`);
+        if (existingTexture.empty()) {
+          svgTexture.select(`#${textureId}`).remove();
+          // Apply the texture configuration
+          const optionTexture = textureConfig.configuration
+            .id(textureId)
+            .stroke(shape.color);
+
+          // Ensure `optionTexture` is a valid function or selection
+          if (typeof optionTexture === "function") {
+            svgTexture.call(optionTexture);
+            console.log("Texture added:", textureId);
+          } else {
+            console.error("Invalid texture configuration:", optionTexture);
+          }
+        } else {
+          console.log("Texture already exists:", textureId);
+        }
+      }
       const isSelected = selectedShapes.includes(shape.name);
+      //CopyTexturesToLegend();
       const handleLegendItemClick = (shape) => {
         // Toggle the selected shape
         if (selectedShapes.includes(shape.name)) {
@@ -1868,49 +2034,51 @@ function ViewGraph() {
           onClick={() => handleLegendItemClick(shape)}
         >
           <div className="shape-container">
-            {shape.type === "line" && (
-              <svg width="40" height="20">
-                <defs>
-                  {Object.keys(markersConfig).map((key) => {
-                    const marker = markersConfig[key];
-                    return marker.content(
-                      shape.color,
-                      marker.id + sanitizeClassName(shape.name)
-                    );
-                  })}
-                </defs>
-                <polyline
-                  x1="10"
-                  y1="10"
-                  x2="30"
-                  y2="10"
-                  points={selectedLinepoints.join(" ")}
-                  stroke={shape.color}
-                  markerEnd={`url(#${
-                    lineStyleAttr.markerEndId
-                  }${sanitizeClassName(shape.name)})`}
-                  markerStart={`url(#${
-                    lineStyleAttr.markerStartId
-                  }${sanitizeClassName(shape.name)})`}
-                  markerMid={`url(#${
-                    lineStyleAttr.markerMidId
-                  }${sanitizeClassName(shape.name)})`}
-                  strokeWidth={
-                    lineStyleAttr.style
-                      ? lineStyleAttr.style["stroke-width"]
-                      : "2"
-                  }
-                  strokeDasharray={
-                    lineStyleAttr.style
-                      ? lineStyleAttr.style["stroke-dasharray"]
-                      : "0"
-                  }
-                />
-              </svg>
-            )}
-            {shape.type === "rect" && (
-              <svg width="40" height="20">
-                <defs ref={textureDefsRef}></defs>
+            <svg width="40" height="20">
+              <defs ref={textureLegendDefsRef}>
+                {endConfig &&
+                  endConfig.content(
+                    shape.color,
+                    endConfig.id + sanitizeClassName(shape.name)
+                  )}
+                {startConfig &&
+                  startConfig.content(
+                    shape.color,
+                    startConfig.id + sanitizeClassName(shape.name)
+                  )}
+              </defs>
+              {shape.type === "line" &&
+                (console.warn("this is shape ", shape),
+                (
+                  <polyline
+                    x1="10"
+                    y1="10"
+                    x2="30"
+                    y2="10"
+                    points={selectedLinepoints.join(" ")}
+                    stroke={shape.color}
+                    markerEnd={`url(#${
+                      lineStyleAttr.markerEndId
+                    }${sanitizeClassName(shape.name)})`}
+                    markerStart={`url(#${
+                      lineStyleAttr.markerStartId
+                    }${sanitizeClassName(shape.name)})`}
+                    markerMid={`url(#${
+                      lineStyleAttr.markerMidId
+                    }${sanitizeClassName(shape.name)})`}
+                    strokeWidth={
+                      lineStyleAttr.style
+                        ? lineStyleAttr.style["stroke-width"]
+                        : "2"
+                    }
+                    strokeDasharray={
+                      lineStyleAttr.style
+                        ? lineStyleAttr.style["stroke-dasharray"]
+                        : "0"
+                    }
+                  />
+                ))}
+              {shape.type === "rect" && (
                 <rect
                   x="10"
                   y="2"
@@ -1919,23 +2087,18 @@ function ViewGraph() {
                   fill={textureConfig?.configuration.id(textureId).url()}
                   stroke={shape.color}
                 />
-              </svg>
-            )}
-            {shape.type === "triangle" && (
-              <svg width="40" height="20">
-                <defs ref={textureDefsRef}></defs>
+              )}
+              {shape.type === "triangle" && (
                 <polygon
                   points="10,18 40,2 40,18"
                   fill={textureConfig?.configuration.id(textureId).url()}
                   stroke={shape.color}
                 />
-              </svg>
-            )}
-            {shape.type === "circle" && (
-              <svg width="40" height="20">
+              )}
+              {shape.type === "circle" && (
                 <circle cx="20" cy="10" r="8" fill={shape.color} />
-              </svg>
-            )}
+              )}
+            </svg>
           </div>
           <div className="text-container">
             <span
@@ -1951,54 +2114,81 @@ function ViewGraph() {
       );
     });
   };
-  const A4_WIDTH_MM = 270; // A4 width in millimeters
-  const A4_HEIGHT_MM = 297; // A4 height in millimeters
-  const saveAsPdfOrImage = (format: "pdf" | "image") => {
-    const svgContainer = document.getElementById("graph-container");
+  const CopyTexturesToLegend = useCallback(() => {
+    const sourceDefs = d3.select(textureDefsRef.current);
+    const targetDefs = d3.select(textureLegendDefsRef.current);
 
-    const dpi = window.devicePixelRatio || 1;
-    const pageWidthPx = Math.floor((A4_WIDTH_MM * dpi) / 25.4);
-    const pageHeightPx = Math.floor((A4_HEIGHT_MM * dpi) / 25.4);
-
-    if (format === "pdf") {
-      const pdf = new jsPDF("portrait", "mm", [A4_WIDTH_MM, A4_HEIGHT_MM]);
-
-      // Clone the SVG container to avoid modifying the original
-      const clonedSvg = svgContainer.cloneNode(true);
-
-      // Fetch external stylesheets and inject them into the SVG
-      const styleSheets = Array.from(document.styleSheets);
-
-      const fetchStyles = async (url: string) => {
-        try {
-          const response = await fetch(url);
-          const cssText = await response.text();
-
-          const styleElement = document.createElement("style");
-          styleElement.textContent = cssText;
-          clonedSvg.appendChild(styleElement);
-        } catch (error) {
-          console.error("Error fetching stylesheet:", error);
-        }
-      };
-
-      styleSheets.forEach((styleSheet) => {
-        if (styleSheet.href) {
-          fetchStyles(styleSheet.href);
+    if (!sourceDefs.empty() && !targetDefs.empty()) {
+      sourceDefs.selectAll("*").each(function () {
+        const node = d3.select(this);
+        if (targetDefs.select(`#${node.attr("id")}`).empty()) {
+          const clonedNode = this.cloneNode(true);
+          if (clonedNode) {
+            targetDefs.node().appendChild(clonedNode);
+            console.log("Successfully appended node:", clonedNode);
+          } else {
+            console.error("Failed to clone node:", node.node());
+          }
         }
       });
-
-      // Convert the SVG to XML string
-      const svgXml = new XMLSerializer().serializeToString(clonedSvg);
-
-      // Embed the SVG XML into the PDF
-      pdf.text(svgXml, 10, 10);
-
-      // Save the PDF
-      pdf.save("graph.pdf");
     }
+  }, []);
+
+  const A4_WIDTH_MM = 210; // A4 width in millimeters
+  const A4_HEIGHT_MM = 297; // A4 height in millimeters
+
+  const convertImageToBlob = async (imageUrl) => {
+    const response = await api.get(imageUrl);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    const blob = await response.blob();
+    return blob;
   };
 
+  const saveAsPdfOrImage = async (format) => {
+    const svgContainer = document.getElementById("graph-container");
+    if (!svgContainer) {
+      console.error("SVG container not found");
+      return;
+    }
+
+    try {
+      //await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // // Convert images to Blobs to avoid CORS issues
+      // const images = svgContainer.querySelectorAll("img");
+      // const imagePromises = Array.from(images).map(async (img) => {
+      //   const blob = await convertImageToBlob(img.src);
+      //   const objectURL = URL.createObjectURL(blob);
+      //   img.src = objectURL;
+      // });
+
+      // await Promise.all(imagePromises);
+
+      const canvas = await html2canvas(svgContainer, {
+        useCORS: true,
+        allowTaint: false,
+      });
+
+      const dataURL = canvas.toDataURL(`image/${format}`, 1.0);
+
+      if (format === "pdf") {
+        const pdf = new jsPDF("portrait", "mm", [210, 297]); // A4 size in mm
+        const imgWidth = 210;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        pdf.addImage(dataURL, "PNG", 0, 0, imgWidth, imgHeight);
+        pdf.save("graph.pdf");
+      } else if (format === "image") {
+        const link = document.createElement("a");
+        link.href = dataURL;
+        link.download = "graph.png";
+        link.click();
+      }
+    } catch (error) {
+      console.error("Error capturing SVG:", error);
+    }
+  };
   useEffect(() => {
     const handleEscapeKey = (event) => {
       if (event.key === "Escape" && zoomLevel > 1) {
@@ -2238,22 +2428,27 @@ function ViewGraph() {
               >
                 {t("drawGraph.Hypothesis")}
               </button>
+
+              <button
+                // disabled
+                className="focus:outline-none mt-5  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
+                onClick={() => saveAsPdfOrImage("pdf")}
+              >
+                PDF
+              </button>
+              <button
+                // disabled
+                className="focus:outline-none mt-5  text-white bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:ring-teal-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-900 flex items-center"
+                onClick={() => saveAsPdfOrImage("image")}
+              >
+                Image
+              </button>
             </div>
             <Accordion
               title={t("drawGraph.utilButtons")}
               isOpenTrigger={selectedShapeData}
             >
               <div className="my-4 flex justify-center gap-2 ">
-                {/* <button
-                  // disabled
-                  className="focus:outline-none mt-5  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
-                  onClick={() => saveAsPdfOrImage("pdf")}
-                >
-                  <span className="mr-2">
-                    <LockClosedIcon className="w-4 h-4" /> 
-                  </span>
-                  PDF
-                </button> */}
                 {/* <button
           type="button"
           onClick={() => navigate("/create-project/5")} // Handle going back to the previous step
@@ -2355,6 +2550,7 @@ function ViewGraph() {
                   src={graphSettings.projectSettings.clientlogoImg ?? logo}
                   className="h-20 w-40 mr-4"
                   alt={"Client" + graphSettings.projectSettings.title}
+                  ///crossOrigin="true"
                 />
                 <div className="flex-grow text-center">
                   <p className="text-2xl">
@@ -2373,6 +2569,7 @@ function ViewGraph() {
                   src={graphSettings.projectSettings.logoImg}
                   className="h-20 w-40 object-fill "
                   alt={graphSettings.projectSettings.title}
+                  //crossOrigin="true"
                 />
               </div>
 
@@ -2385,15 +2582,7 @@ function ViewGraph() {
                     minWidth: containerWidth,
                   }}
                 >
-                  <defs>
-                    {/* {patterns.map((pattern) => {
-              return pattern.content(
-                pattern.width,
-                pattern.height,
-                pattern.id
-              );
-            })} */}
-                  </defs>
+                  <defs ref={textureDefsRef}></defs>
                   <g ref={svgRef}></g>
                 </svg>
               </div>
@@ -2474,11 +2663,20 @@ function ViewGraph() {
                 </div>
               </div>
             </Accordion>
-            <div className="flex w-full justify-center items-center my-4">
+            {/* <div className="flex w-full justify-center items-center my-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full px-5">
                 {createLegend()}
               </div>
-            </div>
+            </div> */}
+
+            {graphSettings.shapes.shapesData && (
+              <LegendComponent
+                shapesData={shapesData}
+                texturesData={texturesData}
+                lineStyles={lineStyles}
+                markersConfig={markersConfig}
+              />
+            )}
           </div>
 
           {isModalOpen && (
