@@ -221,6 +221,8 @@
     "quantity": "QUANTITÉ",
     "productionRate": "TAUX DE PRODUCTION",
     "workShops": "ATELIERS",
+    "quantityUnit": "Unité",
+    "productionRateUnit": "Unité",
     "errors": {
       "activityName": "Le nom de l'activité est requis",
       "startDate": "La date de début est requise",

@@ -229,25 +229,47 @@ const ActivityTableForm: React.FC<ActivityTableFormProps> = ({
                   errors={errors}
                 />
               </div>
-              <div className="mb-4">
+              <div className="mb-4 flex items-center gap-3  w-full">
                 <Input
                   id="quantity"
                   type="number"
                   name="quantity"
                   label={t("activityForm.quantity")}
                   onChange={handleChange}
+                  containerClass="w-[70%]"
                   value={values.quantity}
                   errors={errors}
                 />
+                <Input
+                  id="quantityUnit"
+                  type="text"
+                  name="quantityUnit"
+                  label={t("activityForm.quantityUnit")}
+                  onChange={handleChange}
+                  containerClass="w-[25%]"
+                  value={values.quantityUnit}
+                  errors={errors}
+                />
               </div>
-              <div className="mb-4">
+              <div className="mb-4 flex items-center gap-3  w-full">
                 <Input
                   id="productionRate"
                   type="number"
                   name="productionRate"
+                  containerClass="w-[70%]"
                   label={t("activityForm.productionRate")}
                   onChange={handleChange}
                   value={values.productionRate}
+                  errors={errors}
+                />
+                <Input
+                  id="productionRateUnit"
+                  type="text"
+                  name="productionRateUnit"
+                  label={t("activityForm.productionRateUnit")}
+                  onChange={handleChange}
+                  containerClass="w-[25%]"
+                  value={values.productionRateUnit}
                   errors={errors}
                 />
               </div>

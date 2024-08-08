@@ -58,6 +58,7 @@ import { persistor } from "src/App";
 import { deleteProject } from "src/Services/ProjectService";
 import { updateDelete } from "typescript";
 import ProjectSettingForm from "./ProjectSettingForm";
+import { extractValueAndUnit } from "src/utils/helpers";
 export type FormValues = {
   fromDate: Date;
   toDate: Date;
@@ -107,11 +108,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
     const filteredData = graphSettings.graphData?.filter((item) => {
       const id: string = item.activityId;
-      console.log(
-        "🚀 ~ filteredData ~ item.activityId:",
-        item.activityId,
-        typeof item.activityId
-      );
 
       if (!uniqueIds.has(id) && id.includes(search)) {
         uniqueIds.add(id);
@@ -279,6 +275,30 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         ) {
           // Handle numeric values
           dataObject[setting.pcfField] = parseFloat(value);
+        } else if (
+          setting.pcfField === "workShops" ||
+          setting.pcfField === "productionRate" ||
+          setting.pcfField === "quantity"
+        ) {
+          const { numericValue, unit } = extractValueAndUnit(value);
+          if (numericValue === 159840) {
+            console.warn(
+              "🚀 ~ ImportFileForm ~ numericValue, unit:",
+              numericValue,
+              unit
+            );
+          }
+
+          dataObject[setting.pcfField] = numericValue;
+
+          if (setting.pcfField === "productionRate") {
+            dataObject.productionRateUnit = unit;
+          } else if (setting.pcfField === "quantity") {
+            dataObject.quantityUnit = unit;
+          } else {
+            // Handle other fields
+            dataObject[setting.pcfField] = value;
+          }
         } else {
           // Handle other fields
           dataObject[setting.pcfField] = value;
@@ -467,9 +487,9 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           activity.getElementsByTagName("Finish")[0].textContent;
 
         let duration = activity.getElementsByTagName("Duration")[0].textContent;
-        const criticalString =
-          activity.getElementsByTagName("Critical")[0]?.textContent || "";
-        const critical: boolean = criticalString === "1" ? true : false;
+        // const criticalString =
+        //   activity.getElementsByTagName("Critical")[0]?.textContent || "";
+        // const critical: boolean = criticalString === "1" ? true : false;
         // Get UDF data based on specific Titles
         let durationNumber = convertDurationToHours(duration ?? "");
 
@@ -510,7 +530,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             startDate,
             finishDate,
             calendarName,
-            critical,
+            //critical,
             duration: durationNumber,
             ...udfData,
           });
@@ -1360,16 +1380,40 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       {
         Header: t("importFileForm.quantity"),
         accessor: "quantity",
-        Cell: ({ cell: { value, row } }: any) => (
-          <input type="number" className={`min-w-50 `} value={value} readOnly />
-        ),
+        Cell: ({ cell: { value, row } }: any) => {
+          var unit = row.original["quantityUnit"] ?? "";
+          var quantityString = value + " " + unit;
+          if (!value) {
+            return <></>;
+          }
+          return (
+            <input
+              type="text"
+              className={`min-w-50 `}
+              value={quantityString}
+              readOnly
+            />
+          );
+        },
       },
       {
         Header: t("importFileForm.ProductionRate"),
         accessor: "productionRate",
-        Cell: ({ cell: { value, row } }: any) => (
-          <input type="number" className={`min-w-50 `} value={value} readOnly />
-        ),
+        Cell: ({ cell: { value, row } }: any) => {
+          var unit = row.original["productionRateUnit"] ?? "";
+          var prString = value + " " + unit;
+          if (!value) {
+            return <></>;
+          }
+          return (
+            <input
+              type="text"
+              className={`min-w-50 `}
+              value={prString}
+              readOnly
+            />
+          );
+        },
       },
       {
         Header: t("importFileForm.workShops"),
@@ -1441,7 +1485,11 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
                 disabled={!canWrite && !isAdmin}
                 name="file_upload"
                 className="hidden"
-                accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                accept={
+                  fileType === ProjectFileType.XLSX
+                    ? ".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    : ".xml, text/xml"
+                }
               />
             </>
           )}

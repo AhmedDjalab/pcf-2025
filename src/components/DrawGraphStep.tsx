@@ -181,16 +181,18 @@ function DrawGraphStep() {
         )}:</strong> ${moment(data.finishDate).format("DD/MM/YYYY")}        
         <br>
 
-           <strong>${t("drawGraph.activityDetails.quantity")}:</strong> ${
-        data.quantity
-      }
+           <strong>${t("drawGraph.activityDetails.quantity")}:</strong>  ${
+        data?.quantity ?? ""
+      } ${data?.quantityUnit ?? ""}
           <br>
              <strong>${t(
                "drawGraph.activityDetails.productionRate"
-             )}:</strong> ${data.productionRate}
+             )}:</strong> ${data?.productionRate ?? ""} ${
+        data?.productionRateUnit ?? ""
+      }
                <br>
              <strong>${t("drawGraph.activityDetails.workShops")}:</strong> ${
-        data.workShops
+        data?.workShops ?? ""
       }
           <br>
         <strong>${t("drawGraph.activityDetails.duration")}:</strong> ${
@@ -1710,19 +1712,23 @@ function DrawGraphStep() {
                     {t("drawGraph.activityDetails.quantity")}
                   </div>
                   <div className="border border-gray-700 p-2">
-                    {selectedShapeData?.quantity}
+                    {`${selectedShapeData?.quantity ?? ""} ${
+                      selectedShapeData?.quantityUnit ?? ""
+                    }`}
                   </div>
                   <div className="border border-gray-700 p-2 bg-slate-500">
                     {t("drawGraph.activityDetails.productionRate")}
                   </div>
                   <div className="border border-gray-700 p-2">
-                    {selectedShapeData?.productionRate}
+                    {`${selectedShapeData?.productionRate ?? ""} ${
+                      selectedShapeData?.productionRateUnit ?? ""
+                    }`}
                   </div>
                   <div className="border border-gray-700 p-2 bg-slate-500">
                     {t("drawGraph.activityDetails.workShops")}
                   </div>
                   <div className="border border-gray-700 p-2">
-                    {selectedShapeData?.workShops}
+                    {selectedShapeData?.workShops ?? ""}
                   </div>
                 </div>
               </div>

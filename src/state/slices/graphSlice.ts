@@ -59,6 +59,8 @@ export interface GraphDataType {
   quantity?: number;
   productionRate?: number;
   workShops?: number;
+  productionRateUnit?: string;
+  quantityUnit?: string;
 }
 export interface ShapeType {
   type: "line" | "rect" | "triangle";
@@ -342,6 +344,9 @@ export const saveProjectThunk = createAsyncThunk<
         quantity: act.quantity,
         productionRate: act.productionRate,
         workShops: act.workShops,
+        productionRateUnit: act.productionRateUnit,
+        quantityUnit: act.quantityUnit,
+
         id: act.id,
       })),
       graphSettings: {
@@ -821,6 +826,8 @@ const GraphSlice = createSlice({
         quantity: act.quantity,
         productionRate: act.productionRate,
         workShops: act.workShops,
+        productionRateUnit: act.productionRateUnit,
+        quantityUnit: act.quantityUnit,
       }));
       state.settings.graphData = activities ?? [];
 
@@ -879,6 +886,8 @@ const GraphSlice = createSlice({
         quantity: act.quantity,
         productionRate: act.productionRate,
         workShops: act.workShops,
+        productionRateUnit: act.productionRateUnit,
+        quantityUnit: act.quantityUnit,
       }));
       const projectData: GraphCreateType = {
         id: action.payload.data?.id,

@@ -55,6 +55,17 @@ export function AsUTC(date: Date | null | undefined): Date | null {
   return moment(date).utcOffset(0, true).startOf("day").toDate();
 }
 
+export const extractValueAndUnit = (value: string) => {
+  const stringArray = value.split(" ");
+  const numericValue = parseFloat(stringArray[0]);
+  const unit = stringArray.slice(1).join(" ").trim() || "";
+
+  return {
+    numericValue,
+    unit,
+  };
+};
+
 // const A4_WIDTH_MM = 210; // A4 width in millimeters
 // const A4_HEIGHT_MM = 297; // A4 height in millimeters
 

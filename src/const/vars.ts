@@ -184,23 +184,23 @@ export const graphStringsMSProjectSettings: GraphStringsSetting[] = [
     name: "drawGraph.activityDetails.styleLabel",
     field: "style",
   },
+  // {
+  //   id: 8,
+  //   name: "importFileForm.critical",
+  //   field: "critical",
+  // },
   {
     id: 8,
-    name: "importFileForm.critical",
-    field: "critical",
-  },
-  {
-    id: 9,
     name: "importFileForm.quantity",
     field: "quantity",
   },
   {
-    id: 10,
+    id: 9,
     name: "importFileForm.ProductionRate",
     field: "productionRate",
   },
   {
-    id: 11,
+    id: 10,
     name: "importFileForm.workShops",
     field: "workShops",
   },
