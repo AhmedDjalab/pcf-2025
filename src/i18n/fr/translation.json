@@ -353,5 +353,12 @@
     "hypothesisDescriptions": "Descriptions de l'Hypothèse",
     "cancel": "Annuler",
     "save": "Enregistrer"
-  }
+  },
+  "preSucactivity": {
+    "activityId": "ID",
+    "activityName": "Nom",
+    "type": "Type"
+  },
+  "Predecessors": "Prédécesseurs",
+  "Successors": "Successeurs"
 }

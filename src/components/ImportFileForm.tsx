@@ -9,8 +9,10 @@ import { MultiStepFormProps } from "./DrawGraphForm";
 
 import * as XLSX from "xlsx";
 import {
+  ActivityRelations,
   GraphDataType,
   UdfSetting,
+  addActivitiesRelation,
   addDataDate,
   addFileName,
   addGraphDataList,
@@ -59,6 +61,7 @@ import { deleteProject } from "src/Services/ProjectService";
 import { updateDelete } from "typescript";
 import ProjectSettingForm from "./ProjectSettingForm";
 import { extractValueAndUnit } from "src/utils/helpers";
+import { ActivityRelationType } from "src/enums/ActivityRelationType";
 export type FormValues = {
   fromDate: Date;
   toDate: Date;
@@ -281,13 +284,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           setting.pcfField === "quantity"
         ) {
           const { numericValue, unit } = extractValueAndUnit(value);
-          if (numericValue === 159840) {
-            console.warn(
-              "🚀 ~ ImportFileForm ~ numericValue, unit:",
-              numericValue,
-              unit
-            );
-          }
 
           dataObject[setting.pcfField] = numericValue;
 
@@ -366,7 +362,21 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           setting.pcfField === "productionRate" ||
           setting.pcfField === "quantity"
         ) {
-          dataObject[setting.pcfField] = parseFloat(textValue);
+          const { numericValue, unit } = extractValueAndUnit(textValue);
+
+          dataObject[setting.pcfField] = numericValue;
+
+          if (setting.pcfField === "productionRate") {
+            dataObject.productionRateUnit = unit;
+          } else if (setting.pcfField === "quantity") {
+            dataObject.quantityUnit = unit;
+          } else {
+            // Handle other fields
+            dataObject[setting.pcfField] = textValue;
+          }
+        } else {
+          // Handle other fields
+          dataObject[setting.pcfField] = textValue;
         }
       }
     }
@@ -378,15 +388,49 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     return dataObject;
   };
   //? ---------------------parsers -----------------
+
   const parsePrimaveraXML = (
     xmlDoc: Document,
     userSelectionData: UdfSetting[]
   ) => {
     const graphData: any[] = [];
+    var activitiesRelation: ActivityRelations[] = [];
 
     // Get the <Project> element (assuming it's the root element)
     const project = xmlDoc.getElementsByTagName("Project")[0];
 
+    // get the relationships of project
+    var relations = project.getElementsByTagName("Relationship");
+
+    for (let index = 0; index < relations.length; index++) {
+      const relation = relations[index];
+
+      const predecessorActivityObjectId = relation.getElementsByTagName(
+        "PredecessorActivityObjectId"
+      )[0].textContent;
+      const successorActivityObjectId = relation.getElementsByTagName(
+        "SuccessorActivityObjectId"
+      )[0].textContent;
+      const relationType = relation.getElementsByTagName("Type")[0].textContent;
+
+      if (predecessorActivityObjectId && successorActivityObjectId) {
+        var types = relationType?.split(" ") ?? [];
+        var type = (types[0].charAt(0) + types[2].charAt(0)) as
+          | "FS"
+          | "SS"
+          | "FF"
+          | "SF";
+        console.warn("🚀 ~ ImportFileForm ~ type:", type, types);
+        console.warn("🚀 ~ ImportFileForm ~ type:", ActivityRelationType[type]);
+        activitiesRelation.push({
+          predecessorActivityId: predecessorActivityObjectId,
+          successorActivityId: successorActivityObjectId,
+          activityRelationType: ActivityRelationType[type],
+        });
+      }
+    }
+
+    console.warn("Relations ships ", activitiesRelation);
     if (project) {
       const activities = project.getElementsByTagName("Activity");
       const DataDate = project.getElementsByTagName("DataDate")[0].textContent;
@@ -394,9 +438,15 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       setLoading(true);
       for (let i = 0; i < activities.length; i++) {
         const activity = activities[i];
+
         const activityId = activity.getElementsByTagName("Id")[0].textContent;
+
+        const activityUID =
+          activity.getElementsByTagName("ObjectId")[0].textContent!;
+
         const activityName =
           activity.getElementsByTagName("Name")[0].textContent;
+
         let duration = parseFloat(
           activity.getElementsByTagName("AtCompletionDuration")[0]
             .textContent ?? "0"
@@ -436,6 +486,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         ) {
           graphData.push({
             activityId: activityId,
+            activityUID,
             activityName,
             startDate,
             finishDate,
@@ -451,6 +502,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
     // setGraphData(graphData);
     dispatch(addGraphDataList({ graphData: graphData }));
+    dispatch(addActivitiesRelation({ activitiesRelation: activitiesRelation }));
+
     formik.setFieldValue("graphData", graphData);
   };
 
@@ -459,6 +512,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     userSelectionData: UdfSetting[]
   ) => {
     const graphData: any[] = [];
+    var activitiesRelation: ActivityRelations[] = [];
 
     // Get the <Project> element (assuming it's the root element)
     const project = xmlDoc.getElementsByTagName("Project")[0];
@@ -479,6 +533,8 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         const activity = activities[i];
 
         const activityId = activity.getElementsByTagName("ID")[0].textContent;
+        const activityUID =
+          activity.getElementsByTagName("UID")[0].textContent!;
 
         const activityName =
           activity.getElementsByTagName("Name")[0]?.textContent ?? activityId;
@@ -487,6 +543,28 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           activity.getElementsByTagName("Finish")[0].textContent;
 
         let duration = activity.getElementsByTagName("Duration")[0].textContent;
+
+        var predecessorLink =
+          activity.getElementsByTagName("PredecessorLink")[0];
+        let predecessorActivityID, predecessorType;
+
+        if (predecessorLink) {
+          predecessorActivityID =
+            predecessorLink.getElementsByTagName("PredecessorUID")[0]
+              .textContent!;
+
+          predecessorType = parseInt(
+            predecessorLink.getElementsByTagName("Type")[0].textContent!
+          );
+          activitiesRelation.push({
+            predecessorActivityId: predecessorActivityID,
+            successorActivityId: activityUID,
+            activityRelationType: predecessorType,
+          });
+        }
+
+        console.warn("Relations ships ", activitiesRelation);
+
         // const criticalString =
         //   activity.getElementsByTagName("Critical")[0]?.textContent || "";
         // const critical: boolean = criticalString === "1" ? true : false;
@@ -527,6 +605,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           graphData.push({
             activityId: activityId,
             activityName,
+            activityUID,
             startDate,
             finishDate,
             calendarName,
@@ -540,6 +619,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
     //setGraphData(graphData);
     dispatch(addGraphDataList({ graphData: graphData }));
+    dispatch(addActivitiesRelation({ activitiesRelation: activitiesRelation }));
     formik.setFieldValue("graphData", graphData);
   };
 

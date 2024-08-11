@@ -56,13 +56,19 @@ import Checkbox from "src/components/Checkbox";
 import moment from "moment-timezone";
 import { ActivityModel, ActivityStyleModel } from "src/types/Project";
 import { saveActivityStyle } from "src/Services/ActivityStylesService";
-import { getActivitiesByActivityId } from "src/Services/ActivityService";
+import {
+  getActivitiesByActivityId,
+  getPredecessorsByActivityUID,
+  getSuccessorsByActivityUID,
+} from "src/Services/ActivityService";
 import { useQuery } from "@tanstack/react-query";
 import { EditButton } from "src/components/shared/Button";
 import HypothesisModal from "src/components/HypothesesModal";
 import html2canvas from "html2canvas";
 import LegendComponent from "src/components/Legends";
 import api from "src/utils/api";
+import DynamicTable from "src/components/DynamicTable";
+import { ActivityRelationType } from "src/enums/ActivityRelationType";
 export interface ActivityData {
   id: string;
   activityName: string;
@@ -79,7 +85,11 @@ function ViewGraph() {
   const { canWrite, isAdmin } = useAuth();
 
   const [showHypothesis, setShowHypothesis] = useState(false);
+  const [linksData, setLinksData] = useState();
   const [showCritical, setShowCritical] = useState(false);
+  const [selectedRelativeType, setSelectedRelativeType] = useState<
+    "Predecessors" | "Successors"
+  >();
   const [scrollToActivityId, setScrollToActivityId] = useState(1);
   const tooltipContainerRef = useRef(null);
   const textureLegendDefsRef = useRef(null);
@@ -233,7 +243,7 @@ function ViewGraph() {
     queryFn: async () =>
       await getActivitiesByActivityId({
         projectId: id,
-        activityId: selectedActivityTooltip.id,
+        activityId: selectedActivityTooltip?.id,
       }),
 
     refetchOnWindowFocus: false,
@@ -1705,6 +1715,71 @@ function ViewGraph() {
       d3.selectAll(".rect-info-date").style("display", "block");
     }
   }, [commentsDetails]);
+
+  ///? GetPredecessors && GetSuccessors
+
+  const {
+    data: successrActivitiesRelativesData,
+    refetch: refetchSuccessorActivitiesRelatives,
+  } = useQuery({
+    queryKey: ["SuccessorActivitiesRelatives", selectedShapeData?.id],
+    queryFn: async () => {
+      return await getSuccessorsByActivityUID(selectedShapeData?.activityUID);
+    },
+
+    refetchOnWindowFocus: false,
+    staleTime: 6000,
+    enabled:
+      selectedShapeData !== undefined &&
+      selectedShapeData?.activityUID !== null,
+  });
+  const {
+    data: predecessorActivitiesRelativesData,
+    refetch: refetchPredecessorActivitiesRelatives,
+  } = useQuery({
+    queryKey: ["PredeccessorActivitiesRelatives", selectedShapeData?.id],
+    queryFn: async () => {
+      return await getPredecessorsByActivityUID(selectedShapeData?.activityUID);
+    },
+
+    refetchOnWindowFocus: false,
+    staleTime: 6000,
+    enabled:
+      selectedShapeData !== undefined &&
+      selectedShapeData?.activityUID !== null,
+  });
+  // useEffect(() => {
+  //   if (activitiesRelativesData) {
+  //     const nodesData = [
+  //       {
+  //         id: selectedShapeData.id,
+  //         x: selectedShapeData.x,
+  //         y: selectedShapeData.y,
+  //       },
+  //       ...activitiesRelativesData.activitiesRelations.map((element) => ({
+  //         id: element.id,
+  //         x: element.x,
+  //         y: element.y,
+  //       })),
+  //     ];
+
+  //     const linksData = activitiesRelativesData.activitiesRelations.map(
+  //       (element) => ({
+  //         source:
+  //           selectedRelativeType === "Predecessors"
+  //             ? element.id
+  //             : selectedShapeData.id,
+  //         target:
+  //           selectedRelativeType === "Predecessors"
+  //             ? selectedShapeData.id
+  //             : element.id,
+  //       })
+  //     );
+
+  //     setLinksData(linksData);
+  //   }
+  // }, [selectedRelativeType, refetchActivitiesRelatives]);
+
   const drawD3Chart = useCallback(() => {
     // Set the height attribute of the parent SVG to fit its children
 
@@ -1754,6 +1829,7 @@ function ViewGraph() {
     drawTaskSlot(g, xScale, yScale, tooltip, graphSettings.taskSlots, "Task1");
 
     drawComment(g, xScale, yScale);
+
     // Create a zoom behavior
     // Set the minimum and maximum scale levels
     zoom
@@ -1871,6 +1947,7 @@ function ViewGraph() {
     graphSettings.taskSlotsLevelTwo,
     graphSettings.taskSlots,
     drawComment,
+
     zoom,
     containerHeight,
   ]);
@@ -2374,6 +2451,89 @@ function ViewGraph() {
     navigate("/projects");
   };
 
+  const handleDrawLinks = (linkType, selectedShapeData) => {
+    if (!selectedShapeData) {
+      return;
+    }
+    setSelectedRelativeType(linkType);
+    refetchActivitiesRelatives();
+    // // Select the target shape using its id
+    // const targetShapeId = `shape-${selectedShapeData?.id}`;
+    // const targetShape = d3.select(`#${targetShapeId}`);
+
+    // // Check if the target shape exists
+    // if (!targetShape.empty()) {
+    //   // Get the bounding box of the target shape to determine its position
+    //   const targetBBox = targetShape.node().getBBox();
+
+    //   // Determine the offsets for the link (you can adjust dx and dy as needed)
+    //   let dx, dy;
+    //   if (linkType === "Predecessors") {
+    //     dx = -50;
+    //     dy = -150;
+    //   } else if (linkType === "Successors") {
+    //     dx = 50;
+    //     dy = 150;
+    //   }
+
+    //   // Calculate the starting point (current shape) and the end point (target shape)
+    //   const startX = targetBBox.x;
+    //   const startY = targetBBox.y;
+    //   const endX = targetBBox.x + targetBBox.width * 2 + dx;
+    //   const endY = targetBBox.y + targetBBox.height * 2 + dy;
+
+    //   // Select the SVG container
+    //   const svg = d3.select(svgRef.current!);
+
+    //   // Draw the link (line) between the shapes
+    //   svg
+    //     .append("line")
+    //     .attr("x1", startX)
+    //     .attr("y1", startY)
+    //     .attr("x2", endX)
+    //     .attr("y2", endY)
+    //     .attr("stroke", "red")
+    //     .attr("stroke-width", 10);
+
+    //   // Optionally, add a circle at the end point (target shape)
+    //   svg
+    //     .append("circle")
+    //     .attr("cx", endX)
+    //     .attr("cy", endY)
+    //     .attr("r", 5)
+    //     .attr("fill", "red");
+    // } else {
+    //   console.error(`Shape with id ${targetShapeId} not found.`);
+    // }
+  };
+
+  const predSuccColumns = useMemo(
+    () => [
+      {
+        Header: t("preSucactivity.activityId"),
+        accessor: "activityId",
+      },
+      {
+        Header: t("preSucactivity.activityName"),
+        accessor: "name",
+      },
+      {
+        Header: t("preSucactivity.type"),
+        accessor: "activityRelationType",
+        Cell: ({ cell: { value, row } }: any) => {
+          const type = ActivityRelationType[value];
+
+          return <div>{type}</div>;
+        },
+      },
+    ],
+    [t]
+  );
+
+  useEffect(() => {
+    console.warn("🚀 ~ selectedShapeData:", selectedShapeData);
+  }, [selectedShapeData]);
+
   return (
     <DefaultLayout>
       {graphSettings.loading ? (
@@ -2588,78 +2748,38 @@ function ViewGraph() {
               </div>
             </div>
             <Accordion title={t("drawGraph.activityDetailLabel")}>
-              <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  <div className="border border-gray-700 p-2 bg-slate-500">
-                    {t("drawGraph.activityDetails.activityNameLabel")}
-                  </div>
-                  <div className="border border-gray-700 p-2">
-                    {selectedShapeData?.activityName}
-                  </div>
+              <div className="grid grid-cols-4 gap-2">
+                <div>
+                  {t("Predecessors")}
+                  <DynamicTable
+                    data={
+                      predecessorActivitiesRelativesData?.activitiesRelations ??
+                      []
+                    }
+                    columns={predSuccColumns}
+                    dataCount={
+                      predecessorActivitiesRelativesData?.activitiesRelations
+                        .length ?? 0
+                    }
+                    hideFilters={true}
+                  />
+                </div>
 
-                  <div className="border border-gray-700 p-2 bg-slate-500">
-                    {t("drawGraph.activityDetails.styleLabel")}
-                  </div>
-                  <div className="border border-gray-700 p-2">
-                    {selectedShapeData?.style}
-                  </div>
+                {activityDetails(t, selectedShapeData)}
 
-                  <div className="border border-gray-700 p-2 bg-slate-500">
-                    {t("drawGraph.activityDetails.startDateLabel")}
-                  </div>
-                  <div className="border border-gray-700 p-2">
-                    {moment(selectedShapeData?.startDate).format("DD/MM/YYYY")}
-                  </div>
-
-                  <div className="border border-gray-700 p-2 bg-slate-500">
-                    {t("drawGraph.activityDetails.finishDateLabel")}
-                  </div>
-                  <div className="border border-gray-700 p-2">
-                    {moment(selectedShapeData?.finishDate).format("DD/MM/YYYY")}
-                  </div>
-
-                  <div className="border border-gray-700 p-2 bg-slate-500">
-                    {t("drawGraph.activityDetails.startChainageLabel")}
-                  </div>
-                  <div className="border border-gray-700 p-2">
-                    {selectedShapeData?.startChainage}
-                  </div>
-
-                  <div className="border border-gray-700 p-2 bg-slate-500">
-                    {t("drawGraph.activityDetails.finishChainageLabel")}
-                  </div>
-                  <div className="border border-gray-700 p-2">
-                    {selectedShapeData?.finishChainage}
-                  </div>
-
-                  <div className="border border-gray-700 p-2 bg-slate-500">
-                    {t("drawGraph.activityDetails.calendar")}
-                  </div>
-                  <div className="border border-gray-700 p-2">
-                    {selectedShapeData?.calendarName}
-                  </div>
-
-                  <div className="border border-gray-700 p-2 bg-slate-500">
-                    {t("drawGraph.activityDetails.duration")}
-                  </div>
-                  <div className="border border-gray-700 p-2">
-                    {selectedShapeData?.duration}
-                  </div>
-                  <div className="border border-gray-700 p-2">
-                    {selectedShapeData?.quantity}
-                  </div>
-                  <div className="border border-gray-700 p-2 bg-slate-500">
-                    {t("drawGraph.activityDetails.productionRate")}
-                  </div>
-                  <div className="border border-gray-700 p-2">
-                    {selectedShapeData?.productionRate}
-                  </div>
-                  <div className="border border-gray-700 p-2 bg-slate-500">
-                    {t("drawGraph.activityDetails.workShops")}
-                  </div>
-                  <div className="border border-gray-700 p-2">
-                    {selectedShapeData?.workShops}
-                  </div>
+                <div>
+                  {t("Successors")}
+                  <DynamicTable
+                    data={
+                      successrActivitiesRelativesData?.activitiesRelations ?? []
+                    }
+                    columns={predSuccColumns}
+                    dataCount={
+                      successrActivitiesRelativesData?.activitiesRelations
+                        .length ?? 0
+                    }
+                    hideFilters={true}
+                  />
                 </div>
               </div>
             </Accordion>
@@ -2719,3 +2839,84 @@ function ViewGraph() {
 }
 
 export default ViewGraph;
+function activityDetails(t, selectedShapeData: GraphDataType | undefined) {
+  return (
+    <div className="m-2 col-span-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          {t("drawGraph.activityDetails.activityNameLabel")}
+        </div>
+        <div className="border border-gray-700 p-2">
+          {selectedShapeData?.activityName}
+        </div>
+
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          {t("drawGraph.activityDetails.styleLabel")}
+        </div>
+        <div className="border border-gray-700 p-2">
+          {selectedShapeData?.style}
+        </div>
+
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          {t("drawGraph.activityDetails.startDateLabel")}
+        </div>
+        <div className="border border-gray-700 p-2">
+          {moment(selectedShapeData?.startDate).format("DD/MM/YYYY")}
+        </div>
+
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          {t("drawGraph.activityDetails.finishDateLabel")}
+        </div>
+        <div className="border border-gray-700 p-2">
+          {moment(selectedShapeData?.finishDate).format("DD/MM/YYYY")}
+        </div>
+
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          {t("drawGraph.activityDetails.startChainageLabel")}
+        </div>
+        <div className="border border-gray-700 p-2">
+          {selectedShapeData?.startChainage}
+        </div>
+
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          {t("drawGraph.activityDetails.finishChainageLabel")}
+        </div>
+        <div className="border border-gray-700 p-2">
+          {selectedShapeData?.finishChainage}
+        </div>
+
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          {t("drawGraph.activityDetails.calendar")}
+        </div>
+        <div className="border border-gray-700 p-2">
+          {selectedShapeData?.calendarName}
+        </div>
+
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          {t("drawGraph.activityDetails.duration")}
+        </div>
+        <div className="border border-gray-700 p-2">
+          {selectedShapeData?.duration}
+        </div>
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          {t("drawGraph.activityDetails.quantity")}
+        </div>
+        <div className="border border-gray-700 p-2">
+          {selectedShapeData?.quantity}
+        </div>
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          {t("drawGraph.activityDetails.productionRate")}
+        </div>
+        <div className="border border-gray-700 p-2">
+          {selectedShapeData?.productionRate}
+        </div>
+        <div className="border border-gray-700 p-2 bg-slate-500">
+          {t("drawGraph.activityDetails.workShops")}
+        </div>
+        <div className="border border-gray-700 p-2">
+          {selectedShapeData?.workShops}
+        </div>
+      </div>
+    </div>
+  );
+}

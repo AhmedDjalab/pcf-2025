@@ -23,6 +23,7 @@ export interface DynamicTableProps {
   columns: any;
   data: any[];
   rawData?: any[];
+  hideFilters?: boolean;
   dataCount?: number;
   setSearch?: any;
   initialeStateColumn?: Partial<TableState<object>> | undefined;
@@ -152,6 +153,7 @@ function DynamicTable({
   dataCount,
   setSearch,
   initialeStateColumn,
+  hideFilters = false,
 }: DynamicTableProps) {
   // Use the state and functions returned from useTable to build your UI
 
@@ -206,34 +208,37 @@ function DynamicTable({
             <img src={PdfIcon} className="ml-1 inline h-10 w-10" />
           </button>
         </div> */}
-        <div className="flex overflow-x-scroll md:overflow-x-hidden ">
-          <GlobalFilter
-            preGlobalFilteredRows={preGlobalFilteredRows}
-            globalFilter={state.globalFilter}
-            setGlobalFilter={setSearch}
-            dataCount={dataCount}
-          />
-          <div className="flex ">
-            {headerGroups.map((headerGroup: any) =>
-              headerGroup.headers.map((column: any) =>
-                column.Filter ? (
-                  <div className="" key={column.id}>
-                    {column.render("Filter")}
-                  </div>
-                ) : null
-              )
-            )}
+        {!hideFilters && (
+          <div className="flex overflow-x-scroll md:overflow-x-hidden ">
+            <GlobalFilter
+              preGlobalFilteredRows={preGlobalFilteredRows}
+              globalFilter={state.globalFilter}
+              setGlobalFilter={setSearch}
+              dataCount={dataCount}
+            />
+            <div className="flex ">
+              {headerGroups.map((headerGroup: any) =>
+                headerGroup.headers.map((column: any) =>
+                  column.Filter ? (
+                    <div className="" key={column.id}>
+                      {column.render("Filter")}
+                    </div>
+                  ) : null
+                )
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
+
       {/* table */}
       <div className="mt-4 flex flex-col">
-        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
+        <div className="-my-2  sm:-mx-6 lg:-mx-8 overflow-x-auto">
+          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8 ">
+            <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg ">
               <table
                 {...getTableProps()}
-                className="min-w-full divide-y divide-gray-200"
+                className="min-w-full divide-y divide-gray-200 "
               >
                 <thead>
                   {headerGroups.map((headerGroup: any) => (

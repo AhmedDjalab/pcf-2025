@@ -5,9 +5,14 @@ import {
   GraphSettingModel,
   filterTypes,
 } from "src/types/Project";
+import { ActivityRelations } from "src/state/slices/graphSlice";
 
 export interface ActivitesResponse {
   activities: ActivityModel[];
+  count: number;
+}
+export interface ActivityRelationsResponse {
+  activitiesRelations: ActivityRelations[];
   count: number;
 }
 const apiEndpoint = ActivitiesUrl;
@@ -67,6 +72,33 @@ export async function getActivitiesByActivityId({
     };
     const { data } = await api.get(apiEndpoint + "/GetByActivityId", config);
     return data as ActivitesResponse;
+  } catch (ex: any) {
+    // console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
+  }
+}
+
+export async function getSuccessorsByActivityUID(activityuid: string) {
+  try {
+    let config = {
+      params: {
+        activityuid,
+      },
+    };
+    const { data } = await api.get(apiEndpoint + "/GetSuccessors", config);
+    return data as ActivityRelationsResponse;
+  } catch (ex: any) {
+    // console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
+  }
+}
+export async function getPredecessorsByActivityUID(activityUID: string) {
+  try {
+    let config = {
+      params: {
+        activityUID,
+      },
+    };
+    const { data } = await api.get(apiEndpoint + "/GetPredecessors", config);
+    return data as ActivityRelationsResponse;
   } catch (ex: any) {
     // console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
   }

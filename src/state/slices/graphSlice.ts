@@ -42,8 +42,10 @@ import { getAllActivityStyles } from "src/Services/ActivityStylesService";
 import { getAllTaskSlot } from "src/Services/TaskSlotsService";
 import { TableCellsIcon } from "@heroicons/react/24/solid";
 import { AsUTC } from "src/utils/helpers";
+import { ActivityRelationType } from "src/enums/ActivityRelationType";
 
 export interface GraphDataType {
+  activityUID?: string;
   id?: string;
   activityName: string;
   activityId: string;
@@ -61,6 +63,7 @@ export interface GraphDataType {
   workShops?: number;
   productionRateUnit?: string;
   quantityUnit?: string;
+  predecessorActivityID?: string;
 }
 export interface ShapeType {
   type: "line" | "rect" | "triangle";
@@ -71,7 +74,13 @@ export interface ShapeType {
   id: string;
   activityIds?: string[];
 }
-
+export interface ActivityRelations {
+  predecessorActivityId: string;
+  successorActivityId: string;
+  activityRelationType?: ActivityRelationType;
+  activityId?: string;
+  id?: string;
+}
 export interface TaskSlot {
   start: number;
   end: number;
@@ -99,6 +108,7 @@ export interface ProjectSettings {
   fileName?: string;
   dataDate?: Date;
   hypothesisDescriptions?: string;
+  activitiesRelation?: ActivityRelations[];
 }
 export interface GraphSetting {
   graphData?: GraphDataType[];
@@ -324,6 +334,7 @@ export const saveProjectThunk = createAsyncThunk<
       dataDate: state.graph.projectSettings.dataDate,
       hypothesisDescriptions:
         state.graph.projectSettings.hypothesisDescriptions,
+      activitiesRelation: state.graph.projectSettings.activitiesRelation,
 
       //@ts-ignore
       companyId: getCompanyId(),
@@ -333,6 +344,7 @@ export const saveProjectThunk = createAsyncThunk<
         // Map properties from GraphDataType to ActivityModel
         name: act.activityName,
         activityId: act.activityId,
+        activityUID: act.activityUID,
         startDate: new Date(act.startDate),
         endDate: new Date(act.finishDate),
         startPk: act.startChainage,
@@ -346,6 +358,7 @@ export const saveProjectThunk = createAsyncThunk<
         workShops: act.workShops,
         productionRateUnit: act.productionRateUnit,
         quantityUnit: act.quantityUnit,
+        //predecessorActivityID: act.predecessorActivityID,
 
         id: act.id,
       })),
@@ -774,6 +787,13 @@ const GraphSlice = createSlice({
       state.projectSettings.hypothesisDescriptions =
         action.payload.hypothesisDescriptions;
     },
+    addActivitiesRelation(
+      state,
+      action: PayloadAction<{ activitiesRelation: ActivityRelations[] }>
+    ) {
+      state.projectSettings.activitiesRelation =
+        action.payload.activitiesRelation;
+    },
 
     ///? fetch cases
 
@@ -813,6 +833,7 @@ const GraphSlice = createSlice({
       var activities = action.payload?.activities?.map((act) => ({
         id: act.activityId,
         styleId: act.style,
+        activityUID: act.activityUID,
         activityId: act.activityId,
         startDate: new Date(act.startDate).toISOString(),
         finishDate: new Date(act.endDate).toISOString(),
@@ -828,6 +849,7 @@ const GraphSlice = createSlice({
         workShops: act.workShops,
         productionRateUnit: act.productionRateUnit,
         quantityUnit: act.quantityUnit,
+        //predecessorActivityID: act.predecessorActivityID,
       }));
       state.settings.graphData = activities ?? [];
 
@@ -888,6 +910,8 @@ const GraphSlice = createSlice({
         workShops: act.workShops,
         productionRateUnit: act.productionRateUnit,
         quantityUnit: act.quantityUnit,
+        predecessorActivityID: act.predecessorActivityID,
+        activityUID: act.activityUID,
       }));
       const projectData: GraphCreateType = {
         id: action.payload.data?.id,
@@ -1090,6 +1114,7 @@ export const {
   updateComment,
   updateCommentById,
   addHypothesis,
+  addActivitiesRelation,
 } = GraphSlice.actions;
 
 export default GraphSlice.reducer;

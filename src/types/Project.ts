@@ -26,6 +26,8 @@ export interface Project {
 }
 
 export interface ActivityModel {
+  activityUID?: string;
+  predecessorActivityID?: string;
   productionRateUnit?: string;
   quantityUnit?: string;
   id?: string;
