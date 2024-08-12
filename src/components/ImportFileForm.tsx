@@ -293,7 +293,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             dataObject.quantityUnit = unit;
           } else {
             // Handle other fields
-            dataObject[setting.pcfField] = value;
+            dataObject[setting.pcfField] = numericValue;
           }
         } else {
           // Handle other fields
@@ -372,7 +372,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             dataObject.quantityUnit = unit;
           } else {
             // Handle other fields
-            dataObject[setting.pcfField] = textValue;
+            dataObject[setting.pcfField] = numericValue;
           }
         } else {
           // Handle other fields
@@ -430,7 +430,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       }
     }
 
-    console.warn("Relations ships ", activitiesRelation);
     if (project) {
       const activities = project.getElementsByTagName("Activity");
       const DataDate = project.getElementsByTagName("DataDate")[0].textContent;
