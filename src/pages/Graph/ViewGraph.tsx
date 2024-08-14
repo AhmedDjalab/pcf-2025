@@ -314,19 +314,22 @@ function ViewGraph() {
               )}:</strong> ${data.name}<br>
               <strong>${t(
                 "drawGraph.activityDetails.startDateLabel"
-              )}:</strong> ${moment(data.startDate).format("DD/MM/YYYY")}<br>
+              )}:</strong> ${moment(data.startDate).format("DD/MM/YYYY")}
+              <br>
               <strong>${t(
                 "drawGraph.activityDetails.finishDateLabel"
-              )}:</strong> ${moment(data.endDate).format("DD/MM/YYYY")}<br>
+              )}:</strong> ${moment(data.endDate).format("DD/MM/YYYY")}
+              <br>
              
-               <strong>${t("drawGraph.activityDetails.quantity")}:</strong> ${
-            data.quantity
-          }
+              <strong>${t("drawGraph.activityDetails.quantity")}:</strong>  ${
+            data?.quantity ?? ""
+          } ${data?.quantityUnit ?? ""}
           <br>
              <strong>${t(
                "drawGraph.activityDetails.productionRate"
-             )}:</strong> ${data.productionRate}
-               <br>
+             )}:</strong> ${data?.productionRate ?? ""} ${
+            data?.productionRateUnit ?? ""
+          } <br>
              <strong>${t("drawGraph.activityDetails.workShops")}:</strong> ${
             data.workShops
           }
@@ -2529,10 +2532,6 @@ function ViewGraph() {
     ],
     [t]
   );
-
-  useEffect(() => {
-    console.warn("🚀 ~ selectedShapeData:", selectedShapeData);
-  }, [selectedShapeData]);
 
   return (
     <DefaultLayout>
