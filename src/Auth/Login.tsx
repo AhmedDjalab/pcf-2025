@@ -71,11 +71,10 @@ function Login() {
   const handleMicrosoftLogin = () => {
     // Replace with your actual backend API URL
     const backendUrl = "https://localhost:44366/api/Accounts/ExternalLogin";
+    const returnUrl = encodeURIComponent(window.location.origin + "/login");
 
     // Redirect the user to the backend Microsoft login endpoint
-    window.location.href = `${ExternalLoginUrl}?provider=Microsoft&returnUrl=${encodeURIComponent(
-      "/"
-    )}`;
+    window.location.href = `${ExternalLoginUrl}?provider=Microsoft&returnUrl=${returnUrl}`;
   };
   const handleMicrsoftLogin = async () => {
     setLoader(true);
@@ -215,9 +214,9 @@ function Login() {
                 </div>
               </form>
 
-              {/* <button onClick={handleMicrsoftLogin}>
+              <button onClick={handleMicrsoftLogin}>
                 Login With microsoft
-              </button> */}
+              </button>
               <div className="flex items-center justify-center space-x-2 text-center">
                 <div className="text-sm text-gray-500 dark:text-gray-400">
                   <p>{t("login.noAccount")}</p>

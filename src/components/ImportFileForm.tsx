@@ -1130,152 +1130,152 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     }
   };
 
-  const filterInputs = useCallback(() => {
-    return (
-      <form onSubmit={formik.handleSubmit}>
-        <div className="grid grid-cols-3 gap-2 justify-center">
-          <div className="mb-4">
-            <label
-              htmlFor="fromDate"
-              className="block font-medium text-gray-700 dark:text-white"
-            >
-              {t("importFileForm.startDate")}
-            </label>
-            <DatePicker
-              id="fromDate"
-              selected={formik.values.fromDate}
-              onChange={(date) => formik.setFieldValue("fromDate", date)}
-              dateFormat="MM/yyyy"
-              wrapperClassName="w-full px-3 py-2 border rounded-lg"
-              customInput={
-                <CustomInput
-                  value={moment(formik.values.fromDate).format("MMMM")}
-                />
-              }
-              showMonthYearPicker
-            />
-            {/* {formik.touched.fromDate && formik.errors.fromDate ? (
-           <div className="text-red-600">{formik.errors.fromDate}</div>
-         ) : null} */}
-          </div>
+  // const filterInputs = useCallback(() => {
+  //   return (
+  //     <form onSubmit={formik.handleSubmit}>
+  //       <div className="grid grid-cols-3 gap-2 justify-center">
+  //         <div className="mb-4">
+  //           <label
+  //             htmlFor="fromDate"
+  //             className="block font-medium text-gray-700 dark:text-white"
+  //           >
+  //             {t("importFileForm.startDate")}
+  //           </label>
+  //           <DatePicker
+  //             id="fromDate"
+  //             selected={formik.values.fromDate}
+  //             onChange={(date) => formik.setFieldValue("fromDate", date)}
+  //             dateFormat="MM/yyyy"
+  //             wrapperClassName="w-full px-3 py-2 border rounded-lg"
+  //             customInput={
+  //               <CustomInput
+  //                 value={moment(formik.values.fromDate).format("MMMM")}
+  //               />
+  //             }
+  //             showMonthYearPicker
+  //           />
+  //           {/* {formik.touched.fromDate && formik.errors.fromDate ? (
+  //          <div className="text-red-600">{formik.errors.fromDate}</div>
+  //        ) : null} */}
+  //         </div>
 
-          <div className="mb-4">
-            <label
-              htmlFor="toDate"
-              className="block font-medium text-gray-700 dark:text-white"
-            >
-              {t("importFileForm.endDate")}
-            </label>
-            <DatePicker
-              id="toDate"
-              selected={formik.values.toDate}
-              onChange={(date) => formik.setFieldValue("toDate", date)}
-              dateFormat="MM/yyyy"
-              wrapperClassName="w-full px-3 py-2 border rounded-lg"
-              customInput={
-                <CustomInput
-                  value={moment(formik.values.toDate).format("MMMM")}
-                />
-              }
-              showMonthYearPicker
-            />
-            {/* {formik.touched.toDate && formik.errors.toDate ? (
-           <div className="text-red-600">{formik.errors.toDate}</div>
-         ) : null} */}
-          </div>
+  //         <div className="mb-4">
+  //           <label
+  //             htmlFor="toDate"
+  //             className="block font-medium text-gray-700 dark:text-white"
+  //           >
+  //             {t("importFileForm.endDate")}
+  //           </label>
+  //           <DatePicker
+  //             id="toDate"
+  //             selected={formik.values.toDate}
+  //             onChange={(date) => formik.setFieldValue("toDate", date)}
+  //             dateFormat="MM/yyyy"
+  //             wrapperClassName="w-full px-3 py-2 border rounded-lg"
+  //             customInput={
+  //               <CustomInput
+  //                 value={moment(formik.values.toDate).format("MMMM")}
+  //               />
+  //             }
+  //             showMonthYearPicker
+  //           />
+  //           {/* {formik.touched.toDate && formik.errors.toDate ? (
+  //          <div className="text-red-600">{formik.errors.toDate}</div>
+  //        ) : null} */}
+  //         </div>
 
-          <div className="mb-4">
-            <label
-              htmlFor="timeRange"
-              className="block font-medium text-gray-700 dark:text-white"
-            >
-              {t("importFileForm.timeScale")}
-            </label>
-            <select
-              value={formik.values.timeRange}
-              onChange={formik.handleChange}
-              id="timeRange"
-              name="timeRange"
-              disabled={!canWrite && !isAdmin}
-              className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-            >
-              <option value="Yearly">{t("importFileForm.yearlyOption")}</option>
-              <option value="Monthly">
-                {t("importFileForm.monthlyOption")}
-              </option>
-              <option value="Weekly">{t("importFileForm.weeklyOption")}</option>
-              <option value="Daily">{t("importFileForm.dailyOption")}</option>
-            </select>
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="fromDistance"
-              className="block font-medium text-gray-700 dark:text-white"
-            >
-              {t("importFileForm.startPk")}
-            </label>
-            <input
-              id="fromDistance"
-              name="fromDistance"
-              type="number"
-              disabled={!canWrite && !isAdmin}
-              value={formik.values.fromDistance}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-            />
-            {formik.touched.fromDistance && formik.errors.fromDistance && (
-              <div className="text-red-600">{formik.errors.fromDistance}</div>
-            )}
-          </div>
+  //         <div className="mb-4">
+  //           <label
+  //             htmlFor="timeRange"
+  //             className="block font-medium text-gray-700 dark:text-white"
+  //           >
+  //             {t("importFileForm.timeScale")}
+  //           </label>
+  //           <select
+  //             value={formik.values.timeRange}
+  //             onChange={formik.handleChange}
+  //             id="timeRange"
+  //             name="timeRange"
+  //             disabled={!canWrite && !isAdmin}
+  //             className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+  //           >
+  //             <option value="Yearly">{t("importFileForm.yearlyOption")}</option>
+  //             <option value="Monthly">
+  //               {t("importFileForm.monthlyOption")}
+  //             </option>
+  //             <option value="Weekly">{t("importFileForm.weeklyOption")}</option>
+  //             <option value="Daily">{t("importFileForm.dailyOption")}</option>
+  //           </select>
+  //         </div>
+  //         <div className="mb-4">
+  //           <label
+  //             htmlFor="fromDistance"
+  //             className="block font-medium text-gray-700 dark:text-white"
+  //           >
+  //             {t("importFileForm.startPk")}
+  //           </label>
+  //           <input
+  //             id="fromDistance"
+  //             name="fromDistance"
+  //             type="number"
+  //             disabled={!canWrite && !isAdmin}
+  //             value={formik.values.fromDistance}
+  //             onChange={formik.handleChange}
+  //             onBlur={formik.handleBlur}
+  //             className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+  //           />
+  //           {formik.touched.fromDistance && formik.errors.fromDistance && (
+  //             <div className="text-red-600">{formik.errors.fromDistance}</div>
+  //           )}
+  //         </div>
 
-          <div className="mb-4">
-            <label
-              htmlFor="toDistance"
-              className="block font-medium text-gray-700 dark:text-white"
-            >
-              {t("importFileForm.endPk")}
-            </label>
-            <input
-              id="toDistance"
-              name="toDistance"
-              disabled={!canWrite && !isAdmin}
-              type="number"
-              value={formik.values.toDistance}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-            />
-            {formik.touched.toDistance && formik.errors.toDistance && (
-              <div className="text-red-600">{formik.errors.toDistance}</div>
-            )}
-          </div>
+  //         <div className="mb-4">
+  //           <label
+  //             htmlFor="toDistance"
+  //             className="block font-medium text-gray-700 dark:text-white"
+  //           >
+  //             {t("importFileForm.endPk")}
+  //           </label>
+  //           <input
+  //             id="toDistance"
+  //             name="toDistance"
+  //             disabled={!canWrite && !isAdmin}
+  //             type="number"
+  //             value={formik.values.toDistance}
+  //             onChange={formik.handleChange}
+  //             onBlur={formik.handleBlur}
+  //             className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+  //           />
+  //           {formik.touched.toDistance && formik.errors.toDistance && (
+  //             <div className="text-red-600">{formik.errors.toDistance}</div>
+  //           )}
+  //         </div>
 
-          <div className="mb-4">
-            <label
-              htmlFor="distanceRange"
-              className="block font-medium text-gray-700 dark:text-white"
-            >
-              {t("importFileForm.distanceRange")}
-            </label>
-            <input
-              id="distanceRange"
-              name="distanceRange"
-              disabled={!canWrite && !isAdmin}
-              type="number"
-              value={formik.values.distanceRange}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-            />
-            {formik.touched.distanceRange && formik.errors.distanceRange && (
-              <div className="text-red-600">{formik.errors.distanceRange}</div>
-            )}
-          </div>
-        </div>
-      </form>
-    );
-  }, [CustomInput, canWrite, formik, isAdmin, t]);
+  //         <div className="mb-4">
+  //           <label
+  //             htmlFor="distanceRange"
+  //             className="block font-medium text-gray-700 dark:text-white"
+  //           >
+  //             {t("importFileForm.distanceRange")}
+  //           </label>
+  //           <input
+  //             id="distanceRange"
+  //             name="distanceRange"
+  //             disabled={!canWrite && !isAdmin}
+  //             type="number"
+  //             value={formik.values.distanceRange}
+  //             onChange={formik.handleChange}
+  //             onBlur={formik.handleBlur}
+  //             className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+  //           />
+  //           {formik.touched.distanceRange && formik.errors.distanceRange && (
+  //             <div className="text-red-600">{formik.errors.distanceRange}</div>
+  //           )}
+  //         </div>
+  //       </div>
+  //     </form>
+  //   );
+  // }, [CustomInput, canWrite, formik, isAdmin, t]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const ActionButtonsCell = ({ value, row }: any) => {

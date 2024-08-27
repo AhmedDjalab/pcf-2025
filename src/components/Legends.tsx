@@ -1,5 +1,11 @@
 //@ts-nocheck
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import * as d3 from "d3";
 import { LineStyle } from "src/const/linesArray";
 import { MarkerConfig } from "src/const/markerAndPatternsConfig";
@@ -10,6 +16,8 @@ interface LegendProps {
   texturesData: any[];
   lineStyles: LineStyle[];
   markersConfig: { [key: string]: MarkerConfig };
+  setSelectedShapes: SetStateAction;
+  selectedShapes: string[];
 }
 
 const sanitizeClassName = (key: string): string => {
@@ -22,8 +30,9 @@ const LegendComponent: React.FC<LegendProps> = ({
   texturesData,
   lineStyles,
   markersConfig,
+  setSelectedShapes,
+  selectedShapes,
 }) => {
-  const [selectedShapes, setSelectedShapes] = useState<string[]>([]);
   const textureLegendDefsRef = useRef<SVGDefsElement>(null);
 
   const callTextureData = useCallback(() => {

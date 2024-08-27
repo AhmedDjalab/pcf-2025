@@ -32,6 +32,7 @@ export interface AuthContextData {
   loading: boolean;
   Login: ({}: LoginType) => Promise<boolean>;
   logout: () => void;
+  externalLogin: ({ userData }: any) => Promise<boolean>;
   isAdmin?: boolean;
   canRead?: boolean;
   canWrite?: boolean;
@@ -100,6 +101,46 @@ export const AuthProvider = ({ children }: any) => {
     }
   };
 
+  const externalLogin = async (userData: any) => {
+    try {
+      // you need decrypt jwt token
+
+      let roleName = userData.role;
+      let userId = userData.id;
+      // const claims = userData.claims;
+      //? we have two cases : emplyee , company
+      if (roleName === UserRoles.Admin) {
+        setUser(userData);
+        //secureLocalStorage.setItem(refreshTokens, jwt.refreshToken);
+        //hubOpenConnection(jwt.token);
+      } else {
+        if (roleName === UserRoles.Employee) {
+        }
+      }
+      // check validity of license
+      let licenses = await getLicenseByUserId(userId, roleName);
+      if (!licenses || !licenses?.isValidLicense) {
+        toast.error("your License has Been expired please call the support ");
+        //window.location.href = "/auth/login";
+        secureLocalStorage.removeItem(tokenKeys);
+        return false;
+      } else {
+        secureLocalStorage.setItem(tokenKeys, userData.token);
+        secureLocalStorage.setItem(LicenseKey, licenses!.id);
+        secureLocalStorage.setItem(CompanyKey, licenses!.companyId);
+        secureLocalStorage.setItem(AuthUserKey, JSON.stringify(userData));
+        setUser(userData);
+        window.location.href = "/";
+        return true;
+      }
+
+      // get the list of module types
+
+      //return true;
+    } catch (err) {
+      return false;
+    }
+  };
   const logout = () => {
     secureLocalStorage.clear();
     setUser(null);
@@ -114,9 +155,11 @@ export const AuthProvider = ({ children }: any) => {
         loading,
         Login,
         logout,
-        isAdmin: user?.role === UserRoles.Admin,
+        isAdmin:
+          user?.role === UserRoles.Admin || user?.role === UserRoles.SuperAdmin,
         canRead: user?.canRead,
         canWrite: user?.canWrite,
+        externalLogin,
       }}
     >
       {children}

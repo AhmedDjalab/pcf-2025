@@ -2794,6 +2794,8 @@ function ViewGraph() {
                 texturesData={texturesData}
                 lineStyles={lineStyles}
                 markersConfig={markersConfig}
+                setSelectedShapes={setSelectedShapes}
+                selectedShapes={selectedShapes}
               />
             )}
           </div>

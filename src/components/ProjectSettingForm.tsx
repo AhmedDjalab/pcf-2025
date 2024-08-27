@@ -112,10 +112,14 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
   }, [employeeData, projectSettings.employeesId]);
 
   useEffect(() => {
+    console.warn("🚀 ~ externalLogin ~ userData:", user, isAdmin);
+  }, [user, isAdmin]);
+
+  useEffect(() => {
     if (isSuccess && employeeData) {
       setSelectedEmployees(selectedEmployeesData);
     }
-  }, [employeeData, isSuccess, selectedEmployeesData]);
+  }, [employeeData, isSuccess, selectedEmployeesData, user]);
 
   useEffect(() => {
     if (projectSettings) {

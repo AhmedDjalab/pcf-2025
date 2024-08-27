@@ -54,18 +54,30 @@ export async function login(email: string, password: string) {
 }
 
 export async function loginWithMicrosoft() {
-  const provider = "Microsoft";
-  const returnUrl = "/";
-  try {
-    const response = await api.post(ExternalLoginUrl, { provider, returnUrl });
-    if (response.data && response.data.Url) {
-      window.location.href = response.data.Url;
-    } else {
-      console.error("No redirect URL found in the response.");
-    }
-  } catch (error) {
-    console.error("Error initiating login:", error);
-  }
+  // const provider = "Microsoft";
+  // const returnUrl = "/";
+  // try {
+  //   const response = await api.post(
+  //     ExternalLoginUrl,
+  //     { provider, returnUrl },
+  //     { withCredentials: true }
+  //   );
+  //   if (response.data && response.data.Url) {
+  //     window.location.href = response.data.Url;
+  //   } else {
+  //     console.error("No redirect URL found in the response.");
+  //   }
+  // } catch (error) {
+  //   console.error("Error initiating login:", error);
+  // }
+
+  const returnUrl = encodeURIComponent(
+    window.location.origin + "/MicrosoftCallback"
+  );
+  const errorUrl = encodeURIComponent(window.location.origin + "/error");
+
+  // Redirect the user to the backend Microsoft login endpoint
+  window.location.href = `${ExternalLoginUrl}?provider=Microsoft&returnUrl=${returnUrl}&errorUrl=${errorUrl}`;
 }
 // export function sendSms(number) {
 //   return http.post(apiEndpoint + '/sendSmsCode', {

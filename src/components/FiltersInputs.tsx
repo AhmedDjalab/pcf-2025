@@ -17,6 +17,7 @@ import moment from "moment";
 import { useAuth } from "src/context/UserContext";
 import DatePicker from "react-datepicker";
 import { useParams } from "react-router-dom";
+import { AsUTC } from "src/utils/helpers";
 
 const currentYear = new Date().getFullYear();
 const nextYear = currentYear + 1;
@@ -84,8 +85,8 @@ function FiltersInputs() {
           fetchActivities({
             projectId: id,
             filter: {
-              fromDate: values.fromDate,
-              toDate: values.toDate,
+              fromDate: AsUTC(values.fromDate) ?? new Date(),
+              toDate: AsUTC(values.toDate) ?? new Date(),
               fromDistance: parseFloat(values.fromDistance),
               toDistance: parseFloat(values.toDistance),
               timeRange: values.timeRange,

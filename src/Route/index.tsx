@@ -14,6 +14,7 @@ import { IsAuth, useAuth } from "src/context/UserContext";
 import ViewGraph from "src/pages/Graph/ViewGraph";
 import AboutUs from "src/components/AboutUs";
 import ErrorPage from "src/pages/ErrorPage";
+import MicrosoftLoginCallback from "src/Auth/MicrosoftCallBackLogin";
 
 const AppRoutes = () => {
   const isLogged = IsAuth();
@@ -23,6 +24,7 @@ const AppRoutes = () => {
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
+        <Route path="/MicrosoftCallback" element={<MicrosoftLoginCallback />} />
         <Route path="/signup" element={<Signup />} />
 
         <Route path="/" element={<Projects />} />
