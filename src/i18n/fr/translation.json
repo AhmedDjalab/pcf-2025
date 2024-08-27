@@ -360,5 +360,17 @@
     "type": "Type"
   },
   "Predecessors": "Prédécesseurs",
-  "Successors": "Successeurs"
+  "Successors": "Successeurs",
+  "PaperSizeModal": {
+    "selectTitle": "Sélectionnez le format du papier",
+    "paperSizeLabel": "Format du papier",
+    "A3": "A3",
+    "A4": "A4",
+    "A5": "A5",
+    "orientationLabel": "Orientation",
+    "portrait": "Portrait",
+    "landscape": "Paysage",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
+  }
 }

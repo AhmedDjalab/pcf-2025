@@ -69,7 +69,9 @@ import LegendComponent from "src/components/Legends";
 import api from "src/utils/api";
 import DynamicTable from "src/components/DynamicTable";
 import { ActivityRelationType } from "src/enums/ActivityRelationType";
+import PaperSizeModal from "src/components/PaperSizeModal";
 export interface ActivityData {
+  activityId(activityId: any): unknown;
   id: string;
   activityName: string;
   startDate: string;
@@ -193,6 +195,7 @@ function ViewGraph() {
   const [isStyleModalOpen, setStyleModalOpen] = useState(false);
   const [hideComments, setHideComments] = useState(false);
   const [commentsDetails, setCommentsDetails] = useState(false);
+  const [paperSizeModalOpen, setPaperSizeModalOpen] = useState(false);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const textureDefsRef = useRef<SVGSVGElement | null>(null);
@@ -2226,49 +2229,228 @@ function ViewGraph() {
     return blob;
   };
 
-  const saveAsPdfOrImage = async (format) => {
+  const handleSaveAsPdfOrImage = (paperSize: string, orientation: string) => {
+    // Call the updated function here
+    saveAsPdfOrImage("pdf", paperSize, orientation);
+  };
+
+  const saveAsPdfOrImage = async (
+    format: string,
+    paperSize: string = "A4",
+    orientation: string = "portrait"
+  ) => {
     const svgContainer = document.getElementById("graph-container");
-    if (!svgContainer) {
-      console.error("SVG container not found");
+    const graph = document.getElementById("graph");
+    const legend = document.getElementById("legendsContainer");
+    var fileName = `${graphSettings.projectSettings.title}.${moment(
+      new Date()
+    ).format("DD/MM/YYYY")}`;
+    // Debugging to check element existence
+    console.log("🚀 ~ saveAsPdfOrImage ~ svgContainer:", svgContainer);
+    console.log("🚀 ~ saveAsPdfOrImage ~ graph:", graph);
+    console.log("🚀 ~ saveAsPdfOrImage ~ legend:", legend);
+
+    if (!svgContainer || !graph || !legend) {
+      console.error("SVG container, graph, or legend not found");
       return;
     }
 
     try {
-      //await new Promise((resolve) => setTimeout(resolve, 1000));
+      const sizes: Record<string, [number, number]> = {
+        A3: [297, 420], // A3 size in mm
+        A4: [210, 297], // A4 size in mm
+        A5: [148, 210], // A5 size in mm
+      };
 
-      // // Convert images to Blobs to avoid CORS issues
-      // const images = svgContainer.querySelectorAll("img");
-      // const imagePromises = Array.from(images).map(async (img) => {
-      //   const blob = await convertImageToBlob(img.src);
-      //   const objectURL = URL.createObjectURL(blob);
-      //   img.src = objectURL;
-      // });
+      let [pageWidthMM, pageHeightMM] = sizes[paperSize];
+      if (orientation === "landscape") {
+        // Swap width and height for landscape orientation
+        [pageWidthMM, pageHeightMM] = [pageHeightMM, pageWidthMM];
+      }
 
-      // await Promise.all(imagePromises);
+      const pageWidthPx = pageWidthMM * 3.7795275591; // Convert mm to pixels
+      const pageHeightPx = pageHeightMM * 3.7795275591; // Convert mm to pixels
 
-      const canvas = await html2canvas(svgContainer, {
-        useCORS: true,
-        allowTaint: false,
-      });
+      // // Helper function to convert image to Base64
+      // const imageToBase64 = (img: HTMLImageElement) => {
+      //   return new Promise<string>((resolve, reject) => {
+      //     const canvas = document.createElement("canvas");
+      //     const ctx = canvas.getContext("2d");
+      //     if (!ctx) {
+      //       reject("Failed to get canvas context");
+      //       return;
+      //     }
+      //     console.warn("this is img urls", img);
+      //     canvas.width = img.width;
+      //     canvas.height = img.height;
+      //     ctx.drawImage(img, 0, 0);
 
-      const dataURL = canvas.toDataURL(`image/${format}`, 1.0);
+      //     canvas.toDataURL("image/png", (err, dataURL) => {
+      //       if (err) {
+      //         reject(err);
+      //       } else {
+      //         resolve(dataURL);
+      //       }
+      //     });
+      //   });
+      // };
+
+      // // Convert images inside the graph element to Base64
+      // const convertImagesInGraph = async () => {
+      //   const images = graph.querySelectorAll("img");
+      //   console.warn("🚀 ~ convertImagesInGraph ~ images:", images);
+      //   const base64Promises = Array.from(images).map(async (img) => {
+      //     return new Promise<string>((resolve, reject) => {
+      //       img.onload = async () => {
+      //         try {
+      //           const base64 = await imageToBase64(img as HTMLImageElement);
+      //           resolve(base64);
+      //         } catch (error) {
+      //           reject(error);
+      //         }
+      //       };
+
+      //       img.onerror = () => {
+      //         reject("Failed to load image");
+      //       };
+
+      //       // Trigger loading if image is not yet loaded
+      //       if (img.complete) {
+      //         img.onload?.();
+      //       }
+      //     });
+      //   });
+
+      //   const base64Array = await Promise.all(base64Promises);
+      //   const base64Images = Array.from(images).map((img, index) => {
+      //     img.src = base64Array[index];
+      //     return base64Array[index];
+      //   });
+
+      //   return base64Images;
+      // };
+
+      // await convertImagesInGraph();
+
+      // Helper function to capture element as canvas
+      const captureElement = async (element: HTMLElement) => {
+        return await html2canvas(element, {
+          useCORS: true,
+          allowTaint: false,
+          logging: true,
+          scale: 2,
+          onclone: (documentClone) => {
+            // Clone document to apply CORS settings
+            const images = documentClone.querySelectorAll("img");
+            images.forEach((img) => {
+              img.crossOrigin = "Anonymous"; // Set crossOrigin to handle CORS
+            });
+          },
+        });
+      };
+
+      // Capture the graph
+      const graphCanvas = await captureElement(graph);
+      const graphDataURL = graphCanvas.toDataURL("image/png", 1.0);
+
+      // Capture the legend
+      const legendCanvas = await captureElement(legend);
+      const legendDataURL = legendCanvas.toDataURL("image/png", 1.0);
+
+      // Function to calculate dimensions and scale to fit within page
+      const scaleToFit = (
+        canvas: HTMLCanvasElement,
+        pageWidth: number,
+        pageHeight: number
+      ) => {
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+
+        // Calculate scaling factors for width and height
+        const scaleX = pageWidth / canvasWidth;
+        const scaleY = pageHeight / canvasHeight;
+
+        // Use the smaller scaling factor to fit within the page
+        const scale = Math.min(scaleX, scaleY);
+
+        return {
+          width: canvasWidth * scale,
+          height: canvasHeight * scaleY,
+          scale,
+        };
+      };
 
       if (format === "pdf") {
-        const pdf = new jsPDF("portrait", "mm", [210, 297]); // A4 size in mm
-        const imgWidth = 210;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        pdf.addImage(dataURL, "PNG", 0, 0, imgWidth, imgHeight);
-        pdf.save("graph.pdf");
+        const pdf = new jsPDF(orientation, "mm", [pageWidthMM, pageHeightMM]);
+
+        // Scale graph to fit within the page
+        const { width: graphWidth, height: graphHeight } = scaleToFit(
+          graphCanvas,
+          pageWidthPx,
+          pageHeightPx
+        );
+        const graphX = (pageWidthPx - graphWidth) / 2; // Center horizontally
+        const graphY = (pageHeightPx - graphHeight) / 2; // Center vertically
+        pdf.addImage(
+          graphDataURL,
+          "PNG",
+          graphX / 3.7795275591,
+          graphY / 3.7795275591,
+          graphWidth / 3.7795275591,
+          graphHeight / 3.7795275591
+        );
+
+        // Add legend to a new page
+        pdf.addPage();
+        const { width: legendWidth, height: legendHeight } = scaleToFit(
+          legendCanvas,
+          pageWidthPx,
+          pageHeightPx
+        );
+        const legendX = (pageWidthPx - legendWidth) / 2; // Center horizontally
+        const legendY = (pageHeightPx - legendHeight) / 2; // Center vertically
+        pdf.addImage(
+          legendDataURL,
+          "PNG",
+          legendX / 3.7795275591,
+          legendY / 3.7795275591,
+          legendWidth / 3.7795275591,
+          legendHeight / 3.7795275591 / (pageHeightPx / legendCanvas.height)
+        );
+
+        pdf.save(`${fileName}.pdf`);
       } else if (format === "image") {
+        // Create a new canvas to combine graph and legend
+        const combinedCanvas = document.createElement("canvas");
+        const combinedCtx = combinedCanvas.getContext("2d");
+
+        if (!combinedCtx) {
+          console.error("Failed to get canvas context");
+          return;
+        }
+
+        // Set canvas dimensions
+        combinedCanvas.width = Math.max(graphCanvas.width, legendCanvas.width);
+        combinedCanvas.height = graphCanvas.height + legendCanvas.height;
+
+        // Draw the graph and legend on the combined canvas
+        combinedCtx.drawImage(graphCanvas, 0, 0);
+        combinedCtx.drawImage(legendCanvas, 0, graphCanvas.height);
+
+        // Get the combined image data URL
+        const combinedDataURL = combinedCanvas.toDataURL("image/png");
+
+        // Download the combined image
         const link = document.createElement("a");
-        link.href = dataURL;
-        link.download = "graph.png";
+        link.href = combinedDataURL;
+        link.download = `${fileName}.png`;
         link.click();
       }
     } catch (error) {
-      console.error("Error capturing SVG:", error);
+      console.error("Error capturing content:", error);
     }
   };
+
   useEffect(() => {
     const handleEscapeKey = (event) => {
       if (event.key === "Escape" && zoomLevel > 1) {
@@ -2546,6 +2728,8 @@ function ViewGraph() {
                   checked={hideComments}
                   onChange={() => setHideComments(!hideComments)}
                   label={t("Comments.hideComments")}
+                  id={""}
+                  name={""}
                 />
               </div>
               <div className=" mt-2 flex items-center">
@@ -2553,6 +2737,8 @@ function ViewGraph() {
                   checked={commentsDetails}
                   onChange={() => setCommentsDetails(!commentsDetails)}
                   label={t("Comments.showCommentsDetails")}
+                  id={""}
+                  name={""}
                 />
               </div>
               <div className=" mt-2 flex items-center">
@@ -2560,6 +2746,8 @@ function ViewGraph() {
                   checked={showCritical}
                   onChange={() => setShowCritical(!showCritical)}
                   label={t("drawGraph.showCritical")}
+                  id={""}
+                  name={""}
                 />
               </div>
             </div>
@@ -2591,7 +2779,8 @@ function ViewGraph() {
               <button
                 // disabled
                 className="focus:outline-none mt-5  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
-                onClick={() => saveAsPdfOrImage("pdf")}
+                // onClick={() => saveAsPdfOrImage("pdf")}
+                onClick={() => setPaperSizeModalOpen(true)}
               >
                 PDF
               </button>
@@ -2703,7 +2892,7 @@ function ViewGraph() {
             </button>
           )}
           <div className="flex flex-col w-full  " id="graph-container">
-            <div className="graph-container">
+            <div className="graph-container" id="graph">
               <div className="flex items-center border m-4 w-full ">
                 <img
                   src={graphSettings.projectSettings.clientlogoImg ?? logo}
@@ -2746,7 +2935,11 @@ function ViewGraph() {
                 </svg>
               </div>
             </div>
-            <Accordion title={t("drawGraph.activityDetailLabel")}>
+            <Accordion
+              title={t("drawGraph.activityDetailLabel")}
+              children={undefined}
+              isOpenTrigger={false}
+            >
               <div className="grid grid-cols-4 gap-2">
                 <div>
                   {t("Predecessors")}
@@ -2788,16 +2981,18 @@ function ViewGraph() {
               </div>
             </div> */}
 
-            {graphSettings.shapes.shapesData && (
-              <LegendComponent
-                shapesData={shapesData}
-                texturesData={texturesData}
-                lineStyles={lineStyles}
-                markersConfig={markersConfig}
-                setSelectedShapes={setSelectedShapes}
-                selectedShapes={selectedShapes}
-              />
-            )}
+            <div id="legendsContainer">
+              {graphSettings.shapes.shapesData && (
+                <LegendComponent
+                  shapesData={shapesData}
+                  texturesData={texturesData}
+                  lineStyles={lineStyles}
+                  markersConfig={markersConfig}
+                  setSelectedShapes={setSelectedShapes}
+                  selectedShapes={selectedShapes}
+                />
+              )}
+            </div>
           </div>
 
           {isModalOpen && (
@@ -2814,6 +3009,13 @@ function ViewGraph() {
               id={selectedShapeData?.style}
               onSubmit={submitStyleModal}
               handleClose={closeStyleModal}
+            />
+          )}
+          {paperSizeModalOpen && (
+            <PaperSizeModal
+              isOpen={paperSizeModalOpen}
+              onClose={() => setPaperSizeModalOpen(false)}
+              onSave={handleSaveAsPdfOrImage}
             />
           )}
           {isAddingComments && (
