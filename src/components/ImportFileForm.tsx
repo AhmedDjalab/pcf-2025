@@ -1,10 +1,4 @@
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { forwardRef, useEffect, useMemo, useState } from "react";
 import { MultiStepFormProps } from "./DrawGraphForm";
 
 import * as XLSX from "xlsx";
@@ -16,16 +10,12 @@ import {
   addDataDate,
   addFileName,
   addGraphDataList,
-  applyFilter,
-  fetchAllProjectsOptions,
   removeActivity,
-  resetStoreState,
   updateGraphSettingsValue,
   updateShapes,
 } from "src/state/slices/graphSlice";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,7 +23,6 @@ import { RootState } from "../state";
 import { animateScroll as scroll } from "react-scroll";
 import {
   ArrowUpCircleIcon,
-  EyeIcon,
   PencilIcon,
   TrashIcon,
 } from "@heroicons/react/24/solid";
@@ -42,26 +31,19 @@ import { useTranslation } from "react-i18next";
 import ActivityTableForm from "./ActivityTableForm";
 import Spinner from "./Spinner";
 import ParameterSelector from "./ParmeterSelector";
-import { type } from "@testing-library/user-event/dist/type";
-import { uniqueId } from "lodash";
 import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import { useAuth } from "src/context/UserContext";
-import { Link, useParams } from "react-router-dom";
-import { XLSXIcon } from "./filesSVG";
+import { useParams } from "react-router-dom";
 import excel from "src/assets/filesLogo/excel.svg";
 import primavera from "src/assets/filesLogo/PrimaveraXML.png";
 import msProject from "src/assets/filesLogo/msProject.png";
 import FiltersInputs from "./FiltersInputs";
-import DynamicTable, { SelectColumnFilter } from "./DynamicTable";
+import DynamicTable from "./DynamicTable";
 import DeleteConfirmationModal from "./shared/DeleteConfirmationModal";
 import Pagination from "./shared/Pagination";
-import { useMutation } from "@tanstack/react-query";
-import { persistor } from "src/App";
-import { deleteProject } from "src/Services/ProjectService";
-import { updateDelete } from "typescript";
-import ProjectSettingForm from "./ProjectSettingForm";
 import { extractValueAndUnit } from "src/utils/helpers";
 import { ActivityRelationType } from "src/enums/ActivityRelationType";
+import { getExtendPropertyData, getUDFData } from "src/Helpers/parsers";
 export type FormValues = {
   fromDate: Date;
   toDate: Date;
@@ -217,176 +199,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
   //?  --------****--- parsers -------***---------------------
 
-  //? get Extra parser for attributes names
-  const getExtendPropertyData = (
-    xmlDoc: any,
-    activity: any,
-    userSelectionData: UdfSetting[]
-  ) => {
-    // const UDFTypes =
-    //   xmlDoc.getElementsByTagName("ExtendedAttributes")[0].children;
-
-    const UDFElements = activity.getElementsByTagName("ExtendedAttribute");
-
-    const dataObject: Partial<GraphDataType> = {};
-
-    if (!UDFElements || UDFElements[0]?.children?.length === 0) {
-      // UDFElements is either null or empty
-      return null;
-    }
-    // if (!UDFElements) {
-    //   return {
-    //     startChainage: 0,
-    //     finishChainage: 0,
-    //     style: activity.getElementsByTagName("Name")[0].textContent,
-    //   };
-    // }
-    for (let i = 0; i < UDFElements.length; i++) {
-      const UDF = UDFElements[i];
-
-      const typeObjectId = UDF.getElementsByTagName("FieldID")[0].textContent;
-      const value = UDF.getElementsByTagName("Value")[0].textContent;
-
-      const setting = userSelectionData?.find(
-        (x) => x.udfSettingId === typeObjectId.trim() // Remove leading/trailing whitespaces
-      );
-
-      // console.error(
-      //   "🚀 ~ file: ImportFileForm.tsx:582 ~ getExtendPropertyData ~ UDFType:",
-      //   setting,
-      //   udfSettingsData,
-      //   typeObjectId,
-      //   UDF
-      // );
-
-      if (setting) {
-        if (
-          setting.pcfField === "startDate" ||
-          setting.pcfField === "finishDate"
-        ) {
-          // Handle date values
-          const date = moment.utc(value, "DD/MM/YYYY", true);
-          if (date.isValid()) {
-            date.add(1, "day");
-            dataObject[setting.pcfField] = date.toISOString();
-          } else {
-            // Handle invalid date format
-          }
-        } else if (
-          setting.pcfField === "startChainage" ||
-          setting.pcfField === "finishChainage"
-        ) {
-          // Handle numeric values
-          dataObject[setting.pcfField] = parseFloat(value);
-        } else if (
-          setting.pcfField === "workShops" ||
-          setting.pcfField === "productionRate" ||
-          setting.pcfField === "quantity"
-        ) {
-          const { numericValue, unit } = extractValueAndUnit(value);
-
-          dataObject[setting.pcfField] = numericValue;
-
-          if (setting.pcfField === "productionRate") {
-            dataObject.productionRateUnit = unit;
-          } else if (setting.pcfField === "quantity") {
-            dataObject.quantityUnit = unit;
-          } else {
-            // Handle other fields
-            dataObject[setting.pcfField] = numericValue;
-          }
-        } else {
-          // Handle other fields
-          dataObject[setting.pcfField] = value;
-        }
-      }
-    }
-    if (Object.keys(dataObject).length === 0) {
-      return null;
-    }
-    return dataObject;
-  };
-
-  const getUDFData = (
-    xmlDoc: any,
-    activity: any,
-    userSelectionData: UdfSetting[]
-  ) => {
-    const UDFElements = activity.getElementsByTagName("UDF");
-
-    const dataObject: Partial<GraphDataType> = {};
-
-    if (!UDFElements || UDFElements[0]?.children?.length === 0) {
-      // UDFElements is either null or empty
-      return null;
-    }
-    for (let i = 0; i < UDFElements.length; i++) {
-      const UDF = UDFElements[i];
-
-      const typeObjectId =
-        UDF.getElementsByTagName("TypeObjectId")[0]?.textContent;
-
-      //! you have to check if it double or text
-
-      let textValue = UDF.getElementsByTagName("TextValue")[0]?.textContent;
-
-      if (!textValue) {
-        textValue = UDF.getElementsByTagName("DoubleValue")[0]?.textContent;
-      }
-
-      // Find the corresponding setting based on the typeObjectId
-      const setting = userSelectionData!.find(
-        (x) => x.udfSettingId === typeObjectId.toString()
-      );
-      // ? here you should check if they have pk and style
-
-      // if (!setting) {
-      //   // If any required property is null, return null for the entire dataObject
-      //   return null;
-      // }
-      if (setting) {
-        if (
-          setting.pcfField === "startChainage" ||
-          setting.pcfField === "finishChainage"
-        ) {
-          // Handle numeric values
-          dataObject[setting.pcfField] = parseFloat(textValue);
-        } else if (setting.pcfField === "id") {
-          dataObject["activityId"] = textValue;
-        } else if (setting.pcfField === "style") {
-          dataObject[setting.pcfField] = textValue;
-        } else if (setting.pcfField === "critical") {
-          dataObject[setting.pcfField] = textValue === "Yes" ? true : false;
-        } else if (
-          setting.pcfField === "workShops" ||
-          setting.pcfField === "productionRate" ||
-          setting.pcfField === "quantity"
-        ) {
-          const { numericValue, unit } = extractValueAndUnit(textValue);
-
-          dataObject[setting.pcfField] = numericValue;
-
-          if (setting.pcfField === "productionRate") {
-            dataObject.productionRateUnit = unit;
-          } else if (setting.pcfField === "quantity") {
-            dataObject.quantityUnit = unit;
-          } else {
-            // Handle other fields
-            dataObject[setting.pcfField] = numericValue;
-          }
-        } else {
-          // Handle other fields
-          dataObject[setting.pcfField] = textValue;
-        }
-      }
-    }
-
-    if (Object.keys(dataObject).length === 0) {
-      return null;
-    }
-
-    return dataObject;
-  };
   //? ---------------------parsers -----------------
 
   const parsePrimaveraXML = (
@@ -420,8 +232,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           | "SS"
           | "FF"
           | "SF";
-        console.warn("🚀 ~ ImportFileForm ~ type:", type, types);
-        console.warn("🚀 ~ ImportFileForm ~ type:", ActivityRelationType[type]);
+
         activitiesRelation.push({
           predecessorActivityId: predecessorActivityObjectId,
           successorActivityId: successorActivityObjectId,
@@ -562,8 +373,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           });
         }
 
-        console.warn("Relations ships ", activitiesRelation);
-
         const criticalString =
           activity.getElementsByTagName("Critical")[0]?.textContent || "";
         const critical: boolean = criticalString === "1" ? true : false;
@@ -682,7 +491,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     dispatch(addGraphDataList({ graphData: graphData }));
     formik.setFieldValue("graphData", graphData);
   };
-
+  //? --------------------- end parsers -----------------
   const submitData = (userSelectionData: UdfSetting[]) => {
     setSettingParsedModal(false);
     if (parsedData && fileType === ProjectFileType.XLSX) {
