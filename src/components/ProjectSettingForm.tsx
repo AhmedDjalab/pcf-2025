@@ -111,9 +111,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
     );
   }, [employeeData, projectSettings.employeesId]);
 
-  useEffect(() => {
-    console.warn("🚀 ~ externalLogin ~ userData:", user, isAdmin);
-  }, [user, isAdmin]);
+
 
   useEffect(() => {
     if (isSuccess && employeeData) {

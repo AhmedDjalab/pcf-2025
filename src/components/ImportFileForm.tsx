@@ -564,9 +564,9 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
         console.warn("Relations ships ", activitiesRelation);
 
-        // const criticalString =
-        //   activity.getElementsByTagName("Critical")[0]?.textContent || "";
-        // const critical: boolean = criticalString === "1" ? true : false;
+        const criticalString =
+          activity.getElementsByTagName("Critical")[0]?.textContent || "";
+        const critical: boolean = criticalString === "1" ? true : false;
         // Get UDF data based on specific Titles
         let durationNumber = convertDurationToHours(duration ?? "");
 
@@ -608,7 +608,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             startDate,
             finishDate,
             calendarName,
-            //critical,
+            critical,
             duration: durationNumber,
             ...udfData,
           });
@@ -1451,7 +1451,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           <input
             type="checkbox"
             className={`min-w-50 `}
-            value={value}
+            checked={value}
             readOnly
           />
         ),
