@@ -491,7 +491,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     dispatch(addGraphDataList({ graphData: graphData }));
     formik.setFieldValue("graphData", graphData);
   };
-  //? --------------------- end parsers -----------------
+  //? --------------------- end parsers -----------------test
   const submitData = (userSelectionData: UdfSetting[]) => {
     setSettingParsedModal(false);
     if (parsedData && fileType === ProjectFileType.XLSX) {
