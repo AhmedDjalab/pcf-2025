@@ -63,9 +63,9 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
         onClick={toggleOpen}
       >
         {position === "left" ? (
-          <WrenchScrewdriverIcon className="p-2" />
-        ) : (
           <ViewColumnsIcon className="p-2" />
+        ) : (
+          <WrenchScrewdriverIcon className="p-2" />
         )}
       </div>
       {isOpen && (
