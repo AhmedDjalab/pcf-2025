@@ -1736,8 +1736,10 @@ function ViewGraph() {
     refetchOnWindowFocus: false,
     staleTime: 6000,
     enabled:
+      selectedShapeData !== null &&
       selectedShapeData !== undefined &&
-      selectedShapeData?.activityUID !== null,
+      selectedShapeData?.activityUID !== null &&
+      selectedShapeData?.activityUID,
   });
   const {
     data: predecessorActivitiesRelativesData,
@@ -1751,8 +1753,10 @@ function ViewGraph() {
     refetchOnWindowFocus: false,
     staleTime: 6000,
     enabled:
+      selectedShapeData !== null &&
       selectedShapeData !== undefined &&
-      selectedShapeData?.activityUID !== null,
+      selectedShapeData?.activityUID !== null &&
+      selectedShapeData?.activityUID,
   });
   // useEffect(() => {
   //   if (activitiesRelativesData) {

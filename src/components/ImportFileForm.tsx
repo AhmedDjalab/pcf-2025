@@ -688,7 +688,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     });
   };
 
-  //! this is case of MS
   const handleMsProjectXMLFile = async (file: File) => {
     const fileName = file.name;
     const fileExtension = fileName.split(".").pop()?.toLowerCase();
@@ -853,24 +852,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     e.preventDefault();
     e.stopPropagation();
   };
-  // const renderMonthContent = (month: any, shortMonth: any, longMonth: any) => {
-  //   const tooltipText = `Tooltip for month: ${longMonth}`;
-  //   return <span title={tooltipText}>{shortMonth}</span>;
-  // };
-
-  const CustomInput = forwardRef<HTMLInputElement, any>(
-    ({ value, onClick, onChange }: any, ref: React.Ref<HTMLInputElement>) => (
-      <input
-        type="text"
-        ref={ref}
-        value={value}
-        onClick={onClick}
-        onChange={onChange}
-        disabled={!canWrite && !isAdmin}
-        className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-      />
-    )
-  );
 
   const handleBack = () => {
     // Define what should happen when the "Back" button is clicked.
@@ -897,32 +878,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   if (!editForm) {
-  //     dispatch(
-  //       applyFilter({
-  //         filters: {
-  //           fromDate: formik.values.fromDate.toISOString(),
-  //           toDate: formik.values.toDate.toISOString(),
-  //           fromDistance: parseFloat(formik.values.fromDistance),
-  //           toDistance: parseFloat(formik.values.toDistance),
-  //           timeRange: formik.values.timeRange,
-  //           distanceRange: formik.values.distanceRange,
-  //         },
-  //       })
-  //     );
-  //   }
-  // }, [
-  //   dispatch,
-  //   editForm,
-  //   formik.values.distanceRange,
-  //   formik.values.fromDate,
-  //   formik.values.fromDistance,
-  //   formik.values.timeRange,
-  //   formik.values.toDate,
-  //   formik.values.toDistance,
-  // ]);
-
   const fileSvgIcons = () => {
     switch (fileType) {
       case ProjectFileType.MicrosoftProject:
@@ -939,173 +894,10 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     }
   };
 
-  // const filterInputs = useCallback(() => {
-  //   return (
-  //     <form onSubmit={formik.handleSubmit}>
-  //       <div className="grid grid-cols-3 gap-2 justify-center">
-  //         <div className="mb-4">
-  //           <label
-  //             htmlFor="fromDate"
-  //             className="block font-medium text-gray-700 dark:text-white"
-  //           >
-  //             {t("importFileForm.startDate")}
-  //           </label>
-  //           <DatePicker
-  //             id="fromDate"
-  //             selected={formik.values.fromDate}
-  //             onChange={(date) => formik.setFieldValue("fromDate", date)}
-  //             dateFormat="MM/yyyy"
-  //             wrapperClassName="w-full px-3 py-2 border rounded-lg"
-  //             customInput={
-  //               <CustomInput
-  //                 value={moment(formik.values.fromDate).format("MMMM")}
-  //               />
-  //             }
-  //             showMonthYearPicker
-  //           />
-  //           {/* {formik.touched.fromDate && formik.errors.fromDate ? (
-  //          <div className="text-red-600">{formik.errors.fromDate}</div>
-  //        ) : null} */}
-  //         </div>
-
-  //         <div className="mb-4">
-  //           <label
-  //             htmlFor="toDate"
-  //             className="block font-medium text-gray-700 dark:text-white"
-  //           >
-  //             {t("importFileForm.endDate")}
-  //           </label>
-  //           <DatePicker
-  //             id="toDate"
-  //             selected={formik.values.toDate}
-  //             onChange={(date) => formik.setFieldValue("toDate", date)}
-  //             dateFormat="MM/yyyy"
-  //             wrapperClassName="w-full px-3 py-2 border rounded-lg"
-  //             customInput={
-  //               <CustomInput
-  //                 value={moment(formik.values.toDate).format("MMMM")}
-  //               />
-  //             }
-  //             showMonthYearPicker
-  //           />
-  //           {/* {formik.touched.toDate && formik.errors.toDate ? (
-  //          <div className="text-red-600">{formik.errors.toDate}</div>
-  //        ) : null} */}
-  //         </div>
-
-  //         <div className="mb-4">
-  //           <label
-  //             htmlFor="timeRange"
-  //             className="block font-medium text-gray-700 dark:text-white"
-  //           >
-  //             {t("importFileForm.timeScale")}
-  //           </label>
-  //           <select
-  //             value={formik.values.timeRange}
-  //             onChange={formik.handleChange}
-  //             id="timeRange"
-  //             name="timeRange"
-  //             disabled={!canWrite && !isAdmin}
-  //             className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-  //           >
-  //             <option value="Yearly">{t("importFileForm.yearlyOption")}</option>
-  //             <option value="Monthly">
-  //               {t("importFileForm.monthlyOption")}
-  //             </option>
-  //             <option value="Weekly">{t("importFileForm.weeklyOption")}</option>
-  //             <option value="Daily">{t("importFileForm.dailyOption")}</option>
-  //           </select>
-  //         </div>
-  //         <div className="mb-4">
-  //           <label
-  //             htmlFor="fromDistance"
-  //             className="block font-medium text-gray-700 dark:text-white"
-  //           >
-  //             {t("importFileForm.startPk")}
-  //           </label>
-  //           <input
-  //             id="fromDistance"
-  //             name="fromDistance"
-  //             type="number"
-  //             disabled={!canWrite && !isAdmin}
-  //             value={formik.values.fromDistance}
-  //             onChange={formik.handleChange}
-  //             onBlur={formik.handleBlur}
-  //             className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-  //           />
-  //           {formik.touched.fromDistance && formik.errors.fromDistance && (
-  //             <div className="text-red-600">{formik.errors.fromDistance}</div>
-  //           )}
-  //         </div>
-
-  //         <div className="mb-4">
-  //           <label
-  //             htmlFor="toDistance"
-  //             className="block font-medium text-gray-700 dark:text-white"
-  //           >
-  //             {t("importFileForm.endPk")}
-  //           </label>
-  //           <input
-  //             id="toDistance"
-  //             name="toDistance"
-  //             disabled={!canWrite && !isAdmin}
-  //             type="number"
-  //             value={formik.values.toDistance}
-  //             onChange={formik.handleChange}
-  //             onBlur={formik.handleBlur}
-  //             className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-  //           />
-  //           {formik.touched.toDistance && formik.errors.toDistance && (
-  //             <div className="text-red-600">{formik.errors.toDistance}</div>
-  //           )}
-  //         </div>
-
-  //         <div className="mb-4">
-  //           <label
-  //             htmlFor="distanceRange"
-  //             className="block font-medium text-gray-700 dark:text-white"
-  //           >
-  //             {t("importFileForm.distanceRange")}
-  //           </label>
-  //           <input
-  //             id="distanceRange"
-  //             name="distanceRange"
-  //             disabled={!canWrite && !isAdmin}
-  //             type="number"
-  //             value={formik.values.distanceRange}
-  //             onChange={formik.handleChange}
-  //             onBlur={formik.handleBlur}
-  //             className="block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-  //           />
-  //           {formik.touched.distanceRange && formik.errors.distanceRange && (
-  //             <div className="text-red-600">{formik.errors.distanceRange}</div>
-  //           )}
-  //         </div>
-  //       </div>
-  //     </form>
-  //   );
-  // }, [CustomInput, canWrite, formik, isAdmin, t]);
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const ActionButtonsCell = ({ value, row }: any) => {
     return (
       <div className="flex gap-2">
-        {/* <button
-                    type="button"
-                    onClick={() => handleEditClick(data)}
-                    className="text-blue-500 hover:text-blue-700"
-                    disabled={!canWrite && !isAdmin}
-                  >
-                    {t("importFileForm.edit")}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={!canWrite && !isAdmin}
-                    onClick={() => handleDeleteClick(data.id)}
-                    className="ml-2 text-red-500 hover:text-red-700"
-                  >
-                    {t("importFileForm.delete")}
-                  </button> */}
         <button
           hidden={!canWrite && !isAdmin}
           onClick={() => {
@@ -1447,82 +1239,6 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             onPageSizeChange={onPageSizeChange}
           />
         </div>
-        {/* <table
-          key={uniqueId()}
-          className="   w-full  text-sm text-left text-gray-500 dark:text-gray-400"
-        >
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                ID
-              </th>
-              <th scope="col" className="px-6 py-3">
-                {t("importFileForm.activityName")}
-              </th>
-              <th scope="col" className="px-6 py-3">
-                {t("importFileForm.startDate")}
-              </th>
-              <th scope="col" className="px-6 py-3">
-                {t("importFileForm.endDate")}
-              </th>
-              <th scope="col" className="px-6 py-3">
-                {t("importFileForm.startPk")}
-              </th>
-              <th scope="col" className="px-6 py-3">
-                {t("importFileForm.endPk")}
-              </th>
-              <th scope="col" className="px-6 py-3">
-                {t("importFileForm.activityStyle")}
-              </th>
-              <th scope="col" className="px-6 py-3">
-                {t("importFileForm.actions")}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {graphSettings.graphData?.map((data, index) => (
-              <tr
-                key={data.id + index + uniqueId()}
-                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-              >
-                <th
-                  scope="row"
-                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                >
-                  {data.id}
-                </th>
-                <td className="px-6 py-4">{data.activityName}</td>
-                <td className="px-6 py-4">
-                  {moment(data.startDate).format("DD/MM/YYYY")}
-                </td>
-                <td className="px-6 py-4">
-                  {moment(data.finishDate).format("DD/MM/YYYY")}
-                </td>
-                <td className="px-6 py-4">{data.startChainage}</td>
-                <td className="px-6 py-4">{data.finishChainage}</td>
-                <td className="px-6 py-4">{data.style}</td>
-                <td className="flex px-6 py-3">
-                  <button
-                    type="button"
-                    onClick={() => handleEditClick(data)}
-                    className="text-blue-500 hover:text-blue-700"
-                    disabled={!canWrite && !isAdmin}
-                  >
-                    {t("importFileForm.edit")}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={!canWrite && !isAdmin}
-                    onClick={() => handleDeleteClick(data.id)}
-                    className="ml-2 text-red-500 hover:text-red-700"
-                  >
-                    {t("importFileForm.delete")}
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table> */}
       </div>
 
       {
