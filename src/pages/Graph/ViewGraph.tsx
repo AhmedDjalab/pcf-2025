@@ -2599,9 +2599,6 @@ function ViewGraph() {
               hideFilters={true}
             />
           </div>
-
-          {activityDetails(t, selectedShapeData)}
-
           <div>
             <p className="font-bold text-blue-500"> {t("Successors")}</p>
             <DynamicTable
@@ -2613,6 +2610,7 @@ function ViewGraph() {
               hideFilters={true}
             />
           </div>
+          {activityDetails(t, selectedShapeData)}
         </div>
       </FloatingButton>
       {graphSettings.loading ? (
