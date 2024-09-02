@@ -30,7 +30,21 @@ import { renderToStaticMarkup } from "react-dom/server";
 import jsPDF from "jspdf";
 import domtoimage from "dom-to-image";
 import logo from "src/assets/Logo/logo.png";
-import { LockClosedIcon } from "@heroicons/react/24/solid";
+import {
+  AdjustmentsVerticalIcon,
+  DocumentIcon,
+  InformationCircleIcon,
+  LockClosedIcon,
+  MoonIcon,
+  PencilIcon,
+  PencilSquareIcon,
+  PlusCircleIcon,
+  PlusIcon,
+  SunIcon,
+  TrashIcon,
+  ViewColumnsIcon,
+  WrenchScrewdriverIcon,
+} from "@heroicons/react/24/solid";
 import * as XLSX from "xlsx";
 
 import { LineStyle, lineStyles } from "src/const/linesArray";
@@ -70,6 +84,8 @@ import api from "src/utils/api";
 import DynamicTable from "src/components/DynamicTable";
 import { ActivityRelationType } from "src/enums/ActivityRelationType";
 import PaperSizeModal from "src/components/PaperSizeModal";
+import FloatingButton, { MenuPropsType } from "src/components/FloatingButton";
+
 export interface ActivityData {
   activityId(activityId: any): unknown;
   id: string;
@@ -1738,8 +1754,7 @@ function ViewGraph() {
     enabled:
       selectedShapeData !== null &&
       selectedShapeData !== undefined &&
-      selectedShapeData?.activityUID !== null &&
-      selectedShapeData?.activityUID,
+      selectedShapeData?.activityUID !== null,
   });
   const {
     data: predecessorActivitiesRelativesData,
@@ -1755,8 +1770,7 @@ function ViewGraph() {
     enabled:
       selectedShapeData !== null &&
       selectedShapeData !== undefined &&
-      selectedShapeData?.activityUID !== null &&
-      selectedShapeData?.activityUID,
+      selectedShapeData?.activityUID !== null,
   });
   // useEffect(() => {
   //   if (activitiesRelativesData) {
@@ -2042,197 +2056,6 @@ function ViewGraph() {
       });
   }, [selectedShapes]);
 
-  // useEffect(() => {
-  //   CopyTexturesToLegend();
-  // }, [texturesData, shapesData.shapesData]);
-  const createLegend = () => {
-    let lineStyleAttr: LineStyle = {};
-    let startConfig, endConfig, simpleConfig;
-
-    const selectedLinepoints = [];
-    const segmentLength = 5;
-    for (let x = 5; x < 40 - 5; x += segmentLength) {
-      selectedLinepoints.push(`${x},${20 - 10}`);
-    }
-    selectedLinepoints.push(`${40 - 5},${20 - 10}`);
-    return shapesData.shapesData.map((shape, index) => {
-      if (shape.lineType !== "") {
-        lineStyleAttr = lineStyles.find((x) => x.id === shape.lineType) || {};
-
-        if (lineStyleAttr["markerStartName"]) {
-          startConfig = markersConfig[lineStyleAttr["markerStartName"]] ?? null;
-        }
-        if (lineStyleAttr["markerStartName"]) {
-          endConfig = markersConfig[lineStyleAttr["markerEndName"]] ?? null;
-        }
-      }
-      const textureConfig = texturesData.find(
-        (x) => x.id === shape.backgroundTexture
-      );
-
-      const textureId = sanitizeClassName(shape.name + textureConfig.id);
-
-      // call Texture once
-
-      const svgTexture = d3.select(textureLegendDefsRef.current!);
-
-      if (
-        textureConfig &&
-        (shape.type === "rect" || shape.type === "triangle")
-      ) {
-        const existingTexture = svgTexture.select(`#${textureId}`);
-        if (existingTexture.empty()) {
-          svgTexture.select(`#${textureId}`).remove();
-          // Apply the texture configuration
-          const optionTexture = textureConfig.configuration
-            .id(textureId)
-            .stroke(shape.color);
-
-          // Ensure `optionTexture` is a valid function or selection
-          if (typeof optionTexture === "function") {
-            svgTexture.call(optionTexture);
-            console.log("Texture added:", textureId);
-          } else {
-            console.error("Invalid texture configuration:", optionTexture);
-          }
-        } else {
-          console.log("Texture already exists:", textureId);
-        }
-      }
-      const isSelected = selectedShapes.includes(shape.name);
-      //CopyTexturesToLegend();
-      const handleLegendItemClick = (shape) => {
-        // Toggle the selected shape
-        if (selectedShapes.includes(shape.name)) {
-          setSelectedShapes(
-            selectedShapes.filter((selected) => selected !== shape.name)
-          );
-        } else {
-          setSelectedShapes([...selectedShapes, shape.name]);
-        }
-      };
-
-      return (
-        <div
-          key={index}
-          className="legend-item"
-          // onMouseOver={handleMouseOver}
-          // onMouseOut={handleMouseOut}
-          onClick={() => handleLegendItemClick(shape)}
-        >
-          <div className="shape-container">
-            <svg width="40" height="20">
-              <defs ref={textureLegendDefsRef}>
-                {endConfig &&
-                  endConfig.content(
-                    shape.color,
-                    endConfig.id + sanitizeClassName(shape.name)
-                  )}
-                {startConfig &&
-                  startConfig.content(
-                    shape.color,
-                    startConfig.id + sanitizeClassName(shape.name)
-                  )}
-              </defs>
-              {shape.type === "line" &&
-                (console.warn("this is shape ", shape),
-                (
-                  <polyline
-                    x1="10"
-                    y1="10"
-                    x2="30"
-                    y2="10"
-                    points={selectedLinepoints.join(" ")}
-                    stroke={shape.color}
-                    markerEnd={`url(#${
-                      lineStyleAttr.markerEndId
-                    }${sanitizeClassName(shape.name)})`}
-                    markerStart={`url(#${
-                      lineStyleAttr.markerStartId
-                    }${sanitizeClassName(shape.name)})`}
-                    markerMid={`url(#${
-                      lineStyleAttr.markerMidId
-                    }${sanitizeClassName(shape.name)})`}
-                    strokeWidth={
-                      lineStyleAttr.style
-                        ? lineStyleAttr.style["stroke-width"]
-                        : "2"
-                    }
-                    strokeDasharray={
-                      lineStyleAttr.style
-                        ? lineStyleAttr.style["stroke-dasharray"]
-                        : "0"
-                    }
-                  />
-                ))}
-              {shape.type === "rect" && (
-                <rect
-                  x="10"
-                  y="2"
-                  width="30"
-                  height="16"
-                  fill={textureConfig?.configuration.id(textureId).url()}
-                  stroke={shape.color}
-                />
-              )}
-              {shape.type === "triangle" && (
-                <polygon
-                  points="10,18 40,2 40,18"
-                  fill={textureConfig?.configuration.id(textureId).url()}
-                  stroke={shape.color}
-                />
-              )}
-              {shape.type === "circle" && (
-                <circle cx="20" cy="10" r="8" fill={shape.color} />
-              )}
-            </svg>
-          </div>
-          <div className="text-container">
-            <span
-              style={{
-                color: isSelected ? "blue" : "black",
-                cursor: "pointer",
-              }}
-            >
-              {shape.name}
-            </span>
-          </div>
-        </div>
-      );
-    });
-  };
-  const CopyTexturesToLegend = useCallback(() => {
-    const sourceDefs = d3.select(textureDefsRef.current);
-    const targetDefs = d3.select(textureLegendDefsRef.current);
-
-    if (!sourceDefs.empty() && !targetDefs.empty()) {
-      sourceDefs.selectAll("*").each(function () {
-        const node = d3.select(this);
-        if (targetDefs.select(`#${node.attr("id")}`).empty()) {
-          const clonedNode = this.cloneNode(true);
-          if (clonedNode) {
-            targetDefs.node().appendChild(clonedNode);
-            console.log("Successfully appended node:", clonedNode);
-          } else {
-            console.error("Failed to clone node:", node.node());
-          }
-        }
-      });
-    }
-  }, []);
-
-  const A4_WIDTH_MM = 210; // A4 width in millimeters
-  const A4_HEIGHT_MM = 297; // A4 height in millimeters
-
-  const convertImageToBlob = async (imageUrl) => {
-    const response = await api.get(imageUrl);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const blob = await response.blob();
-    return blob;
-  };
-
   const handleSaveAsPdfOrImage = (paperSize: string, orientation: string) => {
     // Call the updated function here
     saveAsPdfOrImage("pdf", paperSize, orientation);
@@ -2249,10 +2072,6 @@ function ViewGraph() {
     var fileName = `${graphSettings.projectSettings.title}.${moment(
       new Date()
     ).format("DD/MM/YYYY")}`;
-    // Debugging to check element existence
-    console.log("🚀 ~ saveAsPdfOrImage ~ svgContainer:", svgContainer);
-    console.log("🚀 ~ saveAsPdfOrImage ~ graph:", graph);
-    console.log("🚀 ~ saveAsPdfOrImage ~ legend:", legend);
 
     if (!svgContainer || !graph || !legend) {
       console.error("SVG container, graph, or legend not found");
@@ -2718,13 +2537,92 @@ function ViewGraph() {
     ],
     [t]
   );
-
+  const menuItems: MenuPropsType[] = [
+    {
+      title: t("drawGraph.addComments"),
+      Icon: <PencilIcon className="w-6 h-6" />,
+      onClick: handleAddComments,
+      disabled: !selectedShapeData,
+      color: "bg-purple-400",
+    },
+    {
+      title: t("importFileForm.edit"),
+      Icon: <AdjustmentsVerticalIcon className="w-6 h-6 " />,
+      onClick: handleEditClick,
+      disabled: !selectedShapeData,
+      color: "bg-teal-400",
+    },
+    {
+      title: t("importFileForm.add"),
+      Icon: <PlusCircleIcon className="w-6 h-6" />,
+      onClick: handleAddClick,
+      color: "bg-green-400",
+    },
+    {
+      title: t("importFileForm.delete"),
+      Icon: <TrashIcon className="w-6 h-6" />,
+      onClick: handleDeleteClick,
+      disabled: !selectedShapeData,
+      color: "bg-red-400",
+    },
+    {
+      title: t("drawGraph.exportAllData"),
+      Icon: <DocumentIcon className="w-6 h-6 " />,
+      onClick: handleExportAllClick,
+      color: "bg-cyan-400",
+    },
+    {
+      title: t("drawGraph.changeStyle"),
+      Icon: <PencilSquareIcon className="w-6 h-6" />,
+      onClick: () => setStyleModalOpen(true),
+      disabled: !selectedShapeData,
+      color: "bg-violet-400",
+    },
+  ];
   return (
     <DefaultLayout>
+      <FloatingButton position="right">{menuItems}</FloatingButton>
+
+      <FloatingButton position="left">
+        <div className="flex flex-col gap-2 max-h-[400px] overflow-y-scroll overflow-x-hidden">
+          <div>
+            <p className="font-bold text-blue-500">{t("Predecessors")}</p>
+            <DynamicTable
+              data={
+                predecessorActivitiesRelativesData?.activitiesRelations ?? []
+              }
+              columns={predSuccColumns}
+              dataCount={
+                predecessorActivitiesRelativesData?.activitiesRelations
+                  .length ?? 0
+              }
+              hideFilters={true}
+            />
+          </div>
+
+          {activityDetails(t, selectedShapeData)}
+
+          <div>
+            <p className="font-bold text-blue-500"> {t("Successors")}</p>
+            <DynamicTable
+              data={successrActivitiesRelativesData?.activitiesRelations ?? []}
+              columns={predSuccColumns}
+              dataCount={
+                successrActivitiesRelativesData?.activitiesRelations.length ?? 0
+              }
+              hideFilters={true}
+            />
+          </div>
+        </div>
+      </FloatingButton>
       {graphSettings.loading ? (
         <Spinner />
       ) : (
         <div className="flex flex-col bg-white dark:bg-body w-full overflow-x-auto">
+          {
+            //! add fixed position button
+          }
+
           <div className="mx-20">
             <div className="flex  gap-4">
               <div className=" mt-2 flex items-center">
@@ -3127,3 +3025,194 @@ function activityDetails(t, selectedShapeData: GraphDataType | undefined) {
     </div>
   );
 }
+
+// useEffect(() => {
+//   CopyTexturesToLegend();
+// }, [texturesData, shapesData.shapesData]);
+// const createLegend = () => {
+//   let lineStyleAttr: LineStyle = {};
+//   let startConfig, endConfig, simpleConfig;
+
+//   const selectedLinepoints = [];
+//   const segmentLength = 5;
+//   for (let x = 5; x < 40 - 5; x += segmentLength) {
+//     selectedLinepoints.push(`${x},${20 - 10}`);
+//   }
+//   selectedLinepoints.push(`${40 - 5},${20 - 10}`);
+//   return shapesData.shapesData.map((shape, index) => {
+//     if (shape.lineType !== "") {
+//       lineStyleAttr = lineStyles.find((x) => x.id === shape.lineType) || {};
+
+//       if (lineStyleAttr["markerStartName"]) {
+//         startConfig = markersConfig[lineStyleAttr["markerStartName"]] ?? null;
+//       }
+//       if (lineStyleAttr["markerStartName"]) {
+//         endConfig = markersConfig[lineStyleAttr["markerEndName"]] ?? null;
+//       }
+//     }
+//     const textureConfig = texturesData.find(
+//       (x) => x.id === shape.backgroundTexture
+//     );
+
+//     const textureId = sanitizeClassName(shape.name + textureConfig.id);
+
+//     // call Texture once
+
+//     const svgTexture = d3.select(textureLegendDefsRef.current!);
+
+//     if (
+//       textureConfig &&
+//       (shape.type === "rect" || shape.type === "triangle")
+//     ) {
+//       const existingTexture = svgTexture.select(`#${textureId}`);
+//       if (existingTexture.empty()) {
+//         svgTexture.select(`#${textureId}`).remove();
+//         // Apply the texture configuration
+//         const optionTexture = textureConfig.configuration
+//           .id(textureId)
+//           .stroke(shape.color);
+
+//         // Ensure `optionTexture` is a valid function or selection
+//         if (typeof optionTexture === "function") {
+//           svgTexture.call(optionTexture);
+//           console.log("Texture added:", textureId);
+//         } else {
+//           console.error("Invalid texture configuration:", optionTexture);
+//         }
+//       } else {
+//         console.log("Texture already exists:", textureId);
+//       }
+//     }
+//     const isSelected = selectedShapes.includes(shape.name);
+//     //CopyTexturesToLegend();
+//     const handleLegendItemClick = (shape) => {
+//       // Toggle the selected shape
+//       if (selectedShapes.includes(shape.name)) {
+//         setSelectedShapes(
+//           selectedShapes.filter((selected) => selected !== shape.name)
+//         );
+//       } else {
+//         setSelectedShapes([...selectedShapes, shape.name]);
+//       }
+//     };
+
+//     return (
+//       <div
+//         key={index}
+//         className="legend-item"
+//         // onMouseOver={handleMouseOver}
+//         // onMouseOut={handleMouseOut}
+//         onClick={() => handleLegendItemClick(shape)}
+//       >
+//         <div className="shape-container">
+//           <svg width="40" height="20">
+//             <defs ref={textureLegendDefsRef}>
+//               {endConfig &&
+//                 endConfig.content(
+//                   shape.color,
+//                   endConfig.id + sanitizeClassName(shape.name)
+//                 )}
+//               {startConfig &&
+//                 startConfig.content(
+//                   shape.color,
+//                   startConfig.id + sanitizeClassName(shape.name)
+//                 )}
+//             </defs>
+//             {shape.type === "line" &&
+//               (console.warn("this is shape ", shape),
+//               (
+//                 <polyline
+//                   x1="10"
+//                   y1="10"
+//                   x2="30"
+//                   y2="10"
+//                   points={selectedLinepoints.join(" ")}
+//                   stroke={shape.color}
+//                   markerEnd={`url(#${
+//                     lineStyleAttr.markerEndId
+//                   }${sanitizeClassName(shape.name)})`}
+//                   markerStart={`url(#${
+//                     lineStyleAttr.markerStartId
+//                   }${sanitizeClassName(shape.name)})`}
+//                   markerMid={`url(#${
+//                     lineStyleAttr.markerMidId
+//                   }${sanitizeClassName(shape.name)})`}
+//                   strokeWidth={
+//                     lineStyleAttr.style
+//                       ? lineStyleAttr.style["stroke-width"]
+//                       : "2"
+//                   }
+//                   strokeDasharray={
+//                     lineStyleAttr.style
+//                       ? lineStyleAttr.style["stroke-dasharray"]
+//                       : "0"
+//                   }
+//                 />
+//               ))}
+//             {shape.type === "rect" && (
+//               <rect
+//                 x="10"
+//                 y="2"
+//                 width="30"
+//                 height="16"
+//                 fill={textureConfig?.configuration.id(textureId).url()}
+//                 stroke={shape.color}
+//               />
+//             )}
+//             {shape.type === "triangle" && (
+//               <polygon
+//                 points="10,18 40,2 40,18"
+//                 fill={textureConfig?.configuration.id(textureId).url()}
+//                 stroke={shape.color}
+//               />
+//             )}
+//             {shape.type === "circle" && (
+//               <circle cx="20" cy="10" r="8" fill={shape.color} />
+//             )}
+//           </svg>
+//         </div>
+//         <div className="text-container">
+//           <span
+//             style={{
+//               color: isSelected ? "blue" : "black",
+//               cursor: "pointer",
+//             }}
+//           >
+//             {shape.name}
+//           </span>
+//         </div>
+//       </div>
+//     );
+//   });
+// };
+// const CopyTexturesToLegend = useCallback(() => {
+//   const sourceDefs = d3.select(textureDefsRef.current);
+//   const targetDefs = d3.select(textureLegendDefsRef.current);
+
+//   if (!sourceDefs.empty() && !targetDefs.empty()) {
+//     sourceDefs.selectAll("*").each(function () {
+//       const node = d3.select(this);
+//       if (targetDefs.select(`#${node.attr("id")}`).empty()) {
+//         const clonedNode = this.cloneNode(true);
+//         if (clonedNode) {
+//           targetDefs.node().appendChild(clonedNode);
+//           console.log("Successfully appended node:", clonedNode);
+//         } else {
+//           console.error("Failed to clone node:", node.node());
+//         }
+//       }
+//     });
+//   }
+// }, []);
+
+// const A4_WIDTH_MM = 210; // A4 width in millimeters
+// const A4_HEIGHT_MM = 297; // A4 height in millimeters
+
+// const convertImageToBlob = async (imageUrl) => {
+//   const response = await api.get(imageUrl);
+//   if (!response.ok) {
+//     throw new Error("Network response was not ok");
+//   }
+//   const blob = await response.blob();
+//   return blob;
+// };
