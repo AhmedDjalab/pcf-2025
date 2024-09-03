@@ -335,5 +335,36 @@
     "showCommentsDetails": "Mostrar detalles de los comentarios"
   },
   "projectSelection.copy": "Copiar",
-  "selectOption": "Seleccionar"
+  "selectOption": "Seleccionar",
+  "importFileForm": {
+    "quantity": "Cantidad",
+    "ProductionRate": "Tasa de producción",
+    "workShops": "Talleres"
+  },
+  "hypothesisModal": {
+    "title": "Hipótesis",
+    "hypothesisTitle": "Título de la Hipótesis",
+    "hypothesisDescriptions": "Descripciones de la Hipótesis",
+    "cancel": "Cancelar",
+    "save": "Guardar"
+  },
+  "preSucactivity": {
+    "activityId": "ID",
+    "activityName": "Nombre",
+    "type": "Tipo"
+  },
+  "Predecessors": "Predecesores",
+  "Successors": "Sucesores",
+  "PaperSizeModal": {
+    "selectTitle": "Seleccione el tamaño del papel",
+    "paperSizeLabel": "Tamaño del papel",
+    "A3": "A3",
+    "A4": "A4",
+    "A5": "A5",
+    "orientationLabel": "Orientación",
+    "portrait": "Retrato",
+    "landscape": "Paisaje",
+    "cancel": "Cancelar",
+    "save": "Guardar"
+  }
 }

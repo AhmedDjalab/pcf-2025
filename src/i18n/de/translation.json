@@ -333,5 +333,38 @@
     "showCommentsDetails": "Kommentardetails anzeigen"
   },
   "projectSelection.copy": "Kopieren",
-  "selectOption": "Auswählen"
+  "selectOption": "Auswählen",
+  "projectSelection.copy": "Kopieren",
+  "selectOption": "Auswählen",
+  "importFileForm": {
+    "quantity": "Menge",
+    "ProductionRate": "Produktionsrate",
+    "workShops": "Werkstätten"
+  },
+  "hypothesisModal": {
+    "title": "Hypothese",
+    "hypothesisTitle": "Hypothesentitel",
+    "hypothesisDescriptions": "Hypothesenbeschreibungen",
+    "cancel": "Abbrechen",
+    "save": "Speichern"
+  },
+  "preSucactivity": {
+    "activityId": "ID",
+    "activityName": "Name",
+    "type": "Typ"
+  },
+  "Predecessors": "Vorgänger",
+  "Successors": "Nachfolger",
+  "PaperSizeModal": {
+    "selectTitle": "Papierformat auswählen",
+    "paperSizeLabel": "Papierformat",
+    "A3": "A3",
+    "A4": "A4",
+    "A5": "A5",
+    "orientationLabel": "Ausrichtung",
+    "portrait": "Hochformat",
+    "landscape": "Querformat",
+    "cancel": "Abbrechen",
+    "save": "Speichern"
+  }
 }

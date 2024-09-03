@@ -334,5 +334,38 @@
     "utilButtons": "Barra degli strumenti",
     "selectOption": "Selezionare",
     "showCommentsDetails": "Mostra dettagli dei commenti"
+  },
+  "projectSelection.copy": "Copia",
+  "selectOption": "Seleziona",
+  "importFileForm": {
+    "quantity": "Quantità",
+    "ProductionRate": "Tasso di produzione",
+    "workShops": "Laboratori"
+  },
+  "hypothesisModal": {
+    "title": "Ipotesi",
+    "hypothesisTitle": "Titolo dell'Ipotesi",
+    "hypothesisDescriptions": "Descrizioni dell'Ipotesi",
+    "cancel": "Annulla",
+    "save": "Salva"
+  },
+  "preSucactivity": {
+    "activityId": "ID",
+    "activityName": "Nome",
+    "type": "Tipo"
+  },
+  "Predecessors": "Predecessori",
+  "Successors": "Successori",
+  "PaperSizeModal": {
+    "selectTitle": "Seleziona il formato della carta",
+    "paperSizeLabel": "Formato della carta",
+    "A3": "A3",
+    "A4": "A4",
+    "A5": "A5",
+    "orientationLabel": "Orientamento",
+    "portrait": "Ritratto",
+    "landscape": "Paesaggio",
+    "cancel": "Annulla",
+    "save": "Salva"
   }
 }

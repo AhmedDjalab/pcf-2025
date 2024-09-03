@@ -338,5 +338,36 @@
   },
 
   "projectSelection.copy": "Copy",
-  "selectOption": "Select"
+  "selectOption": "Select",
+  "importFileForm": {
+    "quantity": "Quantity",
+    "ProductionRate": "Production Rate",
+    "workShops": "Workshops"
+  },
+  "hypothesisModal": {
+    "title": "Hypothesis",
+    "hypothesisTitle": "Hypothesis Title",
+    "hypothesisDescriptions": "Hypothesis Descriptions",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "preSucactivity": {
+    "activityId": "ID",
+    "activityName": "Name",
+    "type": "Type"
+  },
+  "Predecessors": "Predecessors",
+  "Successors": "Successors",
+  "PaperSizeModal": {
+    "selectTitle": "Select Paper Size",
+    "paperSizeLabel": "Paper Size",
+    "A3": "A3",
+    "A4": "A4",
+    "A5": "A5",
+    "orientationLabel": "Orientation",
+    "portrait": "Portrait",
+    "landscape": "Landscape",
+    "cancel": "Cancel",
+    "save": "Save"
+  }
 }
