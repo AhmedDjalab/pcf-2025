@@ -2692,96 +2692,6 @@ function ViewGraph() {
                 Image
               </button>
             </div>
-            <Accordion
-              title={t("drawGraph.utilButtons")}
-              isOpenTrigger={selectedShapeData}
-            >
-              <div className="my-4 flex justify-center gap-2 ">
-                {/* <button
-          type="button"
-          onClick={() => navigate("/create-project/5")} // Handle going back to the previous step
-          className=" mt-5 bg-gray-400 text-white  hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 flex items-center"
-        >
-          {t("shapesForm.backButton")}
-        </button> */}
-                <button
-                  type="button"
-                  onClick={handleAddComments}
-                  disabled={!selectedShapeData}
-                  className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
-                >
-                  {t("drawGraph.addComments")}
-                </button>
-
-                {/* <button
-        className="focus:outline-none mt-5 text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
-        onClick={() => saveAsPdfOrImage("image")}
-      >
-        Save as image
-      </button> */}
-
-                {/* Add the "Back" button */}
-                {/* <button
-        type="button"
-        disabled={!selectedShapeData}
-        className="px-10 py-2 bg-red-400 text-white rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
-        onClick={handleEditClick}
-      >
-        {t("importFileForm.delete")}
-      </button> */}
-                <button
-                  type="button"
-                  disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-                  className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
-                  onClick={handleEditClick}
-                >
-                  {t("importFileForm.edit")}
-                </button>
-                <button
-                  type="button"
-                  className="px-10 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
-                  onClick={handleAddClick}
-                  disabled={!canWrite && !isAdmin}
-                >
-                  {t("importFileForm.add")}
-                </button>
-                <button
-                  type="button"
-                  className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
-                  onClick={handleDeleteClick}
-                  disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-                >
-                  {t("importFileForm.delete")}
-                </button>
-                <button
-                  type="button"
-                  className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-300 disabled:bg-gray-600"
-                  onClick={handleExportAllClick}
-                  disabled={!canWrite && !isAdmin}
-                >
-                  {/* {"Export All Data"} */}
-                  {t("drawGraph.exportAllData")}
-                </button>
-                {/* <button
-                  type="button"
-                  className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
-                  onClick={(e: any) => saveAsPdfOrImage("pdf")}
-                  disabled={!canWrite && !isAdmin}
-                >
-                  {/* {"Export All Data"} */}
-                {/* PDF
-                </button>  */}
-
-                <button
-                  type="button"
-                  disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-                  className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600 focus:ring-green-300"
-                  onClick={() => setStyleModalOpen(true)}
-                >
-                  {t("drawGraph.changeStyle")}
-                </button>
-              </div>
-            </Accordion>
           </div>
           {zoomLevel > 1 && (
             <button
@@ -2835,46 +2745,7 @@ function ViewGraph() {
                 </svg>
               </div>
             </div>
-            <Accordion
-              title={t("drawGraph.activityDetailLabel")}
-              children={undefined}
-              isOpenTrigger={false}
-            >
-              <div className="grid grid-cols-4 gap-2">
-                <div>
-                  {t("Predecessors")}
-                  <DynamicTable
-                    data={
-                      predecessorActivitiesRelativesData?.activitiesRelations ??
-                      []
-                    }
-                    columns={predSuccColumns}
-                    dataCount={
-                      predecessorActivitiesRelativesData?.activitiesRelations
-                        .length ?? 0
-                    }
-                    hideFilters={true}
-                  />
-                </div>
 
-                {activityDetails(t, selectedShapeData)}
-
-                <div>
-                  {t("Successors")}
-                  <DynamicTable
-                    data={
-                      successrActivitiesRelativesData?.activitiesRelations ?? []
-                    }
-                    columns={predSuccColumns}
-                    dataCount={
-                      successrActivitiesRelativesData?.activitiesRelations
-                        .length ?? 0
-                    }
-                    hideFilters={true}
-                  />
-                </div>
-              </div>
-            </Accordion>
             {/* <div className="flex w-full justify-center items-center my-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full px-5">
                 {createLegend()}
@@ -3214,3 +3085,137 @@ function activityDetails(t, selectedShapeData: GraphDataType | undefined) {
 //   const blob = await response.blob();
 //   return blob;
 // };
+
+// <Accordion
+//               title={t("drawGraph.utilButtons")}
+//               isOpenTrigger={selectedShapeData}
+//             >
+//               <div className="my-4 flex justify-center gap-2 ">
+//                 {/* <button
+//           type="button"
+//           onClick={() => navigate("/create-project/5")} // Handle going back to the previous step
+//           className=" mt-5 bg-gray-400 text-white  hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 flex items-center"
+//         >
+//           {t("shapesForm.backButton")}
+//         </button> */}
+//                 <button
+//                   type="button"
+//                   onClick={handleAddComments}
+//                   disabled={!selectedShapeData}
+//                   className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
+//                 >
+//                   {t("drawGraph.addComments")}
+//                 </button>
+
+//                 {/* <button
+//         className="focus:outline-none mt-5 text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+//         onClick={() => saveAsPdfOrImage("image")}
+//       >
+//         Save as image
+//       </button> */}
+
+//                 {/* Add the "Back" button */}
+//                 {/* <button
+//         type="button"
+//         disabled={!selectedShapeData}
+//         className="px-10 py-2 bg-red-400 text-white rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+//         onClick={handleEditClick}
+//       >
+//         {t("importFileForm.delete")}
+//       </button> */}
+//                 <button
+//                   type="button"
+//                   disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+//                   className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
+//                   onClick={handleEditClick}
+//                 >
+//                   {t("importFileForm.edit")}
+//                 </button>
+//                 <button
+//                   type="button"
+//                   className="px-10 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
+//                   onClick={handleAddClick}
+//                   disabled={!canWrite && !isAdmin}
+//                 >
+//                   {t("importFileForm.add")}
+//                 </button>
+//                 <button
+//                   type="button"
+//                   className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+//                   onClick={handleDeleteClick}
+//                   disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+//                 >
+//                   {t("importFileForm.delete")}
+//                 </button>
+//                 <button
+//                   type="button"
+//                   className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-300 disabled:bg-gray-600"
+//                   onClick={handleExportAllClick}
+//                   disabled={!canWrite && !isAdmin}
+//                 >
+//                   {/* {"Export All Data"} */}
+//                   {t("drawGraph.exportAllData")}
+//                 </button>
+//                 {/* <button
+//                   type="button"
+//                   className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+//                   onClick={(e: any) => saveAsPdfOrImage("pdf")}
+//                   disabled={!canWrite && !isAdmin}
+//                 >
+//                   {/* {"Export All Data"} */}
+//                 {/* PDF
+//                 </button>  */}
+
+//                 <button
+//                   type="button"
+//                   disabled={!selectedShapeData || (!canWrite && !isAdmin)}
+//                   className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600 focus:ring-green-300"
+//                   onClick={() => setStyleModalOpen(true)}
+//                 >
+//                   {t("drawGraph.changeStyle")}
+//                 </button>
+//               </div>
+//             </Accordion>
+
+{
+  /* <Accordion
+title={t("drawGraph.activityDetailLabel")}
+children={undefined}
+isOpenTrigger={false}
+>
+<div className="grid grid-cols-4 gap-2">
+  <div>
+    {t("Predecessors")}
+    <DynamicTable
+      data={
+        predecessorActivitiesRelativesData?.activitiesRelations ??
+        []
+      }
+      columns={predSuccColumns}
+      dataCount={
+        predecessorActivitiesRelativesData?.activitiesRelations
+          .length ?? 0
+      }
+      hideFilters={true}
+    />
+  </div>
+
+  {activityDetails(t, selectedShapeData)}
+
+  <div>
+    {t("Successors")}
+    <DynamicTable
+      data={
+        successrActivitiesRelativesData?.activitiesRelations ?? []
+      }
+      columns={predSuccColumns}
+      dataCount={
+        successrActivitiesRelativesData?.activitiesRelations
+          .length ?? 0
+      }
+      hideFilters={true}
+    />
+  </div>
+</div>
+</Accordion> */
+}
