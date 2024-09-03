@@ -162,6 +162,7 @@
   },
   "drawGraph": {
     "addComments": "Add Comment",
+    "Hypothesis": "Assumptions",
     "activityDetailLabel": "Activity Detail",
     "utilButtons": "Utility Buttons",
     "showCritical": "show Critical",
