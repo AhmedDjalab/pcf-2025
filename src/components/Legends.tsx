@@ -152,6 +152,9 @@ const LegendComponent: React.FC<LegendProps> = ({
   const createLegend = useCallback(() => {
     const svgTexture = d3.select(textureLegendDefsRef.current);
 
+    if (!svgTexture) {
+      return;
+    }
     shapesData.shapesData?.forEach((shape) => {
       let lineStyleAttr: LineStyle | {} = {};
       let startConfig, endConfig;
@@ -175,7 +178,7 @@ const LegendComponent: React.FC<LegendProps> = ({
         const textureId = sanitizeClassName(shape.name + textureConfig.id);
 
         // Remove previous texture definition if it exists
-        svgTexture.select(`#${textureId}`).remove();
+        svgTexture?.select(`#${textureId}`).remove();
         const optionTexture = textureConfig.configuration
           .id(textureId)
           .stroke(shape.color);
