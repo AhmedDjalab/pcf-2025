@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { ChangeEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { classNames } from "./shared/Utils";

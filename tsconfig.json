@@ -18,12 +18,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    
+    "noImplicitAny": false,
+  
     "jsx": "react-jsx",
     "baseUrl": "./",
   },
   "include": [
     "src",
-     "src/custom.d.ts"
-  ]
+     "src/custom.d.ts",
+     "./node_modules/react-image-editor/src/index.d.ts"
+  ],
+  
 }

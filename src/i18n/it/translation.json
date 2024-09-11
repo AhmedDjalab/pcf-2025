@@ -203,20 +203,24 @@
       "description": "Definisci l'inizio e la fine di ogni tratto"
     }
   },
-
   "activityForm": {
-    "addActivity": "Aggiungi un'attività",
-    "editActivity": "Modifica l'attività",
-    "activityName": "Nome dell'attività",
-    "startDate": "Data di inizio",
-    "endDate": "Data di fine",
+    "addActivity": "Aggiungi Attività",
+    "editActivity": "Modifica Attività",
+    "activityName": "Nome dell'Attività",
+    "startDate": "Data di Inizio",
+    "endDate": "Data di Fine",
     "startPk": "Inizio PK",
     "endPk": "Fine PK",
-    "activityStyle": "Stile dell'attività",
+    "activityStyle": "Stile dell'Attività",
     "save": "Salva",
     "cancel": "Annulla",
     "calendar": "Calendario",
     "duration": "DURATA (Giorni)",
+    "quantity": "QUANTITÀ",
+    "productionRate": "TASSO DI PRODUZIONE",
+    "workShops": "LABORATORI",
+    "quantityUnit": "Unità",
+    "productionRateUnit": "Unità",
     "errors": {
       "activityName": "Il nome dell'attività è obbligatorio",
       "startDate": "La data di inizio è obbligatoria",

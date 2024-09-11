@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 // import { FormikErrors } from 'formik';
 // import React, { ChangeEvent, useEffect, useState } from 'react';
 // import Datepicker from 'tailwind-datepicker-react';
