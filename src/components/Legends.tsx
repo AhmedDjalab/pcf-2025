@@ -152,7 +152,7 @@ const LegendComponent: React.FC<LegendProps> = ({
   const createLegend = useCallback(() => {
     const svgTexture = d3.select(textureLegendDefsRef.current);
 
-    shapesData.shapesData.forEach((shape) => {
+    shapesData.shapesData?.forEach((shape) => {
       let lineStyleAttr: LineStyle | {} = {};
       let startConfig, endConfig;
 
