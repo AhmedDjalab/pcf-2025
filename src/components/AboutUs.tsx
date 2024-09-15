@@ -12,8 +12,8 @@ import { useTranslation } from "react-i18next";
 import logo from "src/assets/Logo/logo.png";
 import companyLogo from "src/assets/Logo/companyLogo.png";
 import DefaultLayout from "./DefaultLayout";
-//@ts-ignore
-// import { ImageEditorModule } from "react-image-editor/src";
+
+
 //@ts-ignore
 const AboutUs: React.FC = () => {
   const { t } = useTranslation();
@@ -99,14 +99,7 @@ const AboutUs: React.FC = () => {
         </p>
 
         <hr />
-        {/* <ImageEditorModule
-          imgUrl="https://fastly.picsum.photos/id/7/4728/3168.jpg?hmac=c5B5tfYFM9blHHMhuu4UKmhnbZoJqrzNOP9xjkV4w3o"
-          onSaveState={(data) => {
-            console.warn("🚀 ~ data:", data);
-            exportToJosn(data);
-          }}
-          initialStageData={initialData}
-        /> */}
+      
         <span className="text-gray-500 dark:text-white">
           {t("AboutUs.isProductOF")}
         </span>

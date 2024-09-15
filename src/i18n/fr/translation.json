@@ -203,6 +203,10 @@
     "step5": {
       "title": "Définition des tronçons de niveau 2",
       "description": "Définir le début et la fin de chaque tronçon"
+    },
+    "step6": {
+      "title": "Définition des plans",
+      "description": "Définir le début et la fin de chaque plan"
     }
   },
   "activityForm": {
@@ -372,5 +376,44 @@
     "landscape": "Paysage",
     "cancel": "Annuler",
     "save": "Enregistrer"
+  },
+  "plansPopup": {
+    "titles": {
+      "add": "Ajouter un plan",
+      "edit": "Modifier le plan"
+    },
+    "labels": {
+      "name": "Nom du plan",
+      "start": "Pk de début",
+      "end": "Pk de fin",
+      "logo": "Image du plan"
+    },
+    "placeholders": {
+      "name": "Entrez le nom du plan",
+      "start": "Entrez le Pk de début",
+      "end": "Entrez le Pk de fin"
+    },
+    "errors": {
+      "required": "Ce champ est requis",
+      "minDistance": "Le Pk doit être supérieur ou égal à {{minDistance}}",
+      "maxDistance": "Le Pk doit être inférieur ou égal à {{maxDistance}}",
+      "greaterThanStart": "Le Pk de fin doit être supérieur au Pk de début"
+    },
+    "buttons": {
+      "add": "Ajouter",
+      "save": "Sauvegarder",
+      "cancel": "Annuler"
+    }
+  },
+  "plansList": {
+    "tableHeaders": {
+      "name": "Nom du plan",
+      "start": "Pk de début",
+      "end": "Pk de fin",
+      "actions": "Actions"
+    },
+    "buttons": {
+      "planDraw": "select activities"
+    }
   }
 }

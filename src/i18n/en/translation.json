@@ -205,6 +205,10 @@
     "step5": {
       "title": "Level 2 Segments Definition",
       "description": "Define the start and end of each segment"
+    },
+    "step6": {
+      "title": "Plans Definition",
+      "description": "Define the start and end of each plan"
     }
   },
   "activityForm": {
@@ -375,5 +379,44 @@
     "landscape": "Landscape",
     "cancel": "Cancel",
     "save": "Save"
+  },
+  "plansPopUp": {
+    "titles": {
+      "add": "Add a plan",
+      "edit": "Edit the plan"
+    },
+    "labels": {
+      "name": "Plan name",
+      "start": "Start Pk",
+      "end": "End Pk",
+      "planImage": "Plan image"
+    },
+    "placeholders": {
+      "name": "Enter the plan name",
+      "start": "Enter the start Pk",
+      "end": "Enter the end Pk"
+    },
+    "errors": {
+      "required": "This field is required",
+      "minDistance": "Pk must be greater than or equal to {{minDistance}}",
+      "maxDistance": "Pk must be less than or equal to {{maxDistance}}",
+      "greaterThanStart": "End Pk must be greater than the start Pk"
+    },
+    "buttons": {
+      "add": "Add",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
+  },
+  "plansList": {
+    "tableHeaders": {
+      "name": "Plan Name",
+      "start": "Start Pk",
+      "end": "End Pk",
+      "actions": "Actions"
+    },
+    "buttons": {
+      "planDraw": "select activities"
+    }
   }
 }

@@ -1,4 +1,5 @@
 import { ProjectFileType } from "src/const/vars";
+import { Plan } from "src/state/slices/graphSlice";
 
 export interface Project {
   id?: string;
@@ -15,6 +16,7 @@ export interface Project {
   activityStyles?: ActivityStyleModel[];
   taskSlotsLevelOne?: TaskSlotModel[];
   taskSlotsLevelTwo?: TaskSlotModel[];
+  plans: Plan[];
   UpdatedAt?: Date;
   CreatedAt?: Date;
   ModifierName?: string;

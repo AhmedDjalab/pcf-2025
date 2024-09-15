@@ -81,6 +81,59 @@ export interface ActivityRelations {
   activityId?: string;
   id?: string;
 }
+
+export interface AttributesModel {
+  activityId?: string;
+  id?: string;
+  planImageId?: string;
+  name: string;
+  dataItemType: string;
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  src?: string;
+  zIndex?: number;
+  brightness?: number;
+  filters?: string[];
+  fill?: string;
+  radius?: number;
+  opacity?: number;
+  rotation?: number;
+  draggable?: boolean;
+  scaleX?: number;
+  scaleY?: number;
+  skewX?: number;
+  skewY?: number;
+  offsetX?: number;
+  offsetY?: number;
+  stroke?: string;
+  strokeWidth?: number;
+  dash?: number[];
+  fontFamily?: string;
+  text?: string;
+  textAlign?: string;
+  verticalAlign?: string;
+}
+
+export interface StageDataModel {
+  stageId: string;
+  attrs: AttributesModel;
+  className?: string;
+  children?: StageDataModel[];
+}
+export interface Plan {
+  idnew: string;
+  id?: string;
+  planImageId?: string;
+  planImageUrl: string;
+  name: string;
+  startPk: number;
+  endPk: number;
+  stageDataList?: StageDataModel[];
+  projectId?: string;
+}
+
 export interface TaskSlot {
   start: number;
   end: number;
@@ -154,6 +207,7 @@ export interface GraphCreateType {
   userDefindSettings?: UdfSetting[];
   comments?: CommentsType[];
   projectOptions?: ProjectOption[];
+  plans: Plan[];
 }
 
 const currentYear = new Date().getFullYear();
@@ -183,6 +237,7 @@ const initialState: GraphCreateType = {
   },
   taskSlots: [],
   taskSlotsLevelTwo: [],
+  plans: [],
   loading: false,
   rawGraphDataFromFile: [],
   userDefindSettings: [],
@@ -388,6 +443,17 @@ export const saveProjectThunk = createAsyncThunk<
         name: taskSlot.name,
         level: 1, // Assuming Level is 1 for taskSlots
       })),
+      plans:
+        state.graph.plans?.map((plan) => ({
+          // Map properties from TaskSlot to TaskSlotModel
+          id: plan.id,
+          idnew: plan.id!,
+          startPk: plan.startPk,
+          endPk: plan.endPk,
+          planImageUrl: plan.planImageUrl,
+          //planImageId: plan.planImageId,
+          name: plan.name,
+        })) ?? [],
       taskSlotsLevelTwo: state.graph.taskSlotsLevelTwo.map((taskSlot) => ({
         // Map properties from TaskSlot to TaskSlotModel
         id: taskSlot.id,
@@ -559,6 +625,11 @@ const GraphSlice = createSlice({
     ) {
       state.shapes = action.payload.shapesForm;
     },
+
+    updatePlansValue(state, action: PayloadAction<{ plans: Plan[] }>) {
+      state.plans = [...action.payload.plans];
+    },
+
     updateTaskSlotsValue(
       state,
       action: PayloadAction<{ taskSlots: TaskSlot[] }>
@@ -930,6 +1001,7 @@ const GraphSlice = createSlice({
         },
 
         rawGraphDataFromFile: activities,
+
         settings: {
           graphData: activities ?? [],
           fromDate: new Date(
@@ -971,6 +1043,16 @@ const GraphSlice = createSlice({
             level: 1,
             id: taskSlot.id!,
             idnew: taskSlot.id!,
+          })) ?? [],
+        plans:
+          action.payload.data!.plans?.map((plan: Plan) => ({
+            startPk: plan.startPk,
+            endPk: plan.endPk,
+            name: plan.name,
+            planImageId: plan.planImageId,
+            planImageUrl: plan.planImageUrl,
+            id: plan.id!,
+            idnew: plan.id!,
           })) ?? [],
         taskSlotsLevelTwo:
           action.payload.data!.taskSlotsLevelTwo?.map((taskSlot) => ({
@@ -1115,6 +1197,7 @@ export const {
   updateCommentById,
   addHypothesis,
   addActivitiesRelation,
+  updatePlansValue,
 } = GraphSlice.actions;
 
 export default GraphSlice.reducer;

@@ -17,6 +17,7 @@ import {
   fetchAllProjectsOptions,
   fetchProjectByIdThunk,
 } from "src/state/slices/graphSlice";
+import PlansList from "./PlansStep";
 
 export interface MultiStepFormProps {
   currentStep: number;
@@ -67,6 +68,11 @@ export const DrawGraphForm = () => {
       title: t("DrwMultiStepForm.step5.title"),
       description: t("DrwMultiStepForm.step5.description"),
     },
+    {
+      stepNumber: 6,
+      title: t("DrwMultiStepForm.step6.title"),
+      description: t("DrwMultiStepForm.step6.description"),
+    },
   ];
   return (
     <DefaultLayout>
@@ -103,6 +109,13 @@ export const DrawGraphForm = () => {
         )}
         {currentStep === 5 && (
           <TaskSlotsLevelTwoList
+            currentStep={currentStep}
+            stepsLength={steps.length}
+            setCurrentStep={setCurrentStep}
+          />
+        )}
+        {currentStep === 6 && (
+          <PlansList
             currentStep={currentStep}
             stepsLength={steps.length}
             setCurrentStep={setCurrentStep}
