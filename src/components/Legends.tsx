@@ -21,8 +21,14 @@ interface LegendProps {
 }
 
 const sanitizeClassName = (key: string): string => {
-  // Replace any characters that are not letters, numbers, hyphens, or underscores with hyphens
-  return key.replace(/[^a-zA-Z0-9-_]/g, "-");
+  // Replace invalid characters with hyphens
+  let sanitized = key.replace(/[^a-zA-Z0-9-_]/g, "-");
+  // Ensure it does not start with a number
+  if (/^\d/.test(sanitized)) {
+    sanitized = `_${sanitized}`;
+  }
+  // Remove any leading or trailing hyphens
+  return sanitized.replace(/^-+|-+$/g, "");
 };
 
 const LegendComponent: React.FC<LegendProps> = ({
@@ -152,7 +158,7 @@ const LegendComponent: React.FC<LegendProps> = ({
   const createLegend = useCallback(() => {
     const svgTexture = d3.select(textureLegendDefsRef.current);
 
-    shapesData.shapesData?.forEach((shape) => {
+    shapesData.shapesData.forEach((shape) => {
       let lineStyleAttr: LineStyle | {} = {};
       let startConfig, endConfig;
 
@@ -175,7 +181,7 @@ const LegendComponent: React.FC<LegendProps> = ({
         const textureId = sanitizeClassName(shape.name + textureConfig.id);
 
         // Remove previous texture definition if it exists
-        svgTexture.select(`#${textureId}`).remove();
+        svgTexture?.select(`#${textureId}`).remove();
         const optionTexture = textureConfig.configuration
           .id(textureId)
           .stroke(shape.color);

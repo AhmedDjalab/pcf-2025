@@ -1,0 +1,193 @@
+{
+  "image": {
+    "name": "Immagine"
+  },
+  "colorPalette": {
+    "name": "Tavolozza dei colori",
+    "opacity": {
+      "name": "Opacità"
+    },
+    "brightness": {
+      "name": "Luminosità"
+    },
+    "grayScale": {
+      "name": "Scala di grigi"
+    },
+    "addColor": {
+      "name": "Aggiungi colore"
+    },
+    "clearColor": {
+      "name": "Rimuovi colore\n(Premi Shift per cambiare il colore del contorno)"
+    }
+  },
+  "align": {
+    "name": "Allinea",
+    "left": {
+      "name": "Sinistra"
+    },
+    "center": {
+      "name": "Centro"
+    },
+    "right": {
+      "name": "Destra"
+    },
+    "top": {
+      "name": "In alto"
+    },
+    "middle": {
+      "name": "Centro"
+    },
+    "bottom": {
+      "name": "In basso"
+    }
+  },
+  "frame": {
+    "name": "Cornice",
+    "youtubeVideoThumbnail": {
+      "name": "Miniatura video YouTube"
+    },
+    "youtubeChannelIcon": {
+      "name": "Icona canale YouTube"
+    },
+    "youtubeChannelCover": {
+      "name": "Copertura canale YouTube"
+    },
+    "instagramSquarePhoto": {
+      "name": "Foto quadrata Instagram"
+    },
+    "instagramProfile": {
+      "name": "Profilo Instagram"
+    },
+    "instagramStory": {
+      "name": "Storia Instagram"
+    },
+    "A4": {
+      "name": "A4"
+    },
+    "sample_100X100": {
+      "name": "Esempio_100X100"
+    },
+    "sample_512X512": {
+      "name": "Esempio_512X512"
+    },
+    "facebookProfile": {
+      "name": "Profilo Facebook"
+    },
+    "facebookCoverPhoto": {
+      "name": "Foto di copertura Facebook"
+    },
+    "twitterProfile": {
+      "name": "Profilo Twitter"
+    },
+    "twitterHeader": {
+      "name": "Intestazione Twitter"
+    },
+    "twitterPost": {
+      "name": "Post Twitter"
+    },
+    "linkedInProfil": {
+      "name": "Profilo LinkedIn"
+    },
+    "linkedInCover": {
+      "name": "Copertura LinkedIn"
+    },
+    "pinterestBoardImage": {
+      "name": "Immagine bacheca Pinterest"
+    },
+    "pinterestPinImage": {
+      "name": "Immagine pin Pinterest"
+    },
+    "pinterestProfile": {
+      "name": "Profilo Pinterest"
+    },
+    "tumblrProfile": {
+      "name": "Profilo Tumblr"
+    },
+    "tumblrPostImage": {
+      "name": "Immagine post Tumblr"
+    },
+    "androidAppIcon": {
+      "name": "Icona app Android"
+    },
+    "androidFeatureGraphic": {
+      "name": "Grafica funzionalità Android"
+    },
+    "androidHorizontal": {
+      "name": "Android Orizzontale"
+    },
+    "androidVertical": {
+      "name": "Android Verticale"
+    },
+    "iosIPhoneVertical6_7": {
+      "name": "iOS iPhone Verticale (6,7 pollici)"
+    },
+    "iosIPhoneVertical6_5": {
+      "name": "iOS iPhone Verticale (6,5 pollici)"
+    },
+    "iosIPhoneVertical5_8": {
+      "name": "iOS iPhone Verticale (5,8 pollici)"
+    },
+    "iosIPhoneVertical5_5": {
+      "name": "iOS iPhone Verticale (5,5 pollici)"
+    },
+    "iosIPhoneVertical4_7": {
+      "name": "iOS iPhone Verticale (4,7 pollici)"
+    },
+    "iosIPhoneVertical4": {
+      "name": "iOS iPhone Verticale (4 pollici)"
+    },
+    "iosIPhoneVertical3_5": {
+      "name": "iOS iPhone Verticale (3,5 pollici)"
+    },
+    "iosIPadVertical12_9": {
+      "name": "iOS iPad Verticale (12,9 pollici)"
+    },
+    "iosIPadVertical11": {
+      "name": "iOS iPad Verticale (11 pollici)"
+    },
+    "iosIPadVertical10_5": {
+      "name": "iOS iPad Verticale (10,5 pollici)"
+    },
+    "iosIPadVertical9_7": {
+      "name": "iOS iPad Verticale (9,7 pollici)"
+    }
+  },
+  "shape": {
+    "name": "Forma"
+  },
+  "text": {
+    "name": "Testo"
+  },
+  "icon": {
+    "name": "Icona",
+    "search": {
+      "title": "Cerca icona",
+      "placeholder": "Inserisci parola chiave",
+      "desc": "Digita una parola chiave per trovare l'icona"
+    }
+  },
+  "export": {
+    "name": "Esporta",
+    "export-all-frame": {
+      "name": "Esporta tutti i frame",
+      "icon": "download"
+    },
+    "export-selected": {
+      "name": "Esporta frame selezionato",
+      "icon": "box-arrow-down"
+    }
+  },
+  "border": {
+    "name": "Bordo",
+    "color": "Colore",
+    "width": "Larghezza",
+    "addColor": "Aggiungi colore",
+    "style": "Stile"
+  },
+  "activity": {
+    "name": "Attività",
+    "selectActivity": "Attività",
+    "saveActivity": "Salva",
+    "saveJson": "Salva JSON"
+  }
+}

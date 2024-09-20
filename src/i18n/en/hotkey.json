@@ -1,0 +1,84 @@
+{
+  "moveBackground": {
+    "name": "Hintergrund verschieben",
+    "keys": ["Leertaste", "Klicken & Bewegen"],
+    "desc": ""
+  },
+  "resetZoom": {
+    "name": "Zoom zurücksetzen",
+    "keys": ["Strg", "0"],
+    "desc": ""
+  },
+  "zoomIn": {
+    "name": "Vergrößern",
+    "keys": ["Mausrad"],
+    "desc": ""
+  },
+  "zoomOut": {
+    "name": "Verkleinern",
+    "keys": ["Mausrad"],
+    "desc": ""
+  },
+  "layerUp": {
+    "name": "Ebene nach oben",
+    "keys": ["Umschalt", "Pfeil nach oben"],
+    "desc": ""
+  },
+  "layerDown": {
+    "name": "Ebene nach unten",
+    "keys": ["Umschalt", "Pfeil nach unten"],
+    "desc": ""
+  },
+  "deleteItems": {
+    "name": "Löschen",
+    "keys": ["Rücktaste"],
+    "desc": ""
+  },
+  "duplicateItems": {
+    "name": "Duplizieren",
+    "keys": ["Strg", "d"],
+    "desc": ""
+  },
+  "copyItems": {
+    "name": "Ausgewählte Elemente kopieren",
+    "keys": ["Strg", "c"],
+    "desc": ""
+  },
+  "pasteItems": {
+    "name": "Ausgewählte Elemente einfügen",
+    "keys": ["Strg", "v"],
+    "desc": ""
+  },
+  "selectAllItems": {
+    "name": "Alle Elemente auswählen",
+    "keys": ["Strg", "a"],
+    "desc": ""
+  },
+  "flipHorizontally": {
+    "name": "Horizontal spiegeln",
+    "keys": ["Umschalt", "h"],
+    "desc": ""
+  },
+  "flipVertically": {
+    "name": "Vertikal spiegeln",
+    "keys": ["Umschalt", "v"],
+    "desc": ""
+  },
+  "undo": {
+    "id": "undo",
+    "name": "Rückgängig",
+    "keys": ["Strg", "z"],
+    "desc": ""
+  },
+  "redo": {
+    "id": "redo",
+    "name": "Wiederholen",
+    "keys": ["Strg", "y"],
+    "desc": ""
+  },
+  "remove-background": {
+    "name": "Hintergrund des ausgewählten Bildes entfernen",
+    "keys": ["Strg", "x", "b"],
+    "desc": "Hintergrund des ausgewählten Bildes entfernen"
+  }
+}

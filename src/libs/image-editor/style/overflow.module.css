@@ -1,0 +1,43 @@
+.auto {
+  overflow: auto;
+}
+
+.auto-y {
+  overflow-y: auto;
+}
+.scroll {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+.auto-x {
+  overflow-x: auto;
+}
+
+.hide {
+  overflow: hidden;
+}
+.horizontalScroll {
+  overflow-x: scroll; /* Enables horizontal scrolling */
+  white-space: nowrap; /* Prevents wrapping of child elements */
+  width: 100%;
+}
+.scrollContainer {
+  overflow: hidden;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
+  scrollbar-width: thin; /* For Firefox to have thin scrollbar */
+  -webkit-overflow-scrolling: touch; /* For smooth scrolling on mobile devices */
+}
+
+.scrollContainer::-webkit-scrollbar {
+  width: 12px;
+  height: 12px; /* For always visible horizontal scrollbar */
+}
+
+.scrollContainer::-webkit-scrollbar-thumb {
+  background: #888; /* Custom scrollbar thumb color */
+}
+
+.scrollContainer::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

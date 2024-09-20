@@ -37,7 +37,9 @@ const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
             {step.stepNumber}
           </span>
           <span>
-            <h3 className="font-medium leading-tight">{step.title}</h3>
+            <span className="font-medium leading-tight tex-lg">
+              {step.title}
+            </span>
             <p className="text-sm">{step.description}</p>
           </span>
         </li>

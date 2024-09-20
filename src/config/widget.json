@@ -1,0 +1,31 @@
+[
+  {
+    "id": "image",
+    "name": "Image"
+  },
+  {
+    "id": "colorPalette",
+    "name": "Color Palette"
+  },
+  {
+    "id": "align",
+    "name": "Align"
+  },
+
+  {
+    "id": "shape",
+    "name": "Shape"
+  },
+  {
+    "id": "border",
+    "name": "Border"
+  },
+  {
+    "id": "text",
+    "name": "Text"
+  },
+  {
+    "id": "activity",
+    "name": "Activity"
+  }
+]

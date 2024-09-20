@@ -1,0 +1,193 @@
+{
+  "image": {
+    "name": "Bild"
+  },
+  "colorPalette": {
+    "name": "Farbpalette",
+    "opacity": {
+      "name": "Deckkraft"
+    },
+    "brightness": {
+      "name": "Helligkeit"
+    },
+    "grayScale": {
+      "name": "Graustufen"
+    },
+    "addColor": {
+      "name": "Farbe hinzufügen"
+    },
+    "clearColor": {
+      "name": "Farbe entfernen\n(Drücke Shift, um die Randfarbe zu ändern)"
+    }
+  },
+  "align": {
+    "name": "Ausrichten",
+    "left": {
+      "name": "Links"
+    },
+    "center": {
+      "name": "Zentriert"
+    },
+    "right": {
+      "name": "Rechts"
+    },
+    "top": {
+      "name": "Oben"
+    },
+    "middle": {
+      "name": "Mitte"
+    },
+    "bottom": {
+      "name": "Unten"
+    }
+  },
+  "frame": {
+    "name": "Rahmen",
+    "youtubeVideoThumbnail": {
+      "name": "YouTube-Video-Vorschaubild"
+    },
+    "youtubeChannelIcon": {
+      "name": "YouTube-Kanal-Icon"
+    },
+    "youtubeChannelCover": {
+      "name": "YouTube-Kanal-Cover"
+    },
+    "instagramSquarePhoto": {
+      "name": "Instagram Quadratfoto"
+    },
+    "instagramProfile": {
+      "name": "Instagram-Profil"
+    },
+    "instagramStory": {
+      "name": "Instagram-Story"
+    },
+    "A4": {
+      "name": "A4"
+    },
+    "sample_100X100": {
+      "name": "Beispiel_100X100"
+    },
+    "sample_512X512": {
+      "name": "Beispiel_512X512"
+    },
+    "facebookProfile": {
+      "name": "Facebook-Profil"
+    },
+    "facebookCoverPhoto": {
+      "name": "Facebook-Cover-Foto"
+    },
+    "twitterProfile": {
+      "name": "Twitter-Profil"
+    },
+    "twitterHeader": {
+      "name": "Twitter-Header"
+    },
+    "twitterPost": {
+      "name": "Twitter-Beitrag"
+    },
+    "linkedInProfil": {
+      "name": "LinkedIn-Profil"
+    },
+    "linkedInCover": {
+      "name": "LinkedIn-Cover"
+    },
+    "pinterestBoardImage": {
+      "name": "Pinterest-Board-Bild"
+    },
+    "pinterestPinImage": {
+      "name": "Pinterest-Pin-Bild"
+    },
+    "pinterestProfile": {
+      "name": "Pinterest-Profil"
+    },
+    "tumblrProfile": {
+      "name": "Tumblr-Profil"
+    },
+    "tumblrPostImage": {
+      "name": "Tumblr-Beitragsbild"
+    },
+    "androidAppIcon": {
+      "name": "Android-App-Icon"
+    },
+    "androidFeatureGraphic": {
+      "name": "Android-Funktionsgrafik"
+    },
+    "androidHorizontal": {
+      "name": "Android-Horizontal"
+    },
+    "androidVertical": {
+      "name": "Android-Vertikal"
+    },
+    "iosIPhoneVertical6_7": {
+      "name": "iOS iPhone Vertikal (6,7 Zoll)"
+    },
+    "iosIPhoneVertical6_5": {
+      "name": "iOS iPhone Vertikal (6,5 Zoll)"
+    },
+    "iosIPhoneVertical5_8": {
+      "name": "iOS iPhone Vertikal (5,8 Zoll)"
+    },
+    "iosIPhoneVertical5_5": {
+      "name": "iOS iPhone Vertikal (5,5 Zoll)"
+    },
+    "iosIPhoneVertical4_7": {
+      "name": "iOS iPhone Vertikal (4,7 Zoll)"
+    },
+    "iosIPhoneVertical4": {
+      "name": "iOS iPhone Vertikal (4 Zoll)"
+    },
+    "iosIPhoneVertical3_5": {
+      "name": "iOS iPhone Vertikal (3,5 Zoll)"
+    },
+    "iosIPadVertical12_9": {
+      "name": "iOS iPad Vertikal (12,9 Zoll)"
+    },
+    "iosIPadVertical11": {
+      "name": "iOS iPad Vertikal (11 Zoll)"
+    },
+    "iosIPadVertical10_5": {
+      "name": "iOS iPad Vertikal (10,5 Zoll)"
+    },
+    "iosIPadVertical9_7": {
+      "name": "iOS iPad Vertikal (9,7 Zoll)"
+    }
+  },
+  "shape": {
+    "name": "Form"
+  },
+  "text": {
+    "name": "Text"
+  },
+  "icon": {
+    "name": "Symbol",
+    "search": {
+      "title": "Symbol suchen",
+      "placeholder": "Stichwort eingeben",
+      "desc": "Geben Sie ein Stichwort ein, um ein Symbol zu finden"
+    }
+  },
+  "export": {
+    "name": "Exportieren",
+    "export-all-frame": {
+      "name": "Alle Rahmen exportieren",
+      "icon": "download"
+    },
+    "export-selected": {
+      "name": "Ausgewählten Rahmen exportieren",
+      "icon": "box-arrow-down"
+    }
+  },
+  "border": {
+    "name": "Rand",
+    "color": "Farbe",
+    "width": "Breite",
+    "addColor": "Farbe hinzufügen",
+    "style": "Stil"
+  },
+  "activity": {
+    "name": "Aktivität",
+    "selectActivity": "Aktivität",
+    "saveActivity": "Speichern",
+    "saveJson": "JSON speichern"
+  }
+}

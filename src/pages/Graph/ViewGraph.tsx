@@ -251,8 +251,14 @@ function ViewGraph() {
   const [selectedShapeData, setSelectedShapeData] = useState<GraphDataType>();
   const [patternsData, setPatternsData] = useState<any[]>([]);
   const sanitizeClassName = (key: string): string => {
-    // Replace any characters that are not letters, numbers, hyphens, or underscores with hyphens
-    return key.replace(/[^a-zA-Z0-9-_]/g, "-");
+    // Replace invalid characters with hyphens
+    let sanitized = key.replace(/[^a-zA-Z0-9-_]/g, "-");
+    // Ensure it does not start with a number
+    if (/^\d/.test(sanitized)) {
+      sanitized = `_${sanitized}`;
+    }
+    // Remove any leading or trailing hyphens
+    return sanitized.replace(/^-+|-+$/g, "");
   };
 
   //? this is the tooltip query

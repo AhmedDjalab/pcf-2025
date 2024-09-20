@@ -1,4 +1,5 @@
 //@ts-nocheck
+
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -111,8 +112,6 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
       }) ?? []
     );
   }, [employeeData, projectSettings.employeesId]);
-
-
 
   useEffect(() => {
     if (isSuccess && employeeData) {
