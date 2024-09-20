@@ -1,13 +1,34 @@
 import {
   combineReducers,
   configureStore,
+  EntityState,
   getDefaultMiddleware,
 } from "@reduxjs/toolkit";
 import thunk from "redux-thunk"; // Import Redux Thunk middleware
-import graphSlice, { GraphCreateType } from "./slices/graphSlice";
+import graphSlice, {
+  GraphCreateType,
+  GraphDataType,
+} from "./slices/graphSlice";
+import fileMetaReducer, { FileMeta } from "./fileMeta";
+import stageDataReducer, { StageData } from "./currentStageData";
+import stageDataListReducer, { StageDataListItem } from "./stageDataList";
+import imageAssetListReducer, { ImageAssetListItem } from "./imageAssetList";
 
+export type StoreState = {
+  graph: GraphDataType;
+  fileMeta: FileMeta;
+  currentStageData: EntityState<StageData["attrs"]>;
+  stageDataList: EntityState<StageDataListItem>;
+  imageAssetList: EntityState<ImageAssetListItem>;
+};
 const rootReducer = combineReducers({
   graph: graphSlice,
+
+  fileMeta: fileMetaReducer,
+  currentStageData: stageDataReducer,
+  stageDataList: stageDataListReducer,
+  imageAssetList: imageAssetListReducer,
+
   // Add other reducers if you have them
 });
 

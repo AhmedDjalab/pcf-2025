@@ -51,7 +51,7 @@ const Header = () => {
 
         <div className="flex justify-start items-center space-x-10 ml-10">
           <div className="md:hidden" onClick={handleToggleNav}>
-            <button className="flex items-center mr-10">
+            <button className="flex items-center mr-10 underline-none">
               <svg
                 className="h-6 w-6 text-white cursor-pointer"
                 fill="none"
@@ -185,7 +185,7 @@ const NavLink: React.FC<NavLinkProps> = ({ to, text, icon }) => {
   return (
     <a
       href={to}
-      className="text-gray-500 hover:text-white flex items-center space-x-2 cursor-pointer"
+      className="text-gray-500 no-underline hover:text-white flex items-center space-x-2 cursor-pointer"
     >
       {icon}
       <span>{text}</span>

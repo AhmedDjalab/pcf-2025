@@ -22,9 +22,19 @@ declare module "chart.js" {
     };
   }
 }
+
+export type Category = "widget" | "hotkey" | "workMode";
+declare const useI18n: () => {
+  getTranslation: (
+    category: "widget" | "hotkey" | "workMode",
+    ...values: string[]
+  ) => string;
+};
+export default useI18n;
 declare module "uuid";
 declare module "textures";
 declare module "react-scroll";
 declare module "tailwind-datepicker-react";
 declare module "draftjs-to-html";
 declare module "html-to-draftjs";
+declare module "react-color";

@@ -4,7 +4,11 @@ import { store } from "./state";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import { AuthProvider } from "./context/UserContext";
+import { initReactI18next } from "react-i18next";
+import initI18n from "./i18n/config";
 
+// Initialize i18n with the desired language
+initI18n();
 // import { BrowserRouter, Route, RouterProvider, Routes } from "react-router-dom";
 export const persistor = persistStore(store);
 

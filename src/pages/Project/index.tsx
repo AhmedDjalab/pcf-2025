@@ -77,7 +77,7 @@ const Projects = () => {
       <div className="flex gap-2">
         <Link
           to={`/view-graph/${value}`}
-          className="focus:outline-none text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-purple-600 dark:hover-bg-purple-700 dark:focus:ring-purple-900"
+          className="focus:outline-none no-underline text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-purple-600 dark:hover-bg-purple-700 dark:focus:ring-purple-900"
         >
           <EyeIcon className="w-5 h-5 mr-2 inline" />
           {t("projectsList.buttons.viewGraph")}
@@ -88,7 +88,7 @@ const Projects = () => {
           onClick={() => {
             dispatch(resetStoreState());
           }}
-          className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover-bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+          className="text-white no-underline bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover-bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
         >
           <PencilIcon className="w-5 h-5 mr-2 inline" />
           {t("projectsList.buttons.edit")}
@@ -96,7 +96,7 @@ const Projects = () => {
         {isAdmin && (
           <>
             <button
-              className="focus:outline-none text-white bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:ring-teal-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-teal-600 dark:hover-bg-teal-700 dark:focus:ring-teal-900"
+              className="focus:outline-none no-underline text-white bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:ring-teal-300 font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-teal-600 dark:hover-bg-teal-700 dark:focus:ring-teal-900"
               onClick={(e) => {
                 setSelectedEmployeesId(employeesId);
                 setSelectedRow(value);
@@ -107,7 +107,7 @@ const Projects = () => {
               {t("header.users")}
             </button>
             <button
-              className="focus:outline-none text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover-bg-red-700 dark:focus:ring-red-900"
+              className="focus:outline-none no-underline text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover-bg-red-700 dark:focus:ring-red-900"
               onClick={(e) => {
                 setSelectedRow(value);
                 setIsModalVisible(true);
@@ -294,7 +294,7 @@ const Projects = () => {
           <button
             disabled={!canWrite && !isAdmin}
             onClick={handlePurgeAndNavigate}
-            className=" text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
+            className=" text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
           >
             {t("taskSlotsList.addButton")}
           </button>

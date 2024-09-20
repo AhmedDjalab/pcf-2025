@@ -1,0 +1,84 @@
+{
+  "moveBackground": {
+    "name": "Mover Fondo",
+    "keys": ["barra espaciadora", "clic y mover"],
+    "desc": ""
+  },
+  "resetZoom": {
+    "name": "Restablecer Zoom",
+    "keys": ["ctrl", "0"],
+    "desc": ""
+  },
+  "zoomIn": {
+    "name": "Acercar",
+    "keys": ["rueda del ratón"],
+    "desc": ""
+  },
+  "zoomOut": {
+    "name": "Alejar",
+    "keys": ["rueda del ratón"],
+    "desc": ""
+  },
+  "layerUp": {
+    "name": "Subir Capa",
+    "keys": ["shift", "arriba"],
+    "desc": ""
+  },
+  "layerDown": {
+    "name": "Bajar Capa",
+    "keys": ["shift", "abajo"],
+    "desc": ""
+  },
+  "deleteItems": {
+    "name": "Eliminar",
+    "keys": ["retroceso"],
+    "desc": ""
+  },
+  "duplicateItems": {
+    "name": "Duplicar",
+    "keys": ["ctrl", "d"],
+    "desc": ""
+  },
+  "copyItems": {
+    "name": "Copiar Elementos Seleccionados",
+    "keys": ["ctrl", "c"],
+    "desc": ""
+  },
+  "pasteItems": {
+    "name": "Pegar Elementos Seleccionados",
+    "keys": ["ctrl", "v"],
+    "desc": ""
+  },
+  "selectAllItems": {
+    "name": "Seleccionar Todos los Elementos",
+    "keys": ["ctrl", "a"],
+    "desc": ""
+  },
+  "flipHorizontally": {
+    "name": "Voltear Horizontalmente",
+    "keys": ["shift", "h"],
+    "desc": ""
+  },
+  "flipVertically": {
+    "name": "Voltear Verticalmente",
+    "keys": ["shift", "v"],
+    "desc": ""
+  },
+  "undo": {
+    "id": "undo",
+    "name": "Deshacer",
+    "keys": ["ctrl", "z"],
+    "desc": ""
+  },
+  "redo": {
+    "id": "redo",
+    "name": "Rehacer",
+    "keys": ["ctrl", "y"],
+    "desc": ""
+  },
+  "remove-background": {
+    "name": "Eliminar Fondo de la Imagen Seleccionada",
+    "keys": ["ctrl", "x", "b"],
+    "desc": "Eliminar Fondo de la Imagen Seleccionada"
+  }
+}

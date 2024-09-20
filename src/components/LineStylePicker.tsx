@@ -1,3 +1,4 @@
+//@ts-noCheck
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import useClickOutside from "../hooks/useClickOutside";
 import * as d3 from "d3";

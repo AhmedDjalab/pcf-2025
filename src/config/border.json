@@ -1,0 +1,20 @@
+[
+  {
+    "type": "solid",
+    "id": "border-solid",
+    "style": "solid",
+    "icon": "border-solid-icon"
+  },
+  {
+    "type": "dashed",
+    "id": "border-dashed",
+    "style": "dashed",
+    "icon": "border-dashed-icon"
+  },
+  {
+    "type": "dotted",
+    "id": "border-dotted",
+    "style": "dotted",
+    "icon": "border-dotted-icon"
+  }
+]
