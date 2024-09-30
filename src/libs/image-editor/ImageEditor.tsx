@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { useEffect, useMemo, useState } from "react";
 import { Transformer } from "react-konva";
 import { Node, NodeConfig } from "konva/lib/Node";
@@ -30,44 +31,71 @@ import useWorkHistory from "src/hooks/useWorkHistory";
 import useI18n from "src/hooks/usei18n";
 import useDragAndDrop from "src/hooks/useDragAndDrop";
 import { useSelector } from "react-redux";
-import { StageData, stageDataSelector } from "src/state/currentStageData";
+import {
+  StageActivity,
+  StageData,
+  stageDataSelector,
+} from "src/state/currentStageData";
 import useStageDataList from "src/hooks/useStageDataList";
 import { StageDataListItem } from "src/state/stageDataList";
 import { initialStageDataList } from "src/state/initilaStageDataList";
-import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/css/bootstrap.min.css";
+import { ActivityModel } from "src/types/Project";
+import { GraphDataType } from "src/state/slices/graphSlice";
+import { v4 as Uuid4 } from "uuid";
+import ActivityTable from "./view/object/Activity/ActivityTable";
+import ReadLayout from "./layout/ReadLayout";
 export type FileKind = {
   "file-id": string;
   title: string;
   data: Record<string, any>[];
 };
-const activities = [
-  {
-    id: "1",
-    name: "text1",
-  },
-  {
-    id: "2",
-    name: "text2",
-  },
-  {
-    id: "3",
-    name: "text3",
-  },
-];
+// const activities = [
+//   {
+//     id: "1",
+//     name: "text1",
+//   },
+//   {
+//     id: "2",
+//     name: "text2",
+//   },
+//   {
+//     id: "3",
+//     name: "text3",
+//   },
+// ];
 export type FileData = Record<string, FileKind>;
 
 export type ImageEditorType = {
   imgUrl: string;
   onSaveState: (stageData: StageData[]) => void;
-  initialStageData?: StageData[];
+  initialStageData?: StageData[] | any;
+  activities: GraphDataType[];
+  readOnly?: boolean;
+  stageActivities?: StageActivity[] | undefined;
 };
 function ImageEditor({
   imgUrl,
   initialStageData,
   onSaveState,
+  activities,
+  stageActivities,
+  readOnly,
 }: ImageEditorType) {
+  useEffect(() => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href =
+      "https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css";
+    document.head.appendChild(link);
+
+    // Clean up to remove the Bootstrap styles when the component unmounts
+    return () => {
+      document.head.removeChild(link);
+    };
+  }, []);
   const stageDataLsit = useSelector(stageDataSelector.selectAll);
-  const [readOnly, setReadOnly] = useState(false);
+
   const [past, setPast] = useState<StageData[][]>([]);
   const [future, setFuture] = useState<StageData[][]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -109,7 +137,7 @@ function ImageEditor({
     const target =
       item.attrs["data-item-type"] === "frame" ? item.getParent() : item;
     return {
-      id: nanoid(),
+      id: Uuid4(),
       attrs: {
         ...(stageData.find((_item) => _item.attrs.id === id)?.attrs ?? {}),
       },
@@ -184,6 +212,13 @@ function ImageEditor({
       // Normalize scale
       const normalizedScaleX = scaleX ? scaleX / (imageWidth / imageHeight) : 1;
       const normalizedScaleY = scaleY ? scaleY / (imageHeight / imageWidth) : 1;
+      console.warn(
+        "🚀 ~ normalizeShapeData ~ normalizedScaleX:",
+        scaleX,
+        scaleY,
+        normalizedScaleX,
+        normalizedScaleY
+      );
 
       // Return normalized shape attributes
       return {
@@ -224,7 +259,7 @@ function ImageEditor({
       const denormalizeShapeData = (shape: StageData) => {
         const { x, y, width, height, scaleX, scaleY, ...restAttrs } =
           shape.attrs;
-
+        console.warn("this is attris ", shape);
         if (shape.className === "sample-image") {
           // No need to denormalize the "sample-image" itself
           return shape;
@@ -244,8 +279,16 @@ function ImageEditor({
           ? scaleY * (imageHeight / imageWidth)
           : 1;
 
+        console.warn(
+          "🚀 ~ DnormalizeShapeData ~ DnormalizedScaleX:",
+          scaleX,
+          scaleY,
+          denormalizedScaleX,
+          denormalizedScaleY
+        );
+
         // Return denormalized shape attributes
-        return {
+        const newShape = {
           ...shape,
           attrs: {
             ...restAttrs,
@@ -257,6 +300,9 @@ function ImageEditor({
             scaleY: denormalizedScaleY,
           },
         };
+        console.warn("🚀 ~ denormalizeShapeData ~ newShape:", newShape);
+
+        return newShape;
       };
 
       // Dispatch action to clear the current stage items
@@ -291,7 +337,7 @@ function ImageEditor({
     img.onload = () => {
       const result = {
         type: "image",
-        id: nanoid(),
+        id: Uuid4(),
         name: "imported image",
         src: imgUrl, // Use the passed image URL directly
       };
@@ -377,6 +423,8 @@ function ImageEditor({
       saveChanges={exportShapesAsJson}
     />
   );
+
+  const activityTable = <ActivityTable activities={stageActivities!} />;
 
   const renderObject = (item: StageData) => {
     switch (item.attrs["data-item-type"]) {
@@ -572,10 +620,16 @@ function ImageEditor({
     recordPast(stageData);
   }, [stageData]);
 
+  useEffect(() => {
+    if (stage.stageRef?.current) {
+      stage.stageRef.current.batchDraw(); // Redraw the stage
+    }
+  }, [selectedItems, transformer]);
+
   return loading ? (
     <div>....loading</div>
   ) : readOnly ? (
-    <Layout header={<></>} navBar={<></>} settingBar={<></>}>
+    <ReadLayout settingBar={activityTable}>
       {/* {hotkeyModal} */}
       <View onSelect={() => {}} stage={stage}>
         {stageData.length
@@ -590,7 +644,7 @@ function ImageEditor({
           onTransformEnd={transformer.onTransformEnd}
         /> */}
       </View>
-    </Layout>
+    </ReadLayout>
   ) : (
     <Layout header={header} navBar={navBar} settingBar={settingBar}>
       {hotkeyModal}

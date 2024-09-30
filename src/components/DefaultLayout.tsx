@@ -13,7 +13,7 @@ function DefaultLayout({ children }: any) {
     <>
       {token ? (
         <>
-          <div className="w-full relative h-screen dark:bg-boxdark-2 dark:text-bodydark">
+          <div className="w-full relative h-[100%] dark:bg-boxdark-2 dark:text-bodydark">
             <Header />
             {/* Use the Routes and Route components to define your routes */}
             {children}

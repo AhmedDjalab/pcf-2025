@@ -32,6 +32,7 @@ const ShapeItem: React.FC<ShapeItemProps> = ({
   onSelect,
 }) => {
   const { attrs } = data;
+  console.log("🚀 ~ data:RegularPolygon ", data, attrs.sides);
 
   const shapeRef = useRef() as RefObject<RegularPolygonType | RectType>;
   const stage = useStage();
@@ -54,7 +55,7 @@ const ShapeItem: React.FC<ShapeItemProps> = ({
         onClick={onSelect}
         name="label-target"
         data-item-type="shape"
-        id={data.id}
+        id={attrs.id}
         x={attrs.x}
         y={attrs.y}
         width={Math.sqrt(attrs.radius * 2)}
@@ -82,7 +83,7 @@ const ShapeItem: React.FC<ShapeItemProps> = ({
       onClick={onSelect}
       name="label-target"
       data-item-type="shape"
-      id={data.id}
+      id={attrs.id}
       x={attrs.x}
       y={attrs.y}
       sides={attrs.sides}

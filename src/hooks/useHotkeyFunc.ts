@@ -2,6 +2,7 @@ import { Group } from "konva/lib/Group";
 import { Node, NodeConfig } from "konva/lib/Node";
 import { nanoid } from "nanoid";
 import React from "react";
+import { v4 as Uuid4 } from "uuid";
 
 import useItem from "./useItem";
 import useLocalStorage from "./useLocalStorage";
@@ -60,7 +61,7 @@ const useHotkeyFunc = () => {
         return;
       }
       createItem({
-        id: nanoid(),
+        id: Uuid4(),
         attrs: {
           ...item.attrs,
         },

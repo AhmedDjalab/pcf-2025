@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -81,7 +82,14 @@ const Projects = () => {
         >
           <EyeIcon className="w-5 h-5 mr-2 inline" />
           {t("projectsList.buttons.viewGraph")}
-        </Link>{" "}
+        </Link>
+        <Link
+          to={`/view-plan/${value}`}
+          className="focus:outline-none no-underline text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-purple-600 dark:hover-bg-purple-700 dark:focus:ring-purple-900"
+        >
+          <EyeIcon className="w-5 h-5 mr-2 inline" />
+          {t("projectsList.buttons.viewPlan")}
+        </Link>
         <Link
           to={`/create-project/${value}`}
           hidden={!canWrite && !isAdmin}
@@ -302,7 +310,7 @@ const Projects = () => {
         {projectsLoading ? (
           <Spinner />
         ) : (
-          <div className="flex flex-col mx-auto min-w-[40rem] ">
+          <div className="flex flex-col mx-auto min-w-[40rem] overflow-x-auto  ">
             <DynamicTable
               dataCount={projectsData?.count}
               data={projectsData?.projects ?? []}

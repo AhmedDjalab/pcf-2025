@@ -1,12 +1,15 @@
 //@ts-nocheck
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import TaskSlotsPopUp from "./TaskSlotsPopUp";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../state";
 import {
+  GraphDataType,
   Plan,
   ProjectOption,
+  StageDataModel,
   TaskSlot,
+  addStageDataToPlan,
   fetchAllStyleByProjectId,
   fetchAllTaskSlotByProjectId,
   updatePlansValue,
@@ -20,10 +23,15 @@ import { DocumentDuplicateIcon } from "@heroicons/react/24/solid";
 import Dropdown from "./DropDown";
 import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import PlansPopUp from "./PlansPopUp";
+import PlanSelectEditor from "src/PlanSelectEditor";
+import { decimalUpToSeven } from "src/libs/image-editor/util/decimalUpToSeven";
+import { nanoid } from "nanoid";
+import { StageData } from "src/state/currentStageData";
 
 const PlansList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [drawModalOpen, setDrawModalOpen] = useState(false);
+  const [imgResult, setImgResult] = useState();
   const [editRow, setEditRow] = useState<Plan | null>(null);
   const [isNew, setIsNew] = useState(false);
   const { t } = useTranslation();
@@ -35,13 +43,122 @@ const PlansList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   );
   const navigate = useNavigate();
   const plans: Plan[] = useSelector((state: RootState) => state.graph.plans);
+  const rawActivities: GraphDataType[] = useSelector(
+    (state: RootState) => state.graph.settings.graphData
+  );
 
   const { id } = useParams();
   const [formFieldValues, setFormFieldValues] = useState<Plan[]>([]);
+  const [isPlanEditor, setIsPlanEditor] = useState(false);
+  const exportToJosn = (data: any[]) => {
+    // Convert the normalized data to JSON
+    const shapesData = JSON.stringify(data, null, 2);
+
+    // Create a blob with the JSON data
+    const blob = new Blob([shapesData], { type: "application/json" });
+
+    // Create a link element to trigger the download
+    const link = document.createElement("a");
+    link.download = "shapes.json";
+    link.href = URL.createObjectURL(blob);
+
+    // Append the link to the document, click it to start the download, then remove it
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   useEffect(() => {
     setFormFieldValues(plans ?? []);
   }, [plans]);
+
+  const initialData = useMemo(
+    () => [
+      {
+        id: uuidv4(),
+        attrs: {
+          name: "label-target",
+          "data-item-type": "image",
+          x: 10,
+          y: 10,
+          width: 800,
+          height: 536.0406091,
+          src: editRow?.planImageUrl,
+          draggable: false,
+          zIndex: 0,
+          brightness: 0,
+          _filters: ["Brighten"],
+          updatedAt: Date.now(),
+        },
+        className: "sample-image",
+        children: [],
+      },
+    ],
+    [editRow?.planImageUrl]
+  );
+
+  const selectedActivities = useMemo(
+    () =>
+      rawActivities.filter(
+        (rw) =>
+          rw.startChainage >= editRow?.startPk &&
+          rw.finishChainage <= editRow?.endPk
+      ),
+
+    [editRow?.endPk, editRow?.startPk, rawActivities]
+  );
+  // const loadImage = (imgUrl) => {
+  //   return new Promise((resolve, reject) => {
+  //     const img = new Image();
+  //     img.crossOrigin = "anonymous"; // Try to request CORS permission
+
+  //     img.onload = () => {
+  //       let width, height;
+
+  //       // Calculate image dimensions while keeping the aspect ratio
+  //       if (img.width > img.height) {
+  //         width = decimalUpToSeven(800);
+  //         height = decimalUpToSeven(width * (img.height / img.width));
+  //       } else {
+  //         height = decimalUpToSeven(800);
+  //         width = decimalUpToSeven(height * (img.width / img.height));
+  //       }
+
+  //       const result = {
+  //         type: "image",
+  //         id: nanoid(),
+  //         name: "imported image",
+  //         src: imgUrl,
+  //         width: width,
+  //         height: height,
+  //       };
+
+  //       resolve(result);
+  //     };
+
+  //     img.onerror = (error) => {
+  //       console.error("Error loading image:", error);
+  //       reject(error);
+  //     };
+
+  //     img.src = imgUrl; // This triggers the image loading
+  //   });
+  // };
+  // useEffect(() => {
+  //   const loadImageAndInsert = async () => {
+  //     if (editRow?.planImageUrl) {
+  //       try {
+  //         const result = await loadImage(editRow?.planImageUrl); // Wait for image to load
+  //         setImgResult(result);
+  //       } catch (error) {
+  //         console.error("Error loading image:", error);
+  //       }
+  //     }
+  //   };
+  //   if (editRow?.planImageUrl) {
+  //     loadImageAndInsert();
+  //   }
+  // }, [editRow]);
 
   const minDistance: number = useSelector(
     (state: RootState) => state.graph.settings.fromDistance
@@ -147,6 +264,26 @@ const PlansList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   };
   return (
     <div className="h-[100vh]">
+      <div className="my-4 flex justify-between">
+        <button
+          onClick={() => setCurrentStep(currentStep - 1)} // Handle going back to the previous step
+          className=" text-white bg-gray-400 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
+        >
+          {t("taskSlotsList.buttons.back")}
+        </button>
+        <button
+          type="button"
+          onClick={handleGoToDraw}
+          className=" px-5 py-2.5 mr-2 mb-2 bg-blue-500
+               text-white rounded-lg
+                hover:bg-blue-600
+                 focus:outline-none focus:ring
+                  focus:ring-blue-300
+                   disabled:bg-gray-600"
+        >
+          {t("taskSlotsList.buttons.showPlanning")}
+        </button>
+      </div>
       {!id && (
         <div className="flex w-full justify-center items-center gap-5">
           <Dropdown
@@ -232,7 +369,10 @@ const PlansList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
 
                 <button
                   className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                  onClick={() => handleEditClick(row)}
+                  onClick={() => {
+                    setEditRow(row);
+                    setIsPlanEditor(true);
+                  }}
                   disabled={!canWrite && !isAdmin}
                 >
                   {t("plansList.buttons.planDraw")}
@@ -252,26 +392,37 @@ const PlansList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
         />
       )}
 
-      <div className="my-4 flex justify-between">
-        <button
-          onClick={() => setCurrentStep(currentStep - 1)} // Handle going back to the previous step
-          className=" text-white bg-gray-400 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
-        >
-          {t("taskSlotsList.buttons.back")}
-        </button>
-        <button
-          type="button"
-          onClick={handleGoToDraw}
-          className=" px-5 py-2.5 mr-2 mb-2 bg-blue-500
-               text-white rounded-lg
-                hover:bg-blue-600
-                 focus:outline-none focus:ring
-                  focus:ring-blue-300
-                   disabled:bg-gray-600"
-        >
-          {t("taskSlotsList.buttons.showPlanning")}
-        </button>
-      </div>
+      {isPlanEditor && editRow && (
+        <PlanSelectEditor
+          isOpen={isPlanEditor}
+          // imgUrl={editRow?.planImageUrl}
+          closeModal={() => setIsPlanEditor(false)}
+          exportToJson={(data) => {
+            console.log("🚀 ~ PlansList ~ data:", data);
+            dispatch(
+              addStageDataToPlan({
+                stageData: data,
+                planId: editRow.id,
+              })
+            );
+          }}
+          initialData={
+            editRow.stageDataList && editRow.stageDataList.length > 0
+              ? editRow.stageDataList.map<StageData[]>((s) => {
+                  return {
+                    ...s,
+                    attrs: {
+                      ...s.attrs,
+
+                      "data-item-type": s.attrs.dataItemType,
+                    },
+                  };
+                })
+              : initialData
+          }
+          activities={selectedActivities}
+        />
+      )}
     </div>
   );
 };

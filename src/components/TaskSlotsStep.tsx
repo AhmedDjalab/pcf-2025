@@ -138,6 +138,26 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   };
   return (
     <div className="h-[100vh]">
+      <div className="my-4 flex justify-between">
+        <button
+          onClick={() => setCurrentStep(currentStep - 1)} // Handle going back to the previous step
+          className=" text-white bg-gray-400 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
+        >
+          {t("taskSlotsList.buttons.back")}
+        </button>
+        <button
+          type="button"
+          onClick={handleGoToDraw}
+          className=" px-5 py-2.5 mr-2 mb-2 bg-blue-500
+               text-white rounded-lg
+                hover:bg-blue-600
+                 focus:outline-none focus:ring
+                  focus:ring-blue-300
+                   disabled:bg-gray-600"
+        >
+          {t("stepper.next")}
+        </button>
+      </div>
       {!id && (
         <div className="flex w-full justify-center items-center gap-5">
           <Dropdown
@@ -233,26 +253,6 @@ const TaskSlotsList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
           handleEditTaskSlot={handleEditTaskSlot}
         />
       )}
-      <div className="my-4 flex justify-between">
-        <button
-          onClick={() => setCurrentStep(currentStep - 1)} // Handle going back to the previous step
-          className=" text-white bg-gray-400 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
-        >
-          {t("taskSlotsList.buttons.back")}
-        </button>
-        <button
-          type="button"
-          onClick={handleGoToDraw}
-          className=" px-5 py-2.5 mr-2 mb-2 bg-blue-500
-               text-white rounded-lg
-                hover:bg-blue-600
-                 focus:outline-none focus:ring
-                  focus:ring-blue-300
-                   disabled:bg-gray-600"
-        >
-          {t("stepper.next")}
-        </button>
-      </div>
     </div>
   );
 };

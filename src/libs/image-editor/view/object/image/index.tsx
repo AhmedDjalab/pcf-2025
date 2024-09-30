@@ -29,6 +29,7 @@ export const filterMap: { [name: string]: Filter } = {
 
 const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
   const { attrs } = data;
+  console.warn("🚀 ~ data: ---- img item konva", data);
   const imageRef = useRef() as RefObject<Konva.Image>;
   const [imageSrc, setImageSrc] = useState<CanvasImageSource>(new Image());
 
@@ -67,7 +68,9 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
       setImageSrc(newImage);
     };
     newImage.crossOrigin = "Anonymous";
+
     let source;
+    console.warn("------image ccom ", attrs.src);
     if (attrs.src.startsWith("find:")) {
       source = attrs.src;
     } else {

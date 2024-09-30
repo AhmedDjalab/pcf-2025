@@ -27,6 +27,7 @@ import { SettingBarProps } from "..";
 import useItem from "src/hooks/useItem";
 import useLocalStorage from "src/hooks/useLocalStorage";
 import useI18n from "src/hooks/usei18n";
+import { v4 as Uuid4 } from "uuid";
 
 export type ColorPaletteKind = {
   "data-item-type": string;
@@ -70,7 +71,7 @@ const ColorPaletteWidget: React.FC<ColorPaletteWidgetProps> = ({ data }) => {
       const newList = [
         ...colorList,
         {
-          id: nanoid(),
+          id: Uuid4(),
           type: "color",
           colorCode: newColor,
         },

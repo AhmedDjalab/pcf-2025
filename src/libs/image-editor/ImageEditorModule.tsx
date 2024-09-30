@@ -18,11 +18,12 @@ const ImageEditorModule: React.FC<ImageEditorModuleProps> = ({
   userPreferredLanguage = "en",
 }) => {
   return (
-    <ImageEditor
-      imgUrl={imgUrl}
-      onSaveState={onSaveState}
-      initialStageData={initialStageData}
-    />
+    // <ImageEditor
+    //   imgUrl={imgUrl}
+    //   onSaveState={onSaveState}
+    //   initialStageData={initialStageData}
+    // />
+    <></>
   );
 };
 

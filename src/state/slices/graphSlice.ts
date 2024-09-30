@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import {
   createAsyncThunk,
   createSlice,
@@ -43,6 +45,7 @@ import { getAllTaskSlot } from "src/Services/TaskSlotsService";
 import { TableCellsIcon } from "@heroicons/react/24/solid";
 import { AsUTC } from "src/utils/helpers";
 import { ActivityRelationType } from "src/enums/ActivityRelationType";
+import { StageActivity, StageData } from "../currentStageData";
 
 export interface GraphDataType {
   activityUID?: string;
@@ -83,8 +86,11 @@ export interface ActivityRelations {
 }
 
 export interface AttributesModel {
-  activityId?: string;
   id?: string;
+  activityId?: string;
+  activityGuidId?: string;
+  activityUID?: string;
+  attribId?: string;
   planImageId?: string;
   name: string;
   dataItemType: string;
@@ -97,6 +103,7 @@ export interface AttributesModel {
   brightness?: number;
   filters?: string[];
   fill?: string;
+  sides?: number;
   radius?: number;
   opacity?: number;
   rotation?: number;
@@ -114,17 +121,20 @@ export interface AttributesModel {
   text?: string;
   textAlign?: string;
   verticalAlign?: string;
+  updatedAt?: number;
 }
 
 export interface StageDataModel {
-  stageId: string;
+  id?: string;
+  stageId?: string;
   attrs: AttributesModel;
   className?: string;
   children?: StageDataModel[];
+  activities?: StageActivity;
 }
 export interface Plan {
-  idnew: string;
-  id?: string;
+  idnew: string | undefined;
+  id?: string | undefined;
   planImageId?: string;
   planImageUrl: string;
   name: string;
@@ -451,7 +461,17 @@ export const saveProjectThunk = createAsyncThunk<
           startPk: plan.startPk,
           endPk: plan.endPk,
           planImageUrl: plan.planImageUrl,
-          //planImageId: plan.planImageId,
+          stageDataList: plan.stageDataList?.map((s) => ({
+            ...s,
+            stageId: s.id,
+            attrs: {
+              ...s.attrs,
+              attribId: s.attrs.id,
+
+              activityId: undefined,
+              activityUID: s.attrs.activityUID,
+            },
+          })),
           name: plan.name,
         })) ?? [],
       taskSlotsLevelTwo: state.graph.taskSlotsLevelTwo.map((taskSlot) => ({
@@ -865,6 +885,31 @@ const GraphSlice = createSlice({
       state.projectSettings.activitiesRelation =
         action.payload.activitiesRelation;
     },
+    addStageDataToPlan(
+      state,
+      action: PayloadAction<{ stageData: StageData[]; planId: string }>
+    ) {
+      const planIndex = state.plans?.findIndex(
+        (item) => item.id === action.payload.planId
+      );
+
+      if (planIndex !== undefined && planIndex !== -1) {
+        state.plans![planIndex].stageDataList =
+          action.payload.stageData.map<StageDataModel>((s) => {
+            return {
+              ...s,
+              attrs: {
+                ...s.attrs,
+                dataItemType: s.attrs["data-item-type"],
+              },
+            };
+          });
+
+        return state;
+      }
+
+      return state;
+    },
 
     ///? fetch cases
 
@@ -962,7 +1007,7 @@ const GraphSlice = createSlice({
     builder.addCase(fetchProjectByIdThunk.fulfilled, (state, action) => {
       state.loading = false;
       resetStoreState();
-
+      console.log("thtihit", action.payload.data!.plans);
       var activities = action.payload.data?.activities?.map((act) => ({
         id: act.id,
         styleId: act.style,
@@ -1045,15 +1090,26 @@ const GraphSlice = createSlice({
             idnew: taskSlot.id!,
           })) ?? [],
         plans:
-          action.payload.data!.plans?.map((plan: Plan) => ({
-            startPk: plan.startPk,
-            endPk: plan.endPk,
-            name: plan.name,
-            planImageId: plan.planImageId,
-            planImageUrl: plan.planImageUrl,
-            id: plan.id!,
-            idnew: plan.id!,
-          })) ?? [],
+          action.payload.data!.plans?.map((plan: Plan) => {
+            return {
+              startPk: plan.startPk,
+              endPk: plan.endPk,
+              name: plan.name,
+              //planImageId: plan.planImageId,
+              planImageUrl: plan.planImageUrl,
+              id: plan.id!,
+              idnew: plan.id,
+              stageDataList: plan.stageDataList?.map((s) => ({
+                ...s,
+
+                attrs: {
+                  ...s.attrs,
+
+                  activityUID: s.attrs.activityUID,
+                },
+              })),
+            };
+          }) ?? [],
         taskSlotsLevelTwo:
           action.payload.data!.taskSlotsLevelTwo?.map((taskSlot) => ({
             start: taskSlot.start,
@@ -1070,6 +1126,7 @@ const GraphSlice = createSlice({
       state.shapes = projectData.shapes;
       state.taskSlots = projectData.taskSlots;
       state.taskSlotsLevelTwo = projectData.taskSlotsLevelTwo;
+      state.plans = projectData.plans;
       state.rawGraphDataFromFile = projectData.rawGraphDataFromFile;
     });
     builder.addCase(fetchProjectByIdThunk.rejected, (state) => {
@@ -1173,6 +1230,7 @@ const GraphSlice = createSlice({
 });
 
 export const {
+  addStageDataToPlan,
   addFileName,
   addDataDate,
   saveSettings,

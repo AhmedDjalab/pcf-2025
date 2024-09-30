@@ -270,6 +270,7 @@
       "edit": "Modifier",
       "delete": "Supprimer",
       "viewGraph": "Afficher",
+      "viewPlan": "Afficher Plans",
       "download": "Télécharger"
     }
   },
@@ -415,5 +416,9 @@
     "buttons": {
       "planDraw": "select activities"
     }
+  },
+  "plansForm": {
+    "plans": "un plan",
+    "date": "une date"
   }
 }

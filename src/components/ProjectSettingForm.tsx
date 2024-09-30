@@ -163,7 +163,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
   };
 
   return (
-    <div className=" mx-auto w-full mt-10 relative h-screen">
+    <div className=" mx-auto w-full mt-10 relative ">
       {loading ? (
         <Spinner height="80" width="80" />
       ) : (

@@ -1,84 +1,84 @@
 {
   "moveBackground": {
-    "name": "Hintergrund verschieben",
-    "keys": ["Leertaste", "Klicken & Bewegen"],
+    "name": "Move Background",
+    "keys": ["Spacebar", "Click & Drag"],
     "desc": ""
   },
   "resetZoom": {
-    "name": "Zoom zurücksetzen",
-    "keys": ["Strg", "0"],
+    "name": "Reset Zoom",
+    "keys": ["Ctrl", "0"],
     "desc": ""
   },
   "zoomIn": {
-    "name": "Vergrößern",
-    "keys": ["Mausrad"],
+    "name": "Zoom In",
+    "keys": ["Mouse Wheel"],
     "desc": ""
   },
   "zoomOut": {
-    "name": "Verkleinern",
-    "keys": ["Mausrad"],
+    "name": "Zoom Out",
+    "keys": ["Mouse Wheel"],
     "desc": ""
   },
   "layerUp": {
-    "name": "Ebene nach oben",
-    "keys": ["Umschalt", "Pfeil nach oben"],
+    "name": "Move Layer Up",
+    "keys": ["Shift", "Arrow Up"],
     "desc": ""
   },
   "layerDown": {
-    "name": "Ebene nach unten",
-    "keys": ["Umschalt", "Pfeil nach unten"],
+    "name": "Move Layer Down",
+    "keys": ["Shift", "Arrow Down"],
     "desc": ""
   },
   "deleteItems": {
-    "name": "Löschen",
-    "keys": ["Rücktaste"],
+    "name": "Delete",
+    "keys": ["Backspace"],
     "desc": ""
   },
   "duplicateItems": {
-    "name": "Duplizieren",
-    "keys": ["Strg", "d"],
+    "name": "Duplicate",
+    "keys": ["Ctrl", "d"],
     "desc": ""
   },
   "copyItems": {
-    "name": "Ausgewählte Elemente kopieren",
-    "keys": ["Strg", "c"],
+    "name": "Copy Selected Items",
+    "keys": ["Ctrl", "c"],
     "desc": ""
   },
   "pasteItems": {
-    "name": "Ausgewählte Elemente einfügen",
-    "keys": ["Strg", "v"],
+    "name": "Paste Selected Items",
+    "keys": ["Ctrl", "v"],
     "desc": ""
   },
   "selectAllItems": {
-    "name": "Alle Elemente auswählen",
-    "keys": ["Strg", "a"],
+    "name": "Select All Items",
+    "keys": ["Ctrl", "a"],
     "desc": ""
   },
   "flipHorizontally": {
-    "name": "Horizontal spiegeln",
-    "keys": ["Umschalt", "h"],
+    "name": "Flip Horizontally",
+    "keys": ["Shift", "h"],
     "desc": ""
   },
   "flipVertically": {
-    "name": "Vertikal spiegeln",
-    "keys": ["Umschalt", "v"],
+    "name": "Flip Vertically",
+    "keys": ["Shift", "v"],
     "desc": ""
   },
   "undo": {
     "id": "undo",
-    "name": "Rückgängig",
-    "keys": ["Strg", "z"],
+    "name": "Undo",
+    "keys": ["Ctrl", "z"],
     "desc": ""
   },
   "redo": {
     "id": "redo",
-    "name": "Wiederholen",
-    "keys": ["Strg", "y"],
+    "name": "Redo",
+    "keys": ["Ctrl", "y"],
     "desc": ""
   },
   "remove-background": {
-    "name": "Hintergrund des ausgewählten Bildes entfernen",
-    "keys": ["Strg", "x", "b"],
-    "desc": "Hintergrund des ausgewählten Bildes entfernen"
+    "name": "Remove Background of Selected Image",
+    "keys": ["Ctrl", "x", "b"],
+    "desc": "Remove the background of the selected image"
   }
 }

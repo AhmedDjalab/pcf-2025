@@ -9,6 +9,8 @@ const useTransformer = () => {
   const { updateItem } = useItem();
 
   const onTransformEnd = (e: KonvaEventObject<Event>) => {
+    console.log("---🚀 ~ onTransformEnd ~ e:", e.target.id());
+
     updateItem(e.target.id(), () => ({
       ...e.target.attrs,
       updatedAt: Date.now(),
@@ -22,10 +24,12 @@ const useTransformer = () => {
       nodeStatus = transformer.getNode().attrs["data-item-type"];
     }
 
-    for (const field in (transformerList as Record<string, Konva.TransformerConfig>)[nodeStatus]) {
-      transformer.attrs[field] = (transformerList as Record<string, Konva.TransformerConfig>)[
-        nodeStatus
-      ][field];
+    for (const field in (
+      transformerList as Record<string, Konva.TransformerConfig>
+    )[nodeStatus]) {
+      transformer.attrs[field] = (
+        transformerList as Record<string, Konva.TransformerConfig>
+      )[nodeStatus][field];
     }
     transformer.update();
   };

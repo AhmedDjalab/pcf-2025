@@ -1124,7 +1124,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
 
   return (
     <div
-      className="w-full mt-10 relative h-screen"
+      className="w-full mt-10 relative h-[100%]"
       onDragOver={preventDefault}
       onDrop={handleDrop}
     >
@@ -1214,7 +1214,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
             </button>
           </div>
         }
-        <div className="flex flex-col mx-auto min-w-[40rem] ">
+        <div className="flex flex-col mx-auto min-w-[40rem] overflow-x-scroll ">
           <DynamicTable
             dataCount={graphSettings.graphData?.length ?? 1 - 1 ?? 0}
             rawData={graphSettings.graphData ?? []}

@@ -11,11 +11,18 @@ import { StoreState } from "./store";
 
 export const STAGE_PREFIX = "STAGE";
 
+export type StageActivity = {
+  name: string;
+  activityUID: string;
+  id: string;
+  isPassed: boolean;
+};
 export type StageData = {
   id: string;
   attrs: OverrideItemData<any>;
   className: string;
   children?: StageData[];
+  activities?: StageActivity[];
 };
 
 export const stageDataEpic: Epic = (action$, state$) =>
@@ -40,19 +47,43 @@ export const stageDataSlice = createSlice({
     },
     updateItem(state, action: PayloadAction<StageData | StageData[]>) {
       if (Array.isArray(action.payload)) {
+        // Handling array updates with `updateMany`
         stageDataEntity.updateMany(
           state,
           action.payload.map((item) => ({
             id: item.id,
-            changes: item.attrs,
+            changes: {
+              attrs: {
+                ...state.entities[item.id]?.attrs, // Preserve existing attrs
+                ...item.attrs, // Overwrite with new attributes
+              },
+            },
           }))
         );
         return;
       }
+      console.log("🚀 ~ updateItem ~ state iiiiidd:", state, action.payload.id);
+      // For single update
+      const existingItem = state.entities[action.payload.id];
+      if (!existingItem) {
+        console.error(`No entity found with id: ${action.payload.id}`);
+        return;
+      }
+
+      // Deep merge for nested properties
       stageDataEntity.updateOne(state, {
         id: action.payload.id,
-        changes: action.payload,
+        changes: {
+          attrs: {
+            ...existingItem.attrs, // Keep previous attributes intact
+            ...action.payload.attrs, // Overwrite only updated attributes
+            scaleX: action.payload.attrs.scaleX, // Ensure scaleX is updated
+            scaleY: action.payload.attrs.scaleY, // Ensure scaleY is updated
+          },
+        },
       });
+
+      console.log("🚀 ~ updateItem ~ state after update:", state);
     },
     removeItem(state, action) {
       if (Array.isArray(action.payload)) {

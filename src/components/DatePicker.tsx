@@ -180,6 +180,7 @@ export interface IDatePickerProps {
   id: string;
   disabled?: boolean;
   containerClass?: string;
+  labelClassName?: string;
   labelDir?: "inLine" | "Above";
 }
 
@@ -221,6 +222,7 @@ const DatePickerDefault = ({
   labelDir = "Above",
   defaultDate,
   containerClass,
+  labelClassName,
 }: IDatePickerProps) => {
   const { t, i18n } = useTranslation();
   const [showDate, setShowDate] = useState<boolean>(false);
@@ -275,6 +277,8 @@ const DatePickerDefault = ({
         className={`
           mb-2 block w-[30%] text-sm font-medium text-gray-900 dark:text-white
           ${errors ? "text-red-700 dark:text-red-500" : ""}
+
+          ${labelClassName}
         `}
       >
         {label}

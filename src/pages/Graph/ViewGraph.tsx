@@ -40,6 +40,8 @@ import {
   PencilSquareIcon,
   PlusCircleIcon,
   PlusIcon,
+  PresentationChartBarIcon,
+  PresentationChartLineIcon,
   SunIcon,
   TrashIcon,
   ViewColumnsIcon,
@@ -85,6 +87,7 @@ import DynamicTable from "src/components/DynamicTable";
 import { ActivityRelationType } from "src/enums/ActivityRelationType";
 import PaperSizeModal from "src/components/PaperSizeModal";
 import FloatingButton, { MenuPropsType } from "src/components/FloatingButton";
+import PlanSelectEditor from "src/PlanSelectEditor";
 
 export interface ActivityData {
   activityId(activityId: any): unknown;
@@ -209,6 +212,7 @@ function ViewGraph() {
   const [selectedShapes, setSelectedShapes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStyleModalOpen, setStyleModalOpen] = useState(false);
+  const [isPlanOpen, setIsPlanOpen] = useState(false);
   const [hideComments, setHideComments] = useState(false);
   const [commentsDetails, setCommentsDetails] = useState(false);
   const [paperSizeModalOpen, setPaperSizeModalOpen] = useState(false);
@@ -2584,6 +2588,13 @@ function ViewGraph() {
       disabled: !selectedShapeData,
       color: "bg-violet-400",
     },
+    {
+      title: t("drawGraph.viewPlan"),
+      Icon: <PresentationChartLineIcon className="w-6 h-6" />,
+      onClick: () => setIsPlanOpen(true),
+      disabled: !selectedShapeData,
+      color: "bg-cyan-400",
+    },
   ];
   return (
     <DefaultLayout>
@@ -2810,6 +2821,29 @@ function ViewGraph() {
               }
               onSubmit={(e) => {}}
               handleClose={() => setShowHypothesis(false)}
+            />
+          )}
+          {isPlanOpen && (
+            <PlanSelectEditor
+              isOpen={isPlanEditor}
+              // imgUrl={editRow?.planImageUrl}
+              closeModal={() => setIsPlanEditor(false)}
+              exportToJson={(data) => {}}
+              initialData={
+                editRow.stageDataList && editRow.stageDataList.length > 0
+                  ? editRow.stageDataList.map<StageData[]>((s) => {
+                      return {
+                        ...s,
+                        attrs: {
+                          ...s.attrs,
+
+                          "data-item-type": s.attrs.dataItemType,
+                        },
+                      };
+                    })
+                  : initialData
+              }
+              activities={selectedActivities}
             />
           )}
         </div>

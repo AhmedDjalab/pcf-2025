@@ -18,18 +18,18 @@ import useI18n from "src/hooks/usei18n";
 import useSelection from "src/hooks/useSelection";
 import useStage from "src/hooks/useStage";
 import widgetList from "src/config/widget.json";
+import { ActivityModel } from "src/types/Project";
+import { GraphDataType } from "src/state/slices/graphSlice";
 
 interface ShapeConfig extends Node<NodeConfig> {
   activityId?: string;
+  shapeId?: string;
 }
 export type SettingBarProps = {
   selectedItems: ShapeConfig[];
   clearSelection: ReturnType<typeof useSelection>["clearSelection"];
   stageRef: ReturnType<typeof useStage>["stageRef"];
-  activities?: {
-    id: string;
-    name: string;
-  }[];
+  activities?: GraphDataType[];
   saveChanges?: () => void;
 };
 

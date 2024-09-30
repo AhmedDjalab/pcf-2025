@@ -257,7 +257,7 @@ function ShapesForm({ setCurrentStep, currentStep }: MultiStepFormProps) {
   };
 
   return (
-    <div className="relative h-[100vh]  overflow-x-auto">
+    <div className="relative">
       <div className="flex w-full justify-center items-center gap-5">
         <Dropdown
           id="projectId"

@@ -49,7 +49,7 @@ const View: React.FC<ViewProps> = ({
     // console.warn("🚀 ~ setStateSizeToFitIn ~ width, height:", width, height);
 
     var imgAttrs = stageData.find((x) => x.className == "sample-image")?.attrs;
-    console.log("🚀 ~ setStateSizeToFitIn ~ imgAttrs:", imgAttrs);
+    //console.log("🚀 ~ setStateSizeToFitIn ~ imgAttrs:", imgAttrs);
     if (imgAttrs) {
       if (imgAttrs.width > width) {
         width = imgAttrs.width;
@@ -66,40 +66,43 @@ const View: React.FC<ViewProps> = ({
     stageRef.current.batchDraw();
   }, [stageRef, stageData]);
 
-  const zoomOnWheel = useCallback((e: KonvaEventObject<WheelEvent>) => {
-    e.evt.preventDefault();
-    const stage = stageRef.current;
-    if (!stage) {
-      return;
-    }
-    const zoomDirection = e.evt.deltaY > 0 ? 1 : -1;
-    const scaleBy = 1.1;
-    const oldScale = stage.scaleX();
+  const zoomOnWheel = useCallback(
+    (e: KonvaEventObject<WheelEvent>) => {
+      e.evt.preventDefault();
+      const stage = stageRef.current;
+      if (!stage) {
+        return;
+      }
+      const zoomDirection = e.evt.deltaY > 0 ? 1 : -1;
+      const scaleBy = 1.1;
+      const oldScale = stage.scaleX();
 
-    const pointer = stage.getPointerPosition();
+      const pointer = stage.getPointerPosition();
 
-    if (!pointer) {
-      return;
-    }
+      if (!pointer) {
+        return;
+      }
 
-    const mousePointTo = {
-      x: (pointer.x - stage.x()) / oldScale,
-      y: (pointer.y - stage.y()) / oldScale,
-    };
+      const mousePointTo = {
+        x: (pointer.x - stage.x()) / oldScale,
+        y: (pointer.y - stage.y()) / oldScale,
+      };
 
-    const newScale =
-      zoomDirection > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+      const newScale =
+        zoomDirection > 0 ? oldScale * scaleBy : oldScale / scaleBy;
 
-    stage.scale({ x: newScale, y: newScale });
-    setValue(STAGE_SCALE, { x: newScale, y: newScale });
+      stage.scale({ x: newScale, y: newScale });
+      setValue(STAGE_SCALE, { x: newScale, y: newScale });
 
-    const newPos = {
-      x: pointer.x - mousePointTo.x * newScale,
-      y: pointer.y - mousePointTo.y * newScale,
-    };
-    stage.position(newPos);
-    setValue(STAGE_POSITION, newPos);
-  }, []);
+      const newPos = {
+        x: pointer.x - mousePointTo.x * newScale,
+        y: pointer.y - mousePointTo.y * newScale,
+      };
+      stage.position(newPos);
+      setValue(STAGE_POSITION, newPos);
+    },
+    [setValue, stageRef]
+  );
 
   const resetZoom = useCallback(() => {
     const stage = stageRef.current;
@@ -110,7 +113,7 @@ const View: React.FC<ViewProps> = ({
     stage.position({ x: 0, y: 0 });
     setValue(STAGE_POSITION, { x: 0, y: 0 });
     setValue(STAGE_SCALE, { x: 1, y: 1 });
-  }, []);
+  }, [setValue, stageRef]);
 
   const moveStage = useCallback(() => {
     const stage = stageRef.current;
@@ -156,7 +159,7 @@ const View: React.FC<ViewProps> = ({
       }
     });
     stageRef.current?.draggable(true);
-  }, []);
+  }, [dragBackgroundOrigin, setValue, stageRef]);
 
   const onSelectEmptyBackground = useCallback(
     (e: KonvaEventObject<MouseEvent>) => {
@@ -283,6 +286,7 @@ const View: React.FC<ViewProps> = ({
   );
 
   useEffect(() => {
+    console.warn("----****--this is the resize logic----****--- ");
     window.addEventListener("load", setStateSizeToFitIn);
     window.addEventListener("resize", setStateSizeToFitIn);
     return () => window.removeEventListener("resize", setStateSizeToFitIn);
@@ -300,7 +304,7 @@ const View: React.FC<ViewProps> = ({
     if (stageRef.current) {
       setContainer(stageRef.current!.container());
     }
-  }, []);
+  }, [stageRef]);
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.target as HTMLDivElement;
     setScroll({
@@ -313,8 +317,8 @@ const View: React.FC<ViewProps> = ({
       {({ store }) => (
         <Stage
           ref={stageRef}
-          // width={Math.round(width * 1.5)}
-          // height={Math.round(height * 1.5)}
+          width={Math.round(window.innerWidth * 0.7)}
+          height={Math.round(window.innerHeight * 0.7)}
           draggable={true}
           onWheel={zoomOnWheel}
           onMouseDown={onMouseDownOnStage}

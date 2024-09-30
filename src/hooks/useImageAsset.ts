@@ -6,6 +6,7 @@ import {
   imageAssetListAction,
   imageAssetListSelector,
 } from "src/state/imageAssetList";
+import { v4 as Uuid4 } from "uuid";
 
 const useImageAsset = () => {
   const dispatch = useDispatch();
@@ -59,7 +60,7 @@ const useImageAsset = () => {
         height,
         pixelRatio: 1.2,
       });
-      const id = imageId ?? nanoid();
+      const id = imageId ?? Uuid4();
       if (callback) {
         callback(`find:${id}`);
       }

@@ -1,10 +1,11 @@
 import Konva from "konva";
 import { Vector2d } from "konva/lib/types";
 import { MutableRefObject, useCallback } from "react";
-import { nanoid } from "nanoid";
+
 import { KonvaEventObject, Node, NodeConfig } from "konva/lib/Node";
 import { Group } from "konva/lib/Group";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
+import { v4 as Uuid4 } from "uuid";
 
 import useItem from "./useItem";
 
@@ -13,6 +14,7 @@ import { decimalUpToSeven } from "src/libs/image-editor/util/decimalUpToSeven";
 import { DropCallback } from "src/libs/image-editor/util/eventHandler/dragAndDrop";
 import { getFramePos } from "src/libs/image-editor/view/frame";
 import { StageData } from "src/state/currentStageData";
+import { Stage } from "konva/lib/Stage";
 
 const useDragAndDrop = (
   stageRef: MutableRefObject<Konva.Stage>,
@@ -23,7 +25,7 @@ const useDragAndDrop = (
   const insertFrame = (e: DragEvent, data: { [key: string]: any }) => {
     const position = getFramePos(stageRef.current, e, data.width, data.height);
     const newFrame: StageData = {
-      id: nanoid(),
+      id: Uuid4(),
       attrs: {
         name: "label-target",
         "data-item-type": "frame",
@@ -61,7 +63,7 @@ const useDragAndDrop = (
       }
       const position = getFramePos(stageRef!.current!, e, width, height);
       const newImage: StageData = {
-        id: nanoid(),
+        id: Uuid4(),
         attrs: {
           name: "label-target",
           "data-item-type": "image",
@@ -83,7 +85,69 @@ const useDragAndDrop = (
     };
     imageSrc.src = source;
   };
+  // const insertImageAtCenter = async (imgUrl: string) => {
+  //   const imageSrc = new Image();
+  //   imageSrc.src = imgUrl;
 
+  //   try {
+  //     // Use HTMLImageElement.decode() to load and decode the image
+  //     await imageSrc.decode();
+
+  //     // Calculate image dimensions while keeping the aspect ratio
+  //     const aspectRatio = imageSrc.width / imageSrc.height;
+  //     let width = 800;
+  //     let height = 800;
+
+  //     if (aspectRatio > 1) {
+  //       // Landscape orientation
+  //       height = width / aspectRatio;
+  //     } else {
+  //       // Portrait or square orientation
+  //       width = height * aspectRatio;
+  //     }
+
+  //     // Get the stage container dimensions
+  //     const stage = stageRef.current;
+  //     if (!stage) {
+  //       return;
+  //     }
+
+  //     const stageWidth = stage.width();
+  //     const stageHeight = stage.height();
+
+  //     // Calculate position to center the image on the stage
+  //     const position = {
+  //       x: (stageWidth - width) / 2,
+  //       y: (stageHeight - height) / 2,
+  //     };
+
+  //     // Create the new image object
+  //     const newImage: StageData = {
+  //       id: nanoid(),
+  //       attrs: {
+  //         name: "label-target",
+  //         "data-item-type": "image",
+  //         x: position.x,
+  //         y: position.y,
+  //         width,
+  //         height,
+  //         src: imgUrl,
+  //         draggable: false,
+  //         zIndex: 0,
+  //         brightness: 0,
+  //         _filters: ["Brighten"],
+  //         updatedAt: Date.now(),
+  //       },
+  //       className: "sample-image",
+  //       children: [],
+  //     };
+
+  //     // Insert the new image in the stage
+  //     createItem(newImage);
+  //   } catch (error) {
+  //     console.error("Failed to load the image:", error);
+  //   }
+  // };
   const insertImageAtCenter = (data: { [key: string]: any }) => {
     const imageSrc = new Image();
     let source = data.src;
@@ -112,10 +176,10 @@ const useDragAndDrop = (
         x: (stageWidth - width) / 2,
         y: (stageHeight - height) / 2,
       };
-      console.warn("thi is size ", stage);
+
       // Create the new image object
       const newImage: StageData = {
-        id: nanoid(),
+        id: Uuid4(),
         attrs: {
           name: "label-target",
           "data-item-type": "image",
@@ -144,9 +208,11 @@ const useDragAndDrop = (
 
   const insertText = (e: DragEvent, data: { [key: string]: any }) => {
     const position = getFramePos(stageRef.current, e, data.width, data.height);
+    var stageId = Uuid4();
     const newText: StageData = {
-      id: nanoid(),
+      id: stageId,
       attrs: {
+        id: stageId,
         name: "label-target",
         "data-item-type": "text",
         width: data.text
@@ -180,9 +246,11 @@ const useDragAndDrop = (
   const insertShape = (e: DragEvent, data: { [key: string]: any }) => {
     const width = Math.sqrt(data.radius);
     const position = getFramePos(stageRef.current, e, width, width);
+    var stageId = Uuid4();
     const newShape: StageData = {
-      id: nanoid(),
+      id: stageId,
       attrs: {
+        id: stageId,
         name: "label-target",
         "data-item-type": "shape",
         fill: "#00000",
@@ -195,6 +263,8 @@ const useDragAndDrop = (
         zIndex: 0,
         brightness: 0,
         updatedAt: Date.now(),
+        scaleX: 1,
+        scaleY: 1,
       },
       className: "sample-shape",
       children: [],
@@ -205,7 +275,7 @@ const useDragAndDrop = (
   const insertIcon = (e: DragEvent, data: { [key: string]: any }) => {
     const position = getFramePos(stageRef.current, e, 100, 100);
     const newIcon: StageData = {
-      id: nanoid(),
+      id: Uuid4(),
       attrs: {
         name: "label-target",
         "data-item-type": "icon",
@@ -218,6 +288,8 @@ const useDragAndDrop = (
         brightness: 0,
         zIndex: 0,
         updatedAt: Date.now(),
+        scaleX: 1,
+        scaleY: 1,
       },
       className: "sample-icon",
       children: [],
@@ -234,7 +306,7 @@ const useDragAndDrop = (
           : [80, -10, 10, 110]
         : [];
     const newLine: StageData = {
-      id: nanoid(),
+      id: Uuid4(),
       attrs: {
         name: "label-target",
         "data-item-type": "line",
@@ -249,6 +321,8 @@ const useDragAndDrop = (
         zIndex: 0,
         brightness: 0,
         updatedAt: Date.now(),
+        scaleX: 1,
+        scaleY: 1,
       },
       className: "sample-line",
       children: [],
@@ -262,7 +336,7 @@ const useDragAndDrop = (
     }
     const { trigger, ...data } = dragSrc;
 
-    data.id = nanoid();
+    data.id = Uuid4();
     switch (trigger) {
       case TRIGGER.INSERT.FRAME:
         return insertFrame(e, data);
@@ -333,16 +407,25 @@ const useDragAndDrop = (
 
   const onDragMoveFrame = useCallback((e: KonvaEventObject<DragEvent>) => {
     if (checkIsInFrame(e.target)) {
+      console.log(
+        "🚀 ~ onDragMoveFrame ~ checkIsInFrame:",
+        checkIsInFrame(e.target)
+      );
       return;
     }
     if (e.target.getLayer() !== e.target.getParent()) {
       moveToLayer(e.target as Shape<ShapeConfig>);
+      console.log(
+        "🚀 ~ onDragMoveFrame ~ checkIsInFrame:",
+        checkIsInFrame(e.target)
+      );
     }
   }, []);
 
   const onDragEndFrame = (e: KonvaEventObject<DragEvent>) => {
     e.evt.preventDefault();
     e.evt.stopPropagation();
+    console.log("this is event onDragEndFrame", e.target.attrs);
     updateItem(e.target.id(), () => ({
       ...e.target.attrs,
     }));

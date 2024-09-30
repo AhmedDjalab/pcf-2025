@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { useState, useEffect } from "react";
 import { Button, Col, Row, Form } from "react-bootstrap";
 import useItem from "src/hooks/useItem";
@@ -7,15 +8,18 @@ import { WidgetKind } from "../Widget";
 import { SettingBarProps } from "..";
 import Konva from "konva";
 import { nanoid } from "nanoid";
-import { StageData } from "src/state/currentStageData";
-
-type Activity = {
-  id: string;
-  name: string;
-};
+import { StageData, stageDataSelector } from "src/state/currentStageData";
+import { ActivityModel } from "src/types/Project";
+import { GraphDataType } from "src/state/slices/graphSlice";
+import { v4 as Uuid4 } from "uuid";
+import { useSelector } from "react-redux";
+// type Activity = {
+//   id: string;
+//   name: string;
+// };
 type ActivityWidgetProps = {
   data: WidgetKind & SettingBarProps;
-  activities: Activity[]; // List of activities to select from
+  activities: GraphDataType[]; // List of activities to select from
 };
 
 const ActivityWidget: React.FC<ActivityWidgetProps> = ({
@@ -25,37 +29,59 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
   const { updateItem, createItem } = useItem();
   const { getTranslation } = useI18n();
   const [selectedActivityId, setSelectedActivityId] = useState<string>("");
+  const [selectedActivity, setSelectedActivity] = useState<string>();
   const [activityText, setActivityText] = useState<string>("");
-
+  const stageData = useSelector(stageDataSelector.selectAll);
   useEffect(() => {
     if (data.selectedItems[0]) {
       const item = data.selectedItems[0];
-      const itemActivityId = item.attrs.activityId || "";
+      const itemActivityId = item.attrs.activityUID || "";
       setSelectedActivityId(itemActivityId);
+
       setActivityText(item.attrs.text || itemActivityId);
     }
   }, [data.selectedItems]);
 
   const handleActivityChange = (activityId: string) => {
+    console.log("🚀 ~ handleActivityChange ~ activityId:", activityId);
     setSelectedActivityId(activityId);
   };
+
   const saveActivity = () => {
     if (data.selectedItems.length === 0) return;
 
     data.selectedItems.forEach((item) => {
-      const activityTextId = `activityId-${item.id}`;
+      const activityTextId = `activityId-${item.id()}`;
 
-      // Check if the item already has a text element for the activityId
-      const existingText = item
-        ?.getLayer()
-        ?.findOne((node) => node.getAttr("id") === activityTextId);
+      var existedItem = stageData.find(
+        (x) =>
+          x.attrs["data-item-type"] === "text" && x.attrs.shapeId === item.id()
+      );
+      console.log(
+        "🚀 ~ data.selectedItems.forEach ~ existedItem:",
+        existedItem,
+        stageData
+      );
 
       const textPositionX = item.attrs.x + item.attrs.width / 2;
-      const textPositionY = item.attrs.y - 20; // Position the text near the shape
+      const textPositionY = item.attrs.y - 20;
 
-      if (existingText) {
-        // Update the existing text if found
-        existingText.setAttrs({
+      if (existedItem) {
+        // updateItem(
+        //   existedItem.id,
+        //   (existedItem) => (existedItem.text = selectedActivityId)
+        // );
+
+        const existingText = item
+          ?.getLayer()
+          ?.findOne((node) => node.getAttr("id") === existedItem!.id);
+
+        console.log(
+          "🚀 ~ data.selectedItems.forEach ~ existingText:",
+          existingText
+        );
+
+        existingText?.setAttrs({
           x: textPositionX,
           y: textPositionY,
           text: selectedActivityId,
@@ -63,12 +89,12 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
       } else {
         // Create a new StageData text element
         const newText: StageData = {
-          id: nanoid(),
+          id: Uuid4(),
           attrs: {
             name: "label-target",
             "data-item-type": "text",
-            width: selectedActivityId.length * 14, // Example: Adjust width based on text length
-            height: 20, // Example height for the text element
+            width: selectedActivityId.length * 14,
+            height: 20,
             fill: "black",
             x: textPositionX,
             y: textPositionY,
@@ -79,9 +105,11 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
             verticalAlign: "middle",
             zIndex: 0,
             brightness: 0,
-            activityId: selectedActivityId, // Add activityId as an attribute
+            activityId: selectedActivityId,
+            activityUID: selectedActivityId,
             updatedAt: Date.now(),
-            id: activityTextId,
+            shapeId: item.id(),
+            // id: activityTextId,
           },
           className: "sample-text",
           children: [],
@@ -94,7 +122,7 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
       // Update the shape's activityId attribute
       item.setAttrs({
         ...item.getAttrs(),
-        activityId: selectedActivityId,
+        activityUID: selectedActivityId,
       });
 
       updateItem(item.id(), () => item.attrs);
@@ -122,8 +150,8 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
           {getTranslation("widget", "activity", "selectActivity")}
         </option>
         {activities.map((activity) => (
-          <option key={activity.id} value={activity.id}>
-            {activity.name}
+          <option key={activity.activityUID} value={activity.activityUID}>
+            {activity.activityName}
           </option>
         ))}
       </Form.Select>

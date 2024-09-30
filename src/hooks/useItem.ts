@@ -10,12 +10,26 @@ import {
 export type ItemData = {
   "data-item-type": string;
   id: string;
+  attribId: string;
   x: number;
   y: number;
   width: number;
   height: number;
   fill: string;
   draggable: boolean;
+  activityId?: string;
+  activityGuidId?: string;
+  offsetX?: number;
+  offsetY?: number;
+  opacity?: number;
+  radius?: number;
+  rotation?: number;
+  scaleX?: number;
+  scaleY?: number;
+  sides?: number;
+  skewX?: number;
+  skewY?: number;
+  activityUID?: string;
 } & Record<string, any>;
 
 export type ItemProps = {
@@ -54,6 +68,7 @@ const useItem = () => {
     const targetItem = stageData.find(
       (data) => data.id === id || data.attrs.id === id
     );
+    console.log("🚀 ~ useItem ~ updatedObject:", targetItem);
 
     const updatedObject = {
       ...(targetItem ?? {}),
@@ -62,6 +77,13 @@ const useItem = () => {
         ...attrsFunc(targetItem),
       },
     } as StageData;
+
+    console.log(
+      "🚀 ~ useItem ~ updatedObject:",
+      updatedObject,
+      attrsFunc(targetItem)
+    );
+
     dispatch(stageDataAction.updateItem(updatedObject));
   };
 

@@ -15,6 +15,7 @@ import ViewGraph from "src/pages/Graph/ViewGraph";
 import AboutUs from "src/components/AboutUs";
 import ErrorPage from "src/pages/ErrorPage";
 import MicrosoftLoginCallback from "src/Auth/MicrosoftCallBackLogin";
+import PlanView from "src/pages/Plans/PlanView";
 
 const AppRoutes = () => {
   const isLogged = IsAuth();
@@ -37,6 +38,7 @@ const AppRoutes = () => {
         <Route path="/graph" element={<DrawGraphStep />} />
         <Route path="/graph/:id" element={<DrawGraphStep />} />
         <Route path="/view-graph/:id" element={<ViewGraph />} />
+        <Route path="/view-plan/:id" element={<PlanView />} />
 
         <Route path="/error" element={<ErrorPage />} />
       </Routes>

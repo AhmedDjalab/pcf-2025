@@ -175,7 +175,10 @@
       "finishChainageLabel": "END  CHAINAGE",
       "calendar": "Calendar",
       "duration": "Duration (Day)",
-      "critical": "CRITICAL"
+      "critical": "CRITICAL",
+      "quantity": "Quantity",
+      "productionRate": "Production Rate",
+      "workShops": "Workshops"
     },
 
     "changeStyle": "Change Style",

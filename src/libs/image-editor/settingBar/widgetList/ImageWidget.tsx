@@ -14,6 +14,7 @@ import Drag from "../../util/Drag";
 import TRIGGER from "src/config/trigger";
 import useImageAsset from "src/hooks/useImageAsset";
 import useI18n from "src/hooks/usei18n";
+import { v4 as Uuid4 } from "uuid";
 
 export const IMAGE_LIST_KEY = "importedImage";
 
@@ -35,7 +36,7 @@ const ImageWidget: React.FC = () => {
         const result = [
           {
             type: "image",
-            id: nanoid(),
+            id: Uuid4(),
             name: "imported image",
             src: fileReader.result as string,
           },

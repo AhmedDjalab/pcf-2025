@@ -58,6 +58,7 @@ export const ActivitiesUrl = usedUrl + "/Activities";
 export const TaskSlotsUrl = usedUrl + "/TaskSlots";
 export const ActivityStylesUrl = usedUrl + "/ActivityStyles";
 export const ProjectEmployeesUrl = usedUrl + "/ProjectEmployees";
+export const PlansUrl = usedUrl + "/Plans";
 
 export const UploadImagesUrl = ImagesUrl + "/UploadImage";
 export const HubUrl = siteName + "/notificationHub";

@@ -1,9 +1,5 @@
 [
   {
-    "id": "image",
-    "name": "Image"
-  },
-  {
     "id": "colorPalette",
     "name": "Color Palette"
   },
