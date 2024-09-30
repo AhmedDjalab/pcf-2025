@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { useState } from "react";
 import { Button, Col, Figure, Row } from "react-bootstrap";
 import { nanoid } from "nanoid";

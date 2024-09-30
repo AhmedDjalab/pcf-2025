@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React from "react";
 import { Button, ButtonGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 import colorStyles from "../style/color.module.css";

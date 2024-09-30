@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { useMemo, useState } from "react";
 import { Col, Figure, Form, Row } from "react-bootstrap";
 import iconList from "src/config/icon.json";

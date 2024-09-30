@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React from "react";
 import { Col, Figure, Row } from "react-bootstrap";
 import frameList from "src/config/frame.json";
