@@ -372,5 +372,49 @@
     "landscape": "Querformat",
     "cancel": "Abbrechen",
     "save": "Speichern"
+  },
+
+  "plansPopUp": {
+    "titles": {
+      "add": "Einen Plan hinzufügen",
+      "edit": "Den Plan bearbeiten"
+    },
+    "labels": {
+      "name": "Planname",
+      "start": "Start-Pk",
+      "end": "End-Pk",
+      "planImage": "Planbild"
+    },
+    "placeholders": {
+      "name": "Geben Sie den Planname ein",
+      "start": "Geben Sie das Start-Pk ein",
+      "end": "Geben Sie das End-Pk ein"
+    },
+    "errors": {
+      "required": "Dieses Feld ist erforderlich",
+      "minDistance": "Pk muss größer oder gleich {{minDistance}} sein",
+      "maxDistance": "Pk muss kleiner oder gleich {{maxDistance}} sein",
+      "greaterThanStart": "End-Pk muss größer als Start-Pk sein"
+    },
+    "buttons": {
+      "add": "Hinzufügen",
+      "save": "Speichern",
+      "cancel": "Abbrechen"
+    }
+  },
+  "plansList": {
+    "tableHeaders": {
+      "name": "Planname",
+      "start": "Start-Pk",
+      "end": "End-Pk",
+      "actions": "Aktionen"
+    },
+    "buttons": {
+      "planDraw": "Aktivitäten auswählen"
+    }
+  },
+  "plansForm": {
+    "plans": "Plan",
+    "date": "Datum"
   }
 }

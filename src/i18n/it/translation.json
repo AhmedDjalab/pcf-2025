@@ -372,5 +372,48 @@
     "landscape": "Paesaggio",
     "cancel": "Annulla",
     "save": "Salva"
+  },
+  "plansPopUp": {
+    "titles": {
+      "add": "Aggiungi un piano",
+      "edit": "Modifica il piano"
+    },
+    "labels": {
+      "name": "Nome del piano",
+      "start": "Pk iniziale",
+      "end": "Pk finale",
+      "planImage": "Immagine del piano"
+    },
+    "placeholders": {
+      "name": "Inserisci il nome del piano",
+      "start": "Inserisci il Pk iniziale",
+      "end": "Inserisci il Pk finale"
+    },
+    "errors": {
+      "required": "Questo campo è obbligatorio",
+      "minDistance": "Il Pk deve essere maggiore o uguale a {{minDistance}}",
+      "maxDistance": "Il Pk deve essere minore o uguale a {{maxDistance}}",
+      "greaterThanStart": "Il Pk finale deve essere maggiore del Pk iniziale"
+    },
+    "buttons": {
+      "add": "Aggiungi",
+      "save": "Salva",
+      "cancel": "Annulla"
+    }
+  },
+  "plansList": {
+    "tableHeaders": {
+      "name": "Nome del piano",
+      "start": "Pk iniziale",
+      "end": "Pk finale",
+      "actions": "Azioni"
+    },
+    "buttons": {
+      "planDraw": "seleziona attività"
+    }
+  },
+  "plansForm": {
+    "plans": "piano",
+    "date": "data"
   }
 }

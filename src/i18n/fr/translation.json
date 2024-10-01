@@ -378,7 +378,7 @@
     "cancel": "Annuler",
     "save": "Enregistrer"
   },
-  "plansPopup": {
+  "plansPopUp": {
     "titles": {
       "add": "Ajouter un plan",
       "edit": "Modifier le plan"
@@ -387,7 +387,8 @@
       "name": "Nom du plan",
       "start": "Pk de début",
       "end": "Pk de fin",
-      "logo": "Image du plan"
+      "logo": "Image du plan",
+      "planImage": "Image du plan"
     },
     "placeholders": {
       "name": "Entrez le nom du plan",

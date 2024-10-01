@@ -372,5 +372,48 @@
     "landscape": "Paisaje",
     "cancel": "Cancelar",
     "save": "Guardar"
+  },
+  "plansPopUp": {
+    "titles": {
+      "add": "Agregar un plan",
+      "edit": "Editar el plan"
+    },
+    "labels": {
+      "name": "Nombre del plan",
+      "start": "Pk inicial",
+      "end": "Pk final",
+      "planImage": "Imagen del plan"
+    },
+    "placeholders": {
+      "name": "Ingrese el nombre del plan",
+      "start": "Ingrese el Pk inicial",
+      "end": "Ingrese el Pk final"
+    },
+    "errors": {
+      "required": "Este campo es obligatorio",
+      "minDistance": "El Pk debe ser mayor o igual a {{minDistance}}",
+      "maxDistance": "El Pk debe ser menor o igual a {{maxDistance}}",
+      "greaterThanStart": "El Pk final debe ser mayor que el Pk inicial"
+    },
+    "buttons": {
+      "add": "Agregar",
+      "save": "Guardar",
+      "cancel": "Cancelar"
+    }
+  },
+  "plansList": {
+    "tableHeaders": {
+      "name": "Nombre del plan",
+      "start": "Pk inicial",
+      "end": "Pk final",
+      "actions": "Acciones"
+    },
+    "buttons": {
+      "planDraw": "seleccionar actividades"
+    }
+  },
+  "plansForm": {
+    "plans": "plan",
+    "date": "fecha"
   }
 }

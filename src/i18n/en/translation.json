@@ -421,5 +421,9 @@
     "buttons": {
       "planDraw": "select activities"
     }
+  },
+  "plansForm": {
+    "plans": "plan",
+    "date": "date"
   }
 }
