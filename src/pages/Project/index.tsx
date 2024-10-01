@@ -27,7 +27,11 @@ import {
 } from "src/Services/ProjectService";
 import Spinner from "src/components/Spinner";
 import { Project } from "src/types/Project";
-import { TrashIcon, UserIcon } from "@heroicons/react/24/solid";
+import {
+  DocumentChartBarIcon,
+  TrashIcon,
+  UserIcon,
+} from "@heroicons/react/24/solid";
 import { resetStoreState } from "src/state/slices/graphSlice";
 import { persistor } from "src/App";
 import { UserRoles } from "src/enums/UsersRole";
@@ -85,9 +89,9 @@ const Projects = () => {
         </Link>
         <Link
           to={`/view-plan/${value}`}
-          className="focus:outline-none no-underline text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-purple-600 dark:hover-bg-purple-700 dark:focus:ring-purple-900"
+          className="focus:outline-none no-underline text-white bg-[#f7ad25] hover:bg-[#f7ad25] focus:ring-4 focus:ring-[#f7ad25] font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-[#f7ad25] dark:hover-bg-[#f7ad25] dark:focus:ring-[#f7ad25]"
         >
-          <EyeIcon className="w-5 h-5 mr-2 inline" />
+          <DocumentChartBarIcon className="w-5 h-5 mr-2 inline" />
           {t("projectsList.buttons.viewPlan")}
         </Link>
         <Link
