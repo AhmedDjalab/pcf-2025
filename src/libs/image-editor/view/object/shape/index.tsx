@@ -70,6 +70,7 @@ const ShapeItem: React.FC<ShapeItemProps> = ({
         dash={attrs.dash ?? undefined}
         opacity={attrs.opacity ?? 1}
         rotation={attrs.rotation ?? 0}
+        activityUID={attrs.activityUID}
         draggable
         onDragMove={onDragMoveFrame}
         onDragEnd={onDragEndFrame}

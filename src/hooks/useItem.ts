@@ -6,7 +6,12 @@ import {
   stageDataSelector,
   stageDataAction,
 } from "src/state/currentStageData";
-
+import { Node, NodeConfig } from "konva/lib/Node";
+export interface ShapeConfigType extends Node<NodeConfig> {
+  activityId?: string;
+  shapeId?: string;
+  activityUID?: string;
+}
 export type ItemData = {
   "data-item-type": string;
   id: string;
@@ -45,10 +50,13 @@ export type OverrideItemProps<T> = Omit<ItemProps, keyof T> &
 export type OverrideItemData<T> = Omit<ItemData, keyof T> & T;
 
 export type ITEMS_CONTEXT = {
-  selectedItems: Konva.Node[];
+  selectedItems: ShapeConfigType[];
   onCreate: (newItem: StageData) => void;
   onDelete: (targetItemId: string | string[]) => void;
-  onSelect: (e?: KonvaEventObject<MouseEvent>, itemList?: Konva.Node[]) => void;
+  onSelect: (
+    e?: KonvaEventObject<MouseEvent>,
+    itemList?: ShapeConfigType[]
+  ) => void;
   onClear: () => void;
   onAlter: (dataList: StageData[]) => void;
 };

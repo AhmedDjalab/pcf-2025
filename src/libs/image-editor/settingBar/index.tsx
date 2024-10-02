@@ -20,13 +20,10 @@ import useStage from "src/hooks/useStage";
 import widgetList from "src/config/widget.json";
 import { ActivityModel } from "src/types/Project";
 import { GraphDataType } from "src/state/slices/graphSlice";
+import { ShapeConfigType } from "src/hooks/useItem";
 
-interface ShapeConfig extends Node<NodeConfig> {
-  activityId?: string;
-  shapeId?: string;
-}
 export type SettingBarProps = {
-  selectedItems: ShapeConfig[];
+  selectedItems: ShapeConfigType[];
   clearSelection: ReturnType<typeof useSelection>["clearSelection"];
   stageRef: ReturnType<typeof useStage>["stageRef"];
   activities?: GraphDataType[];

@@ -1,14 +1,17 @@
 import { KonvaEventObject, Node, NodeConfig } from "konva/lib/Node";
 import { useState } from "react";
-import { ITEMS_CONTEXT } from "./useItem";
+import { ITEMS_CONTEXT, ShapeConfigType } from "./useItem";
 import useTransformer from "./useTransformer";
 
 const useSelection = (transformer: ReturnType<typeof useTransformer>) => {
-  const [selectedItems, setSelectedItems] = useState<ITEMS_CONTEXT["selectedItems"]>(
-    [] as ITEMS_CONTEXT["selectedItems"],
-  );
+  const [selectedItems, setSelectedItems] = useState<
+    ITEMS_CONTEXT["selectedItems"]
+  >([] as ITEMS_CONTEXT["selectedItems"]);
 
-  const onSelectItem = (e?: KonvaEventObject<MouseEvent>, itemList?: Node<NodeConfig>[]) => {
+  const onSelectItem = (
+    e?: KonvaEventObject<MouseEvent>,
+    itemList?: ShapeConfigType[]
+  ) => {
     if (transformer === undefined || transformer === null) {
       console.error("transformer is not given");
       return;
@@ -38,14 +41,16 @@ const useSelection = (transformer: ReturnType<typeof useTransformer>) => {
       return;
     }
     let newItemList = [] as ITEMS_CONTEXT["selectedItems"];
-    const targetItem
-      = e.target.name() === "label-text"
+    const targetItem =
+      e.target.name() === "label-text"
         ? e.target.getParent().getParent().findOne(".label-target")
         : e.target;
     if (!e.evt.shiftKey) {
       newItemList = [targetItem];
     } else if (selectedItems.find((item) => item.id() === targetItem.id())) {
-      newItemList = selectedItems.filter((item) => item.id() !== targetItem.id());
+      newItemList = selectedItems.filter(
+        (item) => item.id() !== targetItem.id()
+      );
     } else {
       newItemList = [...selectedItems, targetItem];
     }

@@ -274,6 +274,7 @@ const TextItem: React.FC<TextItemProps> = ({
       opacity={attrs.opacity ?? 1}
       rotation={attrs.rotation ?? 0}
       draggable
+      activityUID={attrs.activityUID}
       onDragMove={onDragMoveFrame}
       onDragEnd={onDragEndFrame}
     />

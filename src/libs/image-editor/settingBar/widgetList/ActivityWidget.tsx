@@ -1,5 +1,5 @@
 //@ts-nocheck
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Button, Col, Row, Form } from "react-bootstrap";
 import useItem from "src/hooks/useItem";
 import useI18n from "src/hooks/usei18n";
@@ -13,6 +13,10 @@ import { ActivityModel } from "src/types/Project";
 import { GraphDataType } from "src/state/slices/graphSlice";
 import { v4 as Uuid4 } from "uuid";
 import { useSelector } from "react-redux";
+import Select from "react-select";
+import Input from "src/components/Input";
+import moment from "moment";
+
 // type Activity = {
 //   id: string;
 //   name: string;
@@ -28,23 +32,44 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
 }) => {
   const { updateItem, createItem } = useItem();
   const { getTranslation } = useI18n();
-  const [selectedActivityId, setSelectedActivityId] = useState<string>("");
-  const [selectedActivity, setSelectedActivity] = useState<string>();
-  const [activityText, setActivityText] = useState<string>("");
+  const [selectedActivity, setSelectedActivity] = useState<GraphDataType>();
   const stageData = useSelector(stageDataSelector.selectAll);
+  const [searchTerm, setSearchTerm] = useState("");
+  const selectRef = useRef<HTMLElement>(null);
+  // Convert activities to options format required by react-select
+  const activityOptions = activities.map((activity) => ({
+    value: activity.id,
+    label: activity.activityName,
+    activityId: activity.activityId,
+    activityUID: activity.activityUID,
+  }));
+
+  // Handle the change in selected option
+  const onActivityChange = (selectedOption) => {
+    handleActivityChange(selectedOption?.value || "");
+  };
+
   useEffect(() => {
+    console.warn("🚀 ~ useEffect ~ data.selectedItems:", data.selectedItems);
+
     if (data.selectedItems[0]) {
       const item = data.selectedItems[0];
       const itemActivityId = item.attrs.activityUID || "";
-      setSelectedActivityId(itemActivityId);
-
-      setActivityText(item.attrs.text || itemActivityId);
+      console.log("🚀 ~ useEffect ~ itemActivityId:", itemActivityId);
+      if (itemActivityId) {
+        //setSelectedActivityId(itemActivityId);
+        const activity = activities.find(
+          (x) => x.activityUID == itemActivityId
+        )!;
+        setSelectedActivity(activity);
+        setSearchTerm(activity.activityName);
+      }
     }
-  }, [data.selectedItems]);
+  }, [activities, data.selectedItems]);
 
   const handleActivityChange = (activityId: string) => {
-    console.log("🚀 ~ handleActivityChange ~ activityId:", activityId);
-    setSelectedActivityId(activityId);
+    const activity = activities.find((x) => x.id === activityId)!;
+    setSelectedActivity(activity);
   };
 
   const saveActivity = () => {
@@ -60,7 +85,8 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
       console.log(
         "🚀 ~ data.selectedItems.forEach ~ existedItem:",
         existedItem,
-        stageData
+        stageData,
+        selectedActivity
       );
 
       const textPositionX = item.attrs.x + item.attrs.width / 2;
@@ -84,7 +110,7 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
         existingText?.setAttrs({
           x: textPositionX,
           y: textPositionY,
-          text: selectedActivityId,
+          text: selectedActivity?.activityUID,
         });
       } else {
         // Create a new StageData text element
@@ -93,20 +119,20 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
           attrs: {
             name: "label-target",
             "data-item-type": "text",
-            width: selectedActivityId.length * 14,
+            width: selectedActivity?.activityUID?.length * 14,
             height: 20,
             fill: "black",
             x: textPositionX,
             y: textPositionY,
             fontSize: 14,
             fontFamily: "Arial",
-            text: selectedActivityId,
+            text: selectedActivity?.activityUID,
             textAlign: "center",
             verticalAlign: "middle",
             zIndex: 0,
             brightness: 0,
-            activityId: selectedActivityId,
-            activityUID: selectedActivityId,
+            activityId: selectedActivity?.activityUID,
+            activityUID: selectedActivity?.activityUID,
             updatedAt: Date.now(),
             shapeId: item.id(),
             // id: activityTextId,
@@ -122,7 +148,7 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
       // Update the shape's activityId attribute
       item.setAttrs({
         ...item.getAttrs(),
-        activityUID: selectedActivityId,
+        activityUID: selectedActivity?.activityUID,
       });
 
       updateItem(item.id(), () => item.attrs);
@@ -138,37 +164,83 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
     console.log("Saved JSON:", JSON.stringify(savedData));
     // Save the JSON somewhere, e.g., send to a server, save to local storage, etc.
   };
+  const selectValue = useMemo(
+    () => activityOptions.find((option) => option.label === searchTerm),
+    [activityOptions, searchTerm]
+  );
+  console.log("🚀 ~ selectValue:", selectValue);
 
   return (
-    <Col>
+    <div className="w-full overflow-y-scroll h-40 ">
+      {/* Title can be added as needed */}
       {/* <h6>{getTranslation("widget", "activity", "selectActivity")}</h6> */}
-      <Form.Select
-        value={selectedActivityId}
-        onChange={(e) => handleActivityChange(e.target.value)}
-      >
-        <option value="">
-          {getTranslation("widget", "activity", "selectActivity")}
-        </option>
-        {activities.map((activity) => (
-          <option key={activity.activityUID} value={activity.activityUID}>
-            {activity.activityName}
-          </option>
-        ))}
-      </Form.Select>
 
-      <Row className="mt-3">
-        <Col>
-          <Button variant="primary" onClick={saveActivity}>
-            {getTranslation("widget", "activity", "saveActivity")}
-          </Button>
-        </Col>
-        {/* <Col>
-          <Button variant="secondary" onClick={saveJson}>
-            {getTranslation("widget", "activity", "saveJson")}
-          </Button>
-        </Col> */}
-      </Row>
-    </Col>
+      {/* Custom Select with Autocomplete */}
+      <div className="mb-4">
+        <Select
+          className="w-full"
+          value={selectValue}
+          onInputChange={(inputValue) => setSearchTerm(inputValue)}
+          onChange={onActivityChange}
+          options={activityOptions}
+          isClearable
+          filterOption={(option, inputValue) => {
+            console.warn("🚀 ~ option, inputValue:", option, inputValue);
+
+            return (
+              option.data.activityId == inputValue ||
+              option.label.toLowerCase().includes(inputValue.toLowerCase())
+            );
+          }}
+        />
+      </div>
+
+      {/* Displaying Activity Entity Data */}
+      <div className="mt-3 grid grid-cols-1 gap-4 ">
+        <Input
+          id="id"
+          label="Id"
+          value={selectedActivity?.activityId}
+          readOnly
+        />
+        <Input
+          id="UID"
+          label="UID"
+          value={selectedActivity?.activityUID}
+          readOnly
+        />
+        <Input
+          id="start"
+          label="Start"
+          value={moment(selectedActivity?.startDate).format("DD-MM-YYYY")}
+          readOnly
+        />
+        <Input
+          id="end"
+          label="End"
+          value={moment(selectedActivity?.finishDate).format("DD-MM-YYYY")}
+          readOnly
+        />
+      </div>
+
+      {/* Action Buttons */}
+      <div className="mt-6 flex justify-start">
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
+          onClick={saveActivity}
+        >
+          {getTranslation("widget", "activity", "saveActivity")}
+        </button>
+
+        {/* Uncomment and style as needed for the JSON save button */}
+        {/* <button
+          className="ml-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 focus:outline-none"
+          onClick={saveJson}
+        >
+          {getTranslation("widget", "activity", "saveJson")}
+        </button> */}
+      </div>
+    </div>
   );
 };
 
