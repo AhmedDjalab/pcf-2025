@@ -417,5 +417,8 @@
   "plansForm": {
     "plans": "Plan",
     "date": "Datum"
+  },
+  "line": {
+    "name": "Linie"
   }
 }

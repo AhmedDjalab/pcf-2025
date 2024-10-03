@@ -24,11 +24,7 @@ const Widget: React.FC<WidgetProps> = ({ data, children }) => {
       <Accordion.Header>
         {getTranslation("widget", data.id, "name")}
       </Accordion.Header>
-      <Accordion.Body
-        className={[colorStyles.whiteTheme, overflowStyles["auto-y"]].join(" ")}
-      >
-        {children}
-      </Accordion.Body>
+      <Accordion.Body className="overflow-y-scroll">{children}</Accordion.Body>
     </Accordion.Item>
   );
 };

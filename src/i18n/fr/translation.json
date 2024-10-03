@@ -419,7 +419,7 @@
     }
   },
   "plansForm": {
-    "plans": "un plan",
-    "date": "une date"
+    "plans": "Sélectionner un plan",
+    "date": "Sélectionner une date"
   }
 }

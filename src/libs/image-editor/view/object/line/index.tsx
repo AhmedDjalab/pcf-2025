@@ -54,6 +54,7 @@ const LineItem: React.FC<LineItemProps> = ({
       );
     }
     shape.strokeWidth(4);
+
     ctx.fillStrokeShape(shape);
   };
 

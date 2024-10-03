@@ -122,6 +122,9 @@ export interface AttributesModel {
   textAlign?: string;
   verticalAlign?: string;
   updatedAt?: number;
+  curve?: boolean;
+  arrow?: boolean;
+  points?: number[];
 }
 
 export interface StageDataModel {

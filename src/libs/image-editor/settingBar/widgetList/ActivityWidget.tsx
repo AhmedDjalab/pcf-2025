@@ -82,12 +82,6 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
         (x) =>
           x.attrs["data-item-type"] === "text" && x.attrs.shapeId === item.id()
       );
-      console.log(
-        "🚀 ~ data.selectedItems.forEach ~ existedItem:",
-        existedItem,
-        stageData,
-        selectedActivity
-      );
 
       const textPositionX = item.attrs.x + item.attrs.width / 2;
       const textPositionY = item.attrs.y - 20;
@@ -171,7 +165,7 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
   console.log("🚀 ~ selectValue:", selectValue);
 
   return (
-    <div className="w-full overflow-y-scroll h-40 ">
+    <div className="w-full overflow-y-scroll h-[30vh] ">
       {/* Title can be added as needed */}
       {/* <h6>{getTranslation("widget", "activity", "selectActivity")}</h6> */}
 
@@ -196,7 +190,7 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
       </div>
 
       {/* Displaying Activity Entity Data */}
-      <div className="mt-3 grid grid-cols-1 gap-4 ">
+      <div className="mt-3 grid grid-cols-1 gap-4  ">
         <Input
           id="id"
           label="Id"

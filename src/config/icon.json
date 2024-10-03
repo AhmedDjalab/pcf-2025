@@ -961,6 +961,12 @@
   },
   {
     "type": "icon",
+    "id": "diagram-2",
+    "name": "diagram-2",
+    "icon": "diagram-2.svg"
+  },
+  {
+    "type": "icon",
     "id": "bicycle",
     "name": "bicycle",
     "icon": "bicycle.svg"

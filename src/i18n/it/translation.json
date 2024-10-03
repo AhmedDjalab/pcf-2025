@@ -416,5 +416,8 @@
   "plansForm": {
     "plans": "piano",
     "date": "data"
+  },
+  "line": {
+    "name": "Linea"
   }
 }

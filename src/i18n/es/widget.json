@@ -309,5 +309,8 @@
     "selectActivity": "Actividad",
     "saveActivity": "Guardar",
     "saveJson": "Guardar Json"
+  },
+  "line": {
+    "name": "Línea"
   }
 }
