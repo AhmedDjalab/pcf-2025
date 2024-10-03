@@ -18,8 +18,10 @@ function ActivityTable({ activities }: ActivityTaleProps) {
 
           return (
             <div
-              className={`dark:bg-boxdark-2 dark:text-bodydark ${
-                isPassed && "text-red-500 dark:text-red-500"
+              className={`dark:bg-boxdark-2  ${
+                isPassed
+                  ? "text-gray-600 dark:text-gray-600"
+                  : "text-primary dark:text-primary"
               }`}
             >
               {value}
@@ -35,8 +37,10 @@ function ActivityTable({ activities }: ActivityTaleProps) {
 
           return (
             <div
-              className={`dark:bg-boxdark-2 dark:text-bodydark ${
-                isPassed && "text-red-500 dark:text-red-500"
+              className={`dark:bg-boxdark-2  ${
+                isPassed
+                  ? "text-gray-600 dark:text-gray-600"
+                  : "text-primary dark:text-primary"
               }`}
             >
               {value}
