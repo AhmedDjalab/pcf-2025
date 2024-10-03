@@ -303,11 +303,11 @@ const useDragAndDrop = (
     const curvePoints =
       data.name.indexOf("curve") !== -1
         ? data.name.indexOf("one") !== -1
-          ? [0, 0, 110, -10] // One-curve line
-          : [0, 0, 80, -10, 10, 110] // Two-curve line
+          ? [110, -10] // One-curve line
+          : [80, -10, 10, 110] // Two-curve line
         : data.name.indexOf("u-shape-line") !== -1
-        ? [0, 0, 0, 100, 100, 100] // U-shape line (left down, bottom right)
-        : [0, 0, 100, 100]; // Default straight line
+        ? [0, 0, 0, 100, 100, 100, 100, 0] // U-shaped line
+        : [];
 
     console.error("🚀 ~ insertLine ~ curvePoints:", curvePoints);
     const newLine: StageData = {
@@ -320,7 +320,7 @@ const useDragAndDrop = (
         y: position.y,
         width: 100,
         height: 100,
-        points: curvePoints,
+        points: [0, 0, ...curvePoints, 100, 100],
 
         arrow: data.name.indexOf("arrow") !== -1,
         curve:
