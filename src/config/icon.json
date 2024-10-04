@@ -967,6 +967,12 @@
   },
   {
     "type": "icon",
+    "id": "vector-pen",
+    "name": "vector-pen",
+    "icon": "vector-pen.svg"
+  },
+  {
+    "type": "icon",
     "id": "bicycle",
     "name": "bicycle",
     "icon": "bicycle.svg"

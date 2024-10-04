@@ -1456,7 +1456,7 @@ function DrawGraphStep() {
   };
   const handleSaveProject = async () => {
     await dispatch(saveProjectThunk(user!));
-    //navigate("/projects");
+    navigate("/projects");
   };
 
   return (

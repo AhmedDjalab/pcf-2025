@@ -134,9 +134,9 @@ function PlanView() {
   );
   return (
     <DefaultLayout>
-      <div className=" grid grid-cols-3 gap-8 my-10 mx-10  min-h-full">
+      <div className="flex  justify-between  my-10 mx-10  min-h-full">
         {/* Dropdown for plans */}
-        <div>
+        <div className="w-[40%]">
           {isLoading ? (
             <p>Loading plans...</p>
           ) : isError ? (
@@ -151,13 +151,13 @@ function PlanView() {
               value={selectedPlan}
               optionValue="id"
               optionLabel="name"
-              className="  rounded-lg border border-gray-300 bg-gray-50  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+              className=" w-[60%]  rounded-lg border border-gray-300 bg-gray-50  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
               options={plansData?.plans ?? []}
             />
           )}
         </div>
 
-        <div className="relative">
+        <div className="relative w-[30%] ">
           <DatePickerDefault
             id="date"
             name="date"

@@ -16,5 +16,11 @@
     "id": "two-curve-plain",
     "name": "two-curve-plain",
     "icon": "bezier2"
+  },
+  {
+    "type": "polygon",
+    "id": "polygon",
+    "name": "polygon",
+    "icon": "vector-pen"
   }
 ]

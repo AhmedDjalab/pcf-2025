@@ -83,8 +83,14 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
           x.attrs["data-item-type"] === "text" && x.attrs.shapeId === item.id()
       );
 
-      const textPositionX = item.attrs.x + item.attrs.width / 2;
-      const textPositionY = item.attrs.y - 20;
+      let textPositionX = item.attrs.x + item.attrs.width / 2;
+      let textPositionY = item.attrs.y - 20;
+
+      if (item.attrs["data-item-type"] === "polygon") {
+        console.log("🚀 ~ data.selectedItems.forEach ~ item.name():", item);
+        textPositionX = item.attrs.points[0];
+        textPositionY = item.attrs.points[1];
+      }
 
       if (existedItem) {
         // updateItem(

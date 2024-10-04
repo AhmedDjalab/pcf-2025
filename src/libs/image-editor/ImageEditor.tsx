@@ -45,6 +45,7 @@ import { GraphDataType } from "src/state/slices/graphSlice";
 import { v4 as Uuid4 } from "uuid";
 import ActivityTable from "./view/object/Activity/ActivityTable";
 import ReadLayout from "./layout/ReadLayout";
+import PolygonItem, { PolygonItemProps } from "./view/object/polygon";
 export type FileKind = {
   "file-id": string;
   title: string;
@@ -476,6 +477,15 @@ function ImageEditor({
           <LineItem
             key={`line-${item.id}`}
             data={item as LineItemProps["data"]}
+            transformer={transformer}
+            onSelect={onSelectItem}
+          />
+        );
+      case "polygon":
+        return (
+          <PolygonItem
+            key={`polygon-${item.id}`}
+            data={item as PolygonItemProps["data"]}
             transformer={transformer}
             onSelect={onSelectItem}
           />

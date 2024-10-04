@@ -23,7 +23,7 @@ const LineWidget: React.FC = () => (
             id: _data.id,
             icon: _data.icon,
             name: _data.name,
-            "data-item-type": "line",
+            "data-item-type": _data.type,
           }}
         />
       ))}
