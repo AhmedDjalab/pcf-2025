@@ -18,6 +18,7 @@ export type PolygonItemProps = OverrideItemProps<{
   data: StageData;
   transformer: ReturnType<typeof useTransformer>;
   e?: DragEvent;
+  readOnly: boolean;
 }>;
 
 const PolygonItem: React.FC<PolygonItemProps> = ({
@@ -25,6 +26,7 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
   e,
   transformer,
   onSelect,
+  readOnly,
 }) => {
   const { attrs } = data;
   const shapeRef = useRef() as RefObject<LineType>;
@@ -36,31 +38,18 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
 
   const { updateItem } = useItem();
 
-  const initialPoints = attrs.points?.length
-    ? attrs.points
-    : [attrs.x, attrs.y];
-  const [points, setPoints] = useState<number[]>(initialPoints);
+  const [points, setPoints] = useState<number[]>(
+    attrs.points || [attrs.x, attrs.y]
+  );
   const [isDrawing, setIsDrawing] = useState(!attrs.points?.length);
+  const [isClosed, setIsClosed] = useState(isShapeClosed(attrs.points));
 
-  const draw = () => {
-    var i = 0;
-    while (i < attrs.points.length) {
-      const x = attrs.points[i];
-      const y = attrs.points[i + 1];
-
-      if (
-        attrs.points.length >= 4 &&
-        Math.abs(x - points[0]) < 10 &&
-        Math.abs(y - points[1]) < 10
-      ) {
-        completePolygon();
-        break;
-      } else {
-        setPoints((prevPoints) => [...prevPoints, x, y]);
-        i += 2;
-      }
-    }
-  };
+  function isShapeClosed(points: number[] | undefined): boolean {
+    if (!points || points.length < 4) return false;
+    const [startX, startY] = points;
+    const [endX, endY] = points.slice(-2);
+    return Math.abs(startX - endX) < 10 && Math.abs(startY - endY) < 10;
+  }
 
   const handleStageClick = (e: any) => {
     const stage = e.target.getStage();
@@ -69,22 +58,42 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
 
     const { x, y } = pointerPos;
 
-    // Check if the click is close to the starting point
     if (
       points.length >= 4 &&
       Math.abs(x - points[0]) < 10 &&
       Math.abs(y - points[1]) < 10
     ) {
-      completePolygon();
+      completeShape(true);
     } else {
       setPoints((prevPoints) => [...prevPoints, x, y]);
     }
   };
 
-  const completePolygon = () => {
+  const handleRightClick = useCallback(
+    (e: any) => {
+      e.evt.preventDefault();
+
+      if (isDrawing) {
+        if (points.length > 2) {
+          setPoints((prevPoints) => prevPoints.slice(0, -2));
+        } else {
+          completeShape(false);
+        }
+      }
+    },
+    [points, isDrawing]
+  );
+
+  const completeShape = (closePath: boolean) => {
     setIsDrawing(false);
-    // Close the polygon by adding the first point again
-    setPoints((prevPoints) => [...prevPoints, prevPoints[0], prevPoints[1]]);
+    if (closePath) {
+      setPoints((prevPoints) => [...prevPoints, prevPoints[0], prevPoints[1]]);
+      setIsClosed(true);
+    } else {
+      setIsClosed(false);
+    }
+    //@ts-nocheck
+    updateItem(attrs.id, () => ({ ...attrs, points: points }));
   };
 
   useEffect(() => {
@@ -94,26 +103,41 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
     }
   }, [data]);
 
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === "f" && isDrawing) {
+        const lastIndex = points.length - 2;
+        const isNearStart =
+          Math.abs(points[lastIndex] - points[0]) < 10 &&
+          Math.abs(points[lastIndex + 1] - points[1]) < 10;
+        completeShape(isNearStart);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [isDrawing, points]);
+
   return (
     <>
       <Line
         ref={shapeRef as RefObject<LineType>}
         onClick={onSelect}
+        onContextMenu={handleRightClick}
         name="label-target"
         data-item-type="polygon"
         id={attrs.id}
         points={points}
-        stroke={attrs.stroke ? attrs.stroke : "#000"}
-        strokeWidth={attrs.strokeWidth ? attrs.strokeWidth : 2}
-        fill={isDrawing ? "transparent" : attrs.fill ? attrs.fill : "red"}
-        // stroke={attrs.stroke ?? "#000"}
-        // strokeWidth={attrs.stroke ? 5 : undefined}
-        // fill={isDrawing ? "transparent" : "red"}
-        closed={!isDrawing}
+        stroke={attrs.stroke || "#000"}
+        strokeWidth={attrs.strokeWidth || 2}
+        fill={isClosed ? attrs.fill || "red" : "transparent"}
+        closed={isClosed}
         opacity={attrs.opacity ?? 1}
         rotation={attrs.rotation ?? 0}
-        activityUID={attrs.activityUID}
-        draggable
+        draggable={!readOnly}
         onDragMove={onDragMoveFrame}
         onDragEnd={onDragEndFrame}
       />

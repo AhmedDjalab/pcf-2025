@@ -21,9 +21,10 @@ export type FrameKind = {
 export type FrameProps = OverrideItemProps<{
   data: StageData;
   e?: DragEvent;
+  readOnly: boolean;
 }>;
 
-const Frame: React.FC<FrameProps> = ({ data, e, onSelect }) => {
+const Frame: React.FC<FrameProps> = ({ data, e, onSelect, readOnly }) => {
   const { id: stageId, attrs } = data;
   const { updateItem } = useItem();
   const stage = useStage();
@@ -135,7 +136,7 @@ const Frame: React.FC<FrameProps> = ({ data, e, onSelect }) => {
         fill={attrs.fill ?? "#ffffff"}
         opacity={attrs.opacity ?? 1}
         filters={[Konva.Filters.Brighten]}
-        draggable
+        draggable={!readOnly}
         onDragMove={_onDragMoveFrame}
         onDragEnd={onDragEndFrame}
       />

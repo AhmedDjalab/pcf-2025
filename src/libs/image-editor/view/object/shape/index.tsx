@@ -23,6 +23,7 @@ export type ShapeItemProps = OverrideItemProps<{
   data: StageData;
   transformer: ReturnType<typeof useTransformer>;
   e?: DragEvent;
+  readOnly: boolean;
 }>;
 
 const ShapeItem: React.FC<ShapeItemProps> = ({
@@ -30,6 +31,7 @@ const ShapeItem: React.FC<ShapeItemProps> = ({
   e,
   transformer,
   onSelect,
+  readOnly,
 }) => {
   const { attrs } = data;
   console.log("🚀 ~ data:RegularPolygon ", data, attrs.sides);
@@ -71,7 +73,7 @@ const ShapeItem: React.FC<ShapeItemProps> = ({
         opacity={attrs.opacity ?? 1}
         rotation={attrs.rotation ?? 0}
         activityUID={attrs.activityUID}
-        draggable
+        draggable={!readOnly}
         onDragMove={onDragMoveFrame}
         onDragEnd={onDragEndFrame}
       />

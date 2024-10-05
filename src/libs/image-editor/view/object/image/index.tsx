@@ -71,6 +71,7 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
           width,
           height,
           pixelRatio: 5,
+          quality: 1.0,
         });
 
         newImage.src = newBase64;
@@ -102,7 +103,7 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
   }, []);
 
   const calculateDimensions = (imageNode: Konva.Image) => {
-    const maxSize = 1024; // Increase max size for better quality
+    const maxSize = 2800; // Increase max size for better quality
     let width, height;
 
     if (imageNode.width() > imageNode.height()) {
@@ -129,14 +130,15 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
       width={attrs.width}
       height={attrs.height}
       scaleX={attrs.scaleX}
-      scaleY={attrs.scaleY}
+      scaleY={attrs.scaleX}
       fill={attrs.fill ?? "transparent"}
       opacity={attrs.opacity ?? 1}
       rotation={attrs.rotation ?? 0}
       filters={filters ?? [Konva.Filters.Brighten]}
       draggable={false}
-      perfectDrawEnabled={true}
       imageSmoothingEnabled={false}
+      webkitImageSmoothingEnabled={false}
+      mozImageSmoothingEnabled={false}
       transformsEnabled="all"
     />
   );

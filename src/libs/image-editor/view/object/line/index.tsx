@@ -22,6 +22,7 @@ export type LineItemProps = OverrideItemProps<{
   data: StageData;
   transformer: ReturnType<typeof useTransformer>;
   e?: DragEvent;
+  readOnly: boolean;
 }>;
 
 const LineItem: React.FC<LineItemProps> = ({
@@ -29,6 +30,7 @@ const LineItem: React.FC<LineItemProps> = ({
   e,
   transformer,
   onSelect,
+  readOnly,
 }) => {
   const {
     attrs: { updatedAt, zIndex, points, ...attrs },
@@ -84,7 +86,7 @@ const LineItem: React.FC<LineItemProps> = ({
         data-item-type="line"
         id={data.id}
         {...attrs}
-        draggable
+        draggable={!readOnly}
         onDragMove={onDragMoveFrame}
         onDragEnd={onDragEndFrame}
       />

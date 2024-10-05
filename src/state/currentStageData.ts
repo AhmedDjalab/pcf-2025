@@ -14,6 +14,7 @@ export const STAGE_PREFIX = "STAGE";
 export type StageActivity = {
   name: string;
   activityUID: string;
+  activityId: string;
   id: string;
   isPassed: boolean;
 };

@@ -12,6 +12,25 @@ function ActivityTable({ activities }: ActivityTaleProps) {
     () => [
       {
         Header: t("preSucactivity.activityId"),
+        accessor: "activityId",
+        Cell: ({ row, cell: { value } }: any) => {
+          const isPassed = row.original["isPassed"];
+
+          return (
+            <div
+              className={`dark:bg-boxdark-2  ${
+                isPassed
+                  ? "text-gray-600 dark:text-gray-600"
+                  : "text-primary dark:text-primary"
+              }`}
+            >
+              {value}
+            </div>
+          );
+        },
+      },
+      {
+        Header: t("preSucactivity.activityUID"),
         accessor: "activityUID",
         Cell: ({ row, cell: { value } }: any) => {
           const isPassed = row.original["isPassed"];

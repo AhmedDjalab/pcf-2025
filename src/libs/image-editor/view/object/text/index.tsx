@@ -21,6 +21,7 @@ export type TextItemProps = OverrideItemProps<{
   data: StageData;
   transformer: ReturnType<typeof useTransformer>;
   e?: DragEvent;
+  readOnly: boolean;
 }>;
 
 const TextItem: React.FC<TextItemProps> = ({
@@ -28,6 +29,7 @@ const TextItem: React.FC<TextItemProps> = ({
   e,
   transformer,
   onSelect,
+  readOnly,
 }) => {
   const { attrs } = data;
 
@@ -273,7 +275,7 @@ const TextItem: React.FC<TextItemProps> = ({
       strokeWidth={attrs.stroke ? 1 : undefined}
       opacity={attrs.opacity ?? 1}
       rotation={attrs.rotation ?? 0}
-      draggable
+      draggable={!readOnly}
       activityUID={attrs.activityUID}
       onDragMove={onDragMoveFrame}
       onDragEnd={onDragEndFrame}

@@ -361,6 +361,7 @@
   },
   "preSucactivity": {
     "activityId": "ID",
+    "activityUID": "UID",
     "activityName": "Nom",
     "type": "Type"
   },
