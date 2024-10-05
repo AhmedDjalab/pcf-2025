@@ -37,12 +37,12 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
   const handleUpload = async (file: File) => {
     let formData = new FormData();
 
-    const compressedFile = await imageCompression(file, {
-      maxSizeMB: 1,
-      maxWidthOrHeight: 1920,
-    });
+    // const compressedFile = await imageCompression(file, {
+    //   maxSizeMB: 1,
+    //   maxWidthOrHeight: 1920,
+    // });
 
-    const compressedAsFile = new File([compressedFile], file.name, {
+    const compressedAsFile = new File([file], file.name, {
       type: file.type,
       lastModified: file.lastModified,
     });

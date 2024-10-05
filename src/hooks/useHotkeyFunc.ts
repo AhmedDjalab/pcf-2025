@@ -10,6 +10,7 @@ import useSelection from "./useSelection";
 import useStage, { STAGE_POSITION, STAGE_SCALE } from "./useStage";
 import useTransformer from "./useTransformer";
 import { StageData } from "src/state/currentStageData";
+import Konva from "konva";
 
 const useHotkeyFunc = () => {
   const { removeItem, createItem, updateItem } = useItem();
@@ -163,6 +164,49 @@ const useHotkeyFunc = () => {
     setValue(STAGE_SCALE, { x: 1, y: 1 });
   };
 
+  const updateImageQuality = (stage: Konva.Stage, newScale: number) => {
+    stage.find("Image").forEach((imageNode: any) => {
+      const image = imageNode.image() as HTMLImageElement;
+      console.log("🚀 ~ stage.find ~ image:", image);
+      if (image.src.startsWith("data:")) {
+        // For base64 images, we need to recreate the image at a higher resolution
+        const width = image.width * newScale;
+        const height = image.height * newScale;
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx!.drawImage(image, 0, 0, width, height);
+
+        const newImageSrc = canvas.toDataURL("image/png", 1.0);
+        const newImage = new Image();
+        newImage.onload = () => {
+          imageNode.image(newImage);
+          imageNode.cache();
+          stage.batchDraw();
+        };
+        newImage.src = newImageSrc;
+      } else {
+        // For regular images, we can simply update the scale
+        imageNode.scale({ x: 1 / newScale, y: 1 / newScale });
+        imageNode.cache();
+      }
+    });
+  };
+
+  // Debounce function to limit how often updateImageQuality is called
+  const debounce = (func: Function, wait: number) => {
+    let timeout: NodeJS.Timeout;
+    return (...args: any[]) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), wait);
+    };
+  };
+
+  // Debounced version of updateImageQuality
+  const debouncedUpdateImageQuality = debounce(updateImageQuality, 200);
+
   const zoom = (stage: ReturnType<typeof useStage>, zoomDirection: 1 | -1) => {
     const stageRef = stage.stageRef.current;
     const scaleBy = 1.1;
@@ -191,6 +235,8 @@ const useHotkeyFunc = () => {
     };
     stageRef.position(newPos);
     setValue(STAGE_POSITION, newPos);
+    // Call the debounced function to update image quality
+    //debouncedUpdateImageQuality(stageRef, newScale);
   };
 
   const undo = () => {

@@ -29,7 +29,6 @@ export const filterMap: { [name: string]: Filter } = {
 
 const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
   const { attrs } = data;
-  console.warn("🚀 ~ data: ---- img item konva", data);
   const imageRef = useRef() as RefObject<Konva.Image>;
   const [imageSrc, setImageSrc] = useState<CanvasImageSource>(new Image());
 
@@ -38,20 +37,6 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
     stage.stageRef,
     stage.dragBackgroundOrigin
   );
-  // const changeImageSrc = (base64: string) => {
-  //   const newImage = new Image();
-  //   newImage.onload = () => {
-  //     setImageSrc(newImage);
-  //   };
-  //   newImage.crossOrigin = "Anonymous";
-  //   newImage.src = base64;
-  // };
-  // const { onMouseMoveSelectColor, onMouseDownAndMoveRemoveColor } = useBrush(
-  //   imageSrc as HTMLImageElement,
-  //   changeImageSrc,
-  //   attrs.width,
-  //   attrs.height
-  // );
 
   const filters = useMemo(() => {
     if (!data.attrs._filters) {
@@ -63,36 +48,23 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
   }, [data.attrs]);
 
   useEffect(() => {
-    const newImage = new Image();
-    newImage.onload = () => {
-      setImageSrc(newImage);
-    };
-    newImage.crossOrigin = "Anonymous";
+    console.log("this isimage and widnows quality ", window.devicePixelRatio);
+    const loadImage = async () => {
+      const newImage = new Image();
+      newImage.crossOrigin = "Anonymous";
 
-    let source;
-    console.warn("------image ccom ", attrs.src);
-    if (attrs.src.startsWith("find:")) {
-      source = attrs.src;
-    } else {
-      source = attrs.src;
-    }
-    if (source.startsWith("data:")) {
-      Konva.Image.fromURL(source, (imageNode: Konva.Image) => {
-        let width;
-        let height;
-        if (imageNode.width() > imageNode.height()) {
-          width = decimalUpToSeven(512);
-          height = decimalUpToSeven(
-            width * (imageNode.height() / imageNode.width())
-          );
-        } else {
-          height = decimalUpToSeven(512);
-          width = decimalUpToSeven(
-            height * (imageNode.width() / imageNode.height())
-          );
-        }
+      let source = attrs.src.startsWith("find:") ? attrs.src : attrs.src;
+
+      if (source.startsWith("data:")) {
+        const imageNode = await new Promise<Konva.Image>((resolve) => {
+          Konva.Image.fromURL(source, (img: Konva.Image) => resolve(img));
+        });
+
+        const { width, height } = calculateDimensions(imageNode);
+
         imageNode.width(width);
         imageNode.height(height);
+
         const newBase64 = imageNode.toDataURL({
           x: 0,
           y: 0,
@@ -100,16 +72,23 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
           height,
           pixelRatio: 5,
         });
+
         newImage.src = newBase64;
-      });
-      return;
-    }
-    newImage.src = source;
+      } else {
+        newImage.src = source;
+      }
+
+      newImage.onload = () => {
+        setImageSrc(newImage);
+      };
+    };
+
+    loadImage();
   }, [attrs.src]);
 
   useEffect(() => {
     if (imageRef.current) {
-      stage.setStageRef(imageRef.current!.getStage()!);
+      stage.setStageRef(imageRef.current.getStage()!);
       imageRef.current.brightness(data.attrs.brightness);
       checkIsInFrame(imageRef.current);
       imageRef.current.cache();
@@ -117,14 +96,30 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
   }, [imageSrc, data]);
 
   useEffect(() => {
-    imageRef.current!.cache();
+    if (imageRef.current) {
+      imageRef.current.cache();
+    }
   }, []);
+
+  const calculateDimensions = (imageNode: Konva.Image) => {
+    const maxSize = 1024; // Increase max size for better quality
+    let width, height;
+
+    if (imageNode.width() > imageNode.height()) {
+      width = Math.min(imageNode.width(), maxSize);
+      height = (width / imageNode.width()) * imageNode.height();
+    } else {
+      height = Math.min(imageNode.height(), maxSize);
+      width = (height / imageNode.height()) * imageNode.width();
+    }
+
+    return { width: decimalUpToSeven(width), height: decimalUpToSeven(height) };
+  };
 
   return (
     <KonvaImage
       ref={imageRef}
       image={imageSrc}
-      //onClick={onSelect}
       name="label-target"
       data-item-type="image"
       data-frame-type="image"
@@ -140,8 +135,9 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
       rotation={attrs.rotation ?? 0}
       filters={filters ?? [Konva.Filters.Brighten]}
       draggable={false}
-      // onDragMove={onDragMoveFrame}
-      // onDragEnd={onDragEndFrame}
+      perfectDrawEnabled={true}
+      imageSmoothingEnabled={false}
+      transformsEnabled="all"
     />
   );
 };

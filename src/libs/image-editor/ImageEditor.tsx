@@ -46,6 +46,7 @@ import { v4 as Uuid4 } from "uuid";
 import ActivityTable from "./view/object/Activity/ActivityTable";
 import ReadLayout from "./layout/ReadLayout";
 import PolygonItem, { PolygonItemProps } from "./view/object/polygon";
+import Konva from "konva";
 export type FileKind = {
   "file-id": string;
   title: string;

@@ -138,8 +138,8 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
           <Rect
             x={0}
             y={0}
-            width={window.innerWidth}
-            height={window.innerHeight}
+            width={Math.round(window.innerWidth * 0.7)}
+            height={Math.round(window.innerHeight * 0.7)}
             fill="transparent"
             onClick={handleStageClick}
           />

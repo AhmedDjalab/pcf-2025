@@ -302,7 +302,7 @@ const useDragAndDrop = (
 
     if (data.name.indexOf("polygon") !== -1) {
       const initialPoints = [position.x, position.y];
-      console.warn("🚀 ~ insertLine ~ initialPoints:", initialPoints);
+      console.warn("🚀 ~ insertLine ~ initialPoints:", initialPoints, e);
       var stageId = Uuid4();
       const newPolyline: StageData = {
         id: stageId,
@@ -311,8 +311,8 @@ const useDragAndDrop = (
           name: "label-target",
           "data-item-type": "polygon",
           // stroke: "#00000",
-          x: position.x,
-          y: position.y,
+          x: e.offsetX,
+          y: e.offsetY,
           radius: 10,
           fill: "#00FF00",
           stroke: "#000000",
@@ -321,8 +321,6 @@ const useDragAndDrop = (
           zIndex: 0,
           brightness: 0,
           updatedAt: Date.now(),
-          scaleX: 1,
-          scaleY: 1,
         },
         className: "sample-polygon",
         children: [],
@@ -339,7 +337,6 @@ const useDragAndDrop = (
           : [80, -10, 10, 110] // Two-curve line
         : [];
 
-    console.error("🚀 ~ insertLine ~ curvePoints:", curvePoints);
     const newLine: StageData = {
       id: Uuid4(),
       attrs: {
@@ -369,6 +366,7 @@ const useDragAndDrop = (
   };
 
   const onDropOnStage: DropCallback = (dragSrc, e) => {
+    console.log("🚀 ~ e:", e);
     if (!stageRef.current) {
       return;
     }
