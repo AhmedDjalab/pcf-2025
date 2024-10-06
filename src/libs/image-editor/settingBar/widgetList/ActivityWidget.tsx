@@ -50,12 +50,9 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
   };
 
   useEffect(() => {
-    console.warn("🚀 ~ useEffect ~ data.selectedItems:", data.selectedItems);
-
     if (data.selectedItems[0]) {
       const item = data.selectedItems[0];
       const itemActivityId = item.attrs.activityUID || "";
-      console.log("🚀 ~ useEffect ~ itemActivityId:", itemActivityId);
       if (itemActivityId) {
         //setSelectedActivityId(itemActivityId);
         const activity = activities.find(
@@ -87,7 +84,6 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
       let textPositionY = item.attrs.y - 20;
 
       if (item.attrs["data-item-type"] === "polygon") {
-        console.log("🚀 ~ data.selectedItems.forEach ~ item.name():", item);
         textPositionX = item.attrs.points[0];
         textPositionY = item.attrs.points[1];
       }
@@ -101,11 +97,6 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
         const existingText = item
           ?.getLayer()
           ?.findOne((node) => node.getAttr("id") === existedItem!.id);
-
-        console.log(
-          "🚀 ~ data.selectedItems.forEach ~ existingText:",
-          existingText
-        );
 
         existingText?.setAttrs({
           x: textPositionX,
@@ -161,14 +152,12 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
   const saveJson = () => {
     if (data.selectedItems.length === 0) return;
     const savedData = data.selectedItems.map((item) => item.toJSON());
-    console.log("Saved JSON:", JSON.stringify(savedData));
     // Save the JSON somewhere, e.g., send to a server, save to local storage, etc.
   };
   const selectValue = useMemo(
     () => activityOptions.find((option) => option.label === searchTerm),
     [activityOptions, searchTerm]
   );
-  console.log("🚀 ~ selectValue:", selectValue);
 
   return (
     <div className="w-full overflow-y-scroll h-[30vh] ">
@@ -185,8 +174,6 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
           options={activityOptions}
           isClearable
           filterOption={(option, inputValue) => {
-            console.warn("🚀 ~ option, inputValue:", option, inputValue);
-
             return (
               option.data.activityId == inputValue ||
               option.label.toLowerCase().includes(inputValue.toLowerCase())

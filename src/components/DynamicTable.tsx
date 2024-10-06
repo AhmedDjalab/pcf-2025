@@ -241,8 +241,11 @@ function DynamicTable({
                 className="min-w-full divide-y divide-gray-200 "
               >
                 <thead>
-                  {headerGroups.map((headerGroup: any) => (
-                    <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroups.map((headerGroup: any, h: any) => (
+                    <tr
+                      {...headerGroup.getHeaderGroupProps()}
+                      key={"headerGroup" + h}
+                    >
                       {headerGroup.headers.map((column: any) => (
                         // Add the sorting props to control sorting. For this example
                         // we can add them into the header props
@@ -252,6 +255,7 @@ function DynamicTable({
                           {...column.getHeaderProps(
                             column.getSortByToggleProps()
                           )}
+                          key={column.id}
                         >
                           <div className="flex items-center justify-between">
                             {column.render("Header")}
@@ -281,13 +285,14 @@ function DynamicTable({
                     // new
                     prepareRow(row);
                     return (
-                      <tr {...row.getRowProps()}>
-                        {row.cells.map((cell: any) => {
+                      <tr {...row.getRowProps()} key={"row" + i}>
+                        {row.cells.map((cell: any, c: any) => {
                           return (
                             <td
                               {...cell.getCellProps()}
                               className="whitespace-nowrap px-6 py-4"
                               role="cell"
+                              key={"cell" + i + c}
                             >
                               {cell.column.Cell.name === "defaultRenderer" ? (
                                 <div className="text-sm text-gray-500">

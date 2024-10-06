@@ -676,7 +676,7 @@ export const markersConfig: MarkersConfig = {
     },
     content: (color = "black", id = "striped-rect-marker") => {
       const { shapes, ...config } = markersConfig.stripedRect.config;
-      console.log("🚀 ~ shapes:", shapes);
+     
 
       return (
         <marker

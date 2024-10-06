@@ -663,7 +663,6 @@ function DrawGraphStep() {
               // if (points[points.length - 1] !== `${x2},${y2}`) {
               //   points.push(`${x2},${y2}`);
               // }
-              console.log("🚀 ~ points:", points, x1, x2, y1, y2);
             } else {
               points.push([x1, y1], [x2, y2]);
             }

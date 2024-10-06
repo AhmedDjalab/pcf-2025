@@ -14,7 +14,6 @@ function PlanSelectEditor({
   activities,
   setIsOpen,
 }) {
-  console.log("🚀 ~ activities:", activities);
   if (!isOpen) return null;
 
   return (

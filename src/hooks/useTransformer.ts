@@ -9,8 +9,6 @@ const useTransformer = () => {
   const { updateItem } = useItem();
 
   const onTransformEnd = (e: KonvaEventObject<Event>) => {
-    console.log("---🚀 ~ onTransformEnd ~ e:", e.target.id());
-
     updateItem(e.target.id(), () => ({
       ...e.target.attrs,
       updatedAt: Date.now(),

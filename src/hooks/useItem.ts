@@ -76,7 +76,6 @@ const useItem = () => {
     const targetItem = stageData.find(
       (data) => data.id === id || data.attrs.id === id
     );
-    console.log("🚀 ~ useItem ~ updatedObject:", targetItem);
 
     const updatedObject = {
       ...(targetItem ?? {}),
@@ -85,12 +84,6 @@ const useItem = () => {
         ...attrsFunc(targetItem),
       },
     } as StageData;
-
-    console.log(
-      "🚀 ~ useItem ~ updatedObject:",
-      updatedObject,
-      attrsFunc(targetItem)
-    );
 
     dispatch(stageDataAction.updateItem(updatedObject));
   };

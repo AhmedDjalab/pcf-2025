@@ -68,12 +68,6 @@ const UsersModal = ({
     let selectedEmployeesData: Options[] = [];
 
     if (isSuccess && employeeData?.employees) {
-      console.warn(
-        "🚀 ~ employeesIds.map ~ employeesIds:",
-        employeeData?.employees,
-        employeesIds
-      );
-
       selectedEmployeesData =
         employeesIds.map((x) => ({
           label: employeeData.employees.find((e) => e.id === x)?.email ?? "",

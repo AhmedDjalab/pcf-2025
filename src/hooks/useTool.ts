@@ -47,7 +47,6 @@ const useTool = (
   // };
 
   const getClickCallback = (id: string) => () => {
-    console.log(id);
     switch (id) {
       case "select-all":
         return hotkeyFunc.selectAll(stage, onSelectItem);

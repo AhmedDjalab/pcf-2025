@@ -48,7 +48,6 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
   }, [data.attrs]);
 
   useEffect(() => {
-    console.log("this isimage and widnows quality ", window.devicePixelRatio);
     const loadImage = async () => {
       const newImage = new Image();
       newImage.crossOrigin = "Anonymous";

@@ -173,7 +173,6 @@ const PlansList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
   };
 
   const handleEditClick = (row: Plan) => {
-    console.log("🚀 ~ handleEditClick ~ row:", row);
     setEditRow(row);
     setIsNew(false);
     setIsModalOpen(true);
@@ -398,7 +397,6 @@ const PlansList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
           // imgUrl={editRow?.planImageUrl}
           closeModal={() => setIsPlanEditor(false)}
           exportToJson={(data) => {
-            console.log("🚀 ~ PlansList ~ data:", data);
             dispatch(
               addStageDataToPlan({
                 stageData: data,

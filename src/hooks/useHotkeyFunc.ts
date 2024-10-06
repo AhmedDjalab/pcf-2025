@@ -167,7 +167,7 @@ const useHotkeyFunc = () => {
   const updateImageQuality = (stage: Konva.Stage, newScale: number) => {
     stage.find("Image").forEach((imageNode: any) => {
       const image = imageNode.image() as HTMLImageElement;
-      console.log("🚀 ~ stage.find ~ image:", image);
+
       if (image.src.startsWith("data:")) {
         // For base64 images, we need to recreate the image at a higher resolution
         const width = image.width * newScale;

@@ -321,15 +321,7 @@ const useDragAndDrop = (
     const y = stagePoint.y;
     if (data.name.indexOf("polygon") !== -1) {
       const initialPoints = [position.x, position.y];
-      console.warn(
-        "🚀 ~ insertLine ~ initialPoints:",
-        initialPoints,
-        x,
-        y,
-        e.clientX,
-        e.clientY,
-        scale
-      );
+
       var stageId = Uuid4();
       const newPolyline: StageData = {
         id: stageId,
@@ -394,7 +386,6 @@ const useDragAndDrop = (
   };
 
   const onDropOnStage: DropCallback = (dragSrc, e) => {
-    console.log("🚀 ~ e:", e);
     if (!stageRef.current) {
       return;
     }
@@ -471,25 +462,17 @@ const useDragAndDrop = (
 
   const onDragMoveFrame = useCallback((e: KonvaEventObject<DragEvent>) => {
     if (checkIsInFrame(e.target)) {
-      console.log(
-        "🚀 ~ onDragMoveFrame ~ checkIsInFrame:",
-        checkIsInFrame(e.target)
-      );
       return;
     }
     if (e.target.getLayer() !== e.target.getParent()) {
       moveToLayer(e.target as Shape<ShapeConfig>);
-      console.log(
-        "🚀 ~ onDragMoveFrame ~ checkIsInFrame:",
-        checkIsInFrame(e.target)
-      );
     }
   }, []);
 
   const onDragEndFrame = (e: KonvaEventObject<DragEvent>) => {
     e.evt.preventDefault();
     e.evt.stopPropagation();
-    console.log("this is event onDragEndFrame", e.target.attrs);
+
     updateItem(e.target.id(), () => ({
       ...e.target.attrs,
     }));

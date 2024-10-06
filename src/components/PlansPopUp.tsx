@@ -33,7 +33,7 @@ const PlansPopUp: React.FC<PlansPopUpProps> = ({
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
     isNew ? "" : editRow!.planImageUrl
   );
-  console.log("🚀 ~ selectedImage:", selectedImage, editRow);
+
   const minDistance: number = useSelector(
     (state: RootState) => state.graph.settings.fromDistance
   );
@@ -112,7 +112,7 @@ const PlansPopUp: React.FC<PlansPopUpProps> = ({
             resetForm,
             isValid,
           }) => (
-            console.log("🚀 ~ errors:", values.planImageUrl),
+          
             (
               <Form>
                 <div className="mb-4">

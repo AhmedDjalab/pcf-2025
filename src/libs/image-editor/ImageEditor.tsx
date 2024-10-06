@@ -217,13 +217,6 @@ function ImageEditor({
       // Normalize scale
       const normalizedScaleX = scaleX ? scaleX / (imageWidth / imageHeight) : 1;
       const normalizedScaleY = scaleY ? scaleY / (imageHeight / imageWidth) : 1;
-      console.warn(
-        "🚀 ~ normalizeShapeData ~ normalizedScaleX:",
-        scaleX,
-        scaleY,
-        normalizedScaleX,
-        normalizedScaleY
-      );
 
       // Return normalized shape attributes
       return {
@@ -264,7 +257,7 @@ function ImageEditor({
       const denormalizeShapeData = (shape: StageData) => {
         const { x, y, width, height, scaleX, scaleY, ...restAttrs } =
           shape.attrs;
-        console.warn("this is attris ", shape);
+
         if (shape.className === "sample-image") {
           // No need to denormalize the "sample-image" itself
           return shape;
@@ -284,14 +277,6 @@ function ImageEditor({
           ? scaleY * (imageHeight / imageWidth)
           : 1;
 
-        console.warn(
-          "🚀 ~ DnormalizeShapeData ~ DnormalizedScaleX:",
-          scaleX,
-          scaleY,
-          denormalizedScaleX,
-          denormalizedScaleY
-        );
-
         // Return denormalized shape attributes
         const newShape = {
           ...shape,
@@ -305,7 +290,6 @@ function ImageEditor({
             scaleY: denormalizedScaleY,
           },
         };
-        console.warn("🚀 ~ denormalizeShapeData ~ newShape:", newShape);
 
         return newShape;
       };

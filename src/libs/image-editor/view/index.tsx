@@ -286,7 +286,6 @@ const View: React.FC<ViewProps> = ({
   );
 
   useEffect(() => {
-    console.warn("----****--this is the resize logic----****--- ");
     window.addEventListener("load", setStateSizeToFitIn);
     window.addEventListener("resize", setStateSizeToFitIn);
     return () => window.removeEventListener("resize", setStateSizeToFitIn);

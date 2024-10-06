@@ -46,7 +46,6 @@ function MicrosoftLoginCallback() {
     api
       .get(getUserDataUrl, { withCredentials: true })
       .then((response) => {
-        console.log("🚀 ~ .then ~ response:", response);
         // // Store the user data and token
         // localStorage.setItem("jwtToken", response.data.token);
         // localStorage.setItem("role", response.data.role);

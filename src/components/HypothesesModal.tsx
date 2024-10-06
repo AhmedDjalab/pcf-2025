@@ -34,15 +34,9 @@ const HypothesisModal: React.FC<HypothesisModalProps> = ({
   );
 
   useEffect(() => {
-    console.log(
-      "🚀 ~ useEffect ~ hypothesisDescriptions:",
-      hypothesisDescriptions
-    );
+   
     if (hypothesisDescriptions) {
-      console.log(
-        "🚀 ~ useEffect ~ hypothesisDescriptions:",
-        hypothesisDescriptions
-      );
+      
       const blocksFromHtml = htmlToDraft(hypothesisDescriptions);
       const { contentBlocks, entityMap } = blocksFromHtml;
       const contentState = ContentState.createFromBlockArray(

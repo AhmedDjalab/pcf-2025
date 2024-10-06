@@ -1010,7 +1010,7 @@ const GraphSlice = createSlice({
     builder.addCase(fetchProjectByIdThunk.fulfilled, (state, action) => {
       state.loading = false;
       resetStoreState();
-      console.log("thtihit", action.payload.data!.plans);
+
       var activities = action.payload.data?.activities?.map((act) => ({
         id: act.id,
         styleId: act.style,

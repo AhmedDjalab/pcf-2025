@@ -34,7 +34,6 @@ type ExportWidgetProps = {
 const ExportWidget: React.FC<ExportWidgetProps> = ({ data }) => {
   const stageData = useSelector(stageDataSelector.selectAll);
   const stageCon = useStage();
-  console.log("🚀 ~ stageCon:", data);
 
   const { alterItems, clearItems, createItem } = useItem();
   const exportShapesAsJson = () => {
@@ -53,13 +52,6 @@ const ExportWidget: React.FC<ExportWidgetProps> = ({ data }) => {
 
     const imageWidth = sampleImage.attrs.width;
     const imageHeight = sampleImage.attrs.height;
-    console.warn(
-      "🚀 ~ exportShapesAsJson ~ imageWidth:",
-      imageWidth,
-      imageHeight,
-      stage.width(),
-      stage.height()
-    );
 
     // Normalize function to adjust positions, sizes, and scales based on the "sample-image"
     const normalizeShapeData = (shape: StageData) => {
