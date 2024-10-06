@@ -154,7 +154,10 @@ export const getFramePos = (
 ) => {
   stage.setPointersPositions(e);
   const stageOrigin = stage.getAbsolutePosition();
+
   const mousePosition = stage.getPointerPosition();
+  console.log("🚀 ~ mousePosition:", mousePosition);
+  console.log("🚀 ~ stageOrigin:", stageOrigin);
   if (!mousePosition) {
     return {
       x: 0,

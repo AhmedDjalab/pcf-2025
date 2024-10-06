@@ -300,9 +300,21 @@ const useDragAndDrop = (
   const insertLine = (e: DragEvent, data: { [key: string]: any }) => {
     const position = getFramePos(stageRef.current, e, 100, 100);
 
+    const stage = stageRef.current;
+    const scale = stage.getAbsoluteScale();
+    const x = e.offsetX;
+    const y = e.offsetY;
     if (data.name.indexOf("polygon") !== -1) {
       const initialPoints = [position.x, position.y];
-      console.warn("🚀 ~ insertLine ~ initialPoints:", initialPoints, e);
+      console.warn(
+        "🚀 ~ insertLine ~ initialPoints:",
+        initialPoints,
+        x,
+        y,
+        e.clientX,
+        e.clientY,
+        scale
+      );
       var stageId = Uuid4();
       const newPolyline: StageData = {
         id: stageId,
@@ -311,8 +323,8 @@ const useDragAndDrop = (
           name: "label-target",
           "data-item-type": "polygon",
           // stroke: "#00000",
-          x: e.offsetX,
-          y: e.offsetY,
+          x: x,
+          y: y,
           radius: 10,
           fill: "#00FF00",
           stroke: "#000000",
@@ -320,6 +332,8 @@ const useDragAndDrop = (
           draggable: true,
           zIndex: 0,
           brightness: 0,
+          scaleX: 1,
+          scaleY: 1,
           updatedAt: Date.now(),
         },
         className: "sample-polygon",
