@@ -75,6 +75,8 @@ export type ImageEditorType = {
   activities: GraphDataType[];
   readOnly?: boolean;
   stageActivities?: StageActivity[] | undefined;
+  stageActivities?: StageActivity[] | undefined;
+  setIsOpen?: () => void;
 };
 function ImageEditor({
   imgUrl,
@@ -83,6 +85,7 @@ function ImageEditor({
   activities,
   stageActivities,
   readOnly,
+  setIsOpen,
 }: ImageEditorType) {
   useEffect(() => {
     const link = document.createElement("link");
@@ -418,6 +421,7 @@ function ImageEditor({
 
   const settingBar = (
     <SettingBar
+      closeModal={setIsOpen}
       selectedItems={selectedItems}
       clearSelection={clearSelection}
       stageRef={stage.stageRef}

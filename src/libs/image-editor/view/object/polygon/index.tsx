@@ -55,8 +55,10 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
     const stage = e.target.getStage();
     const pointerPos = stage.getPointerPosition();
     if (!pointerPos) return;
-
-    const { x, y } = pointerPos;
+    const transform = stage.getAbsoluteTransform().copy();
+    transform.invert();
+    const stagePoint = transform.point(pointerPos);
+    const { x, y } = stagePoint;
 
     if (
       points.length >= 4 &&

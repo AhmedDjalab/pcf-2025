@@ -12,6 +12,7 @@ function PlanSelectEditor({
   imgUrl,
   imgBlob,
   activities,
+  setIsOpen,
 }) {
   console.log("🚀 ~ activities:", activities);
   if (!isOpen) return null;
@@ -41,6 +42,7 @@ function PlanSelectEditor({
             initialStageData={initialData}
             // imgBlob={imgBlob}
             activities={activities}
+            setIsOpen={setIsOpen}
           />
         </div>
       </div>

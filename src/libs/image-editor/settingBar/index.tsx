@@ -28,6 +28,7 @@ export type SettingBarProps = {
   stageRef: ReturnType<typeof useStage>["stageRef"];
   activities?: GraphDataType[];
   saveChanges?: () => void;
+  closeModal?: () => void;
 };
 
 const Widgets = {
@@ -65,7 +66,10 @@ const SettingBar: React.FC<SettingBarProps> = (settingProps: any) => {
         ))}
       </Accordion>
       <Button
-        onClick={() => settingProps!.saveChanges()}
+        onClick={() => {
+          settingProps!.saveChanges();
+          settingProps!.closeModal(false);
+        }}
         style={{
           display: "flex",
           justifyContent: "center",

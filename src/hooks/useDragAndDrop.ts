@@ -299,11 +299,26 @@ const useDragAndDrop = (
 
   const insertLine = (e: DragEvent, data: { [key: string]: any }) => {
     const position = getFramePos(stageRef.current, e, 100, 100);
-
     const stage = stageRef.current;
+    if (!stage) {
+      console.error("Stage reference is not available");
+      return;
+    }
+
     const scale = stage.getAbsoluteScale();
-    const x = e.offsetX;
-    const y = e.offsetY;
+    const pointerPosition = stage.getPointerPosition();
+
+    if (!pointerPosition) {
+      console.error("Unable to get pointer position");
+      return;
+    }
+
+    const transform = stage.getAbsoluteTransform().copy();
+    transform.invert();
+    const stagePoint = transform.point(pointerPosition);
+
+    const x = stagePoint.x;
+    const y = stagePoint.y;
     if (data.name.indexOf("polygon") !== -1) {
       const initialPoints = [position.x, position.y];
       console.warn(
@@ -332,8 +347,7 @@ const useDragAndDrop = (
           draggable: true,
           zIndex: 0,
           brightness: 0,
-          scaleX: 1,
-          scaleY: 1,
+
           updatedAt: Date.now(),
         },
         className: "sample-polygon",

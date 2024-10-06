@@ -421,6 +421,7 @@ const PlansList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
               : initialData
           }
           activities={selectedActivities}
+          setIsOpen={setIsPlanEditor}
         />
       )}
     </div>
