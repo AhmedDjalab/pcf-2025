@@ -28,6 +28,7 @@ import {
 } from "src/state/slices/graphSlice";
 import { v4 as uuidv4 } from "uuid";
 import { Spinner } from "react-bootstrap";
+import { useAuth } from "src/context/UserContext";
 
 function PlanView() {
   const [getStagesData, setGetStagesData] = useState<boolean>(false);
@@ -36,6 +37,7 @@ function PlanView() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const { id: projectId } = useParams();
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
+  const { user, canWrite, isAdmin } = useAuth();
 
   const { t } = useTranslation();
   // React Query to fetch plans

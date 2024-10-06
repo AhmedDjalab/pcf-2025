@@ -436,7 +436,7 @@ function ImageEditor({
             key={`frame-${item.id}`}
             data={item as FrameProps["data"]}
             onSelect={!readOnly && onSelectItem}
-            readOnly={!readOnly}
+            readOnly={readOnly}
           />
         );
       case "image":
@@ -454,7 +454,7 @@ function ImageEditor({
             data={item as TextItemProps["data"]}
             transformer={transformer}
             onSelect={!readOnly && onSelectItem}
-            readOnly={!readOnly}
+            readOnly={readOnly}
           />
         );
       case "shape":
@@ -464,7 +464,7 @@ function ImageEditor({
             data={item as ShapeItemProps["data"]}
             transformer={transformer}
             onSelect={!readOnly && onSelectItem}
-            readOnly={!readOnly}
+            readOnly={readOnly}
           />
         );
       case "icon":
@@ -474,7 +474,7 @@ function ImageEditor({
             data={item as IconItemProps["data"]}
             transformer={transformer}
             onSelect={!readOnly && onSelectItem}
-            readOnly={!readOnly}
+            readOnly={readOnly}
           />
         );
       case "line":
@@ -484,7 +484,7 @@ function ImageEditor({
             data={item as LineItemProps["data"]}
             transformer={transformer}
             onSelect={!readOnly && onSelectItem}
-            readOnly={!readOnly}
+            readOnly={readOnly}
           />
         );
       case "polygon":
@@ -494,7 +494,7 @@ function ImageEditor({
             data={item as PolygonItemProps["data"]}
             transformer={transformer}
             onSelect={!readOnly && onSelectItem}
-            readOnly={!readOnly}
+            readOnly={readOnly}
           />
         );
       default:
