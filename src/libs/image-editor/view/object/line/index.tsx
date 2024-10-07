@@ -89,6 +89,7 @@ const LineItem: React.FC<LineItemProps> = ({
         draggable={!readOnly}
         onDragMove={onDragMoveFrame}
         onDragEnd={onDragEndFrame}
+        activityUID={attrs.activityUID}
       />
     </Group>
   );

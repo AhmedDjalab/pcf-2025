@@ -146,6 +146,7 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
         draggable={!readOnly}
         onDragMove={onDragMoveFrame}
         onDragEnd={onDragEndFrame}
+        activityUID={attrs.activityUID}
       />
 
       {isDrawing && (

@@ -53,6 +53,7 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
     if (data.selectedItems[0]) {
       const item = data.selectedItems[0];
       const itemActivityId = item.attrs.activityUID || "";
+
       if (itemActivityId) {
         //setSelectedActivityId(itemActivityId);
         const activity = activities.find(
@@ -60,6 +61,9 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
         )!;
         setSelectedActivity(activity);
         setSearchTerm(activity.activityName);
+      } else {
+        setSelectedActivity(undefined);
+        setSearchTerm("");
       }
     }
   }, [activities, data.selectedItems]);
@@ -187,25 +191,37 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
         <Input
           id="id"
           label="Id"
-          value={selectedActivity?.activityId}
+          name="id"
+          value={selectedActivity?.activityId ?? ""}
           readOnly
         />
         <Input
           id="UID"
           label="UID"
-          value={selectedActivity?.activityUID}
+          name="UID"
+          value={selectedActivity?.activityUID ?? ""}
           readOnly
         />
         <Input
           id="start"
           label="Start"
-          value={moment(selectedActivity?.startDate).format("DD-MM-YYYY")}
+          name="Start"
+          value={
+            selectedActivity?.startDate
+              ? moment(selectedActivity.startDate).format("DD-MM-YYYY")
+              : ""
+          }
           readOnly
         />
         <Input
           id="end"
           label="End"
-          value={moment(selectedActivity?.finishDate).format("DD-MM-YYYY")}
+          name="End"
+          value={
+            selectedActivity?.finishDate
+              ? moment(selectedActivity.finishDate).format("DD-MM-YYYY")
+              : ""
+          }
           readOnly
         />
       </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export interface SpinnerProps {
   height?: string;
@@ -10,7 +10,7 @@ const Spinner = ({ height, width }: SpinnerProps) => {
   return (
     <div
       role="status"
-      className="mx-auto flex h-full items-center justify-center"
+      className="mx-auto flex h-full w-full items-center justify-center"
     >
       <svg
         aria-hidden="true"
@@ -20,8 +20,8 @@ const Spinner = ({ height, width }: SpinnerProps) => {
              
             `}
         style={{
-          height: height ?? '1rem',
-          width: width ?? '1rem',
+          height: height ?? "1rem",
+          width: width ?? "1rem",
         }}
         viewBox="0 0 100 101"
         fill="none"
