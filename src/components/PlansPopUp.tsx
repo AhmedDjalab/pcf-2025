@@ -5,6 +5,7 @@ import { RootState } from "../state";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import ImagePicker from "./ImagePicker"; // Assuming you have this component for handling images
+import Input from "./Input";
 
 interface PlansPopUpProps {
   isNew: boolean;
@@ -112,97 +113,88 @@ const PlansPopUp: React.FC<PlansPopUpProps> = ({
             resetForm,
             isValid,
           }) => (
-          
-            (
-              <Form>
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2  dark:text-white">
-                    {t("plansPopUp.labels.name")}
-                  </label>
-                  <Field
-                    type="text"
-                    name="name"
-                    placeholder={t("plansPopUp.placeholders.name")}
-                    className={`border ${
-                      errors.name ? "border-red-500" : "border-gray-300"
-                    } rounded p-2 w-full block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500`}
-                  />
-                  <ErrorMessage
-                    name="name"
-                    component="div"
-                    className="text-red-500 mt-2"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2  dark:text-white">
-                    {t("plansPopUp.labels.start")}
-                  </label>
-                  <Field
-                    type="number"
-                    name="startPk"
-                    placeholder={t("plansPopUp.placeholders.start")}
-                    className={`border ${
-                      errors.startPk ? "border-red-500" : "border-gray-300"
-                    } rounded p-2 w-full block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500`}
-                  />
-                  <ErrorMessage
-                    name="start"
-                    component="div"
-                    className="text-red-500 mt-2"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2  dark:text-white">
-                    {t("plansPopUp.labels.end")}
-                  </label>
-                  <Field
-                    type="number"
-                    name="endPk"
-                    placeholder={t("plansPopUp.placeholders.end")}
-                    className={`border ${
-                      errors.endPk ? "border-red-500" : "border-gray-300"
-                    } rounded p-2 w-full block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500`}
-                  />
-                  <ErrorMessage
-                    name="end"
-                    component="div"
-                    className="text-red-500 mt-2"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="planImage"
-                    className="block text-gray-700 text-sm font-bold mb-2 dark:text-white"
-                  >
-                    {t("plansPopUp.labels.planImage")}
-                  </label>
-                  <ImagePicker
-                    keyRef="planImageId"
-                    onChange={handleImageChange}
-                    imageValue={selectedImage}
-                    setFileName={(fileName) => console.log(fileName)}
-                  />
-                </div>
-                <div className="flex justify-end">
-                  <button
-                    type="submit"
-                    disabled={!isValid}
-                    className="bg-blue-500 text-white rounded px-4 py-2 mr-2 hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-                  >
-                    {isNew
-                      ? t("plansPopUp.buttons.add")
-                      : t("plansPopUp.buttons.save")}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    className="bg-gray-300 text-gray-600 rounded px-4 py-2 hover:bg-gray-400 focus:outline-none focus:ring focus:ring-gray-300"
-                  >
-                    {t("plansPopUp.buttons.cancel")}
-                  </button>
-                </div>
-              </Form>
-            )
+            <Form>
+              <div className="mb-4">
+                <Input
+                  type="text"
+                  name="name"
+                  id="name"
+                  label={t("plansPopUp.labels.name")}
+                  labelDir="Above"
+                  placeholder={t("plansPopUp.placeholders.name")}
+                  value={values.name}
+                  onChange={handleChange}
+                  errors={errors}
+                  className={`border ${
+                    errors.name ? "border-red-500" : "border-gray-300"
+                  } rounded p-2 w-full block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500`}
+                />
+              </div>
+              <div className="mb-4">
+                <Input
+                  type="text"
+                  name="startPk"
+                  id="startPk"
+                  label={t("plansPopUp.labels.start")}
+                  labelDir="Above"
+                  placeholder={t("plansPopUp.labels.start")}
+                  value={values.startPk}
+                  onChange={handleChange}
+                  errors={errors}
+                  className={`border ${
+                    errors.startPk ? "border-red-500" : "border-gray-300"
+                  } rounded p-2 w-full block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500`}
+                />
+              </div>
+              <div className="mb-4">
+                <Input
+                  type="text"
+                  name="endPk"
+                  id="endPk"
+                  label={t("plansPopUp.labels.end")}
+                  labelDir="Above"
+                  placeholder={t("plansPopUp.labels.end")}
+                  value={values.endPk}
+                  onChange={handleChange}
+                  errors={errors}
+                  className={`border ${
+                    errors.endPk ? "border-red-500" : "border-gray-300"
+                  } rounded p-2 w-full block w-full rounded-lg border border-gray-300  bg-gray-50 p-2.5  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500`}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="planImage"
+                  className="block text-gray-700 text-sm font-bold mb-2 dark:text-white"
+                >
+                  {t("plansPopUp.labels.planImage")}
+                </label>
+                <ImagePicker
+                  keyRef="planImageId"
+                  onChange={handleImageChange}
+                  imageValue={selectedImage}
+                  setFileName={(fileName) => console.log(fileName)}
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={!isValid}
+                  className="bg-blue-500 text-white rounded px-4 py-2 mr-2 hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+                >
+                  {isNew
+                    ? t("plansPopUp.buttons.add")
+                    : t("plansPopUp.buttons.save")}
+                </button>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="bg-gray-300 text-gray-600 rounded px-4 py-2 hover:bg-gray-400 focus:outline-none focus:ring focus:ring-gray-300"
+                >
+                  {t("plansPopUp.buttons.cancel")}
+                </button>
+              </div>
+            </Form>
           )}
         </Formik>
       </div>

@@ -922,6 +922,7 @@ const GraphSlice = createSlice({
       state.shapes = { ...initialState.shapes };
       state.taskSlots = [...initialState.taskSlots];
       state.taskSlotsLevelTwo = [...initialState.taskSlotsLevelTwo];
+      state.plans = [...initialState.plans];
       state.rawGraphDataFromFile = {
         ...(initialState.rawGraphDataFromFile ?? []),
       };
