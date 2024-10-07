@@ -49,7 +49,7 @@ const View: React.FC<ViewProps> = ({
     // console.warn("🚀 ~ setStateSizeToFitIn ~ width, height:", width, height);
 
     var imgAttrs = stageData.find((x) => x.className == "sample-image")?.attrs;
-    //console.log("🚀 ~ setStateSizeToFitIn ~ imgAttrs:", imgAttrs);
+    console.warn("🚀 ~ setStateSizeToFitIn ~ imgAttrs:", imgAttrs);
     if (imgAttrs) {
       if (imgAttrs.width > width) {
         width = imgAttrs.width;
@@ -57,13 +57,13 @@ const View: React.FC<ViewProps> = ({
       if (imgAttrs.height > height) {
         height = imgAttrs.height;
       }
-      // setHeight(imgAttrs.height);
-      // setWidth(imgAttrs.width);
+      setHeight(imgAttrs.height);
+      setWidth(imgAttrs.width);
     }
 
-    stageRef.current.width(width);
-    stageRef.current.height(height);
-    stageRef.current.batchDraw();
+    // stageRef.current.width(width);
+    // stageRef.current.height(height);
+    // stageRef.current.batchDraw();
   }, [stageRef, stageData]);
 
   const zoomOnWheel = useCallback(
@@ -289,7 +289,7 @@ const View: React.FC<ViewProps> = ({
     window.addEventListener("load", setStateSizeToFitIn);
     window.addEventListener("resize", setStateSizeToFitIn);
     return () => window.removeEventListener("resize", setStateSizeToFitIn);
-  }, [setStateSizeToFitIn]);
+  }, []);
 
   // useEffect(() => {
   //   console.warn("this scr", stageRef.current?.container());
@@ -302,6 +302,7 @@ const View: React.FC<ViewProps> = ({
   useEffect(() => {
     if (stageRef.current) {
       setContainer(stageRef.current!.container());
+      setStateSizeToFitIn();
     }
   }, [stageRef]);
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {

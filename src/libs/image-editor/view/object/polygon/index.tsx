@@ -42,7 +42,7 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
     attrs.points || [attrs.x, attrs.y]
   );
   const [isDrawing, setIsDrawing] = useState(!attrs.points?.length);
-  const [isClosed, setIsClosed] = useState(isShapeClosed(attrs.points));
+  const [isClosed, setIsClosed] = useState(attrs.isClosed ?? false);
 
   function isShapeClosed(points: number[] | undefined): boolean {
     if (!points || points.length < 4) return false;
@@ -95,7 +95,11 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
       setIsClosed(false);
     }
     //@ts-nocheck
-    updateItem(attrs.id, () => ({ ...attrs, points: points }));
+    updateItem(attrs.id, () => ({
+      ...attrs,
+      points: points,
+      isClosed: closePath,
+    }));
   };
 
   useEffect(() => {

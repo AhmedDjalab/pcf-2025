@@ -417,5 +417,6 @@
   "plansForm": {
     "plans": "plan",
     "date": "fecha"
-  }
+  },
+  "PlanEditorPopUp": "Editor de plan"
 }

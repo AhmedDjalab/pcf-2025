@@ -4,6 +4,7 @@ import ImageEditorModule from "src/libs/image-editor/ImageEditorModule";
 import { XIcon } from "@heroicons/react/outline";
 import { ClockIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import ImageEditor from "./libs/image-editor/ImageEditor";
+import { useTranslation } from "react-i18next";
 function PlanSelectEditor({
   isOpen,
   initialData,
@@ -14,6 +15,7 @@ function PlanSelectEditor({
   activities,
   setIsOpen,
 }) {
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   return (
@@ -21,8 +23,8 @@ function PlanSelectEditor({
       <div className=" dark:bg-boxdark-2 dark:text-bodydark relative  bg-white rounded-lg shadow-sm  w-full h-full  overflow-auto">
         {/* Modal Header */}
         <div className="flex  justify-between items-center p-2 border-b border-gray-300">
-          <h2 className="text-lg font-bold dark:text-white  text-gray-800 text-black">
-            Plan Editor
+          <h2 className="text-lg font-bold dark:text-white   text-gray-800 text-black">
+            {t("PlanEditorPopUp")}
           </h2>
 
           <XCircleIcon

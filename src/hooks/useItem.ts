@@ -35,6 +35,7 @@ export type ItemData = {
   skewX?: number;
   skewY?: number;
   activityUID?: string;
+  isClosed: boolean;
 } & Record<string, any>;
 
 export type ItemProps = {

@@ -422,5 +422,6 @@
   "plansForm": {
     "plans": "Sélectionner un plan",
     "date": "Sélectionner une date"
-  }
+  },
+  "PlanEditorPopUp": "Éditeur de plan"
 }

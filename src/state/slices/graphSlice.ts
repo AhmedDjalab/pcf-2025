@@ -124,6 +124,7 @@ export interface AttributesModel {
   updatedAt?: number;
   curve?: boolean;
   arrow?: boolean;
+  isClosed?: boolean;
   points?: number[];
 }
 

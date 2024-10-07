@@ -58,13 +58,6 @@ const SettingBar: React.FC<SettingBarProps> = (settingProps: any) => {
 
   return (
     <aside>
-      <Accordion>
-        {(widgetList as WidgetKind[]).map((data) => (
-          <Widget key={`widget-${data.id}`} data={{ ...data, ...settingProps }}>
-            {Widgets[data.id] && Widgets[data.id]({ ...data, ...settingProps })}
-          </Widget>
-        ))}
-      </Accordion>
       <Button
         onClick={() => {
           settingProps!.saveChanges();
@@ -74,11 +67,19 @@ const SettingBar: React.FC<SettingBarProps> = (settingProps: any) => {
           display: "flex",
           justifyContent: "center",
           margin: "10px auto",
+          marginTop: "-30px",
           paddingInline: "20px",
         }}
       >
         {`${getTranslation("widget", "activity", "saveActivity")}`}
       </Button>
+      <Accordion>
+        {(widgetList as WidgetKind[]).map((data) => (
+          <Widget key={`widget-${data.id}`} data={{ ...data, ...settingProps }}>
+            {Widgets[data.id] && Widgets[data.id]({ ...data, ...settingProps })}
+          </Widget>
+        ))}
+      </Accordion>
     </aside>
   );
 };
