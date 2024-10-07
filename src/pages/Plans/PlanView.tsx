@@ -72,8 +72,8 @@ function PlanView() {
         date: selectedDate!,
       }),
 
-    refetchOnWindowFocus: false,
-    staleTime: 6000,
+    refetchOnWindowFocus: true,
+    staleTime: 3000,
   });
 
   // Handle plan selection

@@ -283,40 +283,7 @@ const PlansList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
           {t("taskSlotsList.buttons.showPlanning")}
         </button>
       </div>
-      {!id && (
-        <div className="flex w-full justify-center items-center gap-5">
-          <Dropdown
-            id="projectId"
-            name="projectId"
-            label={t("projectForm.project")}
-            labelClassName="w-[40%]"
-            onChange={(e) => {
-              setSelectedProject(e.currentTarget.value);
-            }}
-            value={selectedProject}
-            optionValue="id"
-            optionLabel="label"
-            className="  rounded-lg border border-gray-300 bg-gray-50  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-            options={projectOptions ?? []}
-          />
-          <button
-            className="focus:outline-none mt-10  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
-            onClick={() => {
-              dispatch(
-                fetchAllTaskSlotByProjectId({
-                  projectId: selectedProject,
-                  level: 1,
-                })
-              );
-            }}
-          >
-            <span className="mr-2">
-              <DocumentDuplicateIcon className="w-4 h-4" />
-            </span>
-            {t("projectSelection.copy")}
-          </button>
-        </div>
-      )}
+
       <div className="my-4 flex justify-start items-start   ">
         <button
           disabled={!canWrite && !isAdmin}
@@ -366,16 +333,18 @@ const PlansList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
                   {t("taskSlotsList.buttons.delete")}
                 </button>
 
-                <button
-                  className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                  onClick={() => {
-                    setEditRow(row);
-                    setIsPlanEditor(true);
-                  }}
-                  disabled={!canWrite && !isAdmin}
-                >
-                  {t("plansList.buttons.planDraw")}
-                </button>
+                {id && (
+                  <button
+                    className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    onClick={() => {
+                      setEditRow(row);
+                      setIsPlanEditor(true);
+                    }}
+                    disabled={!canWrite && !isAdmin}
+                  >
+                    {t("plansList.buttons.planDraw")}
+                  </button>
+                )}
               </td>
             </tr>
           ))}
@@ -391,7 +360,7 @@ const PlansList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
         />
       )}
 
-      {isPlanEditor && editRow && (
+      {isPlanEditor && editRow && id && (
         <PlanSelectEditor
           isOpen={isPlanEditor}
           // imgUrl={editRow?.planImageUrl}
