@@ -2,6 +2,9 @@ import { uniqueId } from "lodash";
 import { MsProjectOption } from "src/components/ParmeterSelector";
 import { GraphDataType } from "src/state/slices/graphSlice";
 
+const formatNumberForBackend = (number) => {
+  return number.toLocaleString("en-US", { useGrouping: false });
+};
 export const BackToTopHeightSize = 900;
 export var languages = [
   { code: "en", name: "English", countryCode: "GB" },

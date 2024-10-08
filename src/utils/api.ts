@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 import handleApiError from "./handleerror";
 import { usedUrl } from "src/variables/Urls";
 import { getJwt } from "src/Services/AuthService";
+import { storedLanguage } from "src/i18n/config";
 
 const api = axios.create({
   baseURL: usedUrl,
@@ -18,9 +19,13 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  if (storedLanguage) {
+    config.headers["Accept-Language"] = storedLanguage;
+  }
 
   config.params = {
     ...config.params,
+    culture: storedLanguage,
   };
   return config;
 });
