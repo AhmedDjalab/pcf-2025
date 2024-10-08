@@ -405,6 +405,7 @@ const useDragAndDrop = (
         return insertIcon(e, data);
       case TRIGGER.INSERT.LINE:
         return insertLine(e, data);
+
       default:
     }
   };
