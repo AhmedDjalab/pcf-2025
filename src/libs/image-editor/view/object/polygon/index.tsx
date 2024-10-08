@@ -54,6 +54,7 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
   const handleStageClick = (e: any) => {
     const stage = e.target.getStage();
     const pointerPos = stage.getPointerPosition();
+    console.log("🚀 ~ handleStageClick ~ pointerPos:", pointerPos);
     if (!pointerPos) return;
     const transform = stage.getAbsoluteTransform().copy();
     transform.invert();
@@ -169,8 +170,8 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
           <Rect
             x={0}
             y={0}
-            width={Math.round(window.innerWidth * 0.7)}
-            height={Math.round(window.innerHeight * 0.7)}
+            width={Math.round(window.innerWidth)}
+            height={Math.round(window.innerHeight)}
             fill="transparent"
             onClick={handleStageClick}
           />

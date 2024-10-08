@@ -2255,7 +2255,9 @@ function ViewGraph() {
       } else if (format === "image") {
         // Create a new canvas to combine graph and legend
         const combinedCanvas = document.createElement("canvas");
-        const combinedCtx = combinedCanvas.getContext("2d");
+        const combinedCtx = combinedCanvas.getContext("2d", {
+          willReadFrequently: true,
+        });
 
         if (!combinedCtx) {
           console.error("Failed to get canvas context");

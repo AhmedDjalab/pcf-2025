@@ -69,7 +69,7 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
           y: 0,
           width,
           height,
-          pixelRatio: 5,
+          pixelRatio: 2,
           quality: 1.0,
         });
 
@@ -91,9 +91,9 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
       stage.setStageRef(imageRef.current.getStage()!);
       imageRef.current.brightness(data.attrs.brightness);
       checkIsInFrame(imageRef.current);
-      imageRef.current.cache();
+      imageRef.current.cache({ pixelRatio: 5 });
     }
-  }, [imageSrc, data]);
+  }, [imageSrc, data, stage, checkIsInFrame]);
 
   useEffect(() => {
     if (imageRef.current) {
@@ -135,6 +135,7 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
       rotation={attrs.rotation ?? 0}
       filters={filters ?? [Konva.Filters.Brighten]}
       draggable={false}
+      perfectDrawEnabled={true}
       imageSmoothingEnabled={false}
       webkitImageSmoothingEnabled={false}
       mozImageSmoothingEnabled={false}

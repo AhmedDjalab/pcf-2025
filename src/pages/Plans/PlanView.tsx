@@ -65,56 +65,57 @@ function PlanView() {
 
     try {
       const sizes: Record<string, [number, number]> = {
-        A3: [297, 420],
-        A4: [210, 297],
-        A5: [148, 210],
+        A3: [297, 420], // A3 size in mm
+        A4: [210, 297], // A4 size in mm
+        A5: [148, 210], // A5 size in mm
       };
 
       let [pageWidthMM, pageHeightMM] = sizes[paperSize];
       if (orientation === "landscape") {
+        // Swap width and height for landscape orientation
         [pageWidthMM, pageHeightMM] = [pageHeightMM, pageWidthMM];
       }
 
-      const pageWidthPx = pageWidthMM * 3.7795275591;
-      const pageHeightPx = pageHeightMM * 3.7795275591;
+      const pageWidthPx = pageWidthMM * 3.7795275591; // Convert mm to pixels
+      const pageHeightPx = pageHeightMM * 3.7795275591; // Convert mm to pixels
 
-      // Helper function to capture element as canvas using iframe
+      // Helper function to capture element as canvas
       const captureElement = async (element: HTMLElement) => {
-        const iframe = document.createElement("iframe");
-        iframe.style.position = "absolute";
-        iframe.style.top = "-9999px";
-        document.body.appendChild(iframe);
+        // Save original overflow style
+        const originalOverflow = element.style.overflow;
 
-        const iframeDocument =
-          iframe.contentDocument || iframe.contentWindow?.document;
-        iframeDocument?.open();
-        iframeDocument?.write(element.outerHTML);
-        iframeDocument?.close();
+        // Temporarily set overflow to visible
+        element.style.overflow = "visible";
 
-        const iframeElement = iframeDocument?.body?.firstChild as HTMLElement;
-        iframeElement.style.overflow = "visible";
-
-        await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for rendering
-
-        const canvas = await html2canvas(iframeElement, {
+        // Capture the element
+        const canvas = await html2canvas(element, {
           useCORS: true,
           allowTaint: false,
-          scale: 2,
           logging: true,
-          width: element.scrollWidth, // Capture full width
-          height: element.scrollHeight, // Capture full height
+          scale: 2,
+          onclone: (documentClone) => {
+            const images = documentClone.querySelectorAll("img");
+            images.forEach((img) => {
+              img.crossOrigin = "Anonymous";
+            });
+          },
         });
 
-        document.body.removeChild(iframe);
+        // Revert overflow style back to original
+        element.style.overflow = originalOverflow;
+
         return canvas;
       };
 
+      // Capture the graph
       const graphCanvas = await captureElement(graph);
       const graphDataURL = graphCanvas.toDataURL("image/png", 2.0);
 
+      // Capture the legend
       const legendCanvas = await captureElement(legend);
       const legendDataURL = legendCanvas.toDataURL("image/png", 2.0);
 
+      // Function to calculate dimensions and scale to fit within page
       const scaleToFit = (
         canvas: HTMLCanvasElement,
         pageWidth: number,
@@ -122,68 +123,84 @@ function PlanView() {
       ) => {
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
+
+        // Calculate scaling factors for width and height
         const scaleX = pageWidth / canvasWidth;
         const scaleY = pageHeight / canvasHeight;
+
+        // Use the smaller scaling factor to fit within the page
         const scale = Math.min(scaleX, scaleY);
 
         return {
           width: canvasWidth * scale,
-          height: canvasHeight * scale,
+          height: canvasHeight * scaleY,
           scale,
         };
       };
 
       if (format === "pdf") {
         const pdf = new jsPDF(orientation, "mm", [pageWidthMM, pageHeightMM]);
+
+        // Scale graph to fit within the page
         const { width: graphWidth, height: graphHeight } = scaleToFit(
           graphCanvas,
           pageWidthPx,
           pageHeightPx
         );
-
+        const graphX = (pageWidthPx - graphWidth) / 2; // Center horizontally
+        const graphY = (pageHeightPx - graphHeight) / 2; // Center vertically
         pdf.addImage(
           graphDataURL,
           "PNG",
-          0,
-          0,
+          graphX / 3.7795275591,
+          graphY / 3.7795275591,
           graphWidth / 3.7795275591,
           graphHeight / 3.7795275591
         );
 
+        // Add legend to a new page
         pdf.addPage();
         const { width: legendWidth, height: legendHeight } = scaleToFit(
           legendCanvas,
           pageWidthPx,
           pageHeightPx
         );
-
+        const legendX = (pageWidthPx - legendWidth) / 2; // Center horizontally
+        const legendY = (pageHeightPx - legendHeight) / 2; // Center vertically
         pdf.addImage(
           legendDataURL,
           "PNG",
-          0,
-          0,
+          legendX / 3.7795275591,
+          legendY / 3.7795275591,
           legendWidth / 3.7795275591,
-          legendHeight / 3.7795275591
+          legendHeight / 3.7795275591 / (pageHeightPx / legendCanvas.height)
         );
 
         pdf.save(`${fileName}.pdf`);
       } else if (format === "image") {
+        // Create a new canvas to combine graph and legend
         const combinedCanvas = document.createElement("canvas");
-        const combinedCtx = combinedCanvas.getContext("2d");
+        const combinedCtx = combinedCanvas.getContext("2d", {
+          willReadFrequently: true,
+        });
 
         if (!combinedCtx) {
           console.error("Failed to get canvas context");
           return;
         }
 
+        // Set canvas dimensions
         combinedCanvas.width = Math.max(graphCanvas.width, legendCanvas.width);
         combinedCanvas.height = graphCanvas.height + legendCanvas.height;
 
+        // Draw the graph and legend on the combined canvas
         combinedCtx.drawImage(graphCanvas, 0, 0);
         combinedCtx.drawImage(legendCanvas, 0, graphCanvas.height);
 
+        // Get the combined image data URL
         const combinedDataURL = combinedCanvas.toDataURL("image/png");
 
+        // Download the combined image
         const link = document.createElement("a");
         link.href = combinedDataURL;
         link.download = `${fileName}.png`;

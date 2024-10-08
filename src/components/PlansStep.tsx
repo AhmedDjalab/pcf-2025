@@ -363,7 +363,7 @@ const PlansList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
       {isPlanEditor && editRow && id && (
         <PlanSelectEditor
           isOpen={isPlanEditor}
-          // imgUrl={editRow?.planImageUrl}
+        //  imgUrl={editRow?.planImageUrl}
           closeModal={() => setIsPlanEditor(false)}
           exportToJson={(data) => {
             dispatch(

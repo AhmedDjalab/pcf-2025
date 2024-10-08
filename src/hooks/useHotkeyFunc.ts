@@ -195,18 +195,6 @@ const useHotkeyFunc = () => {
     });
   };
 
-  // Debounce function to limit how often updateImageQuality is called
-  const debounce = (func: Function, wait: number) => {
-    let timeout: NodeJS.Timeout;
-    return (...args: any[]) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func(...args), wait);
-    };
-  };
-
-  // Debounced version of updateImageQuality
-  const debouncedUpdateImageQuality = debounce(updateImageQuality, 200);
-
   const zoom = (stage: ReturnType<typeof useStage>, zoomDirection: 1 | -1) => {
     const stageRef = stage.stageRef.current;
     const scaleBy = 1.1;
