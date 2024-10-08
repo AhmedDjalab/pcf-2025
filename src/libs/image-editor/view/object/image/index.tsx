@@ -69,7 +69,7 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
           y: 0,
           width,
           height,
-          pixelRatio: 2,
+          pixelRatio: 5,
           quality: 1.0,
         });
 
@@ -91,7 +91,7 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
       stage.setStageRef(imageRef.current.getStage()!);
       imageRef.current.brightness(data.attrs.brightness);
       checkIsInFrame(imageRef.current);
-      imageRef.current.cache({ pixelRatio: 5 });
+      imageRef.current.cache();
     }
   }, [imageSrc, data, stage, checkIsInFrame]);
 
