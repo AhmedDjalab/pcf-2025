@@ -12,6 +12,12 @@
 @layer components {
   
 }
+
+
+.html2canvas-container { 
+  width: 3000px; 
+  height: 3000px; 
+}
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;

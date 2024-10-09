@@ -46,6 +46,7 @@ import { TableCellsIcon } from "@heroicons/react/24/solid";
 import { AsUTC } from "src/utils/helpers";
 import { ActivityRelationType } from "src/enums/ActivityRelationType";
 import { StageActivity, StageData } from "../currentStageData";
+import { GetPlansDetailed } from "src/Services/PlanService";
 
 export interface GraphDataType {
   activityUID?: string;
@@ -320,6 +321,18 @@ export const fetchAllTaskSlotByProjectId = createAsyncThunk(
   "projectSettings/getAllTaskSlotsByProjectId",
   async ({ projectId, level }: { projectId: string; level: number }) => {
     const response = await getAllTaskSlot({ projectId, level });
+
+    if (response) {
+      return { success: true, data: response };
+    } else {
+      return { success: false, message: response };
+    }
+  }
+);
+export const fetchAllPlansByProjectId = createAsyncThunk(
+  "projectSettings/getAllPlanssByProjectId",
+  async ({ projectId, level }: { projectId: string }) => {
+    const response = await GetPlansDetailed({ projectId });
 
     if (response) {
       return { success: true, data: response };
@@ -1228,6 +1241,44 @@ const GraphSlice = createSlice({
       // const taskSlotData : TaskSlotModel[] = action.payload.data ;
     });
     builder.addCase(fetchAllTaskSlotByProjectId.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    });
+    builder.addCase(fetchAllPlansByProjectId.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(fetchAllPlansByProjectId.fulfilled, (state, action) => {
+      state.loading = false;
+      // ?update the plans
+      console.log(
+        "🚀 ~ state.plans=action.payload.data!.map ~ action.payload.data:",
+        action.payload.data
+      );
+
+      state.plans =
+        action.payload.data!.map((plan: Plan) => {
+          return {
+            startPk: plan.startPk,
+            endPk: plan.endPk,
+            name: plan.name,
+            //planImageId: plan.planImageId,
+            planImageUrl: plan.planImageUrl,
+
+            idnew: plan.id,
+            stageDataList: plan.stageDataList?.map((s) => ({
+              ...s,
+
+              attrs: {
+                ...s.attrs,
+
+                activityUID: s.attrs.activityUID,
+              },
+            })),
+          };
+        }) ?? [];
+      state.loading = false;
+    });
+    builder.addCase(fetchAllPlansByProjectId.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message;
     });

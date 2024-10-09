@@ -40,6 +40,23 @@ export async function getPlans({
   }
 }
 
+export async function GetPlansDetailed({ projectId }: PaginatingParmas) {
+  try {
+    let config = {
+      params: {
+        projectId: projectId,
+      },
+    };
+    const { data } = await api.get(
+      apiEndpoint + "/GetPlansByProjectId",
+      config
+    );
+    return data as PlansResponse;
+  } catch (ex: any) {
+    console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
+  }
+}
+
 export async function getStagesDataByPlanId({
   planId,
   date,

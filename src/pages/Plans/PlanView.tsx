@@ -24,6 +24,7 @@ import { RootState } from "src/state";
 import { StageData } from "src/state/currentStageData";
 import {
   addStageDataToPlan,
+  Plan,
   StageDataModel,
 } from "src/state/slices/graphSlice";
 import { v4 as uuidv4 } from "uuid";
@@ -39,6 +40,9 @@ function PlanView() {
   const [getStagesData, setGetStagesData] = useState<boolean>(false);
   const [selectedPlanImgUrl, setSelectedPlanImgUrl] = useState<string>("");
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [selectedPlanEntity, setSelectedPlanEntity] = useState<Plan | null>(
+    null
+  );
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const { id: projectId } = useParams();
   const [paperSizeModalOpen, setPaperSizeModalOpen] = useState(false);
@@ -56,42 +60,60 @@ function PlanView() {
   ) => {
     const graph = document.querySelector(".konvajs-content");
     const legend = document.querySelector("aside");
-    var fileName = `${selectedPlan}.${moment(new Date()).format("DD/MM/YYYY")}`;
 
     if (!graph || !legend) {
       console.error("SVG container, graph, or legend not found");
       return;
     }
 
+    // Step 1: Add plan name and date as text overlays within the graph
+    const textOverlay = document.createElement("div");
+    textOverlay.style.position = "absolute";
+    textOverlay.style.top = "4px";
+    textOverlay.style.left = "5px";
+    textOverlay.style.color = "#333";
+    textOverlay.style.fontFamily = "Arial, sans-serif";
+    textOverlay.style.fontSize = "14px";
+    textOverlay.style.fontWeight = "bold";
+    textOverlay.style.zIndex = "10";
+    textOverlay.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
+    textOverlay.style.padding = "5px";
+
+    const planNameText = document.createElement("div");
+    planNameText.innerText = `Plan Name: ${selectedPlanEntity?.name || "N/A"}`;
+
+    const dateText = document.createElement("div");
+    dateText.innerText = `Date: ${moment(new Date()).format("DD/MM/YYYY")}`;
+
+    textOverlay.appendChild(planNameText);
+    textOverlay.appendChild(dateText);
+
+    // Append the overlay to the graph container
+    graph.appendChild(textOverlay);
+
+    const fileName = `${selectedPlanEntity?.name}.${moment(new Date()).format(
+      "DD-MM-YYYY"
+    )}`;
+
     try {
-      const sizes: Record<string, [number, number]> = {
-        A3: [297, 420], // A3 size in mm
-        A4: [210, 297], // A4 size in mm
-        A5: [148, 210], // A5 size in mm
+      const sizes = {
+        A3: [297, 420],
+        A4: [210, 297],
+        A5: [148, 210],
       };
 
       let [pageWidthMM, pageHeightMM] = sizes[paperSize];
       if (orientation === "landscape") {
-        // Swap width and height for landscape orientation
         [pageWidthMM, pageHeightMM] = [pageHeightMM, pageWidthMM];
       }
 
-      const pageWidthPx = pageWidthMM * 3.7795275591; // Convert mm to pixels
-      const pageHeightPx = pageHeightMM * 3.7795275591; // Convert mm to pixels
+      const pageWidthPx = pageWidthMM * 3.7795275591;
+      const pageHeightPx = pageHeightMM * 3.7795275591;
 
-      // Helper function to capture element as canvas
-      const captureElement = async (element: HTMLElement) => {
-        // Save original overflow style
-        const originalOverflow = element.style.overflow;
-
-        // Temporarily set overflow to visible
-        element.style.overflow = "visible";
-
-        // Capture the element
+      const captureElement = async (element) => {
         const canvas = await html2canvas(element, {
           useCORS: true,
           allowTaint: false,
-          logging: true,
           scale: 2,
           onclone: (documentClone) => {
             const images = documentClone.querySelectorAll("img");
@@ -101,36 +123,22 @@ function PlanView() {
           },
         });
 
-        // Revert overflow style back to original
-        element.style.overflow = originalOverflow;
-
         return canvas;
       };
 
-      // Capture the graph
+      // Capture the graph including the text overlay
       const graphCanvas = await captureElement(graph);
       const graphDataURL = graphCanvas.toDataURL("image/png", 2.0);
 
-      // Capture the legend
-      const legendCanvas = await captureElement(legend);
-      const legendDataURL = legendCanvas.toDataURL("image/png", 2.0);
+      // Remove the text overlay from the graph container
+      textOverlay.remove();
 
-      // Function to calculate dimensions and scale to fit within page
-      const scaleToFit = (
-        canvas: HTMLCanvasElement,
-        pageWidth: number,
-        pageHeight: number
-      ) => {
+      const scaleToFit = (canvas, pageWidth, pageHeight) => {
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
-
-        // Calculate scaling factors for width and height
         const scaleX = pageWidth / canvasWidth;
         const scaleY = pageHeight / canvasHeight;
-
-        // Use the smaller scaling factor to fit within the page
         const scale = Math.min(scaleX, scaleY);
-
         return {
           width: canvasWidth * scale,
           height: canvasHeight * scaleY,
@@ -141,14 +149,14 @@ function PlanView() {
       if (format === "pdf") {
         const pdf = new jsPDF(orientation, "mm", [pageWidthMM, pageHeightMM]);
 
-        // Scale graph to fit within the page
+        // Scale the graph to fit within the page
         const { width: graphWidth, height: graphHeight } = scaleToFit(
           graphCanvas,
           pageWidthPx,
           pageHeightPx
         );
-        const graphX = (pageWidthPx - graphWidth) / 2; // Center horizontally
-        const graphY = (pageHeightPx - graphHeight) / 2; // Center vertically
+        const graphX = (pageWidthPx - graphWidth) / 2;
+        const graphY = (pageHeightPx - graphHeight) / 2;
         pdf.addImage(
           graphDataURL,
           "PNG",
@@ -158,49 +166,40 @@ function PlanView() {
           graphHeight / 3.7795275591
         );
 
-        // Add legend to a new page
+        // Add a new page for the legend
         pdf.addPage();
+        const legendCanvas = await captureElement(legend);
+        const legendDataURL = legendCanvas.toDataURL("image/png", 2.0);
         const { width: legendWidth, height: legendHeight } = scaleToFit(
           legendCanvas,
           pageWidthPx,
           pageHeightPx
         );
-        const legendX = (pageWidthPx - legendWidth) / 2; // Center horizontally
-        const legendY = (pageHeightPx - legendHeight) / 2; // Center vertically
+        const legendX = (pageWidthPx - legendWidth) / 2;
+        const legendY = (pageHeightPx - legendHeight) / 2;
         pdf.addImage(
           legendDataURL,
           "PNG",
           legendX / 3.7795275591,
           legendY / 3.7795275591,
           legendWidth / 3.7795275591,
-          legendHeight / 3.7795275591 / (pageHeightPx / legendCanvas.height)
+          legendHeight / 3.7795275591
         );
 
         pdf.save(`${fileName}.pdf`);
       } else if (format === "image") {
         // Create a new canvas to combine graph and legend
         const combinedCanvas = document.createElement("canvas");
-        const combinedCtx = combinedCanvas.getContext("2d", {
-          willReadFrequently: true,
-        });
+        const combinedCtx = combinedCanvas.getContext("2d");
 
-        if (!combinedCtx) {
-          console.error("Failed to get canvas context");
-          return;
-        }
-
-        // Set canvas dimensions
-        combinedCanvas.width = Math.max(graphCanvas.width, legendCanvas.width);
-        combinedCanvas.height = graphCanvas.height + legendCanvas.height;
+        combinedCanvas.width = Math.max(graph.width, legend.width);
+        combinedCanvas.height = graph.height + legend.height;
 
         // Draw the graph and legend on the combined canvas
-        combinedCtx.drawImage(graphCanvas, 0, 0);
-        combinedCtx.drawImage(legendCanvas, 0, graphCanvas.height);
+        combinedCtx.drawImage(graph, 0, 0);
+        combinedCtx.drawImage(legend, 0, graphCanvas.height);
 
-        // Get the combined image data URL
         const combinedDataURL = combinedCanvas.toDataURL("image/png");
-
-        // Download the combined image
         const link = document.createElement("a");
         link.href = combinedDataURL;
         link.download = `${fileName}.png`;
@@ -252,6 +251,7 @@ function PlanView() {
   const handlePlanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedPlan(e.target.value);
     var plan = plansData?.plans.filter((x) => x.id == e.target.value)[0]!;
+    setSelectedPlanEntity(plan);
     setSelectedPlanImgUrl(plan.planImageUrl);
   };
 
@@ -332,15 +332,18 @@ function PlanView() {
             )}
           </div>
 
+          <div className="mt-8">
+            <button
+              // disabled
+              className="focus:outline-none  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-8 py-2.5  dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
+              // onClick={() => saveAsPdfOrImage("pdf")}
+              onClick={() => setPaperSizeModalOpen(true)}
+            >
+              PDF
+            </button>
+          </div>
+
           {/* <button
-            // disabled
-            className="focus:outline-none mt-5  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
-            // onClick={() => saveAsPdfOrImage("pdf")}
-            onClick={() => setPaperSizeModalOpen(true)}
-          >
-            PDF
-          </button>
-          <button
             // disabled
             className="focus:outline-none mt-5  text-white bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:ring-teal-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-900 flex items-center"
             onClick={() => saveAsPdfOrImage("image")}
@@ -398,11 +401,13 @@ function PlanView() {
           ))}
 
         {paperSizeModalOpen && (
-          <PaperSizeModal
-            isOpen={paperSizeModalOpen}
-            onClose={() => setPaperSizeModalOpen(false)}
-            onSave={handleSaveAsPdfOrImage}
-          />
+          <div className="w-[60%]">
+            <PaperSizeModal
+              isOpen={paperSizeModalOpen}
+              onClose={() => setPaperSizeModalOpen(false)}
+              onSave={handleSaveAsPdfOrImage}
+            />
+          </div>
         )}
       </div>
     </DefaultLayout>

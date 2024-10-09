@@ -25,8 +25,8 @@ const PaperSizeModal: React.FC<PaperSizeModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed  left-0 top-0 z-50 flex w-full h-full items-center justify-center bg-white bg-opacity-20 dark:bg-gray-700 dark:bg-opacity-20">
-      <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="fixed  left-0 top-0 z-50 flex w-full h-full items-center justify-center bg-white bg-opacity-10  dark:bg-gray-700 dark:bg-opacity-20">
+      <div className="bg-white rounded-lg shadow-lg p-6 min-w-[30%]">
         <h2 className="text-lg font-semibold mb-4">
           {t("PaperSizeModal.selectTitle")}
         </h2>
