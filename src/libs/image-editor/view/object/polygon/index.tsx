@@ -145,10 +145,10 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
         opacity={attrs.opacity ?? 1}
         rotation={attrs.rotation ?? 0}
         draggable={!readOnly}
+        dash={attrs.dash ?? undefined}
         onDragMove={onDragMoveFrame}
         onDragEnd={onDragEndFrame}
         activityUID={attrs.activityUID}
-        {...attrs}
       />
 
       {isDrawing && (
