@@ -17,6 +17,7 @@ export type StageActivity = {
   activityId: string;
   id: string;
   isPassed: boolean;
+  color?: string;
 };
 export type StageData = {
   id: string;

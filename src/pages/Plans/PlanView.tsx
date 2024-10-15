@@ -35,7 +35,7 @@ import jsPDF from "jspdf";
 import PaperSizeModal from "src/components/PaperSizeModal";
 import html2canvas from "html2canvas";
 import moment from "moment";
-
+import "./planView.css";
 function PlanView() {
   const [getStagesData, setGetStagesData] = useState<boolean>(false);
   const [selectedPlanImgUrl, setSelectedPlanImgUrl] = useState<string>("");

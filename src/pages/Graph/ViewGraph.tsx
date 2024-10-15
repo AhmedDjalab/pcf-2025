@@ -2097,73 +2097,11 @@ function ViewGraph() {
 
       let [pageWidthMM, pageHeightMM] = sizes[paperSize];
       if (orientation === "landscape") {
-        // Swap width and height for landscape orientation
         [pageWidthMM, pageHeightMM] = [pageHeightMM, pageWidthMM];
       }
 
       const pageWidthPx = pageWidthMM * 3.7795275591; // Convert mm to pixels
       const pageHeightPx = pageHeightMM * 3.7795275591; // Convert mm to pixels
-
-      // // Helper function to convert image to Base64
-      // const imageToBase64 = (img: HTMLImageElement) => {
-      //   return new Promise<string>((resolve, reject) => {
-      //     const canvas = document.createElement("canvas");
-      //     const ctx = canvas.getContext("2d");
-      //     if (!ctx) {
-      //       reject("Failed to get canvas context");
-      //       return;
-      //     }
-      //     console.warn("this is img urls", img);
-      //     canvas.width = img.width;
-      //     canvas.height = img.height;
-      //     ctx.drawImage(img, 0, 0);
-
-      //     canvas.toDataURL("image/png", (err, dataURL) => {
-      //       if (err) {
-      //         reject(err);
-      //       } else {
-      //         resolve(dataURL);
-      //       }
-      //     });
-      //   });
-      // };
-
-      // // Convert images inside the graph element to Base64
-      // const convertImagesInGraph = async () => {
-      //   const images = graph.querySelectorAll("img");
-      //   console.warn("🚀 ~ convertImagesInGraph ~ images:", images);
-      //   const base64Promises = Array.from(images).map(async (img) => {
-      //     return new Promise<string>((resolve, reject) => {
-      //       img.onload = async () => {
-      //         try {
-      //           const base64 = await imageToBase64(img as HTMLImageElement);
-      //           resolve(base64);
-      //         } catch (error) {
-      //           reject(error);
-      //         }
-      //       };
-
-      //       img.onerror = () => {
-      //         reject("Failed to load image");
-      //       };
-
-      //       // Trigger loading if image is not yet loaded
-      //       if (img.complete) {
-      //         img.onload?.();
-      //       }
-      //     });
-      //   });
-
-      //   const base64Array = await Promise.all(base64Promises);
-      //   const base64Images = Array.from(images).map((img, index) => {
-      //     img.src = base64Array[index];
-      //     return base64Array[index];
-      //   });
-
-      //   return base64Images;
-      // };
-
-      // await convertImagesInGraph();
 
       // Helper function to capture element as canvas
       const captureElement = async (element: HTMLElement) => {
@@ -2171,121 +2109,95 @@ function ViewGraph() {
           useCORS: true,
           allowTaint: false,
           logging: true,
-          scale: 2,
+          scale: 1,
           onclone: (documentClone) => {
-            // Clone document to apply CORS settings
             const images = documentClone.querySelectorAll("img");
             images.forEach((img) => {
-              img.crossOrigin = "Anonymous"; // Set crossOrigin to handle CORS
+              img.crossOrigin = "Anonymous";
             });
           },
         });
       };
 
-      // Capture the graph
+      // Capture the graph and legend
       const graphCanvas = await captureElement(graph);
-      const graphDataURL = graphCanvas.toDataURL("image/png", 1.0);
-
-      // Capture the legend
       const legendCanvas = await captureElement(legend);
-      const legendDataURL = legendCanvas.toDataURL("image/png", 1.0);
 
-      // Function to calculate dimensions and scale to fit within page
-      const scaleToFit = (
+      // Function to fit content exactly to page size
+      const fitToPage = (
         canvas: HTMLCanvasElement,
         pageWidth: number,
         pageHeight: number
       ) => {
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
-
-        // Calculate scaling factors for width and height
-        const scaleX = pageWidth / canvasWidth;
-        const scaleY = pageHeight / canvasHeight;
-
-        // Use the smaller scaling factor to fit within the page
-        const scale = Math.min(scaleX, scaleY);
-
-        return {
-          width: canvasWidth * scale,
-          height: canvasHeight * scaleY,
-          scale,
-        };
+        const scaledCanvas = document.createElement("canvas");
+        scaledCanvas.width = pageWidth;
+        scaledCanvas.height = pageHeight;
+        const ctx = scaledCanvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(canvas, 0, 0, pageWidth, pageHeight);
+        }
+        return scaledCanvas;
       };
+
+      // Fit graph and legend to page size
+      const scaledGraphCanvas = fitToPage(
+        graphCanvas,
+        pageWidthPx,
+        pageHeightPx
+      );
+      const scaledLegendCanvas = fitToPage(
+        legendCanvas,
+        pageWidthPx,
+        pageHeightPx
+      );
 
       if (format === "pdf") {
         const pdf = new jsPDF(orientation, "mm", [pageWidthMM, pageHeightMM]);
 
-        // Scale graph to fit within the page
-        const { width: graphWidth, height: graphHeight } = scaleToFit(
-          graphCanvas,
-          pageWidthPx,
-          pageHeightPx
-        );
-        const graphX = (pageWidthPx - graphWidth) / 2; // Center horizontally
-        const graphY = (pageHeightPx - graphHeight) / 2; // Center vertically
+        // Add graph to first page
         pdf.addImage(
-          graphDataURL,
+          scaledGraphCanvas.toDataURL("image/png"),
           "PNG",
-          graphX / 3.7795275591,
-          graphY / 3.7795275591,
-          graphWidth / 3.7795275591,
-          graphHeight / 3.7795275591
+          0,
+          0,
+          pageWidthMM,
+          pageHeightMM
         );
 
-        // Add legend to a new page
+        // Add legend to new page
         pdf.addPage();
-        const { width: legendWidth, height: legendHeight } = scaleToFit(
-          legendCanvas,
-          pageWidthPx,
-          pageHeightPx
-        );
-        const legendX = (pageWidthPx - legendWidth) / 2; // Center horizontally
-        const legendY = (pageHeightPx - legendHeight) / 2; // Center vertically
         pdf.addImage(
-          legendDataURL,
+          scaledLegendCanvas.toDataURL("image/png"),
           "PNG",
-          legendX / 3.7795275591,
-          legendY / 3.7795275591,
-          legendWidth / 3.7795275591,
-          legendHeight / 3.7795275591 / (pageHeightPx / legendCanvas.height)
+          0,
+          0,
+          pageWidthMM,
+          pageHeightMM
         );
 
         pdf.save(`${fileName}.pdf`);
       } else if (format === "image") {
-        // Create a new canvas to combine graph and legend
+        // Create a combined image with graph and legend
         const combinedCanvas = document.createElement("canvas");
-        const combinedCtx = combinedCanvas.getContext("2d", {
-          willReadFrequently: true,
-        });
+        combinedCanvas.width = pageWidthPx;
+        combinedCanvas.height = pageHeightPx * 2; // Two pages high
 
-        if (!combinedCtx) {
-          console.error("Failed to get canvas context");
-          return;
+        const ctx = combinedCanvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(scaledGraphCanvas, 0, 0);
+          ctx.drawImage(scaledLegendCanvas, 0, pageHeightPx);
+
+          // Download the combined image
+          const link = document.createElement("a");
+          link.href = combinedCanvas.toDataURL("image/png");
+          link.download = `${fileName}.png`;
+          link.click();
         }
-
-        // Set canvas dimensions
-        combinedCanvas.width = Math.max(graphCanvas.width, legendCanvas.width);
-        combinedCanvas.height = graphCanvas.height + legendCanvas.height;
-
-        // Draw the graph and legend on the combined canvas
-        combinedCtx.drawImage(graphCanvas, 0, 0);
-        combinedCtx.drawImage(legendCanvas, 0, graphCanvas.height);
-
-        // Get the combined image data URL
-        const combinedDataURL = combinedCanvas.toDataURL("image/png");
-
-        // Download the combined image
-        const link = document.createElement("a");
-        link.href = combinedDataURL;
-        link.download = `${fileName}.png`;
-        link.click();
       }
     } catch (error) {
       console.error("Error capturing content:", error);
     }
   };
-
   useEffect(() => {
     const handleEscapeKey = (event) => {
       if (event.key === "Escape" && zoomLevel > 1) {

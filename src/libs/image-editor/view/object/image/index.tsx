@@ -133,7 +133,7 @@ const ImageItem: React.FC<ImageItemProps> = ({ data, e, onSelect }) => {
       fill={attrs.fill ?? "transparent"}
       opacity={attrs.opacity ?? 1}
       rotation={attrs.rotation ?? 0}
-      filters={filters ?? [Konva.Filters.Brighten]}
+      //filters={filters ?? [Konva.Filters.Brighten]}
       draggable={false}
       perfectDrawEnabled={true}
       imageSmoothingEnabled={false}

@@ -15,14 +15,16 @@ function ActivityTable({ activities }: ActivityTaleProps) {
         accessor: "activityId",
         Cell: ({ row, cell: { value } }: any) => {
           const isPassed = row.original["isPassed"];
+          const color = row.original["color"];
 
           return (
             <div
               className={`dark:bg-boxdark-2  ${
-                isPassed
-                  ? "text-gray-600 dark:text-gray-600"
-                  : "text-primary dark:text-primary"
+                isPassed && "text-gray-600 dark:text-gray-600"
               }`}
+              style={{
+                color: color && !isPassed ? color : undefined,
+              }}
             >
               {value}
             </div>
@@ -34,14 +36,15 @@ function ActivityTable({ activities }: ActivityTaleProps) {
         accessor: "activityUID",
         Cell: ({ row, cell: { value } }: any) => {
           const isPassed = row.original["isPassed"];
-
+          const color = row.original["color"];
           return (
             <div
               className={`dark:bg-boxdark-2  ${
-                isPassed
-                  ? "text-gray-600 dark:text-gray-600"
-                  : "text-primary dark:text-primary"
+                isPassed && "text-gray-600 dark:text-gray-600"
               }`}
+              style={{
+                color: color && !isPassed ? color : undefined,
+              }}
             >
               {value}
             </div>
@@ -53,14 +56,15 @@ function ActivityTable({ activities }: ActivityTaleProps) {
         accessor: "name",
         Cell: ({ row, cell: { value } }: any) => {
           const isPassed = row.original["isPassed"];
-
+          const color = row.original["color"];
           return (
             <div
               className={`dark:bg-boxdark-2  ${
-                isPassed
-                  ? "text-gray-600 dark:text-gray-600"
-                  : "text-primary dark:text-primary"
+                isPassed && "text-gray-600 dark:text-gray-600"
               }`}
+              style={{
+                color: color && !isPassed ? color : undefined,
+              }}
             >
               {value}
             </div>
