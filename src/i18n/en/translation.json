@@ -273,8 +273,8 @@
     "buttons": {
       "edit": "Edit",
       "delete": "Delete",
-      "viewGraph": "View",
-      "viewPlan": "Show Plans",
+      "viewGraph": "Schedule",
+      "viewPlan": "Phasing",
       "download": "Download"
     }
   },

@@ -269,8 +269,8 @@
     "buttons": {
       "edit": "Modifier",
       "delete": "Supprimer",
-      "viewGraph": "Afficher",
-      "viewPlan": "Afficher Plans",
+      "viewGraph": "Planning",
+      "viewPlan": "Phasage",
       "download": "Télécharger"
     }
   },
