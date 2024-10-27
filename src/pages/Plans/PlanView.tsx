@@ -244,7 +244,7 @@ function PlanView() {
       }),
 
     refetchOnWindowFocus: true,
-    staleTime: 3000,
+    staleTime: 1000,
   });
 
   // Handle plan selection
@@ -257,6 +257,7 @@ function PlanView() {
 
   // Handle date selection
   const handleDateChange = (date: Date | null) => {
+    if (!selectedPlan) return "please select a plan ";
     setSelectedDate(date);
   };
   const handleGetStageData = (e: any) => {
@@ -306,6 +307,18 @@ function PlanView() {
         }),
     [seenIds, stagesData]
   );
+  const stagedataConverter = useMemo(() => {
+    return stagesData?.map<StageData[]>((s) => {
+      return {
+        ...s,
+        attrs: {
+          ...s.attrs,
+
+          "data-item-type": s.attrs.dataItemType,
+        },
+      };
+    });
+  }, [stagesData]);
   return (
     <DefaultLayout>
       <div className="  h-full w-full overflow-hidden">
@@ -377,21 +390,10 @@ function PlanView() {
             <Spinner />
           ) : (
             <ImageEditor
-              key={selectedPlan}
+              key={selectedPlan + moment(selectedDate).format("DD/MM/YYYY")}
               onSaveState={(data) => {}}
               initialStageData={
-                stagesData.length > 0
-                  ? stagesData.map<StageData[]>((s) => {
-                      return {
-                        ...s,
-                        attrs: {
-                          ...s.attrs,
-
-                          "data-item-type": s.attrs.dataItemType,
-                        },
-                      };
-                    })
-                  : initialData
+                stagesData.length > 0 ? stagedataConverter : initialData
               }
               imgUrl={""}
               activities={[]}
