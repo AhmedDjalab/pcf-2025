@@ -423,5 +423,10 @@
     "plans": "Sélectionner un plan",
     "date": "Sélectionner une date"
   },
-  "PlanEditorPopUp": "Éditeur de plan"
+  "PlanEditorPopUp": "Éditeur de plan",
+  "dateOptions": {
+    "day": "Jour",
+    "month": "Mois",
+    "year": "Année"
+  }
 }

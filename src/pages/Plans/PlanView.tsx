@@ -36,9 +36,12 @@ import PaperSizeModal from "src/components/PaperSizeModal";
 import html2canvas from "html2canvas";
 import moment from "moment";
 import "./planView.css";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/solid";
+import Input from "src/components/Input";
 function PlanView() {
   const [getStagesData, setGetStagesData] = useState<boolean>(false);
   const [selectedPlanImgUrl, setSelectedPlanImgUrl] = useState<string>("");
+  const [filterDateType, setFilterDateType] = useState<string>("");
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [selectedPlanEntity, setSelectedPlanEntity] = useState<Plan | null>(
     null
@@ -49,6 +52,31 @@ function PlanView() {
   const stage = useStage();
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
   const { user, canWrite, isAdmin } = useAuth();
+
+  const [incrementType, setIncrementType] = useState("d");
+
+  const incrementDate = () => {
+    setSelectedDate((prevDate) => {
+      const newDate = new Date(prevDate);
+      if (incrementType === "d") newDate.setDate(newDate.getDate() + 1);
+      else if (incrementType === "m") newDate.setMonth(newDate.getMonth() + 1);
+      else if (incrementType === "y")
+        newDate.setFullYear(newDate.getFullYear() + 1);
+      return newDate;
+    });
+  };
+
+  const decrementDate = () => {
+    setSelectedDate((prevDate) => {
+      const newDate = new Date(prevDate);
+      if (incrementType === "d") newDate.setDate(newDate.getDate() - 1);
+      else if (incrementType === "m") newDate.setMonth(newDate.getMonth() - 1);
+      else if (incrementType === "y")
+        newDate.setFullYear(newDate.getFullYear() - 1);
+      return newDate;
+    });
+  };
+
   const handleSaveAsPdfOrImage = (paperSize: string, orientation: string) => {
     // Call the updated function here
     saveAsPdfOrImage("pdf", paperSize, orientation);
@@ -364,7 +392,22 @@ function PlanView() {
             Image
           </button> */}
 
-          <div className="relative w-[30%] ">
+          <div className="relative w-[30%] flex gap-2 items-end">
+            <ArrowLeftIcon
+              className="  h-10 w-10 text-gray-500 border border-gray-500 p-2 mb-2 cursor-pointer "
+              onClick={decrementDate}
+            />
+
+            <select
+              className="border p-2 mb-2 dark:bg-boxdark-2 dark:text-bodydark"
+              value={incrementType}
+              onChange={(e) => setIncrementType(e.target.value)}
+            >
+              <option value="d">{t("dateOptions.day")}</option>
+              <option value="m">{t("dateOptions.month")}</option>
+              <option value="y">{t("dateOptions.year")}</option>
+            </select>
+
             <DatePickerDefault
               id="date"
               name="date"
@@ -373,6 +416,11 @@ function PlanView() {
               value={selectedDate}
               defaultDate={selectedDate ?? new Date()}
               onChange={handleDateChange}
+            />
+
+            <ArrowRightIcon
+              className="  h-10 w-10 text-gray-500 border border-gray-500 p-2 mb-2 cursor-pointer "
+              onClick={incrementDate}
             />
           </div>
           {/* <div className="mt-7">

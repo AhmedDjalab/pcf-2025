@@ -420,5 +420,10 @@
   },
   "line": {
     "name": "Linea"
+  },
+  "dateOptions": {
+    "day": "Giorno",
+    "month": "Mese",
+    "year": "Anno"
   }
 }

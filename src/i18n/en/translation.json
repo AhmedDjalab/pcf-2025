@@ -428,5 +428,10 @@
     "plans": "plan",
     "date": "date"
   },
-  "PlanEditorPopUp": "Plan Editor"
+  "PlanEditorPopUp": "Plan Editor",
+  "dateOptions": {
+    "day": "Day",
+    "month": "Month",
+    "year": "Year"
+  }
 }

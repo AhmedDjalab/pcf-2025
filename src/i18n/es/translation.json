@@ -418,5 +418,10 @@
     "plans": "plan",
     "date": "fecha"
   },
-  "PlanEditorPopUp": "Editor de plan"
+  "PlanEditorPopUp": "Editor de plan",
+  "dateOptions": {
+    "day": "Día",
+    "month": "Mes",
+    "year": "Año"
+  }
 }
