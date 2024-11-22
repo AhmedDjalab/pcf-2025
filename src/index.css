@@ -1,41 +1,37 @@
-
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css");
-
-
-
-
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer components {
-  
 }
 
-
+@layer base {
+  body {
+    @apply font-satoshi font-normal;
+  }
+}
 
 ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-    
-  }
-  
-  ::-webkit-scrollbar-track {
-    margin-top:12px;
-    margin-bottom:12px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-  background-color: #ADB2B8;
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #adb2b8;
   height: 4px;
-  width:4px;
-  border-radius:2px;
-  
-  }
-  body {
-     height: 100%;
-     width: 100%;
-    font-size: 16px;
-    overflow: scroll;
+  width: 4px;
+  border-radius: 2px;
+}
+body {
+  height: 100%;
+  width: 100%;
+  font-size: 16px;
+  overflow: scroll;
 }

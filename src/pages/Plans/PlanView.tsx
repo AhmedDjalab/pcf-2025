@@ -94,6 +94,15 @@ function PlanView() {
       return;
     }
 
+    // Create style element for html2canvas container
+    const style = document.createElement("style");
+    style.textContent = `
+      .html2canvas-container {
+        width: 3000px !important;
+        height: 3000px !important;
+      }
+    `;
+
     // Step 1: Add plan name and date as text overlays within the graph
     const textOverlay = document.createElement("div");
     textOverlay.style.position = "absolute";
@@ -139,6 +148,11 @@ function PlanView() {
       const pageHeightPx = pageHeightMM * 3.7795275591;
 
       const captureElement = async (element) => {
+        // Add the style only when capturing for PDF
+        if (format === "pdf") {
+          document.head.appendChild(style);
+        }
+
         const canvas = await html2canvas(element, {
           useCORS: true,
           allowTaint: false,
@@ -151,9 +165,15 @@ function PlanView() {
           },
         });
 
+        // Remove the style after capture
+        if (format === "pdf") {
+          document.head.removeChild(style);
+        }
+
         return canvas;
       };
 
+      // Rest of the code remains the same...
       // Capture the graph including the text overlay
       const graphCanvas = await captureElement(graph);
       const graphDataURL = graphCanvas.toDataURL("image/png", 2.0);
@@ -271,7 +291,7 @@ function PlanView() {
         date: selectedDate!,
       }),
 
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     staleTime: 1000,
   });
 
