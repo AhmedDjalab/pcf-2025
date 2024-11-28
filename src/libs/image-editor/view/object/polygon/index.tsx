@@ -57,6 +57,8 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
   }
 
   const handleStageClick = (e: any) => {
+    console.log("🚀 ~ handleStageClick ~ e:", e);
+
     const stage = e.target.getStage();
     const pointerPos = stage.getPointerPosition();
 
