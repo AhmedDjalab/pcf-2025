@@ -57,11 +57,10 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
   }
 
   const handleStageClick = (e: any) => {
-    console.log("🚀 ~ handleStageClick ~ e:", e);
     const stage = e.target.getStage();
     const pointerPos = stage.getPointerPosition();
-
-    if (!pointerPos || points.length === 0) return;
+    console.log("🚀 ~ handleStageClick ~ e:", e, pointerPos, stage);
+    if (!pointerPos || points.length === 0) return onSelect?.(e);
 
     // Only perform selection if not currently drawing
     if (isDrawing) {
