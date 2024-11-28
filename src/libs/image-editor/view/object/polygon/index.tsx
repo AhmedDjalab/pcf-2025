@@ -58,24 +58,30 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
 
   const handleStageClick = (e: any) => {
     console.log("🚀 ~ handleStageClick ~ e:", e);
-
     const stage = e.target.getStage();
     const pointerPos = stage.getPointerPosition();
 
     if (!pointerPos || points.length === 0) return;
-    const transform = stage.getAbsoluteTransform().copy();
-    transform.invert();
-    const stagePoint = transform.point(pointerPos);
-    const { x, y } = stagePoint;
 
-    if (
-      points.length >= 4 &&
-      Math.abs(x - points[0]) < 10 &&
-      Math.abs(y - points[1]) < 10
-    ) {
-      completeShape(true);
+    // Only perform selection if not currently drawing
+    if (isDrawing) {
+      const transform = stage.getAbsoluteTransform().copy();
+      transform.invert();
+      const stagePoint = transform.point(pointerPos);
+      const { x, y } = stagePoint;
+
+      if (
+        points.length >= 4 &&
+        Math.abs(x - points[0]) < 10 &&
+        Math.abs(y - points[1]) < 10
+      ) {
+        completeShape(true);
+      } else {
+        setPoints((prevPoints) => [...prevPoints, x, y]);
+      }
     } else {
-      setPoints((prevPoints) => [...prevPoints, x, y]);
+      // If not drawing, call onSelect
+      onSelect?.(e);
     }
   };
 
