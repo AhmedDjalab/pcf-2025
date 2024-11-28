@@ -41,6 +41,11 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
   const [points, setPoints] = useState<number[]>(
     attrs.points || [attrs.x, attrs.y]
   );
+
+  const [initPoints, setInitPoints] = useState<number[]>(
+    attrs.points || [attrs.x, attrs.y]
+  );
+
   const [isDrawing, setIsDrawing] = useState(!attrs.points?.length);
   const [isClosed, setIsClosed] = useState(attrs.isClosed ?? false);
 
@@ -95,7 +100,7 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
     } else {
       setIsClosed(false);
     }
-    //@ts-nocheck
+
     updateItem(attrs.id, () => ({
       ...attrs,
       points: points,
@@ -128,28 +133,47 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
     };
   }, [isDrawing, points]);
 
-  const handleDragEnd = useCallback(
+  const handleDragStart = useCallback(
     (e: KonvaEventObject<DragEvent>) => {
-      // Get the current x and y of the dragged shape
+      // Store initial points when drag starts
+      setInitPoints([...points]);
+    },
+    [points]
+  );
+
+  const handleDragMove = useCallback(
+    (e: KonvaEventObject<DragEvent>) => {
       const { x, y } = e.target.attrs;
 
-      // Translate all points relative to the new position
+      // Translate points based on drag movement
+
       const translatedPoints = points.map((coord, index) => {
         return index % 2 === 0
-          ? coord + x - (attrs.x || 0)
-          : coord + y - (attrs.y || 0);
+          ? //@ts-ignore
+            parseFloat(initPoints[index]) + parseFloat(x)
+          : //@ts-ignore
+            parseFloat(initPoints[index]) + parseFloat(y);
       });
-
-      // Update the item with new points and reset x, y
-      updateItem(attrs.id, () => ({
-        ...attrs,
-        points: translatedPoints,
-        x: undefined,
-        y: undefined,
-      }));
 
       // Update local points state
       setPoints(translatedPoints);
+
+      // Call the original drag move handler
+      onDragMoveFrame(e);
+    },
+    [points, initPoints, onDragMoveFrame]
+  );
+
+  const handleDragEnd = useCallback(
+    (e: KonvaEventObject<DragEvent>) => {
+      // Update the item with new points
+      updateItem(attrs.id, () => ({
+        ...attrs,
+        points: points,
+      }));
+
+      // Reset the shape position
+      e.target.position({ x: 0, y: 0 });
 
       // Call the original drag end handler
       onDragEndFrame(e);
@@ -175,8 +199,9 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
         rotation={attrs.rotation ?? 0}
         draggable
         dash={attrs.dash ?? undefined}
-        onDragMove={onDragMoveFrame}
-        onDragEnd={onDragEndFrame}
+        onDragStart={handleDragStart}
+        onDragMove={handleDragMove}
+        onDragEnd={handleDragEnd}
         activityUID={attrs.activityUID}
       />
 
