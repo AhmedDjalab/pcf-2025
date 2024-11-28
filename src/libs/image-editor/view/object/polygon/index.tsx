@@ -46,7 +46,10 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
     attrs.points || [attrs.x, attrs.y]
   );
 
-  const [isDrawing, setIsDrawing] = useState(!attrs.points?.length);
+  const [isDrawing, setIsDrawing] = useState(() => {
+    // Only start in drawing mode if points are truly not defined or empty
+    return !attrs.points || attrs.points.length === 0;
+  });
   const [isClosed, setIsClosed] = useState(attrs.isClosed ?? false);
 
   function isShapeClosed(points: number[] | undefined): boolean {
@@ -59,8 +62,8 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
   const handleStageClick = (e: any) => {
     const stage = e.target.getStage();
     const pointerPos = stage.getPointerPosition();
-    console.log("🚀 ~ handleStageClick ~ e:", e, pointerPos, stage);
-    if (!pointerPos || points.length === 0) return onSelect?.(e);
+
+    if (!pointerPos || points.length === 0) return;
 
     // Only perform selection if not currently drawing
     if (isDrawing) {
