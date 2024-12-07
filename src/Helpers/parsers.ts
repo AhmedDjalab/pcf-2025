@@ -43,7 +43,7 @@ export const getExtendPropertyData = (
     //   typeObjectId,
     //   UDF
     // );
-
+    console.warn("thisi s seeting ", setting, UDF, [...UDFElements]);
     if (setting) {
       if (
         setting.pcfField === "startDate" ||
@@ -105,6 +105,8 @@ export const getUDFData = (
     // UDFElements is either null or empty
     return null;
   }
+
+  console.warn("thisi s seeting udf element  ", UDFElements, userSelectionData);
   for (let i = 0; i < UDFElements.length; i++) {
     const UDF = UDFElements[i];
 
@@ -129,6 +131,7 @@ export const getUDFData = (
     //   // If any required property is null, return null for the entire dataObject
     //   return null;
     // }
+
     if (setting) {
       if (
         setting.pcfField === "startChainage" ||
@@ -147,9 +150,14 @@ export const getUDFData = (
         setting.pcfField === "productionRate" ||
         setting.pcfField === "quantity"
       ) {
-        const { numericValue, unit } = extractValueAndUnit(textValue);
+        let numericValue = 0,
+          unit;
 
-        dataObject[setting.pcfField] = numericValue;
+        if (textValue) {
+          ({ numericValue, unit } = extractValueAndUnit(textValue));
+        }
+
+        dataObject[setting.pcfField] = textValue ? numericValue : undefined;
 
         if (setting.pcfField === "productionRate") {
           dataObject.productionRateUnit = unit;
