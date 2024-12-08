@@ -284,7 +284,7 @@ const PlansList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
           {t("taskSlotsList.buttons.showPlanning")}
         </button>
       </div>
-      {console.warn("fiiter ", id)}
+
       {!id && (
         <div className="flex w-full justify-center  items-center gap-5">
           <Dropdown

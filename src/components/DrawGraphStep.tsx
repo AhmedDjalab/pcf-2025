@@ -500,11 +500,6 @@ function DrawGraphStep() {
 
               const pattern: PatternConfig =
                 patternsConfig[lineStyleAttr.patternUrl];
-              console.warn(
-                "🚀 ~ pattern:",
-                lineStyleAttr,
-                lineStyleAttr.patternUrl
-              );
 
               const patternDef = defs
                 .append("pattern")

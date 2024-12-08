@@ -34,7 +34,6 @@ const ShapeItem: React.FC<ShapeItemProps> = ({
   readOnly,
 }) => {
   const { attrs } = data;
-  console.log("🚀 ~ data:RegularPolygon ", data, attrs.sides);
 
   const shapeRef = useRef() as RefObject<RegularPolygonType | RectType>;
   const stage = useStage();

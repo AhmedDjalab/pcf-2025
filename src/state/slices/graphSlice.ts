@@ -1250,10 +1250,6 @@ const GraphSlice = createSlice({
     builder.addCase(fetchAllPlansByProjectId.fulfilled, (state, action) => {
       state.loading = false;
       // ?update the plans
-      console.log(
-        "🚀 ~ state.plans=action.payload.data!.map ~ action.payload.data:",
-        action.payload.data
-      );
 
       state.plans =
         action.payload.data!.map((plan: Plan) => {

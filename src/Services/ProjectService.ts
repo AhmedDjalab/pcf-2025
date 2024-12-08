@@ -136,7 +136,6 @@ export async function saveProject(project: Project) {
     }
   }
   try {
-    
     const response_1 = await api.post(apiEndpoint + "/post", project, {
       headers,
     });

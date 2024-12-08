@@ -105,7 +105,6 @@ export const getUDFData = (
     return null;
   }
 
-  console.warn("thisi s seeting udf element  ", UDFElements, userSelectionData);
   for (let i = 0; i < UDFElements.length; i++) {
     const UDF = UDFElements[i];
 

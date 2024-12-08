@@ -64,7 +64,7 @@ export const stageDataSlice = createSlice({
         );
         return;
       }
-      console.log("🚀 ~ updateItem ~ state iiiiidd:", state, action.payload.id);
+
       // For single update
       const existingItem = state.entities[action.payload.id];
       if (!existingItem) {
@@ -84,15 +84,12 @@ export const stageDataSlice = createSlice({
           },
         },
       });
-
-      console.log("🚀 ~ updateItem ~ state after update:", state);
     },
     removeItem(state, action) {
       if (Array.isArray(action.payload)) {
         stageDataEntity.removeMany(state, action.payload);
         return;
       }
-      console.log("🚀 ~ removeItem ~ action.payload:", action.payload);
 
       stageDataEntity.removeOne(state, action.payload.id);
     },

@@ -12,7 +12,6 @@ const useSelection = (transformer: ReturnType<typeof useTransformer>) => {
     e?: KonvaEventObject<MouseEvent>,
     itemList?: ShapeConfigType[]
   ) => {
-    console.error("select item ", e, itemList, transformer);
     if (transformer === undefined || transformer === null) {
       console.error("transformer is not given");
       return;

@@ -69,10 +69,7 @@ const BorderWidget: React.FC<BorderWidgetProps> = ({ data }) => {
         strokeWidth: borderWidth,
         dash: borderStylesOptions[style ?? borderStyle],
       });
-      console.warn(
-        "🚀 ~ data.selectedItems.forEach ~ borderStylesOptions[borderStyle]:",
-        borderStylesOptions[borderStyle]
-      );
+
       updateItem(item.id(), () => item.attrs);
     });
 
