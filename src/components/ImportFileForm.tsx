@@ -100,7 +100,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       }
       return false;
     });
-
+    console.log("thsis serac", search, filteredData);
     // Apply pagination
     const startIndex = pageIndex * pageSize;
     const endIndex = startIndex + pageSize;

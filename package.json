@@ -5,6 +5,8 @@
   "dependencies": {
     "@heroicons/react": "^2.1.5",
     "@reduxjs/toolkit": "^1.9.5",
+    "@sentry/cli": "^2.39.1",
+    "@sentry/react": "^8.42.0",
     "@tanstack/react-query": "^5.8.3",
     "@tanstack/react-query-devtools": "^5.8.3",
     "@tensorflow-models/deeplab": "^0.2.2",
@@ -81,11 +83,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false react-scripts build",
+    "build": "CI=false react-scripts build && npm run sentry:sourcemaps",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "startHttps": "set HTTPS=true&&react-scripts start",
-    "startHttpsCA": "set HTTPS=true&&set SSL_CRT_FILE=C:/Windows/System32/ca.crt&&set SSL_KEY_FILE=C:/Windows/System32/ca.key&&react-scripts start"
+    "startHttpsCA": "set HTTPS=true&&set SSL_CRT_FILE=C:/Windows/System32/ca.crt&&set SSL_KEY_FILE=C:/Windows/System32/ca.key&&react-scripts start",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org developer-qzu --project pcf build && sentry-cli sourcemaps upload --org developer-qzu --project pcf build"
   },
   "eslintConfig": {
     "extends": [

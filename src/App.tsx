@@ -6,9 +6,26 @@ import { persistStore } from "redux-persist";
 import { AuthProvider } from "./context/UserContext";
 import { initReactI18next } from "react-i18next";
 import initI18n from "./i18n/config";
+import * as Sentry from "@sentry/react";
 
 // Initialize i18n with the desired language
 initI18n();
+
+Sentry.init({
+  dsn: "https://e89a92c5fa9b610908401ac5a551849d@o4507668542849024.ingest.de.sentry.io/4508432691298384",
+
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration(),
+  ],
+  // Performance Monitoring
+  tracesSampleRate: 1.0, //  Capture 100% of the transactions
+  // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+  tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/],
+  // Session Replay
+  replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+  replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+});
 // import { BrowserRouter, Route, RouterProvider, Routes } from "react-router-dom";
 export const persistor = persistStore(store);
 

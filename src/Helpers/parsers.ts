@@ -43,7 +43,6 @@ export const getExtendPropertyData = (
     //   typeObjectId,
     //   UDF
     // );
-    console.warn("thisi s seeting ", setting, UDF, [...UDFElements]);
     if (setting) {
       if (
         setting.pcfField === "startDate" ||
