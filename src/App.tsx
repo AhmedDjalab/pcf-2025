@@ -17,9 +17,7 @@ Sentry.init({
   integrations: [
     Sentry.browserTracingIntegration(),
     Sentry.replayIntegration({
-      networkDetailAllowUrls: [
-        "https://pcf-api2023.azurewebsites.net/api/Projects/put",
-      ],
+      networkDetailAllowUrls: ["*"],
       networkRequestHeaders: ["X-Custom-Header"],
       networkResponseHeaders: ["X-Custom-Header"],
       maskAllText: false,
