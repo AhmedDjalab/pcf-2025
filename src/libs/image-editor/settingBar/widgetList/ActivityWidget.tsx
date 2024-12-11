@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import Select from "react-select";
 import Input from "src/components/Input";
 import moment from "moment";
+import { isTemplateSpan } from "typescript";
 
 // type Activity = {
 //   id: string;
@@ -83,15 +84,19 @@ const ActivityWidget: React.FC<ActivityWidgetProps> = ({
         (x) =>
           x.attrs["data-item-type"] === "text" && x.attrs.shapeId === item.id()
       );
-
-      let textPositionX = item.attrs.x + item.attrs.width / 2;
+      var width = item.attrs.width ?? 1;
+      let textPositionX = item.attrs.x + width / 2;
       let textPositionY = item.attrs.y - 20;
+      console.log("🚀 ~ data.selectedItems.forEach ~ item:", item);
 
       if (item.attrs["data-item-type"] === "polygon") {
         textPositionX = item.attrs.points[0];
         textPositionY = item.attrs.points[1];
       }
-
+      if (item.attrs["sides"] > 4) {
+        textPositionX = item.attrs.x;
+        textPositionY = item.attrs.y - item.attrs.y / 2;
+      }
       if (existedItem) {
         // updateItem(
         //   existedItem.id,
