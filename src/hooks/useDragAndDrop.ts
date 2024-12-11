@@ -149,6 +149,7 @@ const useDragAndDrop = (
   //   }
   // };
   const insertImageAtCenter = (data: { [key: string]: any }) => {
+    console.log("🚀 ~ insertImageAtCenter ~ data:", data);
     const imageSrc = new Image();
     let source = data.src;
 
@@ -170,6 +171,13 @@ const useDragAndDrop = (
       const stageParent = stageRef.current.parent;
       const stageWidth = stage.width();
       const stageHeight = stage.height();
+      console.warn(
+        "🚀 ~ insertImageAtCenter ~ stageWidth:",
+        stageWidth,
+        width,
+        stageHeight,
+        height
+      );
 
       // Calculate position to center the image on the stage
       const position = {

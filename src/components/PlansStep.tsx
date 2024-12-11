@@ -73,6 +73,11 @@ const PlansList = ({ setCurrentStep, currentStep }: MultiStepFormProps) => {
     setFormFieldValues(plans ?? []);
   }, [plans]);
 
+  //!the plan pop up editor take 90% of the width of w and height too
+  //! mins p-6 minus w-17% ( increasing maybe make image not smooth )
+  //TODO:check this out we need to make image fill blank space
+  //TODO: in case of plan view ,
+  //TODO: we need to keep the image and change only the shapes so no need to build
   const initialData = useMemo(
     () => [
       {

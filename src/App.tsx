@@ -16,7 +16,15 @@ Sentry.init({
 
   integrations: [
     Sentry.browserTracingIntegration(),
-    Sentry.replayIntegration(),
+    Sentry.replayIntegration({
+      networkDetailAllowUrls: [
+        "https://pcf-api2023.azurewebsites.net/api/Projects/put",
+      ],
+      networkRequestHeaders: ["X-Custom-Header"],
+      networkResponseHeaders: ["X-Custom-Header"],
+      maskAllText: false,
+      blockAllMedia: false,
+    }),
   ],
   // Performance Monitoring
   tracesSampleRate: 1.0, //  Capture 100% of the transactions
