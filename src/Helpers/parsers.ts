@@ -142,7 +142,8 @@ export const getUDFData = (
       } else if (setting.pcfField === "style") {
         dataObject[setting.pcfField] = textValue;
       } else if (setting.pcfField === "critical") {
-        dataObject[setting.pcfField] = textValue === "Yes" ? true : false;
+        dataObject[setting.pcfField] =
+          textValue === "Yes" || textValue === "1" ? true : false;
       } else if (
         setting.pcfField === "workShops" ||
         setting.pcfField === "productionRate" ||
