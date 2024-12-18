@@ -57,6 +57,7 @@ const useHotkeyFunc = () => {
   };
 
   const pasteItems = (clipboard: StageData[]) => {
+    var newId = Uuid4();
     clipboard.forEach((item) => {
       if (Object.keys(item.attrs).length === 0) {
         return;
@@ -65,6 +66,7 @@ const useHotkeyFunc = () => {
         id: Uuid4(),
         attrs: {
           ...item.attrs,
+          id: newId,
         },
         className: item.className,
         children: item.children,

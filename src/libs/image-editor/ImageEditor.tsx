@@ -417,14 +417,15 @@ function ImageEditor({
   const activityTable = <ActivityTable activities={stageActivities!} />;
 
   const renderObject = (item: StageData) => {
+    console.log("this is readonly vale ", readOnly);
     switch (item.attrs["data-item-type"]) {
       case "frame":
         return (
           <Frame
             key={`frame-${item.id}`}
             data={item as FrameProps["data"]}
-            onSelect={onSelectItem}
-            //readOnly={readOnly}
+            onSelect={!readOnly && onSelectItem}
+            readOnly={readOnly}
           />
         );
       case "image":
@@ -432,7 +433,7 @@ function ImageEditor({
           <ImageItem
             key={`image-${item.id}`}
             data={item as ImageItemProps["data"]}
-            onSelect={() => {}}
+            onSelect={!readOnly && (() => {})}
           />
         );
       case "text":
@@ -441,8 +442,8 @@ function ImageEditor({
             key={`image-${item.id}`}
             data={item as TextItemProps["data"]}
             transformer={transformer}
-            onSelect={onSelectItem}
-            // readOnly={readOnly}
+            onSelect={!readOnly && onSelectItem}
+            readOnly={readOnly}
           />
         );
       case "shape":
@@ -451,8 +452,8 @@ function ImageEditor({
             key={`shape-${item.id}`}
             data={item as ShapeItemProps["data"]}
             transformer={transformer}
-            onSelect={onSelectItem}
-            // readOnly={readOnly}
+            onSelect={!readOnly && onSelectItem}
+            readOnly={readOnly}
           />
         );
       case "icon":
@@ -461,8 +462,8 @@ function ImageEditor({
             key={`icon-${item.id}`}
             data={item as IconItemProps["data"]}
             transformer={transformer}
-            onSelect={onSelectItem}
-            // readOnly={readOnly}
+            onSelect={!readOnly && onSelectItem}
+            readOnly={readOnly}
           />
         );
       case "line":
@@ -471,8 +472,8 @@ function ImageEditor({
             key={`line-${item.id}`}
             data={item as LineItemProps["data"]}
             transformer={transformer}
-            onSelect={onSelectItem}
-            // readOnly={readOnly}
+            onSelect={!readOnly && onSelectItem}
+            readOnly={readOnly}
           />
         );
       case "polygon":
@@ -481,8 +482,8 @@ function ImageEditor({
             key={`polygon-${item.id}`}
             data={item as PolygonItemProps["data"]}
             transformer={transformer}
-            onSelect={onSelectItem}
-            // readOnly={readOnly}
+            onSelect={!readOnly && onSelectItem}
+            readOnly={readOnly}
           />
         );
       default:

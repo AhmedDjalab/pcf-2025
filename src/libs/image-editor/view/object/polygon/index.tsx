@@ -207,7 +207,7 @@ const PolygonItem: React.FC<PolygonItemProps> = ({
         closed={isClosed}
         opacity={attrs.opacity ?? 1}
         rotation={attrs.rotation ?? 0}
-        draggable
+        draggable={!readOnly}
         dash={attrs.dash ?? undefined}
         onDragStart={handleDragStart}
         onDragMove={handleDragMove}
