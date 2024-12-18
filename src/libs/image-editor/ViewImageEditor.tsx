@@ -1,4 +1,3 @@
-//@ts-nocheck
 import React, { useEffect, useMemo, useState } from "react";
 import { Transformer } from "react-konva";
 import { Node, NodeConfig } from "konva/lib/Node";
@@ -41,7 +40,7 @@ import { StageDataListItem } from "src/state/stageDataList";
 import { initialStageDataList } from "src/state/initilaStageDataList";
 // import "bootstrap/dist/css/bootstrap.min.css";
 import { ActivityModel } from "src/types/Project";
-import { GraphDataType } from "src/state/slices/graphSlice";
+import { GraphDataType, StageDataModel } from "src/state/slices/graphSlice";
 import { v4 as Uuid4 } from "uuid";
 import ActivityTable from "./view/object/Activity/ActivityTable";
 import ReadLayout from "./layout/ReadLayout";
@@ -68,26 +67,26 @@ export type FileKind = {
 // ];
 export type FileData = Record<string, FileKind>;
 
-export type ImageEditorType = {
-  imgUrl: string;
-  onSaveState: (stageData: StageData[]) => void;
+export type ViewImageEditorType = {
+  imgData: StageData;
+  //onSaveState: (stageData: StageData[]) => void;
   initialStageData?: StageData[] | any;
-  activities: GraphDataType[];
+  //activities: GraphDataType[];
   readOnly?: boolean;
   stageActivities?: StageActivity[] | undefined;
-  stageActivities?: StageActivity[] | undefined;
+  //stageActivities?: StageActivity[] | undefined;
   setIsOpen?: () => void;
-  selectedDate?: Date;
 };
-function ImageEditor({
-  imgUrl,
+function ViewImageEditor({
+  imgData,
   initialStageData,
-  onSaveState,
-  activities,
+  //onSaveState,
+  //activities,
   stageActivities,
   readOnly,
   setIsOpen,
-}: ImageEditorType) {
+}: ViewImageEditorType) {
+  console.log("🚀 ~ imgData:", imgData);
   useEffect(() => {
     const link = document.createElement("link");
     link.rel = "stylesheet";
@@ -139,26 +138,17 @@ function ImageEditor({
   const { getTranslation } = useI18n();
   const [clipboard, setClipboard] = useState<StageData[]>([]);
   const createStageDataObject = (item: Node<NodeConfig>): StageData => {
-    console.log("🚀 ~ createStageDataObject ~ item: before copying ", item);
     const { id } = item.attrs;
     const target =
       item.attrs["data-item-type"] === "frame" ? item.getParent() : item;
-    var newID = Uuid4();
-    var copiedItem = {
-      id: newID,
+    return {
+      id: Uuid4(),
       attrs: {
         ...(stageData.find((_item) => _item.attrs.id === id)?.attrs ?? {}),
-        id: newID,
       },
       className: target.getType(),
       children: [],
     };
-    console.log(
-      "🚀 ~ createStageDataObject ~ item: after copying ",
-      copiedItem
-    );
-
-    return copiedItem;
   };
   const { getClickCallback } = useTool(
     stage,
@@ -192,69 +182,67 @@ function ImageEditor({
   const stageCon = useStage();
 
   const { alterItems, clearItems, createItem } = useItem();
-  const exportShapesAsJson = () => {
-    if (!stageData || stageData.length === 0) return;
+  //   const exportShapesAsJson = () => {
+  //     if (!stageData || stageData.length === 0) return;
 
-    const stage = stageCon.stageRef.current;
+  //     const stage = stageCon.stageRef.current;
 
-    // Find the "sample-image" shape to use as the reference
-    const sampleImage = stageData.find(
-      (shape) => shape.className === "sample-image"
-    );
-    if (!sampleImage) {
-      console.error("No 'sample-image' found for normalization.");
-      return;
-    }
+  //     // Find the "sample-image" shape to use as the reference
+  //     const sampleImage = stageData.find(
+  //       (shape) => shape.className === "sample-image"
+  //     );
+  //     if (!sampleImage) {
+  //       console.error("No 'sample-image' found for normalization.");
+  //       return;
+  //     }
 
-    const imageWidth = sampleImage.attrs.width;
-    const imageHeight = sampleImage.attrs.height;
+  //     const imageWidth = sampleImage.attrs.width;
+  //     const imageHeight = sampleImage.attrs.height;
 
-    // Normalize function to adjust positions, sizes, and scales based on the "sample-image"
-    const normalizeShapeData = (shape: StageData) => {
-      const { x, y, width, height, scaleX, scaleY, ...restAttrs } = shape.attrs;
+  //     // Normalize function to adjust positions, sizes, and scales based on the "sample-image"
+  //     const normalizeShapeData = (shape: StageData) => {
+  //       const { x, y, width, height, scaleX, scaleY, ...restAttrs } = shape.attrs;
 
-      if (shape.className === "sample-image") {
-        // No need to normalize the "sample-image" itself
-        return shape;
-      }
+  //       if (shape.className === "sample-image") {
+  //         // No need to normalize the "sample-image" itself
+  //         return shape;
+  //       }
 
-      // Normalize position and size based on the "sample-image"
-      const normalizedX = x / imageWidth;
-      const normalizedY = y / imageHeight;
-      const normalizedWidth = width / imageWidth;
-      const normalizedHeight = height / imageHeight;
+  //       // Normalize position and size based on the "sample-image"
+  //       const normalizedX = x / imageWidth;
+  //       const normalizedY = y / imageHeight;
+  //       const normalizedWidth = width / imageWidth;
+  //       const normalizedHeight = height / imageHeight;
 
-      // Normalize scale
-      const normalizedScaleX = scaleX ? scaleX / (imageWidth / imageHeight) : 1;
-      const normalizedScaleY = scaleY ? scaleY / (imageHeight / imageWidth) : 1;
+  //       // Normalize scale
+  //       const normalizedScaleX = scaleX ? scaleX / (imageWidth / imageHeight) : 1;
+  //       const normalizedScaleY = scaleY ? scaleY / (imageHeight / imageWidth) : 1;
 
-      // Return normalized shape attributes
-      return {
-        ...shape,
-        attrs: {
-          ...restAttrs,
-          x: normalizedX,
-          y: normalizedY,
-          width: normalizedWidth,
-          height: normalizedHeight,
-          scaleX: normalizedScaleX,
-          scaleY: normalizedScaleY,
-        },
-      };
-    };
+  //       // Return normalized shape attributes
+  //       return {
+  //         ...shape,
+  //         attrs: {
+  //           ...restAttrs,
+  //           x: normalizedX,
+  //           y: normalizedY,
+  //           width: normalizedWidth,
+  //           height: normalizedHeight,
+  //           scaleX: normalizedScaleX,
+  //           scaleY: normalizedScaleY,
+  //         },
+  //       };
+  //     };
 
-    // Normalize all shapes in stageData
-    const normalizedStageData = stageData.map(normalizeShapeData);
-    onSaveState(normalizedStageData);
-    //return normalizedStageData;
-  };
+  //     // Normalize all shapes in stageData
+  //     const normalizedStageData = stageData.map(normalizeShapeData);
+  //     //onSaveState(normalizedStageData);
+  //     //return normalizedStageData;
+  //   };
 
   const importShapesFromJson = () => {
     if (initialStageData && Array.isArray(initialStageData)) {
       // Get the "sample-image" dimensions from the imported data
-      const sampleImage = initialStageData.find(
-        (shape) => shape.className === "sample-image"
-      );
+      const sampleImage = imgData;
       if (!sampleImage) {
         console.error("No 'sample-image' found in the imported data.");
         return;
@@ -321,57 +309,39 @@ function ImageEditor({
     stage.stageRef,
     stage.dragBackgroundOrigin
   );
-  // useEffect(() => {
-  //   setLoading(true);
+  useEffect(() => {
+    setLoading(true);
+    console.log("it is executed ", imgData);
+    if (!imgData) {
+      return;
+    }
+    // if (initialStageData) {
+    //   setLoading(false);
+    //   return;
+    // }
+    // Create a new Image object
+    const img = new window.Image();
+    img.src = imgData.attrs["src"];
 
-  //   if (initialStageData) {
-  //     setLoading(false);
-  //     return;
-  //   }
-  //   // Create a new Image object
-  //   const img = new window.Image();
-  //   img.src = imgUrl;
+    // Once the image loads, set the image in the state
+    img.onload = () => {
+      const result = {
+        type: "image",
+        id: Uuid4(),
+        name: "imported image",
+        src: imgData.attrs["src"], // Use the passed image URL directly
+      };
+      insertImageAtCenter(result);
+      setImage(result);
+    };
 
-  //   // Once the image loads, set the image in the state
-  //   img.onload = () => {
-  //     const result = {
-  //       type: "image",
-  //       id: Uuid4(),
-  //       name: "imported image",
-  //       src: imgUrl, // Use the passed image URL directly
-  //     };
-  //     insertImageAtCenter(result);
-  //     setImage(result);
-  //   };
+    // Handle image loading errors
+    img.onerror = (error) => {
+      console.error("Error loading image:", error);
+    };
 
-  //   // Handle image loading errors
-  //   img.onerror = (error) => {
-  //     console.error("Error loading image:", error);
-  //   };
-
-  //   setLoading(false);
-  // }, [imgUrl, setLoading]);
-
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     insertImageAtCenter(image);
-  //   };
-  //   if (!image) {
-  //     return;
-  //   }
-  //   console.warn("this is windows scae");
-  //   stage.stageRef?.current.remove();
-  //   // Call the function once to insert at center initially
-
-  //   // Add the event listener for window resize
-  //   window.addEventListener("resize", handleResize);
-  //   stage.stageRef.current.batchDraw();
-  //   // Cleanup the event listener when component unmounts
-  //   return () => {
-  //     window.removeEventListener("resize", handleResize);
-  //   };
-  // }, [image, window.innerWidth, window.innerHeight]);
-  //?----
+    setLoading(false);
+  }, [imgData]);
 
   const header = <></>;
 
@@ -388,44 +358,6 @@ function ImageEditor({
     </NavBar>
   );
 
-  const hotkeyModal = (
-    <Modal show={modal.displayModal} onHide={modal.closeModal}>
-      <Modal.Header closeButton>
-        <Modal.Title>Keyboard Shortcut</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {hotkeyList.map((hotkey) => (
-          <Col key={hotkey.name}>
-            <h6>{getTranslation("hotkey", hotkey.id, "name")}</h6>
-            <Row className="justify-content-end" xs={4}>
-              {hotkey.keys.map((key, idx) => (
-                <React.Fragment key={hotkey.name + key}>
-                  {idx !== 0 && "+"}
-                  <Col xs="auto" className="align-items-center">
-                    <Button disabled>{key}</Button>
-                  </Col>
-                </React.Fragment>
-              ))}
-            </Row>
-          </Col>
-        ))}
-      </Modal.Body>
-    </Modal>
-  );
-
-  const settingBar = (
-    <SettingBar
-      closeModal={setIsOpen}
-      selectedItems={selectedItems}
-      clearSelection={clearSelection}
-      stageRef={stage.stageRef}
-      activities={activities}
-      saveChanges={exportShapesAsJson}
-    />
-  );
-
-  const activityTable = <ActivityTable activities={stageActivities!} />;
-
   const renderObject = (item: StageData) => {
     switch (item.attrs["data-item-type"]) {
       case "frame":
@@ -434,7 +366,7 @@ function ImageEditor({
             key={`frame-${item.id}`}
             data={item as FrameProps["data"]}
             onSelect={onSelectItem}
-            //readOnly={readOnly}
+            readOnly={false} //readOnly={readOnly}
           />
         );
       case "image":
@@ -448,11 +380,11 @@ function ImageEditor({
       case "text":
         return (
           <TextItem
-            key={`image-${item.id}`}
+            key={`text-${item.id}`}
             data={item as TextItemProps["data"]}
             transformer={transformer}
             onSelect={onSelectItem}
-            // readOnly={readOnly}
+            readOnly={false} // readOnly={readOnly}
           />
         );
       case "shape":
@@ -462,7 +394,7 @@ function ImageEditor({
             data={item as ShapeItemProps["data"]}
             transformer={transformer}
             onSelect={onSelectItem}
-            // readOnly={readOnly}
+            readOnly={false} // readOnly={readOnly}
           />
         );
       case "icon":
@@ -482,7 +414,7 @@ function ImageEditor({
             data={item as LineItemProps["data"]}
             transformer={transformer}
             onSelect={onSelectItem}
-            // readOnly={readOnly}
+            readOnly={false} // readOnly={readOnly}
           />
         );
       case "polygon":
@@ -492,7 +424,7 @@ function ImageEditor({
             data={item as PolygonItemProps["data"]}
             transformer={transformer}
             onSelect={onSelectItem}
-            // readOnly={readOnly}
+            readOnly={false} // readOnly={readOnly}
           />
         );
       default:
@@ -500,119 +432,115 @@ function ImageEditor({
     }
   };
 
-  useHotkeys(
-    "shift+up",
-    (e) => {
-      e.preventDefault();
-      layerUp(selectedItems);
-    },
-    {},
-    [selectedItems]
-  );
+  //   useHotkeys(
+  //     "shift+up",
+  //     (e) => {
+  //       e.preventDefault();
+  //       layerUp(selectedItems);
+  //     },
+  //     {},
+  //     [selectedItems]
+  //   );
 
-  useHotkeys(
-    "shift+down",
-    (e) => {
-      e.preventDefault();
-      layerDown(selectedItems);
-    },
-    {},
-    [selectedItems]
-  );
+  //   useHotkeys(
+  //     "shift+down",
+  //     (e) => {
+  //       e.preventDefault();
+  //       layerDown(selectedItems);
+  //     },
+  //     {},
+  //     [selectedItems]
+  //   );
 
-  useHotkeys(
-    "ctrl+d",
-    (e) => {
-      e.preventDefault();
-      duplicateItems(selectedItems, createStageDataObject);
-    },
-    {},
-    [selectedItems, stageData]
-  );
+  //   useHotkeys(
+  //     "ctrl+d",
+  //     (e) => {
+  //       e.preventDefault();
+  //       duplicateItems(selectedItems, createStageDataObject);
+  //     },
+  //     {},
+  //     [selectedItems, stageData]
+  //   );
 
-  useHotkeys(
-    "ctrl+c",
-    (e) => {
-      e.preventDefault();
-      console.log("🚀 ~ selectedItems:", selectedItems);
+  //   useHotkeys(
+  //     "ctrl+c",
+  //     (e) => {
+  //       e.preventDefault();
+  //       copyItems(selectedItems, setClipboard, createStageDataObject);
+  //     },
+  //     {},
+  //     [selectedItems, stageData, clipboard]
+  //   );
 
-      copyItems(selectedItems, setClipboard, createStageDataObject);
-    },
-    {},
-    [selectedItems, stageData, clipboard]
-  );
+  //   useHotkeys(
+  //     "ctrl+a",
+  //     (e) => {
+  //       e.preventDefault();
+  //       selectAll(stage, onSelectItem);
+  //     },
+  //     {},
+  //     [selectedItems]
+  //   );
 
-  useHotkeys(
-    "ctrl+a",
-    (e) => {
-      e.preventDefault();
-      selectAll(stage, onSelectItem);
-    },
-    {},
-    [selectedItems]
-  );
+  //   useHotkeys(
+  //     "ctrl+v",
+  //     (e) => {
+  //       e.preventDefault();
+  //       pasteItems(clipboard);
+  //     },
+  //     {},
+  //     [clipboard]
+  //   );
 
-  useHotkeys(
-    "ctrl+v",
-    (e) => {
-      e.preventDefault();
-      console.log("🚀 ~ clipboard:", clipboard);
+  //   useHotkeys(
+  //     "ctrl+z",
+  //     (e) => {
+  //       e.preventDefault();
+  //       goToPast();
+  //     },
+  //     {},
+  //     [goToPast]
+  //   );
 
-      pasteItems(clipboard);
-    },
-    {},
-    [clipboard]
-  );
+  //   useHotkeys(
+  //     "ctrl+y",
+  //     (e) => {
+  //       e.preventDefault();
+  //       goToFuture();
+  //     },
+  //     {},
+  //     [goToFuture]
+  //   );
 
-  useHotkeys(
-    "ctrl+z",
-    (e) => {
-      e.preventDefault();
-      goToPast();
-    },
-    {},
-    [goToPast]
-  );
+  //   useHotkeys(
+  //     "shift+h",
+  //     (e) => {
+  //       e.preventDefault();
+  //       flipHorizontally(selectedItems);
+  //     },
+  //     {},
+  //     [selectedItems]
+  //   );
 
-  useHotkeys(
-    "ctrl+y",
-    (e) => {
-      e.preventDefault();
-      goToFuture();
-    },
-    {},
-    [goToFuture]
-  );
+  //   useHotkeys(
+  //     "shift+v",
+  //     (e) => {
+  //       e.preventDefault();
+  //       flipVertically(selectedItems);
+  //     },
+  //     {},
+  //     [selectedItems]
+  //   );
 
-  useHotkeys(
-    "shift+h",
-    (e) => {
-      e.preventDefault();
-      flipHorizontally(selectedItems);
-    },
-    {},
-    [selectedItems]
-  );
-
-  useHotkeys(
-    "shift+v",
-    (e) => {
-      e.preventDefault();
-      flipVertically(selectedItems);
-    },
-    {},
-    [selectedItems]
-  );
-
-  useHotkeys(
-    "backspace",
-    (e) => {
-      e.preventDefault();
-      deleteItems(selectedItems, setSelectedItems, transformer.transformerRef);
-    },
-    { enabled: Boolean(selectedItems.length) },
-    [selectedItems, transformer.transformerRef.current]
-  );
+  //   useHotkeys(
+  //     "backspace",
+  //     (e) => {
+  //       e.preventDefault();
+  //       deleteItems(selectedItems, setSelectedItems, transformer.transformerRef);
+  //     },
+  //     { enabled: Boolean(selectedItems.length) },
+  //     [selectedItems, transformer.transformerRef.current]
+  //   );
 
   useEffect(() => {
     window.addEventListener("beforeunload", (e) => {
@@ -629,15 +557,17 @@ function ImageEditor({
     stage.stageRef.current.batchDraw();
   }, []);
 
-  useEffect(() => {
-    if (currentTabId) {
-      updateFileData({
-        id: currentTabId,
-        data: stageData,
-      });
-    }
-    recordPast(stageData);
-  }, [stageData]);
+  //   useEffect(() => {
+  //     if (currentTabId) {
+  //       updateFileData({
+  //         id: currentTabId,
+  //         data: stageData,
+  //       });
+  //     }
+  //     recordPast(stageData);
+  //   }, [stageData]);
+
+  const activityTable = <ActivityTable activities={stageActivities!} />;
 
   useEffect(() => {
     if (stage.stageRef?.current) {
@@ -645,9 +575,7 @@ function ImageEditor({
     }
   }, [selectedItems, transformer]);
 
-  return loading ? (
-    <div>....loading</div>
-  ) : readOnly ? (
+  return (
     <ReadLayout settingBar={activityTable}>
       {/* {hotkeyModal} */}
       <View onSelect={() => {}} stage={stage}>
@@ -664,24 +592,7 @@ function ImageEditor({
         /> */}
       </View>
     </ReadLayout>
-  ) : (
-    <Layout header={header} navBar={navBar} settingBar={settingBar}>
-      {hotkeyModal}
-      <View onSelect={onSelectItem} stage={stage}>
-        {stageData.length
-          ? sortedStageData.map((item) => renderObject(item))
-          : null}
-
-        <Transformer
-          ref={transformer.transformerRef}
-          keepRatio
-          shouldOverdrawWholeArea
-          boundBoxFunc={(_, newBox) => newBox}
-          onTransformEnd={transformer.onTransformEnd}
-        />
-      </View>
-    </Layout>
   );
 }
 
-export default ImageEditor;
+export default ViewImageEditor;

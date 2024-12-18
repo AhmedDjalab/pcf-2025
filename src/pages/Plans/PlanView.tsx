@@ -1,5 +1,3 @@
-//@ts-nocheck
-
 import React, { useEffect, useMemo, useState } from "react";
 
 import DefaultLayout from "src/components/DefaultLayout";
@@ -38,6 +36,30 @@ import moment from "moment";
 import "./planView.css";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/solid";
 import Input from "src/components/Input";
+import OptimizedImageEditor from "src/libs/image-editor/OptimizedImageEditor";
+import ReadLayout from "src/libs/image-editor/layout/ReadLayout";
+import View from "src/libs/image-editor/view";
+import Frame, { FrameProps } from "src/libs/image-editor/view/frame";
+import ImageItem, {
+  ImageItemProps,
+} from "src/libs/image-editor/view/object/image";
+import TextItem, {
+  TextItemProps,
+} from "src/libs/image-editor/view/object/text";
+import ShapeItem, {
+  ShapeItemProps,
+} from "src/libs/image-editor/view/object/shape";
+import IconItem, {
+  IconItemProps,
+} from "src/libs/image-editor/view/object/icon";
+import LineItem, {
+  LineItemProps,
+} from "src/libs/image-editor/view/object/line";
+import PolygonItem, {
+  PolygonItemProps,
+} from "src/libs/image-editor/view/object/polygon";
+import ActivityTable from "src/libs/image-editor/view/object/Activity/ActivityTable";
+import useTransformer from "src/hooks/useTransformer";
 function PlanView() {
   const [getStagesData, setGetStagesData] = useState<boolean>(false);
   const [selectedPlanImgUrl, setSelectedPlanImgUrl] = useState<string>("");
@@ -54,7 +76,7 @@ function PlanView() {
   const { user, canWrite, isAdmin } = useAuth();
 
   const [incrementType, setIncrementType] = useState("d");
-
+  const transformer = useTransformer();
   const incrementDate = () => {
     setSelectedDate((prevDate) => {
       const newDate = new Date(prevDate);
@@ -312,6 +334,28 @@ function PlanView() {
     // setGetStagesData(true);
     // refetchStageData();
   };
+  const initialImgData = useMemo<StageData>(() => {
+    return {
+      id: uuidv4(),
+
+      attrs: {
+        name: "label-target",
+        "data-item-type": "image",
+        x: 10,
+        y: 10,
+        width: 800,
+        height: 536.0406091,
+        src: selectedPlanEntity?.planImageUrl,
+        draggable: false,
+        zIndex: 0,
+        brightness: 0,
+        _filters: ["Brighten"],
+        updatedAt: Date.now(),
+      },
+      className: "sample-image",
+      children: [],
+    };
+  }, [selectedPlanEntity]);
 
   const initialData = useMemo<StageData[]>(
     () => [
@@ -325,7 +369,7 @@ function PlanView() {
           y: 10,
           width: 800,
           height: 536.0406091,
-          src: selectedPlanImgUrl,
+          src: selectedPlanEntity?.planImageUrl,
           draggable: false,
           zIndex: 0,
           brightness: 0,
@@ -336,7 +380,7 @@ function PlanView() {
         children: [],
       },
     ],
-    [selectedPlanImgUrl]
+    [selectedPlanEntity]
   );
 
   const seenIds = new Set();
@@ -356,7 +400,7 @@ function PlanView() {
     [seenIds, stagesData]
   );
   const stagedataConverter = useMemo(() => {
-    return stagesData?.map<StageData[]>((s) => {
+    return stagesData?.map<StageData>((s) => {
       return {
         ...s,
         attrs: {
@@ -367,6 +411,89 @@ function PlanView() {
       };
     });
   }, [stagesData]);
+
+  const sortedStageData = useMemo(
+    () =>
+      stagedataConverter?.sort((a, b) => {
+        if (a.attrs.zIndex === b.attrs.zIndex) {
+          if (a.attrs.zIndex < 0) {
+            return b.attrs.updatedAt - a.attrs.updatedAt;
+          }
+          return a.attrs.updatedAt - b.attrs.updatedAt;
+        }
+        return a.attrs.zIndex - b.attrs.zIndex;
+      }) ?? [],
+    [stagedataConverter]
+  );
+  const renderObject = (item: StageData) => {
+    switch (item.attrs["data-item-type"]) {
+      case "frame":
+        return (
+          <Frame
+            key={`frame-${item.id}`}
+            data={item as FrameProps["data"]}
+            onSelect={() => {}}
+            readOnly={true}
+          />
+        );
+
+      case "text":
+        return (
+          <TextItem
+            key={`image-${item.id}`}
+            data={item as TextItemProps["data"]}
+            transformer={transformer}
+            onSelect={() => {}}
+            readOnly={true}
+          />
+        );
+      case "shape":
+        return (
+          <ShapeItem
+            key={`shape-${item.id}`}
+            data={item as ShapeItemProps["data"]}
+            transformer={transformer}
+            onSelect={() => {}}
+            readOnly={true}
+          />
+        );
+      case "icon":
+        return (
+          <IconItem
+            key={`icon-${item.id}`}
+            data={item as IconItemProps["data"]}
+            transformer={transformer}
+            onSelect={() => {}}
+            readOnly={true}
+          />
+        );
+      case "line":
+        return (
+          <LineItem
+            key={`line-${item.id}`}
+            data={item as LineItemProps["data"]}
+            transformer={transformer}
+            onSelect={() => {}}
+            readOnly={true}
+          />
+        );
+      case "polygon":
+        return (
+          <PolygonItem
+            key={`polygon-${item.id}`}
+            data={item as PolygonItemProps["data"]}
+            transformer={transformer}
+            onSelect={() => {}}
+            readOnly={true}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  const activityTable = <ActivityTable activities={uniqueActivities ?? []} />;
+
   return (
     <DefaultLayout>
       <div className="  h-full w-full overflow-hidden">
@@ -453,23 +580,49 @@ function PlanView() {
           </button>
         </div> */}
         </div>
-        {stagesData &&
-          (stagesDataLoading ? (
-            <Spinner />
-          ) : (
-            <ImageEditor
-              key={selectedPlan + moment(selectedDate).format("DD/MM/YYYY")}
-              onSaveState={(data) => {}}
-              initialStageData={
-                stagesData.length > 0 ? stagedataConverter : initialData
-              }
-              imgUrl={""}
-              activities={[]}
-              readOnly={true}
-              stageActivities={uniqueActivities}
-            />
-          ))}
+        {/* {selectedPlan ? (
+          <Spinner />
+        ) : (
+          <ImageEditor
+            key={`${selectedPlan}-${moment(selectedDate).format("DD/MM/YYYY")}`}
+            onSaveState={(data) => {}}
+            initialStageData={initialData ?? []}
+            imgUrl={selectedPlanImgUrl}
+            activities={[]}
+            readOnly={true}
+            stageActivities={uniqueActivities ?? []}
+            selectedDate={selectedDate}
+          />
+        )} */}
 
+        {/* // we will render the layout of konva here  */}
+
+        <ReadLayout settingBar={activityTable}>
+          {/* {hotkeyModal} */}
+          <View onSelect={() => {}} stage={stage}>
+            {selectedPlanImgUrl && initialImgData && (
+              <ImageItem
+                key={`image-${initialImgData.id}`}
+                data={initialImgData as ImageItemProps["data"]}
+                onSelect={() => {}}
+              />
+            )}
+
+            {stagedataConverter?.length
+              ? sortedStageData.map((item) => renderObject(item))
+              : null}
+
+            {/* <Transformer
+          ref={transformer.transformerRef}
+          keepRatio
+          shouldOverdrawWholeArea
+          boundBoxFunc={(_, newBox) => newBox}
+          onTransformEnd={transformer.onTransformEnd}
+        /> */}
+          </View>
+        </ReadLayout>
+
+        {/* end of rendering  */}
         {paperSizeModalOpen && (
           <div className="w-[60%]">
             <PaperSizeModal
