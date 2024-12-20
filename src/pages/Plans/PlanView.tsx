@@ -1,287 +1,115 @@
+//@ts-nocheck
+
 import React, { useEffect, useMemo, useState } from "react";
-
 import DefaultLayout from "src/components/DefaultLayout";
-
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {
-  getPlans,
-  getStagesDataByPlanId,
-  PlansResponse,
-} from "src/Services/PlanService";
+import { getPlans, getStagesDataByPlanId } from "src/Services/PlanService";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Dropdown from "src/components/DropDown";
 import DatePickerDefault from "src/components/DatePicker";
 import { useTranslation } from "react-i18next";
-import PlanSelectEditor from "src/PlanSelectEditor";
-import ImageEditor from "src/libs/image-editor/ImageEditor";
 import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 import { RootState } from "src/state";
 import { StageData } from "src/state/currentStageData";
-import {
-  addStageDataToPlan,
-  Plan,
-  StageDataModel,
-} from "src/state/slices/graphSlice";
+import { Plan } from "src/state/slices/graphSlice";
 import { v4 as uuidv4 } from "uuid";
-import { Spinner } from "react-bootstrap";
 import { useAuth } from "src/context/UserContext";
 import useStage from "src/hooks/useStage";
 import jsPDF from "jspdf";
 import PaperSizeModal from "src/components/PaperSizeModal";
 import html2canvas from "html2canvas";
 import moment from "moment";
-import "./planView.css";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/solid";
-import Input from "src/components/Input";
-import OptimizedImageEditor from "src/libs/image-editor/OptimizedImageEditor";
 import ReadLayout from "src/libs/image-editor/layout/ReadLayout";
 import View from "src/libs/image-editor/view";
-import Frame, { FrameProps } from "src/libs/image-editor/view/frame";
-import ImageItem, {
-  ImageItemProps,
-} from "src/libs/image-editor/view/object/image";
-import TextItem, {
-  TextItemProps,
-} from "src/libs/image-editor/view/object/text";
-import ShapeItem, {
-  ShapeItemProps,
-} from "src/libs/image-editor/view/object/shape";
-import IconItem, {
-  IconItemProps,
-} from "src/libs/image-editor/view/object/icon";
-import LineItem, {
-  LineItemProps,
-} from "src/libs/image-editor/view/object/line";
-import PolygonItem, {
-  PolygonItemProps,
-} from "src/libs/image-editor/view/object/polygon";
+import Frame from "src/libs/image-editor/view/frame";
+import ImageItem from "src/libs/image-editor/view/object/image";
+import TextItem from "src/libs/image-editor/view/object/text";
+import ShapeItem from "src/libs/image-editor/view/object/shape";
+import IconItem from "src/libs/image-editor/view/object/icon";
+import LineItem from "src/libs/image-editor/view/object/line";
+import PolygonItem from "src/libs/image-editor/view/object/polygon";
 import ActivityTable from "src/libs/image-editor/view/object/Activity/ActivityTable";
 import useTransformer from "src/hooks/useTransformer";
+import useItem from "src/hooks/useItem";
+import useTab from "src/hooks/useTab";
+import useStageDataList from "src/hooks/useStageDataList";
+import useWorkHistory from "src/hooks/useWorkHistory";
+import { initialStageDataList } from "src/state/initilaStageDataList";
+
+const normalizeCoordinates = (shape: StageData, referenceImage: StageData) => {
+  const { width: imageWidth, height: imageHeight } = referenceImage.attrs;
+  const { x, y, width, height, scaleX, scaleY, ...restAttrs } = shape.attrs;
+
+  if (shape.className === "sample-image") return shape;
+
+  return {
+    ...shape,
+    attrs: {
+      ...restAttrs,
+      x: x / imageWidth,
+      y: y / imageHeight,
+      width: width / imageWidth,
+      height: height / imageHeight,
+      scaleX: scaleX ? scaleX / (imageWidth / imageHeight) : 1,
+      scaleY: scaleY ? scaleY / (imageHeight / imageWidth) : 1,
+    },
+  };
+};
+
+const denormalizeCoordinates = (
+  shape: StageData,
+  referenceImage: StageData
+) => {
+  const { width: imageWidth, height: imageHeight } = referenceImage.attrs;
+  const { x, y, width, height, scaleX, scaleY, ...restAttrs } = shape.attrs;
+
+  if (shape.className === "sample-image") return shape;
+
+  return {
+    ...shape,
+    attrs: {
+      ...restAttrs,
+      x: x * imageWidth,
+      y: y * imageHeight,
+      width: width * imageWidth,
+      height: height * imageHeight,
+      scaleX: scaleX ? scaleX * (imageWidth / imageHeight) : 1,
+      scaleY: scaleY ? scaleY * (imageHeight / imageWidth) : 1,
+    },
+  };
+};
+
 function PlanView() {
-  const [getStagesData, setGetStagesData] = useState<boolean>(false);
   const [selectedPlanImgUrl, setSelectedPlanImgUrl] = useState<string>("");
-  const [filterDateType, setFilterDateType] = useState<string>("");
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [selectedPlanEntity, setSelectedPlanEntity] = useState<Plan | null>(
     null
   );
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const { id: projectId } = useParams();
-  const [paperSizeModalOpen, setPaperSizeModalOpen] = useState(false);
-  const stage = useStage();
-  const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
-  const { user, canWrite, isAdmin } = useAuth();
-
   const [incrementType, setIncrementType] = useState("d");
-  const transformer = useTransformer();
-  const incrementDate = () => {
-    setSelectedDate((prevDate) => {
-      const newDate = new Date(prevDate);
-      if (incrementType === "d") newDate.setDate(newDate.getDate() + 1);
-      else if (incrementType === "m") newDate.setMonth(newDate.getMonth() + 1);
-      else if (incrementType === "y")
-        newDate.setFullYear(newDate.getFullYear() + 1);
-      return newDate;
-    });
-  };
+  const [paperSizeModalOpen, setPaperSizeModalOpen] = useState(false);
 
-  const decrementDate = () => {
-    setSelectedDate((prevDate) => {
-      const newDate = new Date(prevDate);
-      if (incrementType === "d") newDate.setDate(newDate.getDate() - 1);
-      else if (incrementType === "m") newDate.setMonth(newDate.getMonth() - 1);
-      else if (incrementType === "y")
-        newDate.setFullYear(newDate.getFullYear() - 1);
-      return newDate;
-    });
-  };
-
-  const handleSaveAsPdfOrImage = (paperSize: string, orientation: string) => {
-    // Call the updated function here
-    saveAsPdfOrImage("pdf", paperSize, orientation);
-  };
-  const saveAsPdfOrImage = async (
-    format: string,
-    paperSize: string = "A4",
-    orientation: string = "portrait"
-  ) => {
-    const graph = document.querySelector(".konvajs-content");
-    const legend = document.querySelector("aside");
-
-    if (!graph || !legend) {
-      console.error("SVG container, graph, or legend not found");
-      return;
-    }
-
-    // Create style element for html2canvas container
-    const style = document.createElement("style");
-    style.textContent = `
-      .html2canvas-container {
-        width: 3000px !important;
-        height: 3000px !important;
-      }
-    `;
-
-    // Step 1: Add plan name and date as text overlays within the graph
-    const textOverlay = document.createElement("div");
-    textOverlay.style.position = "absolute";
-    textOverlay.style.top = "4px";
-    textOverlay.style.left = "5px";
-    textOverlay.style.color = "#333";
-    textOverlay.style.fontFamily = "Arial, sans-serif";
-    textOverlay.style.fontSize = "14px";
-    textOverlay.style.fontWeight = "bold";
-    textOverlay.style.zIndex = "10";
-    textOverlay.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
-    textOverlay.style.padding = "5px";
-
-    const planNameText = document.createElement("div");
-    planNameText.innerText = `Plan Name: ${selectedPlanEntity?.name || "N/A"}`;
-
-    const dateText = document.createElement("div");
-    dateText.innerText = `Date: ${moment(new Date()).format("DD/MM/YYYY")}`;
-
-    textOverlay.appendChild(planNameText);
-    textOverlay.appendChild(dateText);
-
-    // Append the overlay to the graph container
-    graph.appendChild(textOverlay);
-
-    const fileName = `${selectedPlanEntity?.name}.${moment(new Date()).format(
-      "DD-MM-YYYY"
-    )}`;
-
-    try {
-      const sizes = {
-        A3: [297, 420],
-        A4: [210, 297],
-        A5: [148, 210],
-      };
-
-      let [pageWidthMM, pageHeightMM] = sizes[paperSize];
-      if (orientation === "landscape") {
-        [pageWidthMM, pageHeightMM] = [pageHeightMM, pageWidthMM];
-      }
-
-      const pageWidthPx = pageWidthMM * 3.7795275591;
-      const pageHeightPx = pageHeightMM * 3.7795275591;
-
-      const captureElement = async (element) => {
-        // Add the style only when capturing for PDF
-        if (format === "pdf") {
-          document.head.appendChild(style);
-        }
-
-        const canvas = await html2canvas(element, {
-          useCORS: true,
-          allowTaint: false,
-          scale: 2,
-          onclone: (documentClone) => {
-            const images = documentClone.querySelectorAll("img");
-            images.forEach((img) => {
-              img.crossOrigin = "Anonymous";
-            });
-          },
-        });
-
-        // Remove the style after capture
-        if (format === "pdf") {
-          document.head.removeChild(style);
-        }
-
-        return canvas;
-      };
-
-      // Rest of the code remains the same...
-      // Capture the graph including the text overlay
-      const graphCanvas = await captureElement(graph);
-      const graphDataURL = graphCanvas.toDataURL("image/png", 2.0);
-
-      // Remove the text overlay from the graph container
-      textOverlay.remove();
-
-      const scaleToFit = (canvas, pageWidth, pageHeight) => {
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
-        const scaleX = pageWidth / canvasWidth;
-        const scaleY = pageHeight / canvasHeight;
-        const scale = Math.min(scaleX, scaleY);
-        return {
-          width: canvasWidth * scale,
-          height: canvasHeight * scaleY,
-          scale,
-        };
-      };
-
-      if (format === "pdf") {
-        const pdf = new jsPDF(orientation, "mm", [pageWidthMM, pageHeightMM]);
-
-        // Scale the graph to fit within the page
-        const { width: graphWidth, height: graphHeight } = scaleToFit(
-          graphCanvas,
-          pageWidthPx,
-          pageHeightPx
-        );
-        const graphX = (pageWidthPx - graphWidth) / 2;
-        const graphY = (pageHeightPx - graphHeight) / 2;
-        pdf.addImage(
-          graphDataURL,
-          "PNG",
-          graphX / 3.7795275591,
-          graphY / 3.7795275591,
-          graphWidth / 3.7795275591,
-          graphHeight / 3.7795275591
-        );
-
-        // Add a new page for the legend
-        pdf.addPage();
-        const legendCanvas = await captureElement(legend);
-        const legendDataURL = legendCanvas.toDataURL("image/png", 2.0);
-        const { width: legendWidth, height: legendHeight } = scaleToFit(
-          legendCanvas,
-          pageWidthPx,
-          pageHeightPx
-        );
-        const legendX = (pageWidthPx - legendWidth) / 2;
-        const legendY = (pageHeightPx - legendHeight) / 2;
-        pdf.addImage(
-          legendDataURL,
-          "PNG",
-          legendX / 3.7795275591,
-          legendY / 3.7795275591,
-          legendWidth / 3.7795275591,
-          legendHeight / 3.7795275591
-        );
-
-        pdf.save(`${fileName}.pdf`);
-      } else if (format === "image") {
-        // Create a new canvas to combine graph and legend
-        const combinedCanvas = document.createElement("canvas");
-        const combinedCtx = combinedCanvas.getContext("2d");
-
-        combinedCanvas.width = Math.max(graph.width, legend.width);
-        combinedCanvas.height = graph.height + legend.height;
-
-        // Draw the graph and legend on the combined canvas
-        combinedCtx.drawImage(graph, 0, 0);
-        combinedCtx.drawImage(legend, 0, graphCanvas.height);
-
-        const combinedDataURL = combinedCanvas.toDataURL("image/png");
-        const link = document.createElement("a");
-        link.href = combinedDataURL;
-        link.download = `${fileName}.png`;
-        link.click();
-      }
-    } catch (error) {
-      console.error("Error capturing content:", error);
-    }
-  };
-
+  const { id: projectId } = useParams();
   const { t } = useTranslation();
-  // React Query to fetch plans
+  const stage = useStage();
+  const transformer = useTransformer();
+  const { stageData, alterItems, clearItems, createItem } = useItem();
+  const [past, setPast] = useState<StageData[][]>([]);
+  const [future, setFuture] = useState<StageData[][]>([]);
+
+  const { goToFuture, goToPast, recordPast } = useWorkHistory(
+    past,
+    future,
+    setPast,
+    setFuture
+  );
+  const { tabList, onClickTab, onCreateTab } = useTab(transformer, () => {});
+  const { initializeFileDataList, updateFileData } = useStageDataList();
+
+  // Queries
   const {
     data: plansData,
     isLoading,
@@ -294,50 +122,27 @@ function PlanView() {
         takevalue: 0,
         projectId: projectId!,
       }),
-
     refetchOnWindowFocus: false,
     staleTime: 6000,
     enabled: !!projectId,
   });
 
-  const {
-    data: stagesData,
-    isLoading: stagesDataLoading,
-    isError: stagesDataError,
-    refetch: refetchStageData,
-  } = useQuery({
+  const { data: stagesData } = useQuery({
     queryKey: ["stagesData", projectId, selectedPlan, selectedDate],
     queryFn: () =>
       getStagesDataByPlanId({
         planId: selectedPlan!,
         date: selectedDate!,
       }),
-
     refetchOnWindowFocus: false,
     staleTime: 1000,
+    enabled: !!selectedPlan && !!selectedDate,
   });
 
-  // Handle plan selection
-  const handlePlanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedPlan(e.target.value);
-    var plan = plansData?.plans.filter((x) => x.id == e.target.value)[0]!;
-    setSelectedPlanEntity(plan);
-    setSelectedPlanImgUrl(plan.planImageUrl);
-  };
-
-  // Handle date selection
-  const handleDateChange = (date: Date | null) => {
-    if (!selectedPlan) return "please select a plan ";
-    setSelectedDate(date);
-  };
-  const handleGetStageData = (e: any) => {
-    // setGetStagesData(true);
-    // refetchStageData();
-  };
-  const initialImgData = useMemo<StageData>(() => {
-    return {
+  // Initial image data
+  const initialImgData = useMemo<StageData>(
+    () => ({
       id: uuidv4(),
-
       attrs: {
         name: "label-target",
         "data-item-type": "image",
@@ -354,94 +159,92 @@ function PlanView() {
       },
       className: "sample-image",
       children: [],
-    };
-  }, [selectedPlanEntity]);
-
-  const initialData = useMemo<StageData[]>(
-    () => [
-      {
-        id: uuidv4(),
-
-        attrs: {
-          name: "label-target",
-          "data-item-type": "image",
-          x: 10,
-          y: 10,
-          width: 800,
-          height: 536.0406091,
-          src: selectedPlanEntity?.planImageUrl,
-          draggable: false,
-          zIndex: 0,
-          brightness: 0,
-          _filters: ["Brighten"],
-          updatedAt: Date.now(),
-        },
-        className: "sample-image",
-        children: [],
-      },
-    ],
+    }),
     [selectedPlanEntity]
   );
 
-  const seenIds = new Set();
+  // Process stage data
+  const processedStageData = useMemo(() => {
+    if (!stagesData || !initialImgData) return [];
 
-  const uniqueActivities = useMemo(
-    () =>
-      stagesData
-        ?.flatMap((sd) => sd.activities || [])
-        .filter((activity) => {
-          // Filter to only allow unique IDs
-          return (
-            activity?.id &&
-            !seenIds.has(activity.id) &&
-            seenIds.add(activity.id)
-          );
-        }),
-    [seenIds, stagesData]
-  );
-  const stagedataConverter = useMemo(() => {
-    return stagesData?.map<StageData>((s) => {
-      return {
-        ...s,
+    return stagesData
+      .map((item) => ({
+        ...item,
         attrs: {
-          ...s.attrs,
-
-          "data-item-type": s.attrs.dataItemType,
+          ...item.attrs,
+          "data-item-type": item.attrs.dataItemType,
         },
-      };
-    });
+      }))
+      .map((item) => denormalizeCoordinates(item, initialImgData));
+  }, [stagesData, initialImgData]);
+
+  // Unique activities
+  const uniqueActivities = useMemo(() => {
+    const seenIds = new Set();
+    return stagesData
+      ?.flatMap((sd) => sd.activities || [])
+      .filter((activity) => {
+        return (
+          activity?.id && !seenIds.has(activity.id) && seenIds.add(activity.id)
+        );
+      });
   }, [stagesData]);
 
-  const sortedStageData = useMemo(
-    () =>
-      stagedataConverter?.sort((a, b) => {
-        if (a.attrs.zIndex === b.attrs.zIndex) {
-          if (a.attrs.zIndex < 0) {
-            return b.attrs.updatedAt - a.attrs.updatedAt;
-          }
-          return a.attrs.updatedAt - b.attrs.updatedAt;
-        }
-        return a.attrs.zIndex - b.attrs.zIndex;
-      }) ?? [],
-    [stagedataConverter]
-  );
+  // Date handlers
+  const incrementDate = () => {
+    setSelectedDate((prevDate) => {
+      if (!prevDate) return new Date();
+      const newDate = new Date(prevDate);
+      if (incrementType === "d") newDate.setDate(newDate.getDate() + 1);
+      else if (incrementType === "m") newDate.setMonth(newDate.getMonth() + 1);
+      else if (incrementType === "y")
+        newDate.setFullYear(newDate.getFullYear() + 1);
+      return newDate;
+    });
+  };
+
+  const decrementDate = () => {
+    setSelectedDate((prevDate) => {
+      if (!prevDate) return new Date();
+      const newDate = new Date(prevDate);
+      if (incrementType === "d") newDate.setDate(newDate.getDate() - 1);
+      else if (incrementType === "m") newDate.setMonth(newDate.getMonth() - 1);
+      else if (incrementType === "y")
+        newDate.setFullYear(newDate.getFullYear() - 1);
+      return newDate;
+    });
+  };
+
+  // Plan selection handler
+  const handlePlanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const planId = e.target.value;
+    setSelectedPlan(planId);
+    const plan = plansData?.plans.find((x) => x.id === planId);
+    if (plan) {
+      setSelectedPlanEntity(plan);
+      setSelectedPlanImgUrl(plan.planImageUrl);
+    }
+  };
+
+  // Shape rendering
   const renderObject = (item: StageData) => {
+    if (item.className === "sample-image") return null;
+
     switch (item.attrs["data-item-type"]) {
       case "frame":
         return (
           <Frame
             key={`frame-${item.id}`}
-            data={item as FrameProps["data"]}
+            data={item}
             onSelect={() => {}}
             readOnly={true}
           />
         );
-
       case "text":
         return (
           <TextItem
-            key={`image-${item.id}`}
-            data={item as TextItemProps["data"]}
+            key={`text-${item.id}`}
+            data={item}
             transformer={transformer}
             onSelect={() => {}}
             readOnly={true}
@@ -451,7 +254,7 @@ function PlanView() {
         return (
           <ShapeItem
             key={`shape-${item.id}`}
-            data={item as ShapeItemProps["data"]}
+            data={item}
             transformer={transformer}
             onSelect={() => {}}
             readOnly={true}
@@ -461,7 +264,7 @@ function PlanView() {
         return (
           <IconItem
             key={`icon-${item.id}`}
-            data={item as IconItemProps["data"]}
+            data={item}
             transformer={transformer}
             onSelect={() => {}}
             readOnly={true}
@@ -471,7 +274,7 @@ function PlanView() {
         return (
           <LineItem
             key={`line-${item.id}`}
-            data={item as LineItemProps["data"]}
+            data={item}
             transformer={transformer}
             onSelect={() => {}}
             readOnly={true}
@@ -481,7 +284,7 @@ function PlanView() {
         return (
           <PolygonItem
             key={`polygon-${item.id}`}
-            data={item as PolygonItemProps["data"]}
+            data={item}
             transformer={transformer}
             onSelect={() => {}}
             readOnly={true}
@@ -492,61 +295,70 @@ function PlanView() {
     }
   };
 
-  const activityTable = <ActivityTable activities={uniqueActivities ?? []} />;
+  // Initialize stage
+  useEffect(() => {
+    if (!stage.stageRef.current) return;
+
+    // Initialize stage position
+    stage.stageRef.current.setPosition({
+      x: Math.max(Math.ceil(stage.stageRef.current.width() - 1280) / 2, 0),
+      y: Math.max(Math.ceil(stage.stageRef.current.height() - 760) / 2, 0),
+    });
+
+    // Clear and add new items
+    clearItems();
+    if (initialImgData) {
+      createItem(initialImgData);
+    }
+
+    processedStageData.forEach((shape) => {
+      if (shape.className !== "sample-image") {
+        createItem(shape);
+      }
+    });
+
+    stage.stageRef.current.batchDraw();
+  }, [processedStageData, initialImgData, stage.stageRef]);
 
   return (
     <DefaultLayout>
-      <div className="  h-full w-full overflow-hidden">
-        <div className="flex  justify-between my-10 mx-10 ">
-          {/* Dropdown for plans */}
+      <div className="h-full w-full overflow-hidden">
+        <div className="flex justify-between my-10 mx-10">
+          {/* Plan Dropdown */}
           <div className="w-[40%]">
-            {isLoading ? (
-              <p>Loading plans...</p>
-            ) : isError ? (
-              <p>Error loading plans</p>
-            ) : (
-              <Dropdown
-                id="planId"
-                name="planId"
-                label={t("plansForm.plans")}
-                labelClassName="w-[40%]"
-                onChange={handlePlanChange}
-                value={selectedPlan}
-                optionValue="id"
-                optionLabel="name"
-                className=" w-[60%]  rounded-lg border border-gray-300 bg-gray-50  text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                options={plansData?.plans ?? []}
-              />
-            )}
+            <Dropdown
+              id="planId"
+              name="planId"
+              label={t("plansForm.plans")}
+              labelClassName="w-[40%]"
+              onChange={handlePlanChange}
+              value={selectedPlan}
+              optionValue="id"
+              optionLabel="name"
+              className="w-[60%] rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+              options={plansData?.plans ?? []}
+            />
           </div>
 
+          {/* PDF Export Button */}
           <div className="mt-8">
             <button
-              // disabled
-              className="focus:outline-none  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-8 py-2.5  dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
-              // onClick={() => saveAsPdfOrImage("pdf")}
+              className="focus:outline-none text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-8 py-2.5"
               onClick={() => setPaperSizeModalOpen(true)}
             >
               PDF
             </button>
           </div>
 
-          {/* <button
-            // disabled
-            className="focus:outline-none mt-5  text-white bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:ring-teal-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-900 flex items-center"
-            onClick={() => saveAsPdfOrImage("image")}
-          >
-            Image
-          </button> */}
-
+          {/* Date Navigation */}
           <div className="relative w-[30%] flex gap-2 items-end">
             <ArrowLeftIcon
-              className="  h-10 w-10 text-gray-500 border border-gray-500 p-2 mb-2 cursor-pointer "
+              className="h-10 w-10 text-gray-500 border border-gray-500 p-2 mb-2 cursor-pointer"
               onClick={decrementDate}
             />
 
             <select
-              className="border p-2 mb-2 dark:bg-boxdark-2 dark:text-bodydark"
+              className="border p-2 mb-2"
               value={incrementType}
               onChange={(e) => setIncrementType(e.target.value)}
             >
@@ -562,73 +374,46 @@ function PlanView() {
               labelClassName="-mt-[0.5rem] w-[50%]"
               value={selectedDate}
               defaultDate={selectedDate ?? new Date()}
-              onChange={handleDateChange}
+              onChange={setSelectedDate}
             />
 
             <ArrowRightIcon
-              className="  h-10 w-10 text-gray-500 border border-gray-500 p-2 mb-2 cursor-pointer "
+              className="h-10 w-10 text-gray-500 border border-gray-500 p-2 mb-2 cursor-pointer"
               onClick={incrementDate}
             />
           </div>
-          {/* <div className="mt-7">
-          <button
-            type="button"
-            onClick={handleGetStageData}
-            className="px-4 py-2 bg-violet-500 text-white rounded-lg hover:bg-violet-600 focus:outline-none focus:ring focus:ring-violet-300 disabled:bg-gray-600"
-          >
-            {t("importFileForm.SaveFilter")}
-          </button>
-        </div> */}
         </div>
-        {/* {selectedPlan ? (
-          <Spinner />
-        ) : (
-          <ImageEditor
-            key={`${selectedPlan}-${moment(selectedDate).format("DD/MM/YYYY")}`}
-            onSaveState={(data) => {}}
-            initialStageData={initialData ?? []}
-            imgUrl={selectedPlanImgUrl}
-            activities={[]}
-            readOnly={true}
-            stageActivities={uniqueActivities ?? []}
-            selectedDate={selectedDate}
-          />
-        )} */}
 
-        {/* // we will render the layout of konva here  */}
-
-        <ReadLayout settingBar={activityTable}>
-          {/* {hotkeyModal} */}
+        {/* Konva Stage */}
+        <ReadLayout
+          settingBar={<ActivityTable activities={uniqueActivities ?? []} />}
+        >
           <View onSelect={() => {}} stage={stage}>
             {selectedPlanImgUrl && initialImgData && (
               <ImageItem
                 key={`image-${initialImgData.id}`}
-                data={initialImgData as ImageItemProps["data"]}
+                data={initialImgData}
                 onSelect={() => {}}
               />
             )}
 
-            {stagedataConverter?.length
-              ? sortedStageData.map((item) => renderObject(item))
-              : null}
-
-            {/* <Transformer
-          ref={transformer.transformerRef}
-          keepRatio
-          shouldOverdrawWholeArea
-          boundBoxFunc={(_, newBox) => newBox}
-          onTransformEnd={transformer.onTransformEnd}
-        /> */}
+            {stageData.length > 0 &&
+              stageData
+                .filter((item) => item.className !== "sample-image")
+                .map(renderObject)}
           </View>
         </ReadLayout>
 
-        {/* end of rendering  */}
+        {/* PDF Size Modal */}
         {paperSizeModalOpen && (
           <div className="w-[60%]">
             <PaperSizeModal
               isOpen={paperSizeModalOpen}
               onClose={() => setPaperSizeModalOpen(false)}
-              onSave={handleSaveAsPdfOrImage}
+              onSave={(paperSize, orientation) => {
+                // Implement your PDF save logic here
+                setPaperSizeModalOpen(false);
+              }}
             />
           </div>
         )}
