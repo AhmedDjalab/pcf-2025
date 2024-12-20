@@ -88,6 +88,7 @@ import { ActivityRelationType } from "src/enums/ActivityRelationType";
 import PaperSizeModal from "src/components/PaperSizeModal";
 import FloatingButton, { MenuPropsType } from "src/components/FloatingButton";
 import PlanSelectEditor from "src/PlanSelectEditor";
+import { PDFExport, savePDF } from "@progress/kendo-react-pdf";
 
 export interface ActivityData {
   activityId(activityId: any): unknown;
@@ -2127,11 +2128,18 @@ function ViewGraph() {
       const fitToPage = (
         canvas: HTMLCanvasElement,
         pageWidth: number,
-        pageHeight: number
+        pageHeight: number,
+        legend?: boolean
       ) => {
         const scaledCanvas = document.createElement("canvas");
-        scaledCanvas.width = pageWidth;
-        scaledCanvas.height = pageHeight;
+        if (legend) {
+          scaledCanvas.width = pageWidth;
+          scaledCanvas.height = pageHeight;
+        } else {
+          scaledCanvas.width = pageWidth;
+          scaledCanvas.height = pageHeight;
+        }
+
         const ctx = scaledCanvas.getContext("2d");
         if (ctx) {
           ctx.drawImage(canvas, 0, 0, pageWidth, pageHeight);
@@ -2148,7 +2156,8 @@ function ViewGraph() {
       const scaledLegendCanvas = fitToPage(
         legendCanvas,
         pageWidthPx,
-        pageHeightPx
+        pageHeightPx,
+        true
       );
 
       if (format === "pdf") {

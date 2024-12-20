@@ -41,6 +41,7 @@ const useHotkeyFunc = () => {
     setClipboard: (value: React.SetStateAction<StageData[]>) => void,
     createStageDataObject: (item: Node<NodeConfig>) => StageData
   ) => {
+    console.error("🚀 ~ useHotkeyFunc ~ selectedItems:", selectedItems);
     const newClips = selectedItems
       .map((item) => createStageDataObject(item))
       .sort((a, b) => {
@@ -52,6 +53,7 @@ const useHotkeyFunc = () => {
         }
         return a.attrs.zIndex - b.attrs.zIndex;
       });
+    console.error("🚀 ~ useHotkeyFunc ~ newClips:", newClips);
 
     setClipboard(newClips);
   };
@@ -62,7 +64,7 @@ const useHotkeyFunc = () => {
       if (Object.keys(item.attrs).length === 0) {
         return;
       }
-      createItem({
+      const newItem = {
         id: Uuid4(),
         attrs: {
           ...item.attrs,
@@ -70,8 +72,10 @@ const useHotkeyFunc = () => {
         },
         className: item.className,
         children: item.children,
-      });
+      };
+      createItem(newItem);
     });
+    console.error("🚀 ~ clipboard.forEach ~ newItem:", clipboard);
   };
 
   const duplicateItems = (

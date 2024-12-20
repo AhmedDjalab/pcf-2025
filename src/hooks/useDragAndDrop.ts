@@ -15,6 +15,7 @@ import { DropCallback } from "src/libs/image-editor/util/eventHandler/dragAndDro
 import { getFramePos } from "src/libs/image-editor/view/frame";
 import { StageData } from "src/state/currentStageData";
 import { Stage } from "konva/lib/Stage";
+import { data } from "autoprefixer";
 
 const useDragAndDrop = (
   stageRef: MutableRefObject<Konva.Stage>,
@@ -148,71 +149,60 @@ const useDragAndDrop = (
   //     console.error("Failed to load the image:", error);
   //   }
   // };
-  const insertImageAtCenter = (data: { [key: string]: any }) => {
-    console.log("🚀 ~ insertImageAtCenter ~ data:", data);
-    const imageSrc = new Image();
-    let source = data.src;
+  const insertImageAtCenter = useCallback(
+    (data: { [key: string]: any }) => {
+      const source = data.src;
 
-    imageSrc.onload = () => {
-      let width;
-      let height;
+      // Use Konva.Image.fromURL for built-in caching
+      Konva.Image.fromURL(source, (imageNode) => {
+        let width;
+        let height;
 
-      // Calculate image dimensions while keeping the aspect ratio
-      if (imageSrc.width > imageSrc.height) {
-        width = decimalUpToSeven(800);
-        height = decimalUpToSeven(width * (imageSrc.height / imageSrc.width));
-      } else {
-        height = decimalUpToSeven(800);
-        width = decimalUpToSeven(height * (imageSrc.width / imageSrc.height));
-      }
+        // Calculate image dimensions while keeping the aspect ratio
+        if (imageNode.width() > imageNode.height()) {
+          width = decimalUpToSeven(800);
+          height = decimalUpToSeven(
+            width * (imageNode.height() / imageNode.width())
+          );
+        } else {
+          height = decimalUpToSeven(800);
+          width = decimalUpToSeven(
+            height * (imageNode.width() / imageNode.height())
+          );
+        }
 
-      // Get the stage container dimensions
-      const stage = stageRef.current!;
-      const stageParent = stageRef.current.parent;
-      const stageWidth = stage.width();
-      const stageHeight = stage.height();
-      console.warn(
-        "🚀 ~ insertImageAtCenter ~ stageWidth:",
-        stageWidth,
-        width,
-        stageHeight,
-        height
-      );
+        // Get the stage container dimensions
+        const stage = stageRef.current!;
+        const stageWidth = stage.width();
+        const stageHeight = stage.height();
 
-      // Calculate position to center the image on the stage
-      const position = {
-        x: (stageWidth - width) / 2,
-        y: (stageHeight - height) / 2,
-      };
+        // Create the new image object
+        const newImage: StageData = {
+          id: Uuid4(),
+          attrs: {
+            name: "label-target",
+            "data-item-type": "image",
+            x: (stageWidth - width) / 2,
+            y: (stageHeight - height) / 2,
+            width: width,
+            height: height,
+            src: source,
+            draggable: false,
+            zIndex: 0,
+            brightness: 0,
+            _filters: ["Brighten"],
+            updatedAt: Date.now(),
+          },
+          className: "sample-image",
+          children: [],
+        };
 
-      // Create the new image object
-      const newImage: StageData = {
-        id: Uuid4(),
-        attrs: {
-          name: "label-target",
-          "data-item-type": "image",
-          x: 10, // Centered x position: ;
-          y: 10, // Centered y position: ;
-          width: width,
-          height: height,
-          src: data.src,
-          draggable: false,
-          zIndex: 0,
-          brightness: 0,
-          _filters: ["Brighten"],
-          updatedAt: Date.now(),
-        },
-        className: "sample-image",
-        children: [],
-      };
-
-      // Insert the new image in the stage
-      createItem(newImage);
-    };
-
-    // Set the image source to trigger the onload event
-    imageSrc.src = source;
-  };
+        // Insert the new image in the stage
+        createItem(newImage);
+      });
+    },
+    [createItem, stageRef]
+  );
 
   const insertText = (e: DragEvent, data: { [key: string]: any }) => {
     const position = getFramePos(stageRef.current, e, data.width, data.height);
