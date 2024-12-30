@@ -178,6 +178,7 @@
       "productionRate": "TAUX DE PRODUCTION",
       "workShops": "ATELIERS"
     },
+    "viewPlan": "Phasage",
     "changeStyle": "Changer le style",
     "cancelZoomButtonLabel": "Annuler le Zoom",
     "exportAllData": "Exporter les données",
@@ -360,8 +361,8 @@
     "save": "Enregistrer"
   },
   "preSucactivity": {
-    "activityId": "ID",
-    "activityUID": "UID",
+    "activityId": "Activity ID",
+    "activityUID": "N° Unique",
     "activityName": "Nom",
     "type": "Type"
   },

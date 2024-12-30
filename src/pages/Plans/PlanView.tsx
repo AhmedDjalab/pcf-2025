@@ -371,7 +371,7 @@ function PlanView() {
               id="date"
               name="date"
               label={t("plansForm.date")}
-              labelClassName="-mt-[0.5rem] w-[50%]"
+              labelClassName=" -mt-2 w-[70%]!"
               value={selectedDate}
               defaultDate={selectedDate ?? new Date()}
               onChange={setSelectedDate}

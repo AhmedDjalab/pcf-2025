@@ -59,13 +59,11 @@ function ActivityTable({ activities }: ActivityTaleProps) {
           const color = row.original["color"];
           return (
             <div
-              className={`dark:bg-boxdark-2 ${
+              className={` line-clamp-2 break-all dark:bg-boxdark-2 ${
                 isPassed && "text-gray-600 dark:text-gray-600"
-              }`}
+              } `}
               style={{
                 color: color && !isPassed ? color : undefined,
-                whiteSpace: "normal", // Allow text to wrap to multiple lines
-                wordWrap: "break-word", // Break long words if necessary
               }}
             >
               {value}

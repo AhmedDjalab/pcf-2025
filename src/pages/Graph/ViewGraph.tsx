@@ -2511,20 +2511,20 @@ function ViewGraph() {
       disabled: !selectedShapeData,
       color: "bg-violet-400",
     },
-    {
-      title: t("drawGraph.viewPlan"),
-      Icon: <PresentationChartLineIcon className="w-6 h-6" />,
-      onClick: () => setIsPlanOpen(true),
-      disabled: !selectedShapeData,
-      color: "bg-cyan-400",
-    },
+    // {
+    //   title: t("drawGraph.viewPlan"),
+    //   Icon: <PresentationChartLineIcon className="w-6 h-6" />,
+    //   onClick: () => setIsPlanOpen(true),
+    //   disabled: !selectedShapeData,
+    //   color: "bg-cyan-400",
+    // },
   ];
   return (
     <DefaultLayout>
       <FloatingButton position="right">{menuItems}</FloatingButton>
 
       <FloatingButton position="left">
-        <div className="flex flex-col gap-2 max-h-[400px] overflow-y-scroll overflow-x-hidden">
+        <div className="flex flex-col gap-2 max-h-[400px] overflow-y-scroll overflow-x-scroll">
           <div>
             <p className="font-bold text-blue-500">{t("Predecessors")}</p>
             <DynamicTable
@@ -2746,9 +2746,9 @@ function ViewGraph() {
               handleClose={() => setShowHypothesis(false)}
             />
           )}
-          {isPlanOpen && (
+          {/* {isPlanOpen && (
             <PlanSelectEditor
-              isOpen={isPlanEditor}
+              isOpen={isPlanOpen}
               // imgUrl={editRow?.planImageUrl}
               closeModal={() => setIsPlanEditor(false)}
               exportToJson={(data) => {}}
@@ -2768,7 +2768,7 @@ function ViewGraph() {
               }
               activities={selectedActivities}
             />
-          )}
+          )} */}
         </div>
       )}
     </DefaultLayout>
