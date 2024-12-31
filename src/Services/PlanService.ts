@@ -7,6 +7,7 @@ import {
   ProjectOption,
   StageDataModel,
 } from "src/state/slices/graphSlice";
+import { StageActivity } from "src/state/currentStageData";
 
 export interface PlansResponse {
   plans: Plan[];
@@ -57,6 +58,10 @@ export async function GetPlansDetailed({ projectId }: PaginatingParmas) {
   }
 }
 
+export interface StageResponse {
+  stageDatas: StageDataModel[];
+  activities?: StageActivity[];
+}
 export async function getStagesDataByPlanId({
   planId,
   date,
@@ -75,7 +80,7 @@ export async function getStagesDataByPlanId({
       apiEndpoint + "/GetStagesDataByPlanId",
       config
     );
-    return data as StageDataModel[];
+    return data as StageResponse;
   } catch (ex: any) {
     console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
   }

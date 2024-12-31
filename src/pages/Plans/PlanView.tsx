@@ -1,4 +1,4 @@
-//@ts-nocheck
+//25@ts-nocheck
 
 import React, { useEffect, useMemo, useState } from "react";
 import DefaultLayout from "src/components/DefaultLayout";
@@ -167,7 +167,9 @@ function PlanView() {
   const processedStageData = useMemo(() => {
     if (!stagesData || !initialImgData) return [];
 
-    return stagesData
+    return stagesData.stageDatas
+      .slice()
+      .reverse()
       .map((item) => ({
         ...item,
         attrs: {
@@ -175,20 +177,20 @@ function PlanView() {
           "data-item-type": item.attrs.dataItemType,
         },
       }))
-      .map((item) => denormalizeCoordinates(item, initialImgData));
+      .map((item: any) => denormalizeCoordinates(item, initialImgData));
   }, [stagesData, initialImgData]);
 
   // Unique activities
-  const uniqueActivities = useMemo(() => {
-    const seenIds = new Set();
-    return stagesData
-      ?.flatMap((sd) => sd.activities || [])
-      .filter((activity) => {
-        return (
-          activity?.id && !seenIds.has(activity.id) && seenIds.add(activity.id)
-        );
-      });
-  }, [stagesData]);
+  // const uniqueActivities = useMemo(() => {
+  //   const seenIds = new Set();
+  //   return stagesData
+  //     ?.flatMap((sd) => sd.activities || [])
+  //     .filter((activity) => {
+  //       return (
+  //         activity?.id && !seenIds.has(activity.id) && seenIds.add(activity.id)
+  //       );
+  //     });
+  // }, [stagesData]);
 
   // Date handlers
   const incrementDate = () => {
@@ -386,7 +388,9 @@ function PlanView() {
 
         {/* Konva Stage */}
         <ReadLayout
-          settingBar={<ActivityTable activities={uniqueActivities ?? []} />}
+          settingBar={
+            <ActivityTable activities={stagesData?.activities ?? []} />
+          }
         >
           <View onSelect={() => {}} stage={stage}>
             {selectedPlanImgUrl && initialImgData && (

@@ -136,6 +136,7 @@ export interface StageDataModel {
   className?: string;
   children?: StageDataModel[];
   activities?: StageActivity;
+  
 }
 export interface Plan {
   idnew: string | undefined;
