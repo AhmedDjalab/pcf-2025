@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useAuth } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import DropdownLanguage from "./DropdownLanguage";
 import { useTranslation } from "react-i18next";
@@ -159,7 +159,7 @@ const Header = () => {
                   <button
                     onClick={() => {
                       logout();
-                      navigate("/login");
+                      window.location.href = "https://pcf.ientreprize.com/";
                     }}
                     className="hover:bg-blue-100 px-2 py-1 rounded-lg focus:outline-none"
                   >
