@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { t } from "i18next";
 import React, { useEffect, useState } from "react";
-import { getBriefProjects, getProjects } from "src/Services/ProjectService";
+import { getBriefProjects } from "src/Services/ProjectService";
 import { useAuth } from "src/context/UserContext";
 import Spinner from "./Spinner";
 import { useTranslation } from "react-i18next";
