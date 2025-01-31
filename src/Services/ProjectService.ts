@@ -19,11 +19,12 @@ export interface PaginatingParmas {
   userAdminId?: string;
 }
 
-export async function getBriefProjects() {
+export async function getBriefProjects(employeeId?: string) {
   try {
     let config = {
       params: {
         companyId: getCompanyId(),
+        employeeId: employeeId,
       },
     };
     const { data } = await api.get(apiEndpoint + "/GetAllBrief", config);

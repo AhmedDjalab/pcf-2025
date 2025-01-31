@@ -12,6 +12,7 @@ export interface Employee {
   userId?: string;
   userAdminId: string;
   companyId?: string;
+  projectsIds?: string[];
 }
 
 export interface EmployeesResponse {

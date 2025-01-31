@@ -16,6 +16,7 @@ import { deleteEmployeeAndUser } from "src/Services/EmployeeService";
 import DynamicTable, { SelectColumnFilter } from "src/components/DynamicTable";
 import DeleteConfirmationModal from "src/components/shared/DeleteConfirmationModal";
 import Pagination from "src/components/shared/Pagination";
+import ProjectsEmployeeModal from "src/components/ProjectsEmployeeModal";
 
 const exampleEmployees = [
   {
@@ -37,6 +38,10 @@ const exampleEmployees = [
 
 const Employees = () => {
   // const [employees, setEmployees] = useState<Employee[]>([]);
+
+  const [isProjectModalVisible, setIsProjectModalVisible] = useState(false);
+  const [selectedProjectsId, setSelectedProjectsId] = useState<string[]>([]);
+
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState<string>("");
@@ -115,6 +120,15 @@ const Employees = () => {
         >
           {t("taskSlotsList.buttons.delete")}
         </button>
+        <button
+          className="focus:outline-none text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+          onClick={() => {
+            setSelectedRow(employee);
+            setIsProjectModalVisible(true);
+          }}
+        >
+          Projets
+        </button>
       </div>
     );
   }, []);
@@ -186,6 +200,17 @@ const Employees = () => {
   };
   return (
     <DefaultLayout>
+      {isProjectModalVisible &&
+        user &&
+        (console.log("thsi si s empleye ", selectedRow),
+        (
+          <ProjectsEmployeeModal
+            handleClose={() => setIsProjectModalVisible(false)}
+            isOpen={isProjectModalVisible}
+            employeeId={selectedRow.original["id"]}
+            projectIds={selectedRow.original["projectsIds"]}
+          />
+        ))}
       {employeeLoading ? (
         <Spinner />
       ) : (

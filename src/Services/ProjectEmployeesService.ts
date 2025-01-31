@@ -7,6 +7,10 @@ export interface ProjectEmployeesType {
   employeesId: string[];
   projectId: string;
 }
+export interface ProjectsEmployeeType {
+  projectsIds: string[];
+  employeeId: string;
+}
 
 export async function saveProjectEmployees(
   projectEmployee: ProjectEmployeesType
@@ -15,6 +19,22 @@ export async function saveProjectEmployees(
 
   try {
     const response = await api.put(apiEndpoint + "/put", body);
+    return response;
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: CompanyService.ts:83 ~ saveCompany ~ error:",
+      error
+    );
+  }
+}
+
+export async function saveProjectsPerEmployee(
+  projectEmployee: ProjectsEmployeeType
+) {
+  const body = { ...projectEmployee };
+
+  try {
+    const response = await api.put(apiEndpoint + "/PutProjects", body);
     return response;
   } catch (error) {
     console.log(
