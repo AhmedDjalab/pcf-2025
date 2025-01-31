@@ -39,8 +39,8 @@ const ProjectsEmployeeModal = ({
     isLoading: projectLoading,
     isSuccess,
   } = useQuery({
-    queryKey: ["projects", user?.id],
-    queryFn: () => getBriefProjects(user?.id),
+    queryKey: ["projects", employeeId],
+    queryFn: () => getBriefProjects(employeeId),
     refetchOnWindowFocus: false,
     staleTime: 10000,
   });
