@@ -1,12 +1,25 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DynamicTable from "src/components/DynamicTable";
+import Pagination from "src/components/shared/Pagination";
 import { StageActivity } from "src/state/currentStageData";
 
 export type ActivityTaleProps = {
   activities: StageActivity[];
+  pageIndex?: number;
+  pageSize?: number;
+  count?: number;
+  setPageIndex?: any;
+  setPageSize?: any;
 };
-function ActivityTable({ activities }: ActivityTaleProps) {
+function ActivityTable({
+  activities,
+  setPageIndex,
+  setPageSize,
+  pageIndex = 1,
+  pageSize = 1,
+  count,
+}: ActivityTaleProps) {
   const { t } = useTranslation();
   const predSuccColumns = useMemo(
     () => [
@@ -74,6 +87,17 @@ function ActivityTable({ activities }: ActivityTaleProps) {
     ],
     [t]
   );
+
+  const pageCount = useMemo(() => {
+    return Math.ceil((count ?? 0) / pageSize);
+  }, [pageSize, count]);
+  const nextPage = () => setPageIndex(pageIndex + 1);
+  const previousPage = () => setPageIndex(pageIndex - 1);
+  const onPageChange = (newPageIndex: number) => setPageIndex(newPageIndex);
+  const onPageSizeChange = (newPageSize: number) => {
+    setPageIndex(0);
+    setPageSize(newPageSize);
+  };
   return (
     <aside>
       <DynamicTable
@@ -81,6 +105,16 @@ function ActivityTable({ activities }: ActivityTaleProps) {
         columns={predSuccColumns}
         dataCount={activities.length ?? 0}
         hideFilters={true}
+      />
+
+      <Pagination
+        pageIndex={pageCount === 0 ? -1 : pageIndex}
+        pageCount={pageCount}
+        pageSize={pageSize}
+        onNextPage={nextPage}
+        onPreviousPage={previousPage}
+        onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
       />
     </aside>
   );

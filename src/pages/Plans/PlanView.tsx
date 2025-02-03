@@ -3,7 +3,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import DefaultLayout from "src/components/DefaultLayout";
 import "react-datepicker/dist/react-datepicker.css";
-import { getPlans, getStagesDataByPlanId } from "src/Services/PlanService";
+import {
+  getPlans,
+  getStagesActivitiesByPlanId,
+  getStagesDataByPlanId,
+} from "src/Services/PlanService";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Dropdown from "src/components/DropDown";
@@ -83,6 +87,8 @@ const denormalizeCoordinates = (
 };
 
 function PlanView() {
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
   const [selectedPlanImgUrl, setSelectedPlanImgUrl] = useState<string>("");
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [selectedPlanEntity, setSelectedPlanEntity] = useState<Plan | null>(
@@ -133,6 +139,27 @@ function PlanView() {
       getStagesDataByPlanId({
         planId: selectedPlan!,
         date: selectedDate!,
+      }),
+    refetchOnWindowFocus: false,
+    staleTime: 1000,
+    enabled: !!selectedPlan && !!selectedDate,
+  });
+
+  const { data: stagesActivities } = useQuery({
+    queryKey: [
+      "stagesActivities",
+      projectId,
+      selectedPlan,
+      selectedDate,
+      pageIndex,
+      pageSize,
+    ],
+    queryFn: () =>
+      getStagesActivitiesByPlanId({
+        planId: selectedPlan!,
+        date: selectedDate!,
+        fromvalue: pageIndex,
+        takevalue: pageSize,
       }),
     refetchOnWindowFocus: false,
     staleTime: 1000,
@@ -389,7 +416,14 @@ function PlanView() {
         {/* Konva Stage */}
         <ReadLayout
           settingBar={
-            <ActivityTable activities={stagesData?.activities ?? []} />
+            <ActivityTable
+              activities={stagesActivities?.activities ?? []}
+              count={stagesActivities?.count ?? 0}
+              pageIndex={pageIndex}
+              pageSize={pageSize}
+              setPageIndex={setPageIndex}
+              setPageSize={setPageSize}
+            />
           }
         >
           <View onSelect={() => {}} stage={stage}>

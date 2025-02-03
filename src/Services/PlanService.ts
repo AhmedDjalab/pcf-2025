@@ -13,6 +13,11 @@ export interface PlansResponse {
   plans: Plan[];
   count: number;
 }
+
+export interface StageActivitiesList {
+  activities: StageActivity[];
+  count: number;
+}
 const apiEndpoint = PlansUrl;
 
 export interface PaginatingParmas {
@@ -62,6 +67,36 @@ export interface StageResponse {
   stageDatas: StageDataModel[];
   activities?: StageActivity[];
 }
+export async function getStagesActivitiesByPlanId({
+  planId,
+  date,
+  takevalue,
+  fromvalue,
+}: {
+  planId: string;
+  date: Date;
+  takevalue?: number;
+  fromvalue?: number;
+}) {
+  try {
+    let config = {
+      params: {
+        planId: planId,
+        date: date,
+        page: fromvalue,
+        take: takevalue,
+      },
+    };
+    const { data } = await api.get(
+      apiEndpoint + "/GetStagesActivitiesByPlanId",
+      config
+    );
+    return data as StageActivitiesList;
+  } catch (ex: any) {
+    console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
+  }
+}
+
 export async function getStagesDataByPlanId({
   planId,
   date,
