@@ -47,6 +47,7 @@ import { AsUTC } from "src/utils/helpers";
 import { ActivityRelationType } from "src/enums/ActivityRelationType";
 import { StageActivity, StageData } from "../currentStageData";
 import { GetPlansDetailed } from "src/Services/PlanService";
+import { resolveTxt } from "node:dns/promises";
 
 export interface GraphDataType {
   activityUID?: string;
@@ -136,7 +137,6 @@ export interface StageDataModel {
   className?: string;
   children?: StageDataModel[];
   activities?: StageActivity;
-  
 }
 export interface Plan {
   idnew: string | undefined;
@@ -932,18 +932,21 @@ const GraphSlice = createSlice({
     ///? fetch cases
 
     resetStoreState(state) {
+      // Reset top-level properties
+      state.id = initialState.id;
+      state.loading = initialState.loading;
+
+      // Reset nested objects and arrays
       state.settings = { ...initialState.settings };
       state.projectSettings = { ...initialState.projectSettings };
       state.shapes = { ...initialState.shapes };
       state.taskSlots = [...initialState.taskSlots];
       state.taskSlotsLevelTwo = [...initialState.taskSlotsLevelTwo];
       state.plans = [...initialState.plans];
-      state.rawGraphDataFromFile = {
-        ...(initialState.rawGraphDataFromFile ?? []),
-      };
-
-      state.loading = false;
-      return state;
+      state.rawGraphDataFromFile = [...initialState.rawGraphDataFromFile];
+      state.userDefindSettings = [...initialState.userDefindSettings];
+      state.comments = [...initialState.comments];
+      state.projectOptions = [...initialState.projectOptions];
     },
   },
   extraReducers: (builder) => {

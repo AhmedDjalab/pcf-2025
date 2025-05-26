@@ -9,6 +9,7 @@ import {
   applyFilter,
   fetchProjectByIdThunk,
   removeActivity,
+  resetStoreState,
   saveProjectThunk,
   updateGraphSettingsValue,
 } from "../state/slices/graphSlice";
@@ -1448,9 +1449,20 @@ function DrawGraphStep() {
     // Export the workbook to an XLSX file
     XLSX.writeFile(workbook, "pcfallData.xlsx");
   };
+
+  const handlePurgeAndNavigate = async () => {
+    try {
+      dispatch(resetStoreState());
+
+      // Now, navigate to the desired location
+      navigate("/projects");
+    } catch (error) {
+      console.error("Error purging state:", error);
+    }
+  };
   const handleSaveProject = async () => {
     await dispatch(saveProjectThunk(user!));
-    navigate("/projects");
+    handlePurgeAndNavigate();
   };
 
   return (
