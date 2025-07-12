@@ -5,6 +5,7 @@
   "language.Arabic": "Arabic",
   "language.German": "German",
   "language.Italian": "Italian",
+  "language.Japanese": "Japanese",
 
   "stepper.next": "Next",
   "stepper.back": "Back",
@@ -433,5 +434,6 @@
     "day": "Day",
     "month": "Month",
     "year": "Year"
-  }
+  },
+  "export.pdf": "PDF"
 }

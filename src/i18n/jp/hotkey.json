@@ -1,0 +1,84 @@
+{
+  "moveBackground": {
+    "name": "背景を移動",
+    "keys": ["スペースキー", "クリック＆ドラッグ"],
+    "desc": ""
+  },
+  "resetZoom": {
+    "name": "ズームをリセット",
+    "keys": ["Ctrl", "0"],
+    "desc": ""
+  },
+  "zoomIn": {
+    "name": "ズームイン",
+    "keys": ["マウスホイール"],
+    "desc": ""
+  },
+  "zoomOut": {
+    "name": "ズームアウト",
+    "keys": ["マウスホイール"],
+    "desc": ""
+  },
+  "layerUp": {
+    "name": "レイヤーを上に移動",
+    "keys": ["Shift", "↑"],
+    "desc": ""
+  },
+  "layerDown": {
+    "name": "レイヤーを下に移動",
+    "keys": ["Shift", "↓"],
+    "desc": ""
+  },
+  "deleteItems": {
+    "name": "削除",
+    "keys": ["Backspace"],
+    "desc": ""
+  },
+  "duplicateItems": {
+    "name": "複製",
+    "keys": ["Ctrl", "d"],
+    "desc": ""
+  },
+  "copyItems": {
+    "name": "選択項目をコピー",
+    "keys": ["Ctrl", "c"],
+    "desc": ""
+  },
+  "pasteItems": {
+    "name": "選択項目を貼り付け",
+    "keys": ["Ctrl", "v"],
+    "desc": ""
+  },
+  "selectAllItems": {
+    "name": "すべての項目を選択",
+    "keys": ["Ctrl", "a"],
+    "desc": ""
+  },
+  "flipHorizontally": {
+    "name": "左右反転",
+    "keys": ["Shift", "h"],
+    "desc": ""
+  },
+  "flipVertically": {
+    "name": "上下反転",
+    "keys": ["Shift", "v"],
+    "desc": ""
+  },
+  "undo": {
+    "id": "undo",
+    "name": "元に戻す",
+    "keys": ["Ctrl", "z"],
+    "desc": ""
+  },
+  "redo": {
+    "id": "redo",
+    "name": "やり直し",
+    "keys": ["Ctrl", "y"],
+    "desc": ""
+  },
+  "remove-background": {
+    "name": "選択した画像の背景を削除",
+    "keys": ["Ctrl", "x", "b"],
+    "desc": "選択した画像の背景を削除"
+  }
+}

@@ -13,6 +13,7 @@ export var languages = [
   { code: "fr", name: "French", countryCode: "FR" },
   { code: "de", name: "German", countryCode: "DE" },
   { code: "it", name: "Italian", countryCode: "IT" },
+  { code: "jp", name: "Japanese", countryCode: "JP" },
 ];
 
 export function classNames(...classes: string[]) {

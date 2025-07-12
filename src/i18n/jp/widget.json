@@ -1,0 +1,193 @@
+{
+  "image": {
+    "name": "画像"
+  },
+  "colorPalette": {
+    "name": "カラーパレット",
+    "opacity": {
+      "name": "不透明度"
+    },
+    "brightness": {
+      "name": "明るさ"
+    },
+    "grayScale": {
+      "name": "グレースケール"
+    },
+    "addColor": {
+      "name": "色を追加"
+    },
+    "clearColor": {
+      "name": "色を削除\n（Shiftキーで枠線の色を変更）"
+    }
+  },
+  "align": {
+    "name": "整列",
+    "left": {
+      "name": "左"
+    },
+    "center": {
+      "name": "中央"
+    },
+    "right": {
+      "name": "右"
+    },
+    "top": {
+      "name": "上"
+    },
+    "middle": {
+      "name": "中央"
+    },
+    "bottom": {
+      "name": "下"
+    }
+  },
+  "frame": {
+    "name": "フレーム",
+    "youtubeVideoThumbnail": {
+      "name": "YouTube動画のサムネイル"
+    },
+    "youtubeChannelIcon": {
+      "name": "YouTubeチャンネルアイコン"
+    },
+    "youtubeChannelCover": {
+      "name": "YouTubeチャンネルカバー"
+    },
+    "instagramSquarePhoto": {
+      "name": "Instagram正方形写真"
+    },
+    "instagramProfile": {
+      "name": "Instagramプロフィール"
+    },
+    "instagramStory": {
+      "name": "Instagramストーリー"
+    },
+    "A4": {
+      "name": "A4"
+    },
+    "sample_100X100": {
+      "name": "サンプル_100X100"
+    },
+    "sample_512X512": {
+      "name": "サンプル_512X512"
+    },
+    "facebookProfile": {
+      "name": "Facebookプロフィール"
+    },
+    "facebookCoverPhoto": {
+      "name": "Facebookカバー写真"
+    },
+    "twitterProfile": {
+      "name": "Twitterプロフィール"
+    },
+    "twitterHeader": {
+      "name": "Twitterヘッダー"
+    },
+    "twitterPost": {
+      "name": "Twitter投稿"
+    },
+    "linkedInProfil": {
+      "name": "LinkedInプロフィール"
+    },
+    "linkedInCover": {
+      "name": "LinkedInカバー"
+    },
+    "pinterestBoardImage": {
+      "name": "Pinterestボード画像"
+    },
+    "pinterestPinImage": {
+      "name": "Pinterestピン画像"
+    },
+    "pinterestProfile": {
+      "name": "Pinterestプロフィール"
+    },
+    "tumblrProfile": {
+      "name": "Tumblrプロフィール"
+    },
+    "tumblrPostImage": {
+      "name": "Tumblr投稿画像"
+    },
+    "androidAppIcon": {
+      "name": "Androidアプリアイコン"
+    },
+    "androidFeatureGraphic": {
+      "name": "Android機能グラフィック"
+    },
+    "androidHorizontal": {
+      "name": "Android横向き"
+    },
+    "androidVertical": {
+      "name": "Android縦向き"
+    },
+    "iosIPhoneVertical6_7": {
+      "name": "iOS iPhone縦向き（6.7インチ）"
+    },
+    "iosIPhoneVertical6_5": {
+      "name": "iOS iPhone縦向き（6.5インチ）"
+    },
+    "iosIPhoneVertical5_8": {
+      "name": "iOS iPhone縦向き（5.8インチ）"
+    },
+    "iosIPhoneVertical5_5": {
+      "name": "iOS iPhone縦向き（5.5インチ）"
+    },
+    "iosIPhoneVertical4_7": {
+      "name": "iOS iPhone縦向き（4.7インチ）"
+    },
+    "iosIPhoneVertical4": {
+      "name": "iOS iPhone縦向き（4インチ）"
+    },
+    "iosIPhoneVertical3_5": {
+      "name": "iOS iPhone縦向き（3.5インチ）"
+    },
+    "iosIPadVertical12_9": {
+      "name": "iOS iPad縦向き（12.9インチ）"
+    },
+    "iosIPadVertical11": {
+      "name": "iOS iPad縦向き（11インチ）"
+    },
+    "iosIPadVertical10_5": {
+      "name": "iOS iPad縦向き（10.5インチ）"
+    },
+    "iosIPadVertical9_7": {
+      "name": "iOS iPad縦向き（9.7インチ）"
+    }
+  },
+  "shape": {
+    "name": "図形"
+  },
+  "text": {
+    "name": "テキスト"
+  },
+  "icon": {
+    "name": "アイコン",
+    "search": {
+      "title": "アイコン検索",
+      "placeholder": "キーワードを入力",
+      "desc": "アイコンを見つけるにはキーワードを入力してください"
+    }
+  },
+  "export": {
+    "name": "エクスポート",
+    "export-all-frame": {
+      "name": "すべてのフレームをエクスポート",
+      "icon": "download"
+    },
+    "export-selected": {
+      "name": "選択されたフレームをエクスポート",
+      "icon": "box-arrow-down"
+    }
+  },
+  "border": {
+    "name": "境界線",
+    "color": "色",
+    "width": "幅",
+    "addColor": "色を追加",
+    "style": "スタイル"
+  },
+  "activity": {
+    "name": "アクティビティ",
+    "selectActivity": "アクティビティ",
+    "saveActivity": "保存",
+    "saveJson": "JSONを保存"
+  }
+}

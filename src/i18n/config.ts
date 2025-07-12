@@ -6,6 +6,7 @@ import translationDE from "./de/translation.json";
 import translationFR from "./fr/translation.json";
 import translationES from "./es/translation.json";
 import translationIT from "./it/translation.json";
+import translationJP from "./jp/translation.json";
 import widgetFR from "./fr/widget.json";
 import hotkeyFR from "./fr/hotkey.json";
 import widgetDE from "./de/widget.json";
@@ -16,6 +17,8 @@ import widgetES from "./es/widget.json";
 import hotkeyES from "./es/hotkey.json";
 import widgetIT from "./it/widget.json";
 import hotkeyIT from "./it/hotkey.json";
+import hotkeyJP from "./jp/hotkey.json";
+import widgetJP from "./jp/widget.json";
 import workMode from "src/config/workMode.json";
 export const storedLanguage = localStorage.getItem("language") || "fr";
 
@@ -64,6 +67,15 @@ const initI18n = () => {
         translation: translationIT,
         widget: widgetIT, // Custom namespaces
         hotkey: hotkeyIT,
+        workMode: workMode.reduce(
+          (acc, curr) => ({ ...acc, [curr.id]: curr }),
+          {}
+        ),
+      },
+      jp: {
+        translation: translationJP,
+        widget: widgetJP, // Custom namespaces
+        hotkey: hotkeyJP,
         workMode: workMode.reduce(
           (acc, curr) => ({ ...acc, [curr.id]: curr }),
           {}
