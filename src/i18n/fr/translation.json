@@ -1,432 +1,433 @@
 {
-  "language.English": "英語",
-  "language.French": "フランス語",
-  "language.Spanish": "スペイン語",
-  "language.Arabic": "アラビア語",
-  "language.German": "ドイツ語",
-  "language.Italian": "イタリア語",
-  "language.Japanese": "日本語",
+  "language.English": "Anglais",
+  "language.French": "Français",
+  "language.Spanish": "Espagnol",
+  "language.Arabic": "Arabe",
+  "language.German": "Allemand",
+  "language.Italian": "Italien",
 
-  "stepper.next": "次へ",
-  "stepper.back": "戻る",
-  "stepper.save": "保存",
+  "stepper.next": "Suivant",
+  "stepper.back": "Retour",
+  "stepper.save": "Sauvegarder",
 
   "login": {
-    "title": "ログイン",
-    "emailLabel": "メールアドレス",
-    "passwordLabel": "パスワード",
-    "loginButton": "ログイン",
-    "googleLoginButton": "Googleでログイン",
+    "title": "Connexion",
+    "emailLabel": "E-mail",
+    "passwordLabel": "Mot de passe",
+    "loginButton": "Entrer",
+    "googleLoginButton": "Connexion avec Google",
     "errorMessages": {
-      "invalidEmail": "無効なメールアドレスです。",
-      "userNotFound": "ユーザーが見つかりません。メールアドレスを確認してください。",
-      "wrongPassword": "パスワードが間違っています。もう一度お試しください。",
-      "userDisabled": "アカウントが無効化されています。",
-      "invalidLoginCredentials": "無効なログイン情報です。メールアドレスとパスワードを確認してください。",
-      "defaultError": "エラーが発生しました。後ほどもう一度お試しください。"
+      "invalidEmail": "Adresse e-mail invalide.",
+      "userNotFound": "Utilisateur non trouvé, veuillez vérifier votre adresse e-mail.",
+      "wrongPassword": "Mot de passe incorrect, veuillez réessayer.",
+      "userDisabled": "Votre compte a été désactivé.",
+      "invalidLoginCredentials": "Identifiants de connexion invalides, veuillez vérifier votre e-mail et votre mot de passe.",
+      "defaultError": "Une erreur s'est produite, veuillez réessayer plus tard."
     },
-    "noAccount": "アカウントをお持ちでない場合：",
-    "contactUs": "お問い合わせ：",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "contactUs": "Contactez-nous :",
     "adminEmail": "admin@ientreprize.com",
-    "signInHeader": "ログイン"
+    "signInHeader": "Se connecter"
   },
   "common": {
-    "invalidEmail": "無効なメールアドレスです。",
-    "passwordRequirements": "パスワードは8文字以上で、少なくとも1つの小文字、大文字、数字、特殊文字を含む必要があります。"
+    "invalidEmail": "Adresse e-mail invalide.",
+    "passwordRequirements": "Le mot de passe doit contenir au moins 8 caractères et inclure au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 caractère spécial."
   },
-  "header.contact": "連絡先：",
+  "header.contact": "Contact : ",
   "header.contactEmail": "admin@ientreprize.com",
-  "header.logout": "ログアウト",
-  "projectForm.title": "プロジェクトタイトル",
-  "projectForm.project": "プロジェクト",
-  "projectForm.logo": "ロゴ1",
-  "projectForm.clientCompanyLogo": "ロゴ2",
-  "projectForm.next": "次へ",
-  "imagePicker.importLogo": "ロゴをインポート",
-  "imagePicker.selectValidImage": "有効な画像ファイル（例：JPG、PNG）を選択してください。",
-  "importFileForm.dragOrImport": "ファイルをドラッグまたはインポート",
-  "importFileForm.title": "ファイルのインポート",
-  "importFileForm.back": "戻る",
-  "importFileForm.next": "次へ",
-  "importFileForm.fileInputLabel": "ファイルをドラッグまたはインポート",
-  "importFileForm.startDate": "開始日",
-  "importFileForm.endDate": "終了日",
-  "importFileForm.timeScale": "時間スケール",
-  "importFileForm.startPk": "開始PK",
-  "importFileForm.endPk": "終了PK",
-  "importFileForm.dateRequired": "日付は必須です",
-  "importFileForm.startDateError": "開始日は必須です",
-  "importFileForm.endDateError": "終了日は開始日より後でなければなりません",
-  "importFileForm.startDistanceRequired": "開始距離は必須です",
-  "importFileForm.endDistanceRequired": "終了距離は必須です",
-  "importFileForm.selectValidFile": "有効なXLSXファイルを選択してください。",
-  "importFileForm.calendar": "カレンダー",
-  "importFileForm.duration": "期間（日）",
-  "importFileForm.activityStyle": "活動スタイル",
-  "importFileForm.activityName": "活動名",
-  "importFileForm.yearlyOption": "年次",
-  "importFileForm.monthlyOption": "月次",
-  "importFileForm.weeklyOption": "週次",
-  "importFileForm.dailyOption": "日次",
-  "importFileForm.distanceRange": "距離範囲",
-  "importFileForm.edit": "編集",
-  "importFileForm.delete": "削除",
-  "importFileForm.actions": "操作",
-  "importFileForm.add": "追加",
-  "importFileForm.SaveFilter": "フィルターを保存",
-  "importFileForm.critical": "重要",
+  "header.logout": "Déconnexion",
+  "projectForm.title": "Titre du projet",
+  "projectForm.project": "Projet",
+  "projectForm.logo": "Logo 1",
+  "projectForm.clientCompanyLogo": "Logo 2",
+  "projectForm.next": "Suivant",
+  "imagePicker.importLogo": "Importer le logo",
+  "imagePicker.selectValidImage": "Veuillez sélectionner un fichier image valide (par exemple, JPG, PNG).",
+  "importFileForm.dragOrImport": "Faites glisser ou importez votre fichier",
+  "importFileForm.title": "Importation de fichier",
+  "importFileForm.back": "Retour",
+  "importFileForm.next": "Suivant",
+  "importFileForm.fileInputLabel": "Faites glisser ou importez votre fichier",
+  "importFileForm.startDate": "Début",
+  "importFileForm.endDate": "Fin",
+  "importFileForm.timeScale": "Échelle de temps",
+  "importFileForm.startPk": "Pk de début",
+  "importFileForm.endPk": "Pk de fin",
+  "importFileForm.dateRequired": "La date est requise",
+  "importFileForm.startDateError": "La date de début est requise",
+  "importFileForm.endDateError": "La date de fin doit être postérieure à la date de début",
+  "importFileForm.startDistanceRequired": "La distance de début est requise",
+  "importFileForm.endDistanceRequired": "La distance de fin est requise",
+  "importFileForm.selectValidFile": "Veuillez sélectionner un fichier XLSX valide.",
+  "importFileForm.calendar": "CALENDRIER",
+  "importFileForm.duration": "DURÉE (Jour)",
+  "importFileForm.activityStyle": "STYLE DE L’ACTIVITÉ",
+  "importFileForm.activityName": "NOM DE L’ACTIVITÉ",
+  "importFileForm.yearlyOption": "Annuel",
+  "importFileForm.monthlyOption": "Mensuel",
+  "importFileForm.weeklyOption": "Hebdomadaire",
+  "importFileForm.dailyOption": "Quotidien",
+  "importFileForm.distanceRange": "Échelle de distance",
+  "importFileForm.edit": "Modifier",
+  "importFileForm.delete": "Supprimer",
+  "importFileForm.actions": "Actions",
+  "importFileForm.add": "Ajouter",
+  "importFileForm.SaveFilter": "Enregistrer les filtres",
+  "importFileForm.critical": "Critique",
 
   "shapesForm": {
-    "backButton": "戻る",
-    "nextButton": "次へ",
-    "formatStyle": "スタイル形式",
-    "lineType": "線の種類",
-    "rectangleTriangleType": "四角形/三角形の種類",
-    "color": "色",
-    "styleName": "スタイル名",
+    "backButton": "Retour",
+    "nextButton": "Suivant",
+    "formatStyle": "FORMAT DU STYLE",
+    "lineType": "TYPE DE LA LIGNE",
+    "rectangleTriangleType": "TYPE DE RECTANGLE / TRIANGLE",
+    "color": "Couleur",
+    "styleName": "Nom du style",
     "headers": {
-      "formatStyle": "スタイル形式",
-      "lineType": "線の種類",
-      "rectangleTriangleType": "四角形/三角形の種類",
-      "color": "色",
-      "styleName": "スタイル名"
+      "formatStyle": "FORMAT DU STYLE",
+      "lineType": "TYPE DE LA LIGNE",
+      "rectangleTriangleType": "TYPE DE RECTANGLE / TRIANGLE",
+      "color": "Couleur",
+      "styleName": "Nom du style"
     },
-    "Triangle": "三角形",
-    "Rectangle": "四角形",
-    "Ligne": "線"
+    "Triangle": "Triangle",
+    "Rectangle": "Rectangle",
+    "Ligne": "Ligne"
   },
   "validationMessages": {
-    "passwordRequired": "パスワードは必須です。",
-    "passwordMinLength": "パスワードは8文字以上必要です。",
-    "passwordCapitalLetters": "パスワードには大文字が含まれている必要があります。",
-    "passwordLowercaseLetters": "パスワードには小文字が含まれている必要があります。",
-    "passwordDigits": "パスワードには数字が含まれている必要があります。",
-    "passwordSpecialCharacters": "パスワードには特殊文字が含まれている必要があります。",
-    "passwordNoInvalidCharacters": "パスワードには£、#、“”やスペースを含めることはできません。",
-    "emailAlreadyExists": "メールアドレスは既に存在します",
-    "teamLeaderNotInEmployees": "チームリーダーは従業員として選択できません。",
-    "teamLeaderIsRequired": "チームリーダーは必須です。"
+    "passwordRequired": "Le mot de passe est requis.",
+    "passwordMinLength": "Le mot de passe doit comporter au moins 8 caractères.",
+    "passwordCapitalLetters": "Le mot de passe doit contenir une ou plusieurs lettres majuscules.",
+    "passwordLowercaseLetters": "Le mot de passe doit contenir une ou plusieurs lettres minuscules.",
+    "passwordDigits": "Le mot de passe doit contenir un ou plusieurs chiffres.",
+    "passwordSpecialCharacters": "Le mot de passe doit contenir un ou plusieurs caractères spéciaux.",
+    "passwordNoInvalidCharacters": "Le mot de passe ne doit pas contenir £, #, “”, ni d'espaces.",
+    "emailAlreadyExists": "L'email existe déjà",
+    "teamLeaderNotInEmployees": "Le chef d'équipe ne peut pas être sélectionné en tant qu'employé.",
+    "teamLeaderIsRequired": "Le chef d'équipe est requis."
   },
   "taskSlotsList": {
-    "addButton": "追加",
+    "addButton": "Ajouter",
     "sectionHeaders": {
-      "section1": "時間スロットリスト",
-      "section2": "操作"
+      "section1": "Liste des créneaux horaires",
+      "section2": "Actions"
     },
     "tableHeaders": {
-      "name": "セクション名",
-      "start": "開始PK",
-      "end": "終了PK",
-      "actions": "操作"
+      "name": "NOM DE TRONÇON",
+      "start": "PK DE DÉBUT",
+      "end": "PK DE FIN",
+      "actions": "Actions"
     },
     "buttons": {
-      "edit": "編集",
-      "delete": "削除",
-      "back": "戻る",
-      "showPlanning": "計画を表示"
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "back": "Retour",
+      "showPlanning": "Afficher le Planning"
     },
     "popUp": {
-      "addTitle": "時間スロットを追加",
-      "editTitle": "時間スロットを編集",
-      "saveButton": "保存",
-      "cancelButton": "キャンセル"
+      "addTitle": "Ajouter un créneau horaire",
+      "editTitle": "Modifier le créneau horaire",
+      "saveButton": "Enregistrer",
+      "cancelButton": "Annuler"
     }
   },
   "taskSlotsPopUp": {
     "titles": {
-      "add": "境界の定義",
-      "edit": "境界を編集"
+      "add": "Définition des limites",
+      "edit": "Modifier les limites"
     },
     "labels": {
-      "name": "名前：",
-      "start": "開始PK：",
-      "end": "終了PK："
+      "name": "Nom :",
+      "start": "Pk de début :",
+      "end": "Pk de fin :"
     },
     "placeholders": {
-      "name": "セクション名を入力",
-      "start": "開始PKを入力",
-      "end": "終了PKを入力"
+      "name": "Entrez le nom du tronçon",
+      "start": "Entrez le Pk de début ",
+      "end": "Entrez le Pk de fin"
     },
     "errors": {
-      "required": "名前は必須です",
-      "minDistance": "開始PKは{{minDistance}}以上でなければなりません",
-      "maxDistance": "開始PKは{{maxDistance}}以下でなければなりません",
-      "greaterThanStart": "終了PKは開始PKより大きくなければなりません"
+      "required": "Le nom est requis",
+      "minDistance": "Le Pk de début doit être supérieur ou égal à {{minDistance}}",
+      "maxDistance": "Le Pk de début doit être inférieur ou égal à {{maxDistance}}",
+      "greaterThanStart": "Le Pk de fin doit être supérieur au Pk de début"
     },
     "buttons": {
-      "add": "追加",
-      "save": "保存",
-      "cancel": "終了"
+      "add": "Ajouter",
+      "save": "Enregistrer",
+      "cancel": "Quitter"
     }
   },
   "drawGraph": {
-    "addComments": "コメントを追加",
-    "Hypothesis": "仮説",
-    "activityDetailLabel": "活動詳細",
-    "utilButtons": "ユーティリティボタン",
-    "showCritical": "重要なタスクを表示",
+    "addComments": "Ajouter un commentaire",
+    "Hypothesis": "Hypothèses",
+    "activityDetailLabel": "Détails de l'activité",
+    "utilButtons": "Boutons utilitaires",
+    "showCritical": "Afficher les tâches critiques",
     "activityDetails": {
-      "activityNameLabel": "活動名",
-      "styleLabel": "スタイル",
-      "startDateLabel": "開始日",
-      "finishDateLabel": "終了日",
-      "startChainageLabel": "開始PK",
-      "finishChainageLabel": "終了PK",
-      "calendar": "カレンダー",
-      "duration": "期間（日）",
-      "critical": "重要",
-      "quantity": "数量",
-      "productionRate": "生産率",
-      "workShops": "ワークショップ"
+      "activityNameLabel": "NOM DE L’ACTIVITÉ",
+      "styleLabel": "STYLE",
+      "startDateLabel": "DATE DE DÉBUT",
+      "finishDateLabel": "DATE DE FIN",
+      "startChainageLabel": " PK DE DÉBUT",
+      "finishChainageLabel": "PK DE FIN",
+      "calendar": "CALENDRIER",
+      "duration": "DURÉE (Jour)",
+      "critical": "CRITIQUE",
+      "quantity": "QUANTITÉ",
+      "productionRate": "TAUX DE PRODUCTION",
+      "workShops": "ATELIERS"
     },
-    "viewPlan": "フェーズ",
-    "changeStyle": "スタイルを変更",
-    "cancelZoomButtonLabel": "ズームをキャンセル",
-    "exportAllData": "データをエクスポート",
-    "exportGraphData": "グラフをエクスポート"
+    "viewPlan": "Phasage",
+    "changeStyle": "Changer le style",
+    "cancelZoomButtonLabel": "Annuler le Zoom",
+    "exportAllData": "Exporter les données",
+    "exportGraphData": "Exporter le graphique"
   },
   "DrwMultiStepForm": {
     "step1": {
-      "title": "計画ヘッダー",
-      "description": "タイトルとロゴを入力"
+      "title": "Entête du planning",
+      "description": "Entrez le titre & Logo"
     },
     "step2": {
-      "title": "Excelファイルのインポート",
-      "description": "ファイルをドラッグまたはインポート"
+      "title": "Importation du fichier Excel",
+      "description": "Faites glisser ou importez votre fichier"
     },
     "step3": {
-      "title": "スタイルの定義",
-      "description": "活動のスタイルを定義"
+      "title": "Définition des Styles",
+      "description": "Définissez le style des activités"
     },
     "step4": {
-      "title": "セクションの定義",
-      "description": "各セクションの開始と終了を定義"
+      "title": "Définition des tronçons",
+      "description": "Définissez le début et la fin de chaque tronçon"
     },
     "step5": {
-      "title": "レベル2セクションの定義",
-      "description": "各セクションの開始と終了を定義"
+      "title": "Définition des tronçons de niveau 2",
+      "description": "Définir le début et la fin de chaque tronçon"
     },
     "step6": {
-      "title": "計画の定義",
-      "description": "各計画の開始と終了を定義"
+      "title": "Définition des plans",
+      "description": "Définir le début et la fin de chaque plan"
     }
   },
   "activityForm": {
-    "addActivity": "活動を追加",
-    "editActivity": "活動を編集",
-    "activityName": "活動名",
-    "startDate": "開始日",
-    "endDate": "終了日",
-    "startPk": "開始PK",
-    "endPk": "終了PK",
-    "activityStyle": "活動スタイル",
-    "save": "保存",
-    "cancel": "キャンセル",
-    "calendar": "カレンダー",
-    "duration": "期間（日）",
-    "quantity": "数量",
-    "productionRate": "生産率",
-    "workShops": "ワークショップ",
-    "quantityUnit": "単位",
-    "productionRateUnit": "単位",
+    "addActivity": "Ajouter une activité",
+    "editActivity": "Modifier l'activité",
+    "activityName": "Nom de l'activité",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "startPk": "Début PK",
+    "endPk": "Fin PK",
+    "activityStyle": "Style de l'activité",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "calendar": "Calendrier",
+    "duration": "DURÉE (Jour)",
+    "quantity": "QUANTITÉ",
+    "productionRate": "TAUX DE PRODUCTION",
+    "workShops": "ATELIERS",
+    "quantityUnit": "Unité",
+    "productionRateUnit": "Unité",
     "errors": {
-      "activityName": "活動名は必須です",
-      "startDate": "開始日は必須です",
-      "endDate": "終了日は必須です",
-      "startPk": "開始PKは必須です",
-      "endPk": "終了PKは必須です",
-      "activityStyle": "活動スタイルは必須です",
-      "endDateMin": "終了日は開始日より後でなければなりません"
+      "activityName": "Le nom de l'activité est requis",
+      "startDate": "La date de début est requise",
+      "endDate": "La date de fin est requise",
+      "startPk": "Le début PK est requis",
+      "endPk": "La fin PK est requise",
+      "activityStyle": "Le style de l'activité est requis",
+      "endDateMin": "la date de fin doit être postérieure à la date de début"
     }
   },
-  "projectForm.fileType": "ファイルタイプ",
+  "projectForm.fileType": "Type de Fichier",
   "header": {
-    "createProject": "プロジェクトを作成",
-    "projects": "プロジェクト",
-    "employees": "従業員",
-    "pricing": "価格設定",
-    "aboutUs": "会社概要",
-    "contact": "連絡先：",
-    "logout": "ログアウト",
-    "users": "ユーザー"
+    "createProject": "Créer un Projet",
+    "projects": "Projets",
+    "employees": "Salariés",
+    "pricing": "Tarification",
+    "aboutUs": "À Propos",
+    "contact": "Contact :",
+    "logout": "Déconnexion",
+    "users": "Utilisateurs"
   },
   "employeeList": {
-    "Email": "メール",
-    "fullName": "氏名",
-    "jobTitle": "職位",
-    "canRead": "読み取り権限",
-    "canWrite": "書き込み権限",
-    "actions": "操作"
+    "Email": "Email",
+    "fullName": "Nom ",
+    "jobTitle": "Titre du Poste",
+    "canRead": "Accès en lecture",
+    "canWrite": "Accès en écriture",
+    "actions": "Actions"
   },
   "projectsList": {
-    "title": "タイトル",
-    "numEmployees": "従業員数",
-    "actions": "操作",
-    "createdAt": "作成日",
-    "NoDateAvailable": "なし",
-    "LastModifiedAt": "最終更新日",
-    "CreatedBy": "作成者",
-    "ModifiedBy": "更新者",
+    "title": "Titre",
+    "numEmployees": "Nombre de Salariés",
+    "actions": "Actions",
+    "createdAt": "Créé le",
+    "NoDateAvailable": "N/A",
+
+    "LastModifiedAt": "Dernière modification",
+    "CreatedBy": "Créé par",
+    "ModifiedBy": "Modifié par",
     "buttons": {
-      "edit": "編集",
-      "delete": "削除",
-      "viewGraph": "計画",
-      "viewPlan": "フェーズ",
-      "download": "ダウンロード"
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "viewGraph": "Planning",
+      "viewPlan": "Phasage",
+      "download": "Télécharger"
     }
   },
   "graphSettings": {
-    "title": "グラフ設定",
-    "numEmployees": "従業員数",
-    "actions": "操作",
+    "title": "Paramètres du graphique",
+    "numEmployees": "Nombre de Salariés",
+    "actions": "Actions",
     "buttons": {
-      "edit": "編集",
-      "delete": "削除"
+      "edit": "Edit",
+      "delete": "Delete"
     }
   },
   "employeeForm": {
-    "addEmployee": "ユーザーを追加",
-    "editEmployee": "ユーザーを編集",
-    "fullName": "氏名",
-    "email": "メール",
-    "password": "パスワード",
-    "canRead": "読み取り権限",
-    "canWrite": "書き込み権限",
-    "save": "保存",
-    "cancel": "キャンセル",
+    "addEmployee": "Ajouter un utilisateur",
+    "editEmployee": "Modifier l'utilisateur",
+    "fullName": "Nom complet",
+    "email": "Email",
+    "password": "Mot de passe",
+    "canRead": "Accès en lecture",
+    "canWrite": "Accès en écriture",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
     "errors": {
-      "fullName": "氏名は必須です",
-      "email": "無効なメールアドレス",
-      "password": "パスワードは必須です",
-      "canRead": "読み取り権限は必須です",
-      "canWrite": "書き込み権限は必須です",
-      "fullNameMustTwoString": "氏名はスペースで区切られた2つの名前である必要があります"
+      "fullName": "Le nom complet est requis",
+      "email": "Adresse email invalide",
+      "password": "Le mot de passe est requis",
+      "canRead": "La permission de lecture est requise",
+      "canWrite": "La permission d'écriture est requise",
+      "fullNameMustTwoString": "Le nom complet doit contenir deux noms séparés par un espace"
     }
   },
+
   "projectFileTypes": {
-    "XLSX": "Excelファイル - XLSX",
+    "XLSX": "Fichier Excel - XLSX",
     "PrimaveraXML": "Primavera P6 - XML",
     "MicrosoftProject": "Microsoft Project - XML"
   },
   "AboutUs": {
-    "welcomingMessage": "iEntrepriZeの世界へようこそ - プロジェクト管理のパートナー",
-    "description": "iEntrepriZeは、チーム内での鉄道計画の作成と共有を簡素化するためのオンライン共同プラットフォームです。",
-    "Allrightsreserved": "© 2023 iEntrepriZe. 全著作権所有。",
-    "isProductOF": "PCF鉄道計画：iEntrepriZeの革新的な製品。",
-    "Contact": "連絡先：",
-    "Explore": "プラットフォームを探索："
+    "welcomingMessage": "Bienvenue dans l'Univers de iEntrepriZe - Votre Allié en Gestion de Projet",
+    "description": "Découvrez notre plateforme collaborative en ligne, iEntrepriZe, conçue pour simplifier la création et le partage de plannings chemin de fer au sein de votre équipe.  ",
+    "Allrightsreserved": "© 2023 iEntrepriZe. Tous droits réservés.",
+    "isProductOF": "PCF Planning Chemin de Fer : Un produit innovant d'iEntrepriZe.",
+    "Contact": "Contact :",
+    "Explore": "Explorez notre Plateforme :"
   },
   "DynamicTable": {
-    "Search": "検索：",
-    "records": "レコード"
+    "Search": "Rechercher :",
+    "records": "Enregistrements"
   },
   "DeleteModal": {
-    "confirmDelete": "この項目を削除してもよろしいですか？",
-    "yes": "はい、削除します",
-    "no": "いいえ、キャンセル"
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet élément ?",
+    "yes": "Oui, je suis sûr",
+    "no": "Non, annuler"
   },
   "Pagination": {
-    "previous": "前へ",
-    "next": "次へ",
-    "page": "ページ {{pageIndex}} / {{pageCount}}",
-    "itemsPerPage": "ページごとの項目数",
-    "show": "{{pageSize}}件表示",
-    "first": "最初",
-    "last": "最後"
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page {{pageIndex}} sur {{pageCount}}",
+    "itemsPerPage": "Articles par page",
+    "show": "Afficher {{pageSize}}",
+    "first": "Premier",
+    "last": "Dernier"
   },
   "Comments": {
-    "addComments": "コメントを追加",
-    "pk": "挿入ポイント",
-    "commentText": "コメントテキスト",
-    "save": "保存",
-    "cancel": "キャンセル",
-    "hideComments": "コメントを非表示",
-    "activityDetailLabel": "活動詳細",
-    "utilButtons": "ツールバー",
-    "showCommentsDetails": "コメントの作成者を表示"
+    "addComments": "Ajouter un commentaire",
+    "pk": "Point d'insertion",
+    "commentText": "Texte du commentaire",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "hideComments": "Masquer les commentaires",
+    "activityDetailLabel": "Détails de l'activité",
+    "utilButtons": "Barre d'outils",
+    "showCommentsDetails": "Afficher l’auteur des commentaires"
   },
-  "projectSelection.copy": "コピー",
-  "selectOption": "選択",
+  "projectSelection.copy": "Copier",
+  "selectOption": "Sélectionner",
   "importFileForm": {
-    "quantity": "数量",
-    "ProductionRate": "生産率",
-    "workShops": "ワークショップ"
+    "quantity": "Quantité",
+    "ProductionRate": "Taux de production",
+    "workShops": "Ateliers"
   },
   "hypothesisModal": {
-    "title": "仮説",
-    "hypothesisTitle": "仮説のタイトル",
-    "hypothesisDescriptions": "仮説の説明",
-    "cancel": "キャンセル",
-    "save": "保存"
+    "title": "Hypothèse",
+    "hypothesisTitle": "Titre de l'Hypothèse",
+    "hypothesisDescriptions": "Descriptions de l'Hypothèse",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
   },
   "preSucactivity": {
-    "activityId": "活動ID",
-    "activityUID": "ユニーク番号",
-    "activityName": "名前",
-    "type": "タイプ"
+    "activityId": "Activity ID",
+    "activityUID": "N° Unique",
+    "activityName": "Nom",
+    "type": "Type"
   },
-  "Predecessors": "先行活動",
-  "Successors": "後続活動",
+  "Predecessors": "Prédécesseurs",
+  "Successors": "Successeurs",
   "PaperSizeModal": {
-    "selectTitle": "用紙サイズを選択",
-    "paperSizeLabel": "用紙サイズ",
+    "selectTitle": "Sélectionnez le format du papier",
+    "paperSizeLabel": "Format du papier",
     "A3": "A3",
     "A4": "A4",
     "A5": "A5",
-    "orientationLabel": "向き",
-    "portrait": "縦",
-    "landscape": "横",
-    "cancel": "キャンセル",
-    "save": "保存"
+    "orientationLabel": "Orientation",
+    "portrait": "Portrait",
+    "landscape": "Paysage",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
   },
   "plansPopUp": {
     "titles": {
-      "add": "計画を追加",
-      "edit": "計画を編集"
+      "add": "Ajouter un plan",
+      "edit": "Modifier le plan"
     },
     "labels": {
-      "name": "計画名",
-      "start": "開始PK",
-      "end": "終了PK",
-      "logo": "計画画像",
-      "planImage": "計画画像"
+      "name": "Nom du plan",
+      "start": "Pk de début",
+      "end": "Pk de fin",
+      "logo": "Image du plan",
+      "planImage": "Image du plan"
     },
     "placeholders": {
-      "name": "計画名を入力",
-      "start": "開始PKを入力",
-      "end": "終了PKを入力"
+      "name": "Entrez le nom du plan",
+      "start": "Entrez le Pk de début",
+      "end": "Entrez le Pk de fin"
     },
     "errors": {
-      "required": "このフィールドは必須です",
-      "minDistance": "PKは{{minDistance}}以上でなければなりません",
-      "maxDistance": "PKは{{maxDistance}}以下でなければなりません",
-      "greaterThanStart": "終了PKは開始PKより大きくなければなりません"
+      "required": "Ce champ est requis",
+      "minDistance": "Le Pk doit être supérieur ou égal à {{minDistance}}",
+      "maxDistance": "Le Pk doit être inférieur ou égal à {{maxDistance}}",
+      "greaterThanStart": "Le Pk de fin doit être supérieur au Pk de début"
     },
     "buttons": {
-      "add": "追加",
-      "save": "保存",
-      "cancel": "キャンセル"
+      "add": "Ajouter",
+      "save": "Sauvegarder",
+      "cancel": "Annuler"
     }
   },
   "plansList": {
     "tableHeaders": {
-      "name": "計画名",
-      "start": "開始PK",
-      "end": "終了PK",
-      "actions": "操作"
+      "name": "Nom du plan",
+      "start": "Pk de début",
+      "end": "Pk de fin",
+      "actions": "Actions"
     },
     "buttons": {
-      "planDraw": "活動を選択"
+      "planDraw": "select activities"
     }
   },
   "plansForm": {
-    "plans": "計画を選択",
-    "date": "日付を選択"
+    "plans": "Sélectionner un plan",
+    "date": "Sélectionner une date"
   },
-  "PlanEditorPopUp": "計画エディター",
+  "PlanEditorPopUp": "Éditeur de plan",
   "dateOptions": {
-    "day": "日",
-    "month": "月",
-    "year": "年"
+    "day": "Jour",
+    "month": "Mois",
+    "year": "Année"
   }
 }
