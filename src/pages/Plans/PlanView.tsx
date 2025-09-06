@@ -189,22 +189,25 @@ function PlanView() {
     }),
     [selectedPlanEntity]
   );
-
+  //! this  is issues
   // Process stage data
   const processedStageData = useMemo(() => {
     if (!stagesData || !initialImgData) return [];
 
-    return stagesData.stageDatas
-      .slice()
-      .reverse()
-      .map((item) => ({
-        ...item,
-        attrs: {
-          ...item.attrs,
-          "data-item-type": item.attrs.dataItemType,
-        },
-      }))
-      .map((item: any) => denormalizeCoordinates(item, initialImgData));
+    return (
+      stagesData.stageDatas
+        // .slice()
+        // .reverse()
+        .map((item) => ({
+          ...item,
+          attrs: {
+            ...item.attrs,
+            "data-item-type": item.attrs.dataItemType,
+            zIndex: undefined,
+          },
+        }))
+        .map((item: any) => denormalizeCoordinates(item, initialImgData))
+    );
   }, [stagesData, initialImgData]);
 
   // Unique activities
@@ -349,10 +352,24 @@ function PlanView() {
     stage.stageRef.current.batchDraw();
   }, [processedStageData, initialImgData, stage.stageRef]);
 
+  const sortedStageData = useMemo(
+    () =>
+      stageData.sort((a, b) => {
+        if (a.attrs.zIndex === b.attrs.zIndex) {
+          if (a.attrs.zIndex < 0) {
+            return b.attrs.updatedAt - a.attrs.updatedAt;
+          }
+          return a.attrs.updatedAt - b.attrs.updatedAt;
+        }
+        return a.attrs.zIndex - b.attrs.zIndex;
+      }),
+    [stageData]
+  );
+
   return (
     <DefaultLayout>
-      <div className="h-full w-full overflow-hidden">
-        <div className="flex justify-between my-10 mx-10">
+      <div className="w-full h-full overflow-hidden">
+        <div className="flex justify-between mx-10 my-10">
           {/* Plan Dropdown */}
           <div className="w-[40%]">
             <Dropdown
@@ -382,12 +399,12 @@ function PlanView() {
           {/* Date Navigation */}
           <div className="relative w-[30%] flex gap-2 items-end">
             <ArrowLeftIcon
-              className="h-10 w-10 text-gray-500 border border-gray-500 p-2 mb-2 cursor-pointer"
+              className="w-10 h-10 p-2 mb-2 text-gray-500 border border-gray-500 cursor-pointer"
               onClick={decrementDate}
             />
 
             <select
-              className="border p-2 mb-2"
+              className="p-2 mb-2 border"
               value={incrementType}
               onChange={(e) => setIncrementType(e.target.value)}
             >
@@ -407,7 +424,7 @@ function PlanView() {
             />
 
             <ArrowRightIcon
-              className="h-10 w-10 text-gray-500 border border-gray-500 p-2 mb-2 cursor-pointer"
+              className="w-10 h-10 p-2 mb-2 text-gray-500 border border-gray-500 cursor-pointer"
               onClick={incrementDate}
             />
           </div>
