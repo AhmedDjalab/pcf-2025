@@ -15,25 +15,32 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
-      - uses: actions/checkout@v3
+      # Checkout repo
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Setup Node.js (CRA works well with Node 18)
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
       # Install dependencies
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       # Build CRA app
-      - name: Build
+      - name: Build app
         run: npm run build
 
       # Deploy to Azure Static Web Apps
-      - name: Build And Deploy
-        id: builddeploy
+      - name: Deploy to Azure SWA
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_POLITE_WAVE_00A026D03 }}
           action: "upload"
-          app_location: "/"     # where your CRA source code lives
-          api_location: ""      # if you have an API (optional)
+          app_location: "/"        # CRA is in repo root
+          api_location: ""         # no API for CRA
           output_location: "build" # CRA build output folder
 
   close_pull_request_job:
@@ -42,7 +49,6 @@ jobs:
     name: Close Pull Request Job
     steps:
       - name: Close Pull Request
-        id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
           action: "close"
