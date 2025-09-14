@@ -43,7 +43,8 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GRAY_PEBBLE_03D9B4503 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "build" # 👈 directly upload the build folder
+          app_location: "build"   # 👈 where your built files are
+          skip_app_build: true    # 👈 prevent Oryx from running again
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
