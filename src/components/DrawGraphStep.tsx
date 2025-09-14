@@ -81,7 +81,7 @@ function DrawGraphStep() {
     (state: RootState) => state.graph.settings.distanceRange
   );
   const dispatch: ThunkDispatch<RootState, any, AnyAction> = useDispatch();
-  const isDevelopment = process.env.REACT_APP_ENV === "development";
+  const isDevelopment = import.meta.env.VITE_API_URL === "development";
 
   const url = useMemo(
     () =>
@@ -1470,9 +1470,9 @@ function DrawGraphStep() {
       {graphSettings.loading ? (
         <Spinner />
       ) : (
-        <div className="flex flex-col  w-full dark:bg-body overflow-scroll">
+        <div className="flex flex-col w-full overflow-scroll dark:bg-body">
           <div className="mx-20">
-            <div className=" mt-2 flex items-center">
+            <div className="flex items-center mt-2 ">
               <Checkbox
                 checked={showCritical}
                 onChange={() => setShowCritical(!showCritical)}
@@ -1480,7 +1480,7 @@ function DrawGraphStep() {
               />
             </div>
 
-            <div className=" mt-2 flex items-center gap-5 ">
+            <div className="flex items-center gap-5 mt-2 ">
               {(isAdmin || canWrite) && (
                 <button
                   type="button"
@@ -1509,7 +1509,7 @@ function DrawGraphStep() {
               title={t("drawGraph.utilButtons")}
               isOpenTrigger={selectedShapeData}
             >
-              <div className="my-4 flex justify-center gap-2 ">
+              <div className="flex justify-center gap-2 my-4 ">
                 {/* <button
                   // disabled
                   className="focus:outline-none mt-5  text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 flex items-center"
@@ -1531,7 +1531,7 @@ function DrawGraphStep() {
                   type="button"
                   onClick={handleAddComments}
                   disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-                  className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
+                  className="px-10 py-2 text-white bg-green-400 rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
                 >
                   {t("drawGraph.addComments")}
                 </button> */}
@@ -1547,7 +1547,7 @@ function DrawGraphStep() {
                 {/* <button
         type="button"
         disabled={!selectedShapeData}
-        className="px-10 py-2 bg-red-400 text-white rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+        className="px-10 py-2 text-white bg-red-400 rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
         onClick={handleEditClick}
       >
         {t("importFileForm.delete")}
@@ -1555,14 +1555,14 @@ function DrawGraphStep() {
                 <button
                   type="button"
                   disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-                  className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
+                  className="px-10 py-2 text-white bg-green-400 rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
                   onClick={handleEditClick}
                 >
                   {t("importFileForm.edit")}
                 </button>
                 <button
                   type="button"
-                  className="px-10 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
+                  className="px-10 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
                   onClick={handleAddClick}
                   disabled={!canWrite && !isAdmin}
                 >
@@ -1570,7 +1570,7 @@ function DrawGraphStep() {
                 </button>
                 <button
                   type="button"
-                  className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+                  className="px-10 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
                   onClick={handleDeleteClick}
                   disabled={!selectedShapeData || (!canWrite && !isAdmin)}
                 >
@@ -1578,7 +1578,7 @@ function DrawGraphStep() {
                 </button>
                 <button
                   type="button"
-                  className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
+                  className="px-10 py-2 text-white bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
                   onClick={handleExportAllClick}
                   disabled={!canWrite && !isAdmin}
                 >
@@ -1588,7 +1588,7 @@ function DrawGraphStep() {
                 <button
                   type="button"
                   disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-                  className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
+                  className="px-10 py-2 text-white bg-green-400 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600"
                   onClick={() => setStyleModalOpen(true)}
                 >
                   {t("drawGraph.changeStyle")}
@@ -1607,10 +1607,10 @@ function DrawGraphStep() {
 
           <div className="flex flex-col w-full " id="graph-container">
             <div className="graph-container">
-              <div className="flex items-center border m-4 w-full ">
+              <div className="flex items-center w-full m-4 border ">
                 <img
                   src={graphSettings.projectSettings.clientlogoImg ?? logo}
-                  className="h-20 w-40 mr-4"
+                  className="w-40 h-20 mr-4"
                   alt={"Client" + graphSettings.projectSettings.title}
                 />
                 <div className="flex-grow text-center">
@@ -1628,12 +1628,12 @@ function DrawGraphStep() {
                 </div>
                 <img
                   src={graphSettings.projectSettings.logoImg}
-                  className="h-20 w-40 object-fill "
+                  className="object-fill w-40 h-20 "
                   alt={graphSettings.projectSettings.title}
                 />
               </div>
 
-              <div id="tooltip" className="absolute  text-white"></div>
+              <div id="tooltip" className="absolute text-white"></div>
               <div id="wrapper">
                 <svg
                   ref={containerSVGRef}
@@ -1658,89 +1658,89 @@ function DrawGraphStep() {
 
             <Accordion title={t("drawGraph.activityDetailLabel")}>
               <div className="mb-10 mx-auto sm:w-[70%] lg:w-[50%]">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  <div className="border border-gray-700 p-2 bg-slate-500">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  <div className="p-2 border border-gray-700 bg-slate-500">
                     {t("drawGraph.activityDetails.activityNameLabel")}
                   </div>
-                  <div className="border border-gray-700 p-2">
+                  <div className="p-2 border border-gray-700">
                     {selectedShapeData?.activityName}
                   </div>
 
-                  <div className="border border-gray-700 p-2 bg-slate-500">
+                  <div className="p-2 border border-gray-700 bg-slate-500">
                     {t("drawGraph.activityDetails.styleLabel")}
                   </div>
-                  <div className="border border-gray-700 p-2">
+                  <div className="p-2 border border-gray-700">
                     {selectedShapeData?.style}
                   </div>
 
-                  <div className="border border-gray-700 p-2 bg-slate-500">
+                  <div className="p-2 border border-gray-700 bg-slate-500">
                     {t("drawGraph.activityDetails.startDateLabel")}
                   </div>
-                  <div className="border border-gray-700 p-2">
+                  <div className="p-2 border border-gray-700">
                     {moment(selectedShapeData?.startDate).format("DD/MM/YYYY")}
                   </div>
 
-                  <div className="border border-gray-700 p-2 bg-slate-500">
+                  <div className="p-2 border border-gray-700 bg-slate-500">
                     {t("drawGraph.activityDetails.finishDateLabel")}
                   </div>
-                  <div className="border border-gray-700 p-2">
+                  <div className="p-2 border border-gray-700">
                     {moment(selectedShapeData?.finishDate).format("DD/MM/YYYY")}
                   </div>
 
-                  <div className="border border-gray-700 p-2 bg-slate-500">
+                  <div className="p-2 border border-gray-700 bg-slate-500">
                     {t("drawGraph.activityDetails.startChainageLabel")}
                   </div>
-                  <div className="border border-gray-700 p-2">
+                  <div className="p-2 border border-gray-700">
                     {selectedShapeData?.startChainage}
                   </div>
 
-                  <div className="border border-gray-700 p-2 bg-slate-500">
+                  <div className="p-2 border border-gray-700 bg-slate-500">
                     {t("drawGraph.activityDetails.finishChainageLabel")}
                   </div>
-                  <div className="border border-gray-700 p-2">
+                  <div className="p-2 border border-gray-700">
                     {selectedShapeData?.finishChainage}
                   </div>
 
-                  <div className="border border-gray-700 p-2 bg-slate-500">
+                  <div className="p-2 border border-gray-700 bg-slate-500">
                     {t("drawGraph.activityDetails.calendar")}
                   </div>
-                  <div className="border border-gray-700 p-2">
+                  <div className="p-2 border border-gray-700">
                     {selectedShapeData?.calendarName}
                   </div>
 
-                  <div className="border border-gray-700 p-2 bg-slate-500">
+                  <div className="p-2 border border-gray-700 bg-slate-500">
                     {t("drawGraph.activityDetails.duration")}
                   </div>
-                  <div className="border border-gray-700 p-2">
+                  <div className="p-2 border border-gray-700">
                     {selectedShapeData?.duration}
                   </div>
-                  <div className="border border-gray-700 p-2 bg-slate-500">
+                  <div className="p-2 border border-gray-700 bg-slate-500">
                     {t("drawGraph.activityDetails.quantity")}
                   </div>
-                  <div className="border border-gray-700 p-2">
+                  <div className="p-2 border border-gray-700">
                     {`${selectedShapeData?.quantity ?? ""} ${
                       selectedShapeData?.quantityUnit ?? ""
                     }`}
                   </div>
-                  <div className="border border-gray-700 p-2 bg-slate-500">
+                  <div className="p-2 border border-gray-700 bg-slate-500">
                     {t("drawGraph.activityDetails.productionRate")}
                   </div>
-                  <div className="border border-gray-700 p-2">
+                  <div className="p-2 border border-gray-700">
                     {`${selectedShapeData?.productionRate ?? ""} ${
                       selectedShapeData?.productionRateUnit ?? ""
                     }`}
                   </div>
-                  <div className="border border-gray-700 p-2 bg-slate-500">
+                  <div className="p-2 border border-gray-700 bg-slate-500">
                     {t("drawGraph.activityDetails.workShops")}
                   </div>
-                  <div className="border border-gray-700 p-2">
+                  <div className="p-2 border border-gray-700">
                     {selectedShapeData?.workShops ?? ""}
                   </div>
                 </div>
               </div>
             </Accordion>
-            <div className="flex w-full justify-center items-center my-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full px-5">
+            <div className="flex items-center justify-center w-full my-4">
+              <div className="grid w-full grid-cols-1 gap-4 px-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
                 {createLegend()}
               </div>
             </div>

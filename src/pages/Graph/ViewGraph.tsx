@@ -194,7 +194,7 @@ function ViewGraph() {
     "#9900B3",
     "#E64D66",
   ];
-  const isDevelopment = process.env.REACT_APP_ENV === "development";
+  const isDevelopment = import.meta.env.VITE_API_URL === "development";
 
   const url = useMemo(
     () =>
@@ -2556,14 +2556,14 @@ function ViewGraph() {
       {graphSettings.loading ? (
         <Spinner />
       ) : (
-        <div className="flex flex-col bg-white dark:bg-body w-full overflow-x-auto">
+        <div className="flex flex-col w-full overflow-x-auto bg-white dark:bg-body">
           {
             //! add fixed position button
           }
 
           <div className="mx-20">
-            <div className="flex  gap-4">
-              <div className=" mt-2 flex items-center">
+            <div className="flex gap-4">
+              <div className="flex items-center mt-2 ">
                 <Checkbox
                   checked={hideComments}
                   onChange={() => setHideComments(!hideComments)}
@@ -2572,7 +2572,7 @@ function ViewGraph() {
                   name={""}
                 />
               </div>
-              <div className=" mt-2 flex items-center">
+              <div className="flex items-center mt-2 ">
                 <Checkbox
                   checked={commentsDetails}
                   onChange={() => setCommentsDetails(!commentsDetails)}
@@ -2581,7 +2581,7 @@ function ViewGraph() {
                   name={""}
                 />
               </div>
-              <div className=" mt-2 flex items-center">
+              <div className="flex items-center mt-2 ">
                 <Checkbox
                   checked={showCritical}
                   onChange={() => setShowCritical(!showCritical)}
@@ -2591,7 +2591,7 @@ function ViewGraph() {
                 />
               </div>
             </div>
-            <div className=" mt-2 flex items-center gap-5 ">
+            <div className="flex items-center gap-5 mt-2 ">
               {(isAdmin || canWrite) && (
                 <button
                   type="button"
@@ -2641,12 +2641,12 @@ function ViewGraph() {
               {t("drawGraph.cancelZoomButtonLabel")}
             </button>
           )}
-          <div className="flex flex-col w-full  " id="graph-container">
+          <div className="flex flex-col w-full " id="graph-container">
             <div className="graph-container" id="graph">
-              <div className="flex items-center border m-4 w-full ">
+              <div className="flex items-center w-full m-4 border ">
                 <img
                   src={graphSettings.projectSettings.clientlogoImg ?? logo}
-                  className="h-20 w-40 mr-4"
+                  className="w-40 h-20 mr-4"
                   alt={"Client" + graphSettings.projectSettings.title}
                   ///crossOrigin="true"
                 />
@@ -2665,13 +2665,13 @@ function ViewGraph() {
                 </div>
                 <img
                   src={graphSettings.projectSettings.logoImg}
-                  className="h-20 w-40 object-fill "
+                  className="object-fill w-40 h-20 "
                   alt={graphSettings.projectSettings.title}
                   //crossOrigin="true"
                 />
               </div>
 
-              <div id="tooltip" className="absolute  text-white"></div>
+              <div id="tooltip" className="absolute text-white"></div>
               <div id="wrapper">
                 <svg
                   ref={containerSVGRef}
@@ -2686,8 +2686,8 @@ function ViewGraph() {
               </div>
             </div>
 
-            {/* <div className="flex w-full justify-center items-center my-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full px-5">
+            {/* <div className="flex items-center justify-center w-full my-4">
+              <div className="grid w-full grid-cols-1 gap-4 px-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
                 {createLegend()}
               </div>
             </div> */}
@@ -2778,79 +2778,79 @@ function ViewGraph() {
 export default ViewGraph;
 function activityDetails(t, selectedShapeData: GraphDataType | undefined) {
   return (
-    <div className="m-2 col-span-2">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <div className="border border-gray-700 p-2 bg-slate-500">
+    <div className="col-span-2 m-2">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="p-2 border border-gray-700 bg-slate-500">
           {t("drawGraph.activityDetails.activityNameLabel")}
         </div>
-        <div className="border border-gray-700 p-2">
+        <div className="p-2 border border-gray-700">
           {selectedShapeData?.activityName}
         </div>
 
-        <div className="border border-gray-700 p-2 bg-slate-500">
+        <div className="p-2 border border-gray-700 bg-slate-500">
           {t("drawGraph.activityDetails.styleLabel")}
         </div>
-        <div className="border border-gray-700 p-2">
+        <div className="p-2 border border-gray-700">
           {selectedShapeData?.style}
         </div>
 
-        <div className="border border-gray-700 p-2 bg-slate-500">
+        <div className="p-2 border border-gray-700 bg-slate-500">
           {t("drawGraph.activityDetails.startDateLabel")}
         </div>
-        <div className="border border-gray-700 p-2">
+        <div className="p-2 border border-gray-700">
           {moment(selectedShapeData?.startDate).format("DD/MM/YYYY")}
         </div>
 
-        <div className="border border-gray-700 p-2 bg-slate-500">
+        <div className="p-2 border border-gray-700 bg-slate-500">
           {t("drawGraph.activityDetails.finishDateLabel")}
         </div>
-        <div className="border border-gray-700 p-2">
+        <div className="p-2 border border-gray-700">
           {moment(selectedShapeData?.finishDate).format("DD/MM/YYYY")}
         </div>
 
-        <div className="border border-gray-700 p-2 bg-slate-500">
+        <div className="p-2 border border-gray-700 bg-slate-500">
           {t("drawGraph.activityDetails.startChainageLabel")}
         </div>
-        <div className="border border-gray-700 p-2">
+        <div className="p-2 border border-gray-700">
           {selectedShapeData?.startChainage}
         </div>
 
-        <div className="border border-gray-700 p-2 bg-slate-500">
+        <div className="p-2 border border-gray-700 bg-slate-500">
           {t("drawGraph.activityDetails.finishChainageLabel")}
         </div>
-        <div className="border border-gray-700 p-2">
+        <div className="p-2 border border-gray-700">
           {selectedShapeData?.finishChainage}
         </div>
 
-        <div className="border border-gray-700 p-2 bg-slate-500">
+        <div className="p-2 border border-gray-700 bg-slate-500">
           {t("drawGraph.activityDetails.calendar")}
         </div>
-        <div className="border border-gray-700 p-2">
+        <div className="p-2 border border-gray-700">
           {selectedShapeData?.calendarName}
         </div>
 
-        <div className="border border-gray-700 p-2 bg-slate-500">
+        <div className="p-2 border border-gray-700 bg-slate-500">
           {t("drawGraph.activityDetails.duration")}
         </div>
-        <div className="border border-gray-700 p-2">
+        <div className="p-2 border border-gray-700">
           {selectedShapeData?.duration}
         </div>
-        <div className="border border-gray-700 p-2 bg-slate-500">
+        <div className="p-2 border border-gray-700 bg-slate-500">
           {t("drawGraph.activityDetails.quantity")}
         </div>
-        <div className="border border-gray-700 p-2">
+        <div className="p-2 border border-gray-700">
           {selectedShapeData?.quantity}
         </div>
-        <div className="border border-gray-700 p-2 bg-slate-500">
+        <div className="p-2 border border-gray-700 bg-slate-500">
           {t("drawGraph.activityDetails.productionRate")}
         </div>
-        <div className="border border-gray-700 p-2">
+        <div className="p-2 border border-gray-700">
           {selectedShapeData?.productionRate}
         </div>
-        <div className="border border-gray-700 p-2 bg-slate-500">
+        <div className="p-2 border border-gray-700 bg-slate-500">
           {t("drawGraph.activityDetails.workShops")}
         </div>
-        <div className="border border-gray-700 p-2">
+        <div className="p-2 border border-gray-700">
           {selectedShapeData?.workShops}
         </div>
       </div>
@@ -3053,7 +3053,7 @@ function activityDetails(t, selectedShapeData: GraphDataType | undefined) {
 //               title={t("drawGraph.utilButtons")}
 //               isOpenTrigger={selectedShapeData}
 //             >
-//               <div className="my-4 flex justify-center gap-2 ">
+//               <div className="flex justify-center gap-2 my-4 ">
 //                 {/* <button
 //           type="button"
 //           onClick={() => navigate("/create-project/5")} // Handle going back to the previous step
@@ -3065,7 +3065,7 @@ function activityDetails(t, selectedShapeData: GraphDataType | undefined) {
 //                   type="button"
 //                   onClick={handleAddComments}
 //                   disabled={!selectedShapeData}
-//                   className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
+//                   className="px-10 py-2 text-white bg-green-400 rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
 //                 >
 //                   {t("drawGraph.addComments")}
 //                 </button>
@@ -3081,7 +3081,7 @@ function activityDetails(t, selectedShapeData: GraphDataType | undefined) {
 //                 {/* <button
 //         type="button"
 //         disabled={!selectedShapeData}
-//         className="px-10 py-2 bg-red-400 text-white rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+//         className="px-10 py-2 text-white bg-red-400 rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
 //         onClick={handleEditClick}
 //       >
 //         {t("importFileForm.delete")}
@@ -3089,14 +3089,14 @@ function activityDetails(t, selectedShapeData: GraphDataType | undefined) {
 //                 <button
 //                   type="button"
 //                   disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-//                   className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
+//                   className="px-10 py-2 text-white bg-green-400 rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 disabled:bg-gray-600"
 //                   onClick={handleEditClick}
 //                 >
 //                   {t("importFileForm.edit")}
 //                 </button>
 //                 <button
 //                   type="button"
-//                   className="px-10 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
+//                   className="px-10 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
 //                   onClick={handleAddClick}
 //                   disabled={!canWrite && !isAdmin}
 //                 >
@@ -3104,7 +3104,7 @@ function activityDetails(t, selectedShapeData: GraphDataType | undefined) {
 //                 </button>
 //                 <button
 //                   type="button"
-//                   className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+//                   className="px-10 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
 //                   onClick={handleDeleteClick}
 //                   disabled={!selectedShapeData || (!canWrite && !isAdmin)}
 //                 >
@@ -3112,7 +3112,7 @@ function activityDetails(t, selectedShapeData: GraphDataType | undefined) {
 //                 </button>
 //                 <button
 //                   type="button"
-//                   className="px-10 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-300 disabled:bg-gray-600"
+//                   className="px-10 py-2 text-white bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-300 disabled:bg-gray-600"
 //                   onClick={handleExportAllClick}
 //                   disabled={!canWrite && !isAdmin}
 //                 >
@@ -3121,7 +3121,7 @@ function activityDetails(t, selectedShapeData: GraphDataType | undefined) {
 //                 </button>
 //                 {/* <button
 //                   type="button"
-//                   className="px-10 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
+//                   className="px-10 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-600"
 //                   onClick={(e: any) => saveAsPdfOrImage("pdf")}
 //                   disabled={!canWrite && !isAdmin}
 //                 >
@@ -3132,7 +3132,7 @@ function activityDetails(t, selectedShapeData: GraphDataType | undefined) {
 //                 <button
 //                   type="button"
 //                   disabled={!selectedShapeData || (!canWrite && !isAdmin)}
-//                   className="px-10 py-2 bg-green-400 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600 focus:ring-green-300"
+//                   className="px-10 py-2 text-white bg-green-400 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orbg-orange-300 disabled:bg-gray-600 focus:ring-green-300"
 //                   onClick={() => setStyleModalOpen(true)}
 //                 >
 //                   {t("drawGraph.changeStyle")}

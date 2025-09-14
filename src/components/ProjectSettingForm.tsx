@@ -67,7 +67,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
     (state: RootState) => state.graph.projectSettings
   );
 
-  const isDevelopment = process.env.REACT_APP_ENV === "development";
+  const isDevelopment = import.meta.env.VITE_API_URL === "development";
 
   const [selectedImage, setSelectedImage] = useState(
     projectSettings.logoImg ?? ""

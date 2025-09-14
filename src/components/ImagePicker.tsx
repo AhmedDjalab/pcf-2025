@@ -22,7 +22,7 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
   const [selectedImage, setSelectedImage] = useState<string | null>(
     imageValue || null
   ); // Set initial value to null if imageValue is not provided
-  const isDevelopment = process.env.REACT_APP_ENV === "development";
+  const isDevelopment = import.meta.env.VITE_API_URL === "development";
 
   const { t } = useTranslation();
   // const url = useMemo(
@@ -102,13 +102,13 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
       />
       <label
         htmlFor={keyRef}
-        className="cursor-pointer block p-4 border border-dashed border-gray-300 rounded-lg text-center hover:bg-gray-100"
+        className="block p-4 text-center border border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-100"
       >
         {selectedImage ? (
           <img
             src={selectedImage}
             alt="Selected"
-            className="mx-auto mb-2 w-40 h-40"
+            className="w-40 h-40 mx-auto mb-2"
           />
         ) : (
           <span className="text-gray-400">{t("imagePicker.importLogo")}</span>

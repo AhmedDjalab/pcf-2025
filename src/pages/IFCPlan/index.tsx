@@ -7,6 +7,7 @@ import * as FRAG from "@thatopen/fragments";
 import * as BUIC from "@thatopen/ui-obc";
 import Stats from "stats.js";
 import * as OBCF from "@thatopen/components-front";
+import * as THREE from "three";
 
 import ActivitiesPanel, { ACTIVI } from "./components/ActivitiesPannel";
 
@@ -111,7 +112,7 @@ const IFCViewer = () => {
       world.camera.controls.addEventListener("rest", () =>
         fragments.core?.update(true)
       );
-      world.scene.three.background = new THREE.Color(0xff0000);
+      world.scene.three.background = new THREE.Color(0x212121);
 
       fragments.list.onItemSet.add(({ value: model }) => {
         model.useCamera(world.camera.three);
