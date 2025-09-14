@@ -429,5 +429,24 @@
     "day": "Jour",
     "month": "Mois",
     "year": "Année"
+  },
+
+  "projectForm": {
+    "ifcFile": "Fichier IFC",
+    "optional": "Optionnel",
+    "ifcFileUploaded": "Fichier IFC téléchargé",
+    "removeFile": "Supprimer le fichier",
+    "uploadingIfcFile": "Téléchargement du fichier IFC...",
+    "clickToUploadIfc": "Cliquez pour télécharger un fichier IFC",
+    "ifcFilesOnly": "Fichiers IFC uniquement",
+    "enterProjectTitleFirst": "Entrez d’abord le titre du projet"
+  },
+  "errors": {
+    "invalidIfcFile": "Veuillez télécharger un fichier IFC valide (extension .ifc uniquement)",
+    "projectTitleRequired": "Veuillez entrer un titre de projet avant de télécharger un fichier IFC",
+    "ifcUploadFailed": "Échec du téléchargement du fichier IFC. Veuillez réessayer."
+  },
+  "success": {
+    "ifcFileUploaded": "Fichier IFC téléchargé avec succès !"
   }
 }

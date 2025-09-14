@@ -84,14 +84,22 @@ const Projects = () => {
           to={`/view-graph/${value}`}
           className="focus:outline-none no-underline text-white bg-purple-500 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-purple-600 dark:hover-bg-purple-700 dark:focus:ring-purple-900"
         >
-          <EyeIcon className="w-5 h-5 mr-2 inline" />
+          <EyeIcon className="inline w-5 h-5 mr-2" />
           {t("projectsList.buttons.viewGraph")}
+        </Link>
+
+        <Link
+          to={`/view-bim/${value}`}
+          className="focus:outline-none no-underline text-white bg-fuchsia-500 hover:bg-fuchsia-800 focus:ring-4 focus:ring-bg-fuchsia-300 font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-fuchsia-600 dark:hover-bg-fuchsia-700 dark:focus:ring-ebg-fuchsia-900"
+        >
+          <EyeIcon className="inline w-5 h-5 mr-2" />
+          Bim
         </Link>
         <Link
           to={`/view-plan/${value}`}
           className="focus:outline-none no-underline text-white bg-[#f7ad25] hover:bg-[#f7ad25] focus:ring-4 focus:ring-[#f7ad25] font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-[#f7ad25] dark:hover-bg-[#f7ad25] dark:focus:ring-[#f7ad25]"
         >
-          <DocumentChartBarIcon className="w-5 h-5 mr-2 inline" />
+          <DocumentChartBarIcon className="inline w-5 h-5 mr-2" />
           {t("projectsList.buttons.viewPlan")}
         </Link>
         <Link
@@ -102,7 +110,7 @@ const Projects = () => {
           }}
           className="text-white no-underline bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover-bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
         >
-          <PencilIcon className="w-5 h-5 mr-2 inline" />
+          <PencilIcon className="inline w-5 h-5 mr-2" />
           {t("projectsList.buttons.edit")}
         </Link>
         {isAdmin && (
@@ -115,7 +123,7 @@ const Projects = () => {
                 setIsUserModalVisible(true);
               }}
             >
-              <UserIcon className="w-5 h-5 mr-2 inline" />
+              <UserIcon className="inline w-5 h-5 mr-2" />
               {t("header.users")}
             </button>
             <button
@@ -125,7 +133,7 @@ const Projects = () => {
                 setIsModalVisible(true);
               }}
             >
-              <TrashIcon className="w-5 h-5 mr-2 inline" />
+              <TrashIcon className="inline w-5 h-5 mr-2" />
               {t("projectsList.buttons.delete")}
             </button>
           </>
@@ -301,8 +309,8 @@ const Projects = () => {
 
   return (
     <DefaultLayout>
-      <div className="dark:bg-boxdark bg-white  w-full  ">
-        <div className="py-2 ml-10 flex justify-between">
+      <div className="w-full bg-white dark:bg-boxdark ">
+        <div className="flex justify-between py-2 ml-10">
           <button
             disabled={!canWrite && !isAdmin}
             onClick={handlePurgeAndNavigate}

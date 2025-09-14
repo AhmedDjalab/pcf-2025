@@ -550,14 +550,12 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
     const fileInput = event.target as HTMLInputElement;
 
     if (!fileInput || !fileInput.files) {
-      // Handle the case where event.target is null or files are not available
       return;
     }
 
     const file = fileInput.files[0];
 
     if (!file) {
-      // No file selected, do nothing
       return;
     }
     fileInput.value = "";
@@ -905,7 +903,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           }}
           className="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover-bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
         >
-          <PencilIcon className="w-5 h-5 mr-2 inline" />
+          <PencilIcon className="inline w-5 h-5 mr-2" />
           {t("projectsList.buttons.edit")}
         </button>
         {isAdmin && (
@@ -916,7 +914,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
               setIsModalVisible(true);
             }}
           >
-            <TrashIcon className="w-5 h-5 mr-2 inline" />
+            <TrashIcon className="inline w-5 h-5 mr-2" />
             {t("projectsList.buttons.delete")}
           </button>
         )}
@@ -1131,11 +1129,11 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
       {loading ? (
         <Spinner />
       ) : (
-        <label className=" relative dark:bg-boxdark  flex justify-center items-center w-full h-40 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
+        <label className="relative flex items-center justify-center w-full h-40 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer dark:bg-boxdark hover:border-gray-400 focus:outline-none">
           {editForm ? (
             <div className="flex flex-col ">
               {fileSvgIcons()}
-              <span className="text-center font-semibold">{fileName}</span>
+              <span className="font-semibold text-center">{fileName}</span>
             </div>
           ) : (
             <>
@@ -1176,21 +1174,21 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
         </label>
       )}
 
-      <div className="relative   w-full mt-10">
+      <div className="relative w-full mt-10">
         {rawData && rawData.length > 0 && <FiltersInputs />}
 
-        <div className="my-4 flex justify-between">
+        <div className="flex justify-between my-4">
           {/* Add the "Back" button */}
           <button
             type="button"
-            className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600"
+            className="px-4 py-2 text-white bg-gray-400 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-300 disabled:bg-gray-600"
             onClick={handleBack}
           >
             {t("importFileForm.back")}
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
+            className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-600"
             disabled={
               graphSettings.graphData?.length === 0 ||
               graphSettings.fromDate > graphSettings.toDate
@@ -1204,7 +1202,7 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           </button>
         </div>
         {
-          <div className="my-4 flex justify-start">
+          <div className="flex justify-start my-4">
             <button
               type="button"
               onClick={handleAddClick}
@@ -1246,12 +1244,12 @@ export const ImportFileForm = ({ setCurrentStep }: MultiStepFormProps) => {
           {showBackToTopButton && (
             <button
               type="button"
-              className="back-to-top-button flex justify-end items-end self-end w-full"
+              className="flex items-end self-end justify-end w-full back-to-top-button"
               onClick={() => {
                 scroll.scrollToTop(); // Scroll to the top when the button is clicked
               }}
             >
-              <ArrowUpCircleIcon className=" h-20 w-20  text-blue-500 opacity-40" />{" "}
+              <ArrowUpCircleIcon className="w-20 h-20 text-blue-500 opacity-40" />{" "}
               {/* Use the Heroicon here */}
             </button>
           )}

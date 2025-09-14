@@ -1,0 +1,610 @@
+//@ts-ignore
+//@ts-noCheck
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import * as OBC from "@thatopen/components";
+import * as BUI from "@thatopen/ui";
+import * as FRAG from "@thatopen/fragments";
+import * as BUIC from "@thatopen/ui-obc";
+import Stats from "stats.js";
+import * as OBCF from "@thatopen/components-front";
+
+import ActivitiesPanel, { ACTIVI } from "./components/ActivitiesPannel";
+
+import TimelineScheduling from "./components/TimelineScheduling";
+import AutomaticLinkingModal from "./components/AutomaticLinkingModal";
+import { ActivityModel } from "src/types/Project";
+import { useQuery } from "@tanstack/react-query";
+import { getBim } from "src/Services/BimService";
+import { useParams } from "react-router-dom";
+import Spinner from "src/components/Spinner";
+import { data } from "autoprefixer";
+import { decompressFile } from "src/utils/fileCompresser";
+
+// export interface Activity {
+//   uid: string;
+//   name: string;
+//   activityId: string;
+//   startDate: Date;
+//   endDate: Date;
+//   startPk: number;
+//   endPk: number;
+//   linkedModelIds: string[];
+// }
+const IFCViewer = () => {
+  const { id } = useParams();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const componentsRef = useRef<OBC.Components | null>(null);
+  const worldRef = useRef<OBC.World | null>(null);
+  const spatialTreeRef = useRef<BUI.Table<any> | null>(null);
+  const ifcLoaderRef = useRef<OBC.IfcLoader | null>(null);
+  const hiderRef = useRef<OBC.Hider>();
+  const [activities, setActivities] = useState<ActivityModel[]>();
+  const modelRef = useRef<FRAG.FragmentsModel | null>(null);
+  const fragmentsRef = useRef<OBC.FragmentsManager | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [modelName, setModelName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState<string>("");
+  const [selectedModelIds, setSelectedModelIds] = useState<string[]>([]);
+  const [selectedModelIdMap, setSelectedModelIdMap] =
+    useState<OBC.ModelIdMap>();
+  const [modelMapIds, setModelMapIds] = useState<Record<string, number[]>>({});
+  const html = document.querySelector("html")!;
+
+  const initViewer = useCallback(async () => {
+    try {
+      setIsLoading(true);
+
+      // Components
+      const components = new OBC.Components();
+      componentsRef.current = components;
+
+      // World
+      const worlds = components.get(OBC.Worlds);
+      const world = worlds.create<
+        OBC.SimpleScene,
+        OBC.SimpleCamera,
+        OBC.SimpleRenderer
+      >();
+      worldRef.current = world;
+
+      world.scene = new OBC.SimpleScene(components);
+      world.renderer = new OBC.SimpleRenderer(
+        components,
+        containerRef?.current
+      );
+      world.camera = new OBC.SimpleCamera(components);
+
+      await components.init();
+
+      // Scene setup
+      world.scene.setup();
+      world.scene.three.background = null;
+      const grids = components.get(OBC.Grids);
+      grids.create(world);
+      const hider = components.get(OBC.Hider);
+      hiderRef.current = hider;
+      // IFC Loader
+      const ifcLoader = components.get(OBC.IfcLoader);
+      await ifcLoader.setup({
+        autoSetWasm: false,
+        wasm: {
+          path: "https://unpkg.com/web-ifc@0.0.70/",
+          absolute: true,
+        },
+      });
+      ifcLoaderRef.current = ifcLoader;
+
+      // Fragments
+      const fragments = components.get(OBC.FragmentsManager);
+      const response = await fetch(
+        "https://thatopen.github.io/engine_fragment/resources/worker.mjs"
+      );
+      const workerBlob = await response.blob();
+      const workerFile = new File([workerBlob], "worker.mjs", {
+        type: "text/javascript",
+      });
+      fragments.init(URL.createObjectURL(workerFile));
+      fragmentsRef.current = fragments;
+
+      // Camera + Fragments sync
+      world.camera.controls.addEventListener("rest", () =>
+        fragments.core?.update(true)
+      );
+      world.scene.three.background = new THREE.Color(0xff0000);
+
+      fragments.list.onItemSet.add(({ value: model }) => {
+        model.useCamera(world.camera.three);
+        world.scene.three.add(model.object);
+        fragments.core?.update(true);
+        world.camera.controls.fitToSphere(model.object, true);
+      });
+      html.classList.remove("bim-ui-dark", "bim-ui-light");
+      html.className = "bim-ui-dark";
+      // ✅ UI Manager
+      BUI.Manager.init();
+
+      // ✅ Spatial Tree & Properties Panel
+      const [spatialTree] = BUIC.tables.spatialTree({
+        components,
+        models: [],
+      });
+
+      spatialTreeRef.current = spatialTree;
+
+      console.warn("🚀 ~ initViewer ~ spatialTree:", spatialTree);
+
+      const table = document.createElement("bim-table") as BUI.Table;
+      table.dataTransform = {};
+
+      const [propertiesTable, updatePropertiesTable] = BUIC.tables.itemsData({
+        components,
+        modelIdMap: {},
+      });
+      propertiesTable.preserveStructureOnFilter = true;
+      propertiesTable.indentationInText = false;
+
+      const uiContainer = document.getElementById("ui-panels");
+      const propContainer = document.getElementById("properties-panel");
+      if (uiContainer) {
+        uiContainer.appendChild(spatialTree);
+        //uiContainer.appendChild(propertiesTable);
+      }
+      if (propContainer) {
+        propContainer.appendChild(propertiesTable);
+        //uiContainer.appendChild(propertiesTable);
+      }
+      const finder = components.get(OBC.ItemsFinder);
+
+      // Stats
+      const stats = new Stats();
+      stats.showPanel(2);
+      containerRef.current?.appendChild(stats.dom);
+      stats.dom.style.position = "absolute";
+      stats.dom.style.left = "0px";
+      stats.dom.style.top = "0px";
+      world.renderer.onBeforeUpdate.add(() => stats.begin());
+      world.renderer.onAfterUpdate.add(() => stats.end());
+      const highlighter = components.get(OBCF.Highlighter);
+      highlighter.setup({ world });
+      let selectedFragmentIdMap: Record<string, number[]> = {};
+      let hiddenElements = new Set<string>();
+      highlighter.events.select.onHighlight.add(
+        (modelIdMap: OBC.ModelIdMap) => {
+          console.log("🚀 ~ initViewer ~ modelIdMap:", modelIdMap);
+          updatePropertiesTable({ modelIdMap });
+          let selectedFragmentIdMap = modelIdMap;
+          const fragmentIdStrings: string[] = Object.values(
+            selectedFragmentIdMap
+          ).flatMap((set) => Array.from(set, (id) => id.toString()));
+          setSelectedModelIds(fragmentIdStrings);
+          setSelectedModelIdMap(modelIdMap);
+          selectedFragmentIdMap = modelIdMap;
+          // setModelMapIds(modelIdMap) ;
+          //hider.set(false, modelIdMap);
+        }
+      );
+      highlighter.events.select.onClear.add(() => {
+        updatePropertiesTable({ modelIdMap: {} });
+        setSelectedModelIds([]);
+
+        //  hider.set(true);
+      });
+      // Load sample model
+      // loadSampleModel();
+      setIsLoading(false);
+    } catch (err: any) {
+      console.error("Failed to initialize viewer:", err);
+      setError(err.message || "Initialization failed");
+      setIsLoading(false);
+    }
+  }, [html]);
+  // useEffect(() => {
+  //   if (!containerRef.current) return;
+
+  //   initViewer();
+
+  //   return () => {
+  //     componentsRef.current?.dispose();
+  //   };
+  // }, []);
+
+  const {
+    data: projectsData,
+    isLoading: projectsLoading,
+    refetch: refetchProject,
+  } = useQuery({
+    queryKey: ["activitiesBim", id],
+    queryFn: () => {
+      return getBim({
+        projectId: id,
+      });
+    },
+
+    refetchOnWindowFocus: false,
+    staleTime: 6000,
+  });
+
+  const loadIFC = useCallback(async (file: File | string) => {
+    if (
+      !componentsRef.current ||
+      !worldRef.current ||
+      !ifcLoaderRef.current ||
+      !fragmentsRef.current
+    ) {
+      setError("Viewer not initialized properly");
+      console.error(
+        "this is ereor ---***- ",
+        componentsRef.current,
+        worldRef.current,
+        ifcLoaderRef.current,
+        fragmentsRef.current
+      );
+      return;
+    }
+
+    if (!fragmentsRef.current.core) {
+      setError("Fragments core not initialized");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // Clear old models
+      for (const modelId of fragmentsRef.current.list.keys()) {
+        fragmentsRef.current.core.disposeModel(modelId);
+      }
+
+      let buffer: Uint8Array;
+
+      if (typeof file === "string") {
+        const fileBuffer = await loadAndProcessFile(file);
+        buffer = new Uint8Array(fileBuffer);
+      } else {
+        const data = await file.arrayBuffer();
+        buffer = new Uint8Array(data);
+      }
+
+      const modelName = typeof file === "string" ? "sample-model" : file.name;
+      setModelName(modelName);
+      const model = await ifcLoaderRef.current.load(buffer, false, modelName, {
+        processData: {
+          progressCallback: (progress) =>
+            console.log(`Loading progress: ${progress}%`),
+        },
+      });
+
+      modelRef.current = model;
+
+      await fragmentsRef.current.core.update(true);
+
+      // Get the synchro code map
+
+      //console.log("🚀 ~ loadIFC ~ synchroCodeMap:", activities);
+
+      setIsLoading(false);
+    } catch (err: any) {
+      console.error("Failed to load IFC file:", err);
+      setError(err.message || "Failed to load IFC file");
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const initializeViewer = async () => {
+      if (projectsData) {
+        const activities = projectsData.activities.map((ac) => ({
+          ...ac,
+          startDate: new Date(ac.startDate),
+          endDate: new Date(ac.endDate),
+        }));
+        setActivities(activities);
+        await initViewer();
+        await loadIFC(projectsData.ifcFileUrl);
+      }
+    };
+
+    initializeViewer();
+  }, [initViewer, loadIFC, projectsData]);
+
+  const loadAndProcessFile = async (file: File | string) => {
+    let buffer: Uint8Array;
+
+    if (typeof file === "string") {
+      // It's a URL
+      const response = await fetch(file);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch IFC file: ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+
+      // Check if the file is compressed (gz format)
+      if (file.endsWith(".gz") || blob.type === "application/gzip") {
+        // Decompress the file
+        buffer = await decompressFile(blob);
+      } else {
+        const data = await blob.arrayBuffer();
+        buffer = new Uint8Array(data);
+      }
+    } else {
+      // It's a File object
+      if (file.name.endsWith(".gz") || file.type === "application/gzip") {
+        // Decompress the file
+        buffer = await decompressFile(file);
+      } else {
+        const data = await file.arrayBuffer();
+        buffer = new Uint8Array(data);
+      }
+    }
+
+    return buffer;
+  };
+
+  const loadSampleModel = async () => {
+    await loadIFC(
+      "https://thatopen.github.io/engine_components/resources/ifc/school_str.ifc"
+    );
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.name.toLowerCase().endsWith(".ifc")) {
+      loadIFC(file);
+    } else {
+      setError("Please select a valid IFC file");
+    }
+  };
+
+  const getModelIdFromItemId = async (localId: number) => {
+    for (const [modelId, model] of fragmentsRef.current.list) {
+      // Get all items of this model
+      const itemData = await model.getItem(localId);
+      const modelItemId = await itemData.getLocalId();
+      console.log("🚀 ~ getModelIdFromItemId ~ modelItemId:", modelItemId);
+      if (modelItemId == localId) {
+        return modelId; // found the model containing this item
+      }
+    }
+    return null; // not found
+  };
+  const toggleModelVisibility = async (
+    localIds: string[],
+    visible?: boolean
+  ) => {
+    if (!selectedModelIdMap) return;
+
+    const modelIdMap: OBC.ModelIdMap = {};
+
+    modelIdMap[modelName] = new Set(localIds.map((l) => parseInt(l)));
+    console.log("🚀 ~ toggleModelVisibility ~ modelIdMap:", modelIdMap);
+
+    if (visible) {
+      await hiderRef.current?.set(true);
+    } else {
+      await hiderRef.current?.toggle(modelIdMap);
+    }
+  };
+
+  const hideAllItems = async () => {
+    await hiderRef.current?.set(false);
+  };
+
+  const toggleModelIsolated = async (localIds: string[], visible?: boolean) => {
+    if (!selectedModelIdMap) return;
+
+    const modelIdMap: OBC.ModelIdMap = {};
+
+    modelIdMap[modelName] = new Set(localIds.map((l) => parseInt(l)));
+    console.log("🚀 ~ toggleModelVisibility ~ modelIdMap:", modelIdMap);
+    await hiderRef.current?.isolate(modelIdMap);
+  };
+
+  // const formatItemPsets = (rawPsets: FRAG.ItemData[]) => {
+  //   const result: Record<string, Record<string, any>> = {};
+  //   for (const [_, pset] of rawPsets.entries()) {
+  //     const { Name: psetName, HasProperties } = pset;
+  //     if (!("value" in psetName && Array.isArray(HasProperties))) continue;
+  //     const props: Record<string, any> = {};
+  //     for (const [_, prop] of HasProperties.entries()) {
+  //       const { Name, NominalValue } = prop;
+  //       if (!("value" in Name && "value" in NominalValue)) continue;
+  //       const name = Name.value;
+  //       const nominalValue = NominalValue.value;
+  //       if (!(name && nominalValue !== undefined)) continue;
+  //       props[name] = nominalValue;
+  //     }
+  //     result[psetName.value] = props;
+  //   }
+  //   return result;
+  // };
+  // const getItemPropertySets = async (localIds: number[]) => {
+  //   if (!localIds) return null;
+  //   const [data] =
+  //     (await modelRef.current?.getItemsData(localIds, {
+  //       attributesDefault: false,
+  //       attributes: ["Name", "NominalValue"],
+  //       relations: {
+  //         IsDefinedBy: { attributes: true, relations: true },
+  //         DefinesOcurrence: { attributes: false, relations: false },
+  //       },
+  //     })) ?? [];
+  //   return (data.IsDefinedBy as FRAG.ItemData[]) ?? [];
+  // };
+
+  return projectsLoading ? (
+    <Spinner />
+  ) : (
+    <div className="flex w-full h-screen">
+      {/* Left panel */}
+      <ActivitiesPanel
+        setActivities={setActivities}
+        activities={
+          activities?.sort(
+            (a, b) =>
+              (b.linkedModelIds?.length ?? 0) - (a.linkedModelIds?.length ?? 0)
+          ) ?? []
+        }
+        onLink={(ac, modelId) => console.log("thos ", ac, modelId)}
+        getSelectedModelIds={() => selectedModelIds}
+        toggleVisibilty={(localId) => toggleModelVisibility(localId)}
+        isolateItem={(localId) => toggleModelIsolated(localId)}
+        resetIsolated={(localId) => toggleModelVisibility(localId, true)}
+      />
+
+      <div style={{ width: "100%", height: "100vh", position: "relative" }}>
+        <div className="absolute z-10 top-4 left-4">
+          <AutomaticLinkingModal
+            setActivities={setActivities}
+            activities={activities ?? []}
+            modelRef={modelRef}
+          />
+        </div>
+        {/* <input
+          value={search}
+          onChange={async (e) => {
+            var value = e.target.value;
+            setSearch(value);
+            if (spatialTreeRef.current) {
+              spatialTreeRef.current.queryString = value;
+            }
+
+            const data = spatialTreeRef.current?.value;
+            console.log("🚀 ~ data:", data);
+            // //! let get all local ids
+            // var localIds = (await modelRef.current?.getLocalIds()) ?? [];
+
+            // const elementData = await modelRef.current?.getItemsData(localIds, {
+            //   attributesDefault: true,
+            //   relations: {
+            //     HasProperties: { attributes: true, relations: false },
+            //     DefinesOcurrence: { attributes: true, relations: false },
+            //   },
+            // });
+
+            // const testdata = await getItemPropertySets(localIds);
+            // const fromated = await formatItemPsets(testdata!);
+            // const sycnhCode = findSynchroCodes(
+            //   testdata! as unknown as PropertySet[]
+            // );
+
+            if (!elementData) {
+              return;
+            } // Direct attributes are in the main object
+            console.log("Direct attributes:", elementData, testdata);
+            console.log("formated attributes:", fromated);
+            console.log("sycnhoc attributes:", sycnhCode);
+
+            // Property sets are in IsDefinedBy array
+          }}
+          className="absolute h-20 text-white bg-red-400 left-80 top-10 w-200"
+        /> */}
+        {/* 3D Viewer */}
+        <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
+
+        <div className="absolute flex justify-center w-full p-2 overflow-auto rounded-lg shadow-md bottom-5 bg-white/90">
+          <TimelineScheduling
+            activities={activities ?? []}
+            toggleVisibility={(localId) => toggleModelVisibility(localId)}
+            hideAllItems={hideAllItems}
+          />
+        </div>
+        {/* 🔲 Spatial Tree + Properties Panel container */}
+        <div
+          id="ui-panels"
+          className="absolute top-20 right-5 flex flex-col gap-4 bg-white/90 p-2 rounded-lg shadow-md max-h-[80vh] overflow-auto"
+          style={{ width: "300px" }}
+        />
+
+        <div
+          id="properties-panel"
+          className="absolute top-20 left-5 flex flex-col gap-4 bg-white/90 p-2 rounded-lg shadow-md max-h-[80vh] overflow-auto"
+          style={{ width: "300px" }}
+        />
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundColor: "rgba(0,0,0,0.7)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1000,
+            }}
+          >
+            <div style={{ color: "white", fontSize: "24px" }}>Loading...</div>
+          </div>
+        )}
+
+        {/* Error Banner */}
+        {error && (
+          <div
+            style={{
+              position: "absolute",
+              top: "10px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "rgba(255,0,0,0.8)",
+              color: "white",
+              padding: "10px 20px",
+              borderRadius: "5px",
+              zIndex: 1001,
+            }}
+          >
+            Error: {error}
+          </div>
+        )}
+
+        {/* Upload / Load buttons */}
+        <div
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            zIndex: 1000,
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+          }}
+        >
+          <label
+            htmlFor="ifc-upload"
+            style={{
+              backgroundColor: "white",
+              padding: "10px",
+              borderRadius: "5px",
+              cursor: "pointer",
+              textAlign: "center",
+            }}
+          >
+            Upload IFC
+          </label>
+          <input
+            id="ifc-upload"
+            type="file"
+            accept=".ifc"
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
+          <button
+            onClick={loadSampleModel}
+            style={{
+              backgroundColor: "white",
+              padding: "10px",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Load Sample Model
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default IFCViewer;
