@@ -13,8 +13,21 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "require-corp",
+    },
+  },
+  optimizeDeps: {
+    exclude: ["web-ifc"],
   },
   define: {
     global: "window", // 👈 polyfill global
   },
+
+  build: {
+    target: "es2020",
+    assetsInlineLimit: 0, // ← This is important!
+  },
+  assetsInclude: ["**/*.wasm"], // ← Include WASM as assets
 });
