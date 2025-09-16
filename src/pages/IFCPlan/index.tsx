@@ -90,22 +90,24 @@ const IFCViewer = () => {
       await ifcLoader.setup({
         autoSetWasm: false,
         wasm: {
-          path: "https://unpkg.com/web-ifc@0.0.70/",
-          absolute: true,
+          path: "/wasm/",
+          absolute: false,
         },
       });
       ifcLoaderRef.current = ifcLoader;
 
       // Fragments
       const fragments = components.get(OBC.FragmentsManager);
-      const response = await fetch(
-        "https://thatopen.github.io/engine_fragment/resources/worker.mjs"
+      // const response = await fetch(
+      //   "https://thatopen.github.io/engine_fragment/resources/worker.mjs"
+      // );
+      // const workerBlob = await response.blob();
+      // const workerFile = new File([workerBlob], "worker.mjs", {
+      //   type: "text/javascript",
+      // });
+      fragments.init(
+        "/node_modules/@thatopen/fragments/dist/Worker/worker.mjs"
       );
-      const workerBlob = await response.blob();
-      const workerFile = new File([workerBlob], "worker.mjs", {
-        type: "text/javascript",
-      });
-      fragments.init(URL.createObjectURL(workerFile));
       fragmentsRef.current = fragments;
 
       // Camera + Fragments sync
