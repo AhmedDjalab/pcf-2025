@@ -27,7 +27,7 @@ export default defineConfig({
 
   build: {
     target: "es2020",
-    assetsInlineLimit: 0, // ← This is important!
+    assetsInlineLimit: 0, 
   },
-  assetsInclude: ["**/*.wasm"], // ← Include WASM as assets
+  assetsInclude: ["**/*.wasm"], 
 });
