@@ -105,9 +105,16 @@ const IFCViewer = () => {
       // const workerFile = new File([workerBlob], "worker.mjs", {
       //   type: "text/javascript",
       // });
-      fragments.init(
-        "/node_modules/@thatopen/fragments/dist/Worker/worker.mjs"
+      //const fragments = components.get(OBC.FragmentsManager);
+      const response = await fetch(
+        "https://thatopen.github.io/engine_fragment/resources/worker.mjs"
       );
+      const workerBlob = await response.blob();
+      const workerFile = new File([workerBlob], "worker.mjs", {
+        type: "text/javascript",
+      });
+      fragments.init(URL.createObjectURL(workerFile));
+
       fragmentsRef.current = fragments;
 
       // Camera + Fragments sync
