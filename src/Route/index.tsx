@@ -40,7 +40,7 @@ const AppRoutes = () => {
         <Route path="/graph/:id" element={<DrawGraphStep />} />
         <Route path="/view-graph/:id" element={<ViewGraph />} />
         <Route path="/view-plan/:id" element={<PlanView />} />
-        <Route path="/3dmodel" element={<IFCViewer />} />
+        {/* <Route path="/3dmodel" element={<IFCViewer />} /> */}
         <Route path="/view-bim/:id" element={<IFCViewer />} />
 
         <Route path="/error" element={<ErrorPage />} />

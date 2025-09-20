@@ -91,21 +91,25 @@ const IFCViewer = () => {
         autoSetWasm: false,
         wasm: {
           path: "/wasm/",
-          absolute: false,
+          absolute: true,
         },
       });
+
+      if (ifcLoader.webIfc && ifcLoader.webIfc.wasmModule) {
+        // Try to override the worker URL
+        const originalWorkerPath = ifcLoader.webIfc.wasmModule.workerPath;
+        ifcLoader.webIfc.wasmModule.workerPath = "/wasm/web-ifc-mt.worker.js";
+        console.log(
+          "Worker path overridden from",
+          originalWorkerPath,
+          "to",
+          ifcLoader.webIfc.wasmModule.workerPath
+        );
+      }
       ifcLoaderRef.current = ifcLoader;
 
       // Fragments
       const fragments = components.get(OBC.FragmentsManager);
-      // const response = await fetch(
-      //   "https://thatopen.github.io/engine_fragment/resources/worker.mjs"
-      // );
-      // const workerBlob = await response.blob();
-      // const workerFile = new File([workerBlob], "worker.mjs", {
-      //   type: "text/javascript",
-      // });
-      //const fragments = components.get(OBC.FragmentsManager);
       const response = await fetch(
         "https://thatopen.github.io/engine_fragment/resources/worker.mjs"
       );
@@ -113,6 +117,14 @@ const IFCViewer = () => {
       const workerFile = new File([workerBlob], "worker.mjs", {
         type: "text/javascript",
       });
+      //const fragments = components.get(OBC.FragmentsManager);
+      // const response = await fetch(
+      //   "https://thatopen.github.io/engine_fragment/resources/worker.mjs"
+      // );
+      // const workerBlob = await response.blob();
+      // const workerFile = new File([workerBlob], "worker.mjs", {
+      //   type: "text/javascript",
+      // });
       fragments.init(URL.createObjectURL(workerFile));
 
       fragmentsRef.current = fragments;

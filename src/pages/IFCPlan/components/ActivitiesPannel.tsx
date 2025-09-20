@@ -629,14 +629,18 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
       alert("Please select model elements first in the 3D viewer.");
       return;
     }
+    console.log("🚀 ~ handleLink ~ selectedIds:", selectedIds, uid);
 
     setActivities((prev) =>
       prev.map((activity) =>
-        activity.uid === uid
+        activity.activityUID === uid
           ? {
               ...activity,
               linkedModelIds: [
-                ...new Set([...activity.linkedModelIds, ...selectedIds]),
+                ...new Set([
+                  ...(activity.linkedModelIds ?? []),
+                  ...selectedIds,
+                ]),
               ],
             }
           : activity
