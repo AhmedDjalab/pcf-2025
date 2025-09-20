@@ -39,6 +39,7 @@ const IFCViewer = () => {
   const spatialTreeRef = useRef<BUI.Table<any> | null>(null);
   const ifcLoaderRef = useRef<OBC.IfcLoader | null>(null);
   const hiderRef = useRef<OBC.Hider>();
+  const highlighterRef = useRef<OBCF.Highlighter>();
   const [activities, setActivities] = useState<ActivityModel[]>();
   const modelRef = useRef<FRAG.FragmentsModel | null>(null);
   const fragmentsRef = useRef<OBC.FragmentsManager | null>(null);
@@ -188,7 +189,10 @@ const IFCViewer = () => {
       world.renderer.onBeforeUpdate.add(() => stats.begin());
       world.renderer.onAfterUpdate.add(() => stats.end());
       const highlighter = components.get(OBCF.Highlighter);
-      highlighter.setup({ world });
+      highlighter.setup({
+        world,
+      });
+      highlighterRef.current = highlighter;
       let selectedFragmentIdMap: Record<string, number[]> = {};
       let hiddenElements = new Set<string>();
       highlighter.events.select.onHighlight.add(
@@ -212,6 +216,7 @@ const IFCViewer = () => {
 
         //  hider.set(true);
       });
+
       // Load sample model
       // loadSampleModel();
       setIsLoading(false);
@@ -221,6 +226,165 @@ const IFCViewer = () => {
       setIsLoading(false);
     }
   }, [html]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+
+    if (!container) return;
+
+    let start: THREE.Vector2 | null = null;
+
+    let box: HTMLDivElement | null = null;
+
+    const onPointerDown = (event: PointerEvent) => {
+      // Require Left Mouse Button + Shift key
+
+      if (event.button !== 0 || !event.shiftKey || !worldRef.current) return;
+
+      const rect = container.getBoundingClientRect();
+
+      start = new THREE.Vector2(
+        event.clientX - rect.left,
+        event.clientY - rect.top
+      );
+
+      box = document.createElement("div");
+
+      box.className = "selection-box";
+
+      box.style.left = `${start.x}px`;
+
+      box.style.top = `${start.y}px`;
+
+      container.appendChild(box);
+
+      worldRef.current.camera.controls.enabled = false;
+
+      window.addEventListener("pointermove", onPointerMove);
+
+      window.addEventListener("pointerup", onPointerUp);
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!start || !box) return;
+
+      const rect = container.getBoundingClientRect();
+
+      const current = new THREE.Vector2(
+        event.clientX - rect.left,
+        event.clientY - rect.top
+      );
+
+      const minX = Math.min(start.x, current.x);
+
+      const minY = Math.min(start.y, current.y);
+
+      const width = Math.abs(start.x - current.x);
+
+      const height = Math.abs(start.y - current.y);
+
+      box.style.left = `${minX}px`;
+
+      box.style.top = `${minY}px`;
+
+      box.style.width = `${width}px`;
+
+      box.style.height = `${height}px`;
+    };
+
+    const onPointerUp = async (event: PointerEvent) => {
+      window.removeEventListener("pointermove", onPointerMove);
+
+      window.removeEventListener("pointerup", onPointerUp);
+
+      worldRef.current && (worldRef.current.camera.controls.enabled = true);
+
+      if (
+        !start ||
+        !box ||
+        !worldRef.current ||
+        !fragmentsRef.current ||
+        !highlighterRef.current
+      ) {
+        box?.remove();
+
+        start = null;
+
+        box = null;
+
+        return;
+      }
+
+      const rect = container.getBoundingClientRect();
+
+      const end = new THREE.Vector2(
+        event.clientX - rect.left,
+        event.clientY - rect.top
+      );
+
+      const topLeft = new THREE.Vector2(
+        Math.min(start.x, end.x),
+        Math.min(start.y, end.y)
+      );
+
+      const bottomRight = new THREE.Vector2(
+        Math.max(start.x, end.x),
+        Math.max(start.y, end.y)
+      );
+
+      box.remove();
+
+      start = null;
+
+      box = null;
+
+      const modelIdMap: OBC.ModelIdMap = {};
+
+      for (const [, model] of fragmentsRef.current.list) {
+        const res = await model.rectangleRaycast({
+          camera: worldRef.current.camera.three,
+
+          dom: worldRef.current.renderer.three.domElement,
+
+          topLeft,
+
+          bottomRight,
+
+          fullyIncluded: true,
+        });
+
+        if (res && res.localIds.length) {
+          modelIdMap[model.modelId] = new Set(res.localIds);
+        }
+      }
+
+      if (Object.keys(modelIdMap).length) {
+        await highlighterRef.current.highlightByID(
+          highlighterRef.current.config.selectName,
+
+          modelIdMap,
+
+          true,
+
+          false
+        );
+      } else {
+        await highlighterRef.current.clear(
+          highlighterRef.current.config.selectName
+        );
+      }
+    };
+
+    container.addEventListener("pointerdown", onPointerDown);
+
+    return () => {
+      container.removeEventListener("pointerdown", onPointerDown);
+
+      window.removeEventListener("pointermove", onPointerMove);
+
+      window.removeEventListener("pointerup", onPointerUp);
+    };
+  }, []);
   // useEffect(() => {
   //   if (!containerRef.current) return;
 

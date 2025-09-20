@@ -9,10 +9,18 @@
 
 @layer base {
   body {
-    @apply font-satoshi font-normal;
+    @apply font-normal font-satoshi;
   }
 }
 
+
+.selection-box {
+  position: absolute;
+  background: rgba(0, 120, 255, 0.1);
+  border: 1px solid rgba(0, 120, 255, 0.5);
+  pointer-events: none;
+  z-index: 10;
+}
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
