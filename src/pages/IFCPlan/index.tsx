@@ -21,16 +21,6 @@ import Spinner from "src/components/Spinner";
 import { data } from "autoprefixer";
 import { decompressFile } from "src/utils/fileCompresser";
 
-// export interface Activity {
-//   uid: string;
-//   name: string;
-//   activityId: string;
-//   startDate: Date;
-//   endDate: Date;
-//   startPk: number;
-//   endPk: number;
-//   linkedModelIds: string[];
-// }
 const IFCViewer = () => {
   const { id } = useParams();
   const containerRef = useRef<HTMLDivElement | null>(null);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import {
   Eye,
@@ -8,6 +8,7 @@ import {
   Link,
   Calendar,
   Clock,
+  Search,
 } from "lucide-react";
 
 import moment from "moment";
@@ -598,17 +599,38 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
   setActivities,
 }) => {
   console.log("🚀 ~ ActivitiesPanel ~ activities:", activities);
-  //const [activities, setActivities] = useState<Activity[]>(ACTIVI);
 
   const [visibilityState, setVisibilityState] = useState<{
     [key: string]: boolean;
   }>({});
   const [isolatedActivity, setIsolatedActivity] = useState<string | null>(null);
+  const [searchFilters, setSearchFilters] = useState({
+    activityId: "",
+    activityUID: "",
+  });
+
+  // Filter activities based on search criteria
+  const filteredActivities = useMemo(() => {
+    return activities.filter((activity) => {
+      const matchesId =
+        searchFilters.activityId === "" ||
+        activity.activityId
+          .toLowerCase()
+          .includes(searchFilters.activityId.toLowerCase());
+
+      const matchesUID =
+        searchFilters.activityUID === "" ||
+        (activity.activityUID &&
+          activity.activityUID
+            .toLowerCase()
+            .includes(searchFilters.activityUID.toLowerCase()));
+
+      return matchesId && matchesUID;
+    });
+  }, [activities, searchFilters]);
 
   const formatDate = (date: string | Date): string => {
-    // Convert string to Date object if it's a string
     const dateObj = typeof date === "string" ? new Date(date) : date;
-
     return dateObj.toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -617,10 +639,19 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
   };
 
   const getDuration = (startDate: Date, endDate: Date) => {
-    console.log("🚀 ~ getDuration ~ startDate:", typeof startDate);
     const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return `${diffDays} days`;
+  };
+
+  const handleSearchFilterChange = (
+    filterType: "activityId" | "activityUID",
+    value: string
+  ) => {
+    setSearchFilters((prev) => ({
+      ...prev,
+      [filterType]: value,
+    }));
   };
 
   const handleLink = (uid: string) => {
@@ -629,7 +660,6 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
       alert("Please select model elements first in the 3D viewer.");
       return;
     }
-    console.log("🚀 ~ handleLink ~ selectedIds:", selectedIds, uid);
 
     setActivities((prev) =>
       prev.map((activity) =>
@@ -705,130 +735,178 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
         )}
       </div>
 
+      {/* Search Filters */}
+      <div className="p-4 space-y-3 border-b border-gray-200 bg-gray-50">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700">
+            Search by Activity ID
+          </label>
+          <div className="relative">
+            <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="text"
+              placeholder="Filter by Activity ID..."
+              value={searchFilters.activityId}
+              onChange={(e) =>
+                handleSearchFilterChange("activityId", e.target.value)
+              }
+              className="w-full py-2 pl-10 pr-3 transition-colors border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700">
+            Search by Activity UID
+          </label>
+          <div className="relative">
+            <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="text"
+              placeholder="Filter by Activity UID..."
+              value={searchFilters.activityUID}
+              onChange={(e) =>
+                handleSearchFilterChange("activityUID", e.target.value)
+              }
+              className="w-full py-2 pl-10 pr-3 transition-colors border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Activities List */}
       <div className="flex-1 p-4 overflow-auto">
-        <div className="space-y-3">
-          {activities.map((activity) => (
-            <div
-              key={activity.activityUID}
-              className={`border rounded-lg p-4 transition-all duration-200 ${
-                isolatedActivity === activity.activityUID
-                  ? "border-orange-300 bg-orange-50"
-                  : isolatedActivity &&
-                    isolatedActivity !== activity.activityUID
-                  ? "border-gray-200 bg-gray-50 opacity-60"
-                  : "border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm"
-              }`}
-            >
-              {/* Activity Header */}
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <h3 className="mb-1 font-medium text-gray-800">
-                    {activity.name}
-                  </h3>
-                  <div className="space-y-1 text-xs text-gray-500">
-                    <div>ID: {activity.activityId}</div>
-                    <div>UID: {activity.activityUID}</div>
+        {filteredActivities.length === 0 ? (
+          <div className="py-8 text-center text-gray-500">
+            <Search className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+            <p>No activities found matching your search criteria</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredActivities.map((activity) => (
+              <div
+                key={activity.activityUID}
+                className={`border rounded-lg p-4 transition-all duration-200 ${
+                  isolatedActivity === activity.activityUID
+                    ? "border-orange-300 bg-orange-50"
+                    : isolatedActivity &&
+                      isolatedActivity !== activity.activityUID
+                    ? "border-gray-200 bg-gray-50 opacity-60"
+                    : "border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm"
+                }`}
+              >
+                {/* Activity Header */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="mb-1 font-medium text-gray-800">
+                      {activity.name}
+                    </h3>
+                    <div className="space-y-1 text-xs text-gray-500">
+                      <div>ID: {activity.activityId}</div>
+                      <div>UID: {activity.activityUID}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Date Range */}
-              <div className="p-2 mb-3 text-sm rounded bg-gray-50">
-                <div className="flex items-center gap-2 mb-1 text-gray-600">
-                  <Clock className="w-3 h-3" />
-                  <span className="font-medium">Timeline</span>
-                </div>
-                <div className="text-gray-700">
-                  {formatDate(activity.startDate)} →{" "}
-                  {formatDate(activity.endDate)}
-                </div>
-                <div className="mt-1 text-xs text-gray-500">
-                  Duration: {getDuration(activity.startDate, activity.endDate)}{" "}
-                  | PK: {activity.startPk}-{activity.endPk}
-                </div>
-              </div>
-
-              {/* Linked Models Status */}
-              <div className="mb-3">
-                {(activity?.linkedModelIds?.length ?? 0) > 0 ? (
-                  <div className="flex items-center gap-2 text-sm text-green-600">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    Linked to {activity.linkedModelIds?.length} model element
-                    {activity.linkedModelIds?.length !== 1 ? "s" : ""}
+                {/* Date Range */}
+                <div className="p-2 mb-3 text-sm rounded bg-gray-50">
+                  <div className="flex items-center gap-2 mb-1 text-gray-600">
+                    <Clock className="w-3 h-3" />
+                    <span className="font-medium">Timeline</span>
                   </div>
-                ) : (
-                  <div className="flex items-center gap-2 text-sm text-gray-400">
-                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                    No linked elements
+                  <div className="text-gray-700">
+                    {formatDate(activity.startDate)} →{" "}
+                    {formatDate(activity.endDate)}
                   </div>
-                )}
-              </div>
+                  <div className="mt-1 text-xs text-gray-500">
+                    Duration:{" "}
+                    {getDuration(activity.startDate, activity.endDate)} | PK:{" "}
+                    {activity.startPk}-{activity.endPk}
+                  </div>
+                </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-2">
-                {/* Link Button */}
-                <button
-                  onClick={() => handleLink(activity.activityUID!)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors"
-                  title="Link Selected Elements"
-                >
-                  <Link className="w-3 h-3" />
-                  Link
-                </button>
-
-                {/* Toggle Visibility Button */}
-                <button
-                  onClick={() => handleToggleVisibility(activity)}
-                  disabled={activity.linkedModelIds?.length === 0}
-                  className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-colors ${
-                    activity.linkedModelIds?.length === 0
-                      ? "text-gray-400 bg-gray-100 cursor-not-allowed"
-                      : visibilityState[activity.activityUID!]
-                      ? "text-white bg-gray-600 hover:bg-gray-700"
-                      : "text-white bg-green-500 hover:bg-green-600"
-                  }`}
-                  title={
-                    visibilityState[activity.activityUID!]
-                      ? "Show Elements"
-                      : "Hide Elements"
-                  }
-                >
-                  {visibilityState[activity.activityUID!] ? (
-                    <EyeOff className="w-3 h-3" />
+                {/* Linked Models Status */}
+                <div className="mb-3">
+                  {(activity?.linkedModelIds?.length ?? 0) > 0 ? (
+                    <div className="flex items-center gap-2 text-sm text-green-600">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      Linked to {activity.linkedModelIds?.length} model element
+                      {activity.linkedModelIds?.length !== 1 ? "s" : ""}
+                    </div>
                   ) : (
-                    <Eye className="w-3 h-3" />
+                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                      No linked elements
+                    </div>
                   )}
-                  {visibilityState[activity.activityUID!] ? "Show" : "Hide"}
-                </button>
+                </div>
 
-                {/* Isolate Button */}
-                <button
-                  onClick={() => handleIsolateItem(activity)}
-                  disabled={
-                    activity.linkedModelIds?.length === 0 ||
-                    isolatedActivity === activity.activityUID
-                  }
-                  className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-colors ${
-                    activity.linkedModelIds?.length === 0 ||
-                    isolatedActivity === activity.activityUID
-                      ? "text-gray-400 bg-gray-100 cursor-not-allowed"
-                      : "text-white bg-purple-500 hover:bg-purple-600"
-                  }`}
-                  title="Isolate Elements"
-                >
-                  <Focus className="w-3 h-3" />
-                  Isolate
-                </button>
+                {/* Action Buttons */}
+                <div className="flex flex-wrap gap-2">
+                  {/* Link Button */}
+                  <button
+                    onClick={() => handleLink(activity.activityUID!)}
+                    className="flex items-center gap-1 px-3 py-1.5 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors"
+                    title="Link Selected Elements"
+                  >
+                    <Link className="w-3 h-3" />
+                    Link
+                  </button>
+
+                  {/* Toggle Visibility Button */}
+                  <button
+                    onClick={() => handleToggleVisibility(activity)}
+                    disabled={activity.linkedModelIds?.length === 0}
+                    className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-colors ${
+                      activity.linkedModelIds?.length === 0
+                        ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                        : visibilityState[activity.activityUID!]
+                        ? "text-white bg-gray-600 hover:bg-gray-700"
+                        : "text-white bg-green-500 hover:bg-green-600"
+                    }`}
+                    title={
+                      visibilityState[activity.activityUID!]
+                        ? "Show Elements"
+                        : "Hide Elements"
+                    }
+                  >
+                    {visibilityState[activity.activityUID!] ? (
+                      <EyeOff className="w-3 h-3" />
+                    ) : (
+                      <Eye className="w-3 h-3" />
+                    )}
+                    {visibilityState[activity.activityUID!] ? "Show" : "Hide"}
+                  </button>
+
+                  {/* Isolate Button */}
+                  <button
+                    onClick={() => handleIsolateItem(activity)}
+                    disabled={
+                      activity.linkedModelIds?.length === 0 ||
+                      isolatedActivity === activity.activityUID
+                    }
+                    className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-colors ${
+                      activity.linkedModelIds?.length === 0 ||
+                      isolatedActivity === activity.activityUID
+                        ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                        : "text-white bg-purple-500 hover:bg-purple-600"
+                    }`}
+                    title="Isolate Elements"
+                  >
+                    <Focus className="w-3 h-3" />
+                    Isolate
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Footer Info */}
       <div className="p-4 text-xs text-gray-500 border-t border-gray-200 bg-gray-50">
         <div>Total Activities: {activities.length}</div>
+        <div>Filtered Activities: {filteredActivities.length}</div>
         <div>
           Linked Activities:{" "}
           {activities.filter((a) => (a.linkedModelIds?.length ?? 0) > 0).length}
