@@ -15,7 +15,7 @@ import TimelineScheduling from "./components/TimelineScheduling";
 import AutomaticLinkingModal from "./components/AutomaticLinkingModal";
 import { ActivityModel } from "src/types/Project";
 import { useQuery } from "@tanstack/react-query";
-import { getBim } from "src/Services/BimService";
+import { BimDataModel, getBim, saveBimData } from "src/Services/BimService";
 import { useParams } from "react-router-dom";
 import Spinner from "src/components/Spinner";
 import { data } from "autoprefixer";
@@ -226,7 +226,6 @@ const IFCViewer = () => {
       setIsLoading(false);
     }
   }, [html]);
-
   useEffect(() => {
     const container = containerRef.current;
 
@@ -240,7 +239,8 @@ const IFCViewer = () => {
       // Require Left Mouse Button + Shift key
 
       if (event.button !== 0 || !event.shiftKey || !worldRef.current) return;
-
+      event.preventDefault();
+      event.stopImmediatePropagation();
       const rect = container.getBoundingClientRect();
 
       start = new THREE.Vector2(
@@ -267,7 +267,8 @@ const IFCViewer = () => {
 
     const onPointerMove = (event: PointerEvent) => {
       if (!start || !box) return;
-
+      event.preventDefault();
+      event.stopImmediatePropagation();
       const rect = container.getBoundingClientRect();
 
       const current = new THREE.Vector2(
@@ -385,6 +386,7 @@ const IFCViewer = () => {
       window.removeEventListener("pointerup", onPointerUp);
     };
   }, []);
+
   // useEffect(() => {
   //   if (!containerRef.current) return;
 
@@ -587,6 +589,25 @@ const IFCViewer = () => {
     console.log("🚀 ~ toggleModelVisibility ~ modelIdMap:", modelIdMap);
     await hiderRef.current?.isolate(modelIdMap);
   };
+  const handleSaveBimData = () => {
+    const activitiesWithLinkedModel: BimDataModel[] =
+      activities
+        ?.filter((a) => a.linkedModelIds && a.linkedModelIds.length > 0) // keep only activities with linked models
+        .map((a) => ({
+          linkedModelIds: a.linkedModelIds,
+          activityId: a.id,
+        })) ?? [];
+
+    console.log(
+      "🚀 ~ handleSaveBimData ~ activitiesWithLinkedModel:",
+      activitiesWithLinkedModel
+    );
+
+    saveBimData({
+      projectId: id,
+      activityBimLinkeds: activitiesWithLinkedModel,
+    });
+  };
 
   // const formatItemPsets = (rawPsets: FRAG.ItemData[]) => {
   //   const result: Record<string, Record<string, any>> = {};
@@ -757,35 +778,11 @@ const IFCViewer = () => {
             gap: "10px",
           }}
         >
-          <label
-            htmlFor="ifc-upload"
-            style={{
-              backgroundColor: "white",
-              padding: "10px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              textAlign: "center",
-            }}
-          >
-            Upload IFC
-          </label>
-          <input
-            id="ifc-upload"
-            type="file"
-            accept=".ifc"
-            style={{ display: "none" }}
-            onChange={handleFileChange}
-          />
           <button
-            onClick={loadSampleModel}
-            style={{
-              backgroundColor: "white",
-              padding: "10px",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
+            onClick={handleSaveBimData}
+            className="bg-primary hover:bg-primary-500 text-white w-40 p-4"
           >
-            Load Sample Model
+            Save
           </button>
         </div>
       </div>

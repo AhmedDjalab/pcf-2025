@@ -23,6 +23,7 @@ export interface PaginatingParmas {
   orderAsc?: boolean;
   activityId?: string;
 }
+
 export async function getBim({
   fromvalue = 0,
   takevalue = 10,
@@ -42,5 +43,28 @@ export async function getBim({
     return data as BimResponse;
   } catch (ex: any) {
     // console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
+  }
+}
+
+export interface BimDataModel {
+  activityId: string;
+  linkedModelIds?: string[];
+}
+
+export interface SavedBimDataModel {
+  activityBimLinkeds: BimDataModel[];
+  projectId: string;
+}
+
+export async function saveBimData(bimData: SavedBimDataModel) {
+  try {
+    const body = { ...bimData };
+    const response = await api.post(BimUrl + "/post", body);
+    return response;
+  } catch (error) {
+    // console.log(
+    //   "🚀 ~ file: CompanyService.ts:83 ~ saveCompany ~ error:",
+    //   error
+    // );
   }
 }
