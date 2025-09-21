@@ -655,23 +655,39 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
   };
 
   const handleLink = (uid: string) => {
+    // Find the current activity to check its current linked state
+    const currentActivity = activities.find((a) => a.activityUID === uid);
+    const hasExistingLinks = (currentActivity?.linkedModelIds ?? []).length > 0;
+
+    // If there are existing links, we can clear them without needing selected elements
+    if (hasExistingLinks) {
+      setActivities((prev) =>
+        prev.map((activity) =>
+          activity.activityUID === uid
+            ? {
+                ...activity,
+                linkedModelIds: [],
+              }
+            : activity
+        )
+      );
+      return; // Exit early, no need to call onLink
+    }
+
+    // Only check for selected elements when we want to add new links
     const selectedIds = getSelectedModelIds();
     if (selectedIds.length === 0) {
       alert("Please select model elements first in the 3D viewer.");
       return;
     }
 
+    // Add new links
     setActivities((prev) =>
       prev.map((activity) =>
         activity.activityUID === uid
           ? {
               ...activity,
-              linkedModelIds: [
-                ...new Set([
-                  ...(activity.linkedModelIds ?? []),
-                  ...selectedIds,
-                ]),
-              ],
+              linkedModelIds: [...selectedIds],
             }
           : activity
       )
