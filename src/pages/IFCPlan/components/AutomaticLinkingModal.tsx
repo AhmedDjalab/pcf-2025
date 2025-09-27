@@ -59,7 +59,7 @@ const AutomaticLinkingModal = ({
 
         results.push({
           localId: pset._localId.value,
-          synchroCode: synchroProperty.NominalValue.value.split(".")[1],
+          synchroCode: synchroProperty.NominalValue.value,
           propertySetName: pset.Name.value,
         });
       }
@@ -123,6 +123,7 @@ const AutomaticLinkingModal = ({
 
         // Find matching local IDs for this activity's synchro code
         const matchingLocalIds = synchroCodeMap[activitySynchroCode] || [];
+
         const matchingLocalIdsStrings = matchingLocalIds.map((e) =>
           e.toString()
         );

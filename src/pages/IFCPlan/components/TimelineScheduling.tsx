@@ -217,7 +217,9 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
       hideAllItems();
     }
     setShownActivities(new Set());
-
+    if (showAllItems) {
+      showAllItems();
+    }
     // Scroll to beginning
     if (timelineRef.current) {
       timelineRef.current.scrollTo({ left: 0, behavior: "smooth" });
