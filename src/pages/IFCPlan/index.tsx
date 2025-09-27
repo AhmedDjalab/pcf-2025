@@ -455,7 +455,21 @@ const IFCViewer = () => {
       });
 
       modelRef.current = model;
+      // const fragmentsManager = componentsRef.current.get(OBC.FragmentsManager);
 
+      // // Get modelIdMap for a specific model
+      // const modeltest = fragmentsManager.groups.get(model.modelId);
+      // if (modeltest) {
+      //   const modeltestIdMap = model.meshIdMap;
+      //   console.log("Model ID Map:", modelIdMap);
+
+      //   // Convert to the format you need
+      //   const fragmentIdStrings: string[] = Object.values(
+      //     modeltestIdMap
+      //   ).flatMap((set) => Array.from(set, (id) => id.toString()));
+      //   setSelectedModelIds(fragmentIdStrings);
+      //   setSelectedModelIdMap(modeltestIdMap);
+      // }
       await fragmentsRef.current.core.update(true);
 
       // Get the synchro code map
@@ -477,6 +491,7 @@ const IFCViewer = () => {
           ...ac,
           startDate: new Date(ac.startDate),
           endDate: new Date(ac.endDate),
+          persistAfterEnd: ac.persistAfterEnd,
         }));
         setActivities(activities);
         await initViewer();
@@ -552,22 +567,26 @@ const IFCViewer = () => {
     localIds: string[],
     visible?: boolean
   ) => {
-    if (!selectedModelIdMap) return;
-
     const modelIdMap: OBC.ModelIdMap = {};
-
     modelIdMap[modelName] = new Set(localIds.map((l) => parseInt(l)));
-    console.log("🚀 ~ toggleModelVisibility ~ modelIdMap:", modelIdMap);
 
-    if (visible) {
-      await hiderRef.current?.set(true);
+    if (visible === true) {
+      // Show specific items
+      await hiderRef.current?.show(modelIdMap);
+    } else if (visible === false) {
+      // Hide specific items
+      await hiderRef.current?.hide(modelIdMap);
     } else {
+      // Toggle if no visibility specified
       await hiderRef.current?.toggle(modelIdMap);
     }
   };
 
   const hideAllItems = async () => {
     await hiderRef.current?.set(false);
+  };
+  const showAllItems = async () => {
+    await hiderRef.current?.set(true);
   };
 
   const toggleModelIsolated = async (localIds: string[], visible?: boolean) => {
@@ -586,6 +605,7 @@ const IFCViewer = () => {
         .map((a) => ({
           linkedModelIds: a.linkedModelIds,
           activityId: a.id,
+          persistAfterEnd: a.persistAfterEnd,
         })) ?? [];
 
     console.log(
@@ -706,6 +726,7 @@ const IFCViewer = () => {
             activities={activities ?? []}
             toggleVisibility={(localId) => toggleModelVisibility(localId)}
             hideAllItems={hideAllItems}
+            showAllItems={showAllItems}
           />
         </div>
         {/* 🔲 Spatial Tree + Properties Panel container */}
@@ -770,7 +791,7 @@ const IFCViewer = () => {
         >
           <button
             onClick={handleSaveBimData}
-            className="bg-primary hover:bg-primary-500 text-white w-40 p-4"
+            className="w-40 p-4 text-white bg-primary hover:bg-primary-500"
           >
             Save
           </button>

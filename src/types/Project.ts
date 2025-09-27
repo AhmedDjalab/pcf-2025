@@ -51,6 +51,7 @@ export interface ActivityModel {
   productionRate?: number;
   workShops?: number;
   linkedModelIds?: string[];
+  persistAfterEnd?: boolean;
 }
 
 export interface ActivityStyleModel {

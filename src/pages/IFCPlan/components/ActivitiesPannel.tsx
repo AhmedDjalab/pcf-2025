@@ -9,6 +9,8 @@ import {
   Calendar,
   Clock,
   Search,
+  ToggleLeft,
+  ToggleRight,
 } from "lucide-react";
 
 import moment from "moment";
@@ -654,6 +656,20 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
     }));
   };
 
+  // Toggle timeline visibility for an activity
+  const handleToggleTimelineVisibility = (activityUID: string) => {
+    setActivities((prev) =>
+      prev.map((activity) =>
+        activity.activityUID === activityUID
+          ? {
+              ...activity,
+              persistAfterEnd: !activity.persistAfterEnd,
+            }
+          : activity
+      )
+    );
+  };
+
   const handleLink = (uid: string) => {
     // Find the current activity to check its current linked state
     const currentActivity = activities.find((a) => a.activityUID === uid);
@@ -814,12 +830,49 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                 {/* Activity Header */}
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
-                    <h3 className="mb-1 font-medium text-gray-800">
+                    <h3 className="mb-1 font-medium text-gray-800 max-w-30 text-md">
                       {activity.name}
                     </h3>
                     <div className="space-y-1 text-xs text-gray-500">
                       <div>ID: {activity.activityId}</div>
                       <div>UID: {activity.activityUID}</div>
+                    </div>
+                  </div>
+
+                  {/* Timeline Visibility Toggle */}
+                  <div className="flex flex-col items-end gap-2">
+                    <button
+                      onClick={() =>
+                        handleToggleTimelineVisibility(activity.activityUID!)
+                      }
+                      className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
+                        activity.persistAfterEnd
+                          ? "text-green-600 bg-green-50 hover:bg-green-100"
+                          : "text-gray-500 bg-gray-50 hover:bg-gray-100"
+                      }`}
+                      title={
+                        activity.persistAfterEnd
+                          ? "Persist After EndDate"
+                          : "Hide After EndDate"
+                      }
+                    >
+                      {activity.persistAfterEnd ? (
+                        <ToggleRight className="w-4 h-4 text-green-500" />
+                      ) : (
+                        <ToggleLeft className="w-4 h-4 text-gray-400" />
+                      )}
+                      Persist
+                    </button>
+
+                    {/* Timeline Status Badge */}
+                    <div
+                      className={`text-xs px-2 py-1 rounded ${
+                        activity.persistAfterEnd
+                          ? "bg-green-100 text-green-700"
+                          : "bg-gray-100 text-gray-500"
+                      }`}
+                    >
+                      {activity.persistAfterEnd ? "Visible" : "Hidden"}
                     </div>
                   </div>
                 </div>
@@ -828,7 +881,7 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                 <div className="p-2 mb-3 text-sm rounded bg-gray-50">
                   <div className="flex items-center gap-2 mb-1 text-gray-600">
                     <Clock className="w-3 h-3" />
-                    <span className="font-medium">Timeline</span>
+                    <span className="font-medium">Persist</span>
                   </div>
                   <div className="text-gray-700">
                     {formatDate(activity.startDate)} →{" "}
@@ -926,6 +979,10 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
         <div>
           Linked Activities:{" "}
           {activities.filter((a) => (a.linkedModelIds?.length ?? 0) > 0).length}
+        </div>
+        <div>
+          Not Persisted Activities:
+          {activities.filter((a) => !a.persistAfterEnd).length}
         </div>
         {isolatedActivity && (
           <div className="mt-1 text-orange-600">

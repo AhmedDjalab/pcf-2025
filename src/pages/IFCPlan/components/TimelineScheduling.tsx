@@ -20,12 +20,14 @@ interface TimelineSchedulingProps {
   activities: ActivityModel[];
   toggleVisibility: (modelIds: string[]) => void;
   hideAllItems?: () => void;
+  showAllItems?: () => void;
 }
 
 const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
   activities,
   toggleVisibility,
   hideAllItems,
+  showAllItems,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -72,40 +74,100 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
     }
   }, [hideAllItems, isPlaying]);
 
-  // Incremental visibility: only show new activities when they start (one by one building effect)
   useEffect(() => {
-    const newShownActivities = new Set(shownActivities);
-    let hasChanges = false;
+    if (activities.length === 0) return;
 
-    // Find activities that should start showing (reached their start date)
-    const activitiesToShow: string[] = [];
-
-    activities.forEach((activity) => {
+    // Calculate what should be visible at current date
+    const activitiesToShow = activities.filter((activity) => {
       const hasStarted = currentDate >= activity.startDate;
-      const alreadyShown = shownActivities.has(activity.activityUID!);
+      const hasEnded = currentDate >= activity.endDate;
+      const hasLinkedModels = (activity.linkedModelIds?.length ?? 0) > 0;
+      const isPersistent = activity.persistAfterEnd === true;
 
-      // Only show if it has started AND hasn't been shown yet AND has linked models
+      return hasStarted && hasLinkedModels && (isPersistent || !hasEnded);
+    });
+
+    // Get all model IDs that should be visible
+    const modelIdsToShow = new Set<string>();
+    activitiesToShow.forEach((activity) => {
+      activity.linkedModelIds?.forEach((id) => modelIdsToShow.add(id));
+    });
+
+    // Check if we've reached the end
+    const lastActivityEnded =
+      currentDate >= Math.max(...activities.map((a) => a.endDate.getTime()));
+
+    // Handle end state - show everything
+    if (lastActivityEnded) {
+      showAllItems();
+      setShownActivities(
+        new Set(activities.map((a) => a.activityUID!).filter(Boolean))
+      );
+      return;
+    }
+
+    // Calculate what's currently shown
+    const currentlyShownModelIds = new Set<string>();
+    activities.forEach((activity) => {
       if (
-        hasStarted &&
-        !alreadyShown &&
-        (activity.linkedModelIds?.length ?? 0) > 0
+        shownActivities.has(activity.activityUID!) &&
+        activity.linkedModelIds
       ) {
-        newShownActivities.add(activity.activityUID!);
-        activitiesToShow.push(...(activity.linkedModelIds ?? []));
-        hasChanges = true;
+        activity.linkedModelIds.forEach((id) => currentlyShownModelIds.add(id));
       }
     });
 
-    if (hasChanges) {
-      setShownActivities(newShownActivities);
+    // Find differences
+    const toShow: string[] = [];
+    const toHide: string[] = [];
 
-      // Show the new activity elements
-      if (activitiesToShow.length > 0) {
-        toggleVisibility(activitiesToShow);
+    // What should be shown but isn't
+    modelIdsToShow.forEach((modelId) => {
+      if (!currentlyShownModelIds.has(modelId)) {
+        toShow.push(modelId);
       }
-    }
-  }, [currentDate, activities, shownActivities, toggleVisibility]);
+    });
 
+    // What is shown but shouldn't be
+    currentlyShownModelIds.forEach((modelId) => {
+      if (!modelIdsToShow.has(modelId)) {
+        toHide.push(modelId);
+      }
+    });
+
+    // Apply changes
+    if (toShow.length > 0 || toHide.length > 0) {
+      console.log("Visibility update:", {
+        toShow: toShow.length,
+        toHide: toHide.length,
+        currentDate: formatDateShort(currentDate),
+      });
+
+      // Apply changes in batch
+      const updatePromises = [];
+      if (toHide.length > 0) {
+        updatePromises.push(toggleVisibility(toHide, false));
+      }
+      if (toShow.length > 0) {
+        updatePromises.push(toggleVisibility(toShow, true));
+      }
+
+      // Wait for all visibility updates to complete
+      Promise.all(updatePromises).then(() => {
+        // Update state only after visibility changes are applied
+        const newShownActivities = new Set(
+          activitiesToShow.map((a) => a.activityUID!).filter(Boolean)
+        );
+        setShownActivities(newShownActivities);
+      });
+    }
+  }, [
+    currentDate,
+    activities,
+    shownActivities,
+    toggleVisibility,
+    showAllItems,
+  ]);
   // Auto-scroll to current date position
   useEffect(() => {
     if (timelineRef.current && isPlaying) {
