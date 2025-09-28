@@ -454,32 +454,239 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
           </div>
         </div>
       </div>
-
-      {/* Active Activities Bar - Horizontal scrolling */}
+      {/* Active Activities Bar - Compact Vertical Design */}
       <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
-        <div className="flex items-center gap-2 overflow-x-auto">
-          <span className="flex-shrink-0 text-xs font-medium text-gray-700">
-            Built:
+        <div className="flex items-start gap-4">
+          <span className="flex-shrink-0 pt-2 text-sm font-semibold text-gray-700">
+            Construction Sequence:
           </span>
+
           {Array.from(shownActivities).length === 0 ? (
-            <span className="flex-shrink-0 text-xs text-gray-500">
+            <span className="py-2 text-sm text-gray-500">
               No activities built yet
             </span>
           ) : (
-            <div className="flex gap-2 overflow-x-auto">
-              {Array.from(shownActivities).map((activityUID) => {
-                const activity = activities.find(
-                  (a) => a.activityUID === activityUID
+            <div className="flex-1">
+              {/* Current Activity - Always Visible */}
+              {(() => {
+                const currentActivity = activities
+                  .filter((activity) =>
+                    shownActivities.has(activity.activityUID!)
+                  )
+                  .find(
+                    (activity) =>
+                      currentDate >= activity.startDate &&
+                      currentDate <= activity.endDate
+                  );
+
+                return currentActivity ? (
+                  <div className="p-3 mb-3 border border-blue-200 rounded-lg shadow-sm bg-blue-50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                          <span className="text-xs font-medium text-blue-600">
+                            CURRENT
+                          </span>
+                        </div>
+                        <span className="text-sm font-semibold text-blue-900">
+                          {currentActivity.name}
+                        </span>
+                      </div>
+                      <div className="text-xs text-blue-700">
+                        {formatDateShort(currentActivity.startDate)} -{" "}
+                        {formatDateShort(currentActivity.endDate)}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-3 mb-3 bg-gray-100 border border-gray-300 rounded-lg">
+                    <div className="text-sm text-center text-gray-600">
+                      No active construction - All activities completed or
+                      pending
+                    </div>
+                  </div>
                 );
-                return activity ? (
-                  <span
-                    key={activityUID}
-                    className="flex-shrink-0 px-3 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full"
-                  >
-                    {activity.name}
-                  </span>
-                ) : null;
-              })}
+              })()}
+
+              {/* Upcoming & Completed Activities - Vertical Scroll */}
+              <div className="bg-white border border-gray-300 rounded-lg">
+                <div className="overflow-y-auto max-h-40">
+                  {activities
+                    .filter((activity) =>
+                      shownActivities.has(activity.activityUID!)
+                    )
+                    .sort(
+                      (a, b) => a.startDate.getTime() - b.startDate.getTime()
+                    )
+                    .map((activity, index, sortedActivities) => {
+                      const isCurrent =
+                        currentDate >= activity.startDate &&
+                        currentDate <= activity.endDate;
+                      const isCompleted = currentDate > activity.endDate;
+                      const isUpcoming = currentDate < activity.startDate;
+
+                      // Skip current activity since it's shown above
+                      if (isCurrent) return null;
+
+                      return (
+                        <div
+                          key={activity.activityUID}
+                          className={`
+                      flex items-center gap-3 p-2 border-b border-gray-200 last:border-b-0
+                      ${
+                        isCompleted
+                          ? "bg-green-50"
+                          : isUpcoming
+                          ? "bg-orange-50"
+                          : "bg-white"
+                      }
+                      hover:bg-gray-50 transition-colors
+                    `}
+                        >
+                          {/* Status Indicator */}
+                          <div
+                            className={`
+                      w-2 h-2 rounded-full flex-shrink-0
+                      ${
+                        isCompleted
+                          ? "bg-green-500"
+                          : isUpcoming
+                          ? "bg-orange-400"
+                          : "bg-gray-400"
+                      }
+                    `}
+                          ></div>
+
+                          {/* Activity Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <span
+                                className={`
+                          text-sm font-medium truncate
+                          ${
+                            isCompleted
+                              ? "text-green-800"
+                              : isUpcoming
+                              ? "text-orange-800"
+                              : "text-gray-700"
+                          }
+                        `}
+                              >
+                                {activity.name}
+                              </span>
+                              <span className="flex-shrink-0 ml-2 text-xs text-gray-500">
+                                {formatDateShort(activity.startDate)}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between mt-1">
+                              <span
+                                className={`
+                          text-xs
+                          ${
+                            isCompleted
+                              ? "text-green-600"
+                              : isUpcoming
+                              ? "text-orange-600"
+                              : "text-gray-500"
+                          }
+                        `}
+                              >
+                                {isCompleted
+                                  ? "Completed"
+                                  : isUpcoming
+                                  ? "Upcoming"
+                                  : "In Progress"}
+                              </span>
+                              <span className="flex-shrink-0 text-xs text-gray-400">
+                                {formatDateShort(activity.endDate)}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Status Icon */}
+                          {isCompleted && (
+                            <svg
+                              className="flex-shrink-0 w-4 h-4 text-green-500"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                          {isUpcoming && (
+                            <svg
+                              className="flex-shrink-0 w-4 h-4 text-orange-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                  {/* Empty state for scroll area */}
+                  {activities.filter(
+                    (activity) =>
+                      shownActivities.has(activity.activityUID!) &&
+                      !(
+                        currentDate >= activity.startDate &&
+                        currentDate <= activity.endDate
+                      )
+                  ).length === 0 && (
+                    <div className="p-4 text-sm text-center text-gray-500">
+                      No other activities to show
+                    </div>
+                  )}
+                </div>
+
+                {/* Scroll indicator */}
+                <div className="px-3 py-2 bg-gray-100 border-t border-gray-300 rounded-b-lg">
+                  <div className="flex items-center justify-between text-xs text-gray-600">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>
+                          Completed:{" "}
+                          {
+                            activities.filter(
+                              (a) =>
+                                shownActivities.has(a.activityUID!) &&
+                                currentDate > a.endDate
+                            ).length
+                          }
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                        <span>
+                          Upcoming:{" "}
+                          {
+                            activities.filter(
+                              (a) =>
+                                shownActivities.has(a.activityUID!) &&
+                                currentDate < a.startDate
+                            ).length
+                          }
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-gray-400">Scroll to see more ↓</div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
