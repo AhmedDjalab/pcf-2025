@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   Eye,
@@ -11,6 +11,8 @@ import {
   Search,
   ToggleLeft,
   ToggleRight,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 import moment from "moment";
@@ -589,6 +591,7 @@ interface ActivitiesPanelProps {
   resetIsolated: (modelIds: string[]) => void;
   onLink: (activityUid: string, modelIds: string[]) => void;
   getSelectedModelIds: () => string[];
+  currentActivityId?: string;
 }
 
 const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
@@ -599,9 +602,11 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
   getSelectedModelIds,
   activities,
   setActivities,
+  currentActivityId,
 }) => {
   console.log("🚀 ~ ActivitiesPanel ~ activities:", activities);
-
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const activitiesListRef = useRef(null);
   const [visibilityState, setVisibilityState] = useState<{
     [key: string]: boolean;
   }>({});
@@ -610,6 +615,29 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
     activityId: "",
     activityUID: "",
   });
+
+  useEffect(() => {
+    if (currentActivityId && activitiesListRef.current) {
+      const currentActivityElement = activitiesListRef.current.querySelector(
+        `[data-activity-id="${currentActivityId}"]`
+      );
+      if (currentActivityElement) {
+        currentActivityElement.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+
+        // Add highlight effect
+        currentActivityElement.classList.add("bg-blue-50", "border-blue-200");
+        setTimeout(() => {
+          currentActivityElement.classList.remove(
+            "bg-blue-50",
+            "border-blue-200"
+          );
+        }, 2000);
+      }
+    }
+  }, [currentActivityId]);
 
   // Filter activities based on search criteria
   const filteredActivities = useMemo(() => {
@@ -748,249 +776,339 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-gray-200 w-96">
-      {/* Header */}
+    <div
+      className={`flex flex-col h-full bg-white border-r border-gray-200 transition-all duration-300 ${
+        isCollapsed ? "w-16" : "w-96"
+      }`}
+    >
+      {/* Header - Collapsible */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
-        <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-          <Calendar className="w-5 h-5" />
-          Activities Panel
-        </h2>
-        {isolatedActivity && (
-          <button
-            onClick={handleResetIsolation}
-            className="flex items-center gap-1 px-3 py-1 text-sm text-white transition-colors bg-orange-500 rounded hover:bg-orange-600"
-            title="Reset Isolation"
-          >
-            <RotateCcw className="w-4 h-4" />
-            Reset
-          </button>
+        {!isCollapsed && (
+          <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+            <Calendar className="w-5 h-5" />
+            Activities Panel
+          </h2>
         )}
-      </div>
-
-      {/* Search Filters */}
-      <div className="p-4 space-y-3 border-b border-gray-200 bg-gray-50">
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
-            Search by Activity ID
-          </label>
-          <div className="relative">
-            <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
-            <input
-              type="text"
-              placeholder="Filter by Activity ID..."
-              value={searchFilters.activityId}
-              onChange={(e) =>
-                handleSearchFilterChange("activityId", e.target.value)
-              }
-              className="w-full py-2 pl-10 pr-3 transition-colors border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
-            Search by Activity UID
-          </label>
-          <div className="relative">
-            <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
-            <input
-              type="text"
-              placeholder="Filter by Activity UID..."
-              value={searchFilters.activityUID}
-              onChange={(e) =>
-                handleSearchFilterChange("activityUID", e.target.value)
-              }
-              className="w-full py-2 pl-10 pr-3 transition-colors border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
+        <div className="flex items-center gap-2">
+          {!isCollapsed && isolatedActivity && (
+            <button
+              onClick={handleResetIsolation}
+              className="flex items-center gap-1 px-3 py-1 text-sm text-white transition-colors bg-orange-500 rounded hover:bg-orange-600"
+              title="Reset Isolation"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          )}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="p-1.5 text-gray-500 transition-colors rounded hover:bg-gray-200 hover:text-gray-700"
+            title={isCollapsed ? "Expand Panel" : "Collapse Panel"}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="w-4 h-4" />
+            ) : (
+              <ChevronLeft className="w-4 h-4" />
+            )}
+          </button>
         </div>
       </div>
+
+      {/* Search Filters - Hidden when collapsed */}
+      {!isCollapsed && (
+        <div className="p-4 space-y-3 border-b border-gray-200 bg-gray-50">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Search by Activity ID
+            </label>
+            <div className="relative">
+              <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+              <input
+                type="text"
+                placeholder="Filter by Activity ID..."
+                value={searchFilters.activityId}
+                onChange={(e) =>
+                  handleSearchFilterChange("activityId", e.target.value)
+                }
+                className="w-full py-2 pl-10 pr-3 transition-colors border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Search by Activity UID
+            </label>
+            <div className="relative">
+              <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+              <input
+                type="text"
+                placeholder="Filter by Activity UID..."
+                value={searchFilters.activityUID}
+                onChange={(e) =>
+                  handleSearchFilterChange("activityUID", e.target.value)
+                }
+                className="w-full py-2 pl-10 pr-3 transition-colors border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Activities List */}
-      <div className="flex-1 p-4 overflow-auto">
-        {filteredActivities.length === 0 ? (
-          <div className="py-8 text-center text-gray-500">
-            <Search className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-            <p>No activities found matching your search criteria</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
+      <div ref={activitiesListRef} className="flex-1 p-4 overflow-auto">
+        {isCollapsed ? (
+          // Collapsed View - Icons Only
+          <div className="space-y-2">
             {filteredActivities.map((activity) => (
-              <div
+              <button
                 key={activity.activityUID}
-                className={`border rounded-lg p-4 transition-all duration-200 ${
-                  isolatedActivity === activity.activityUID
-                    ? "border-orange-300 bg-orange-50"
-                    : isolatedActivity &&
-                      isolatedActivity !== activity.activityUID
-                    ? "border-gray-200 bg-gray-50 opacity-60"
-                    : "border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm"
+                onClick={() => {
+                  // Quick actions in collapsed mode
+                  if (activity.linkedModelIds?.length > 0) {
+                    handleToggleVisibility(activity);
+                  }
+                }}
+                className={`w-full p-2 rounded-lg transition-all ${
+                  currentActivityId === activity.id
+                    ? "bg-blue-100 border border-blue-300"
+                    : activity.linkedModelIds?.length > 0
+                    ? "bg-green-100 hover:bg-green-200"
+                    : "bg-gray-100 hover:bg-gray-200"
                 }`}
+                title={`${activity.name}\n${
+                  activity.linkedModelIds?.length || 0
+                } linked elements`}
               >
-                {/* Activity Header */}
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="mb-1 font-medium text-gray-800 max-w-30 text-md">
-                      {activity.name}
-                    </h3>
-                    <div className="space-y-1 text-xs text-gray-500">
-                      <div>ID: {activity.activityId}</div>
-                      <div>UID: {activity.activityUID}</div>
-                    </div>
-                  </div>
-
-                  {/* Timeline Visibility Toggle */}
-                  <div className="flex flex-col items-end gap-2">
-                    <button
-                      onClick={() =>
-                        handleToggleTimelineVisibility(activity.activityUID!)
-                      }
-                      className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
-                        activity.persistAfterEnd
-                          ? "text-green-600 bg-green-50 hover:bg-green-100"
-                          : "text-gray-500 bg-gray-50 hover:bg-gray-100"
-                      }`}
-                      title={
-                        activity.persistAfterEnd
-                          ? "Persist After EndDate"
-                          : "Hide After EndDate"
-                      }
-                    >
-                      {activity.persistAfterEnd ? (
-                        <ToggleRight className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <ToggleLeft className="w-4 h-4 text-gray-400" />
-                      )}
-                      Persist
-                    </button>
-
-                    {/* Timeline Status Badge */}
-                    <div
-                      className={`text-xs px-2 py-1 rounded ${
-                        activity.persistAfterEnd
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-100 text-gray-500"
-                      }`}
-                    >
-                      {activity.persistAfterEnd ? "Visible" : "Hidden"}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Date Range */}
-                <div className="p-2 mb-3 text-sm rounded bg-gray-50">
-                  <div className="flex items-center gap-2 mb-1 text-gray-600">
-                    <Clock className="w-3 h-3" />
-                    <span className="font-medium">Persist</span>
-                  </div>
-                  <div className="text-gray-700">
-                    {formatDate(activity.startDate)} →{" "}
-                    {formatDate(activity.endDate)}
-                  </div>
-                  <div className="mt-1 text-xs text-gray-500">
-                    Duration:{" "}
-                    {getDuration(activity.startDate, activity.endDate)} | PK:{" "}
-                    {activity.startPk}-{activity.endPk}
-                  </div>
-                </div>
-
-                {/* Linked Models Status */}
-                <div className="mb-3">
-                  {(activity?.linkedModelIds?.length ?? 0) > 0 ? (
-                    <div className="flex items-center gap-2 text-sm text-green-600">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      Linked to {activity.linkedModelIds?.length} model element
-                      {activity.linkedModelIds?.length !== 1 ? "s" : ""}
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                      No linked elements
+                <div className="flex flex-col items-center gap-1">
+                  <Calendar
+                    className={`w-4 h-4 ${
+                      currentActivityId === activity.id
+                        ? "text-blue-600"
+                        : activity.linkedModelIds?.length > 0
+                        ? "text-green-600"
+                        : "text-gray-400"
+                    }`}
+                  />
+                  <span className="max-w-full text-xs font-medium truncate">
+                    {activity.activityId}
+                  </span>
+                  {activity.linkedModelIds?.length > 0 && (
+                    <div className="text-xs font-bold text-green-600">
+                      {activity.linkedModelIds.length}
                     </div>
                   )}
                 </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-wrap gap-2">
-                  {/* Link Button */}
-                  <button
-                    onClick={() => handleLink(activity.activityUID!)}
-                    className="flex items-center gap-1 px-3 py-1.5 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors"
-                    title="Link Selected Elements"
-                  >
-                    <Link className="w-3 h-3" />
-                    Link
-                  </button>
-
-                  {/* Toggle Visibility Button */}
-                  <button
-                    onClick={() => handleToggleVisibility(activity)}
-                    disabled={activity.linkedModelIds?.length === 0}
-                    className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-colors ${
-                      activity.linkedModelIds?.length === 0
-                        ? "text-gray-400 bg-gray-100 cursor-not-allowed"
-                        : visibilityState[activity.activityUID!]
-                        ? "text-white bg-gray-600 hover:bg-gray-700"
-                        : "text-white bg-green-500 hover:bg-green-600"
-                    }`}
-                    title={
-                      visibilityState[activity.activityUID!]
-                        ? "Show Elements"
-                        : "Hide Elements"
-                    }
-                  >
-                    {visibilityState[activity.activityUID!] ? (
-                      <EyeOff className="w-3 h-3" />
-                    ) : (
-                      <Eye className="w-3 h-3" />
-                    )}
-                    {visibilityState[activity.activityUID!] ? "Show" : "Hide"}
-                  </button>
-
-                  {/* Isolate Button */}
-                  <button
-                    onClick={() => handleIsolateItem(activity)}
-                    disabled={
-                      activity.linkedModelIds?.length === 0 ||
-                      isolatedActivity === activity.activityUID
-                    }
-                    className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-colors ${
-                      activity.linkedModelIds?.length === 0 ||
-                      isolatedActivity === activity.activityUID
-                        ? "text-gray-400 bg-gray-100 cursor-not-allowed"
-                        : "text-white bg-purple-500 hover:bg-purple-600"
-                    }`}
-                    title="Isolate Elements"
-                  >
-                    <Focus className="w-3 h-3" />
-                    Isolate
-                  </button>
-                </div>
-              </div>
+              </button>
             ))}
           </div>
+        ) : (
+          // Expanded View - Full Details
+          <>
+            {filteredActivities.length === 0 ? (
+              <div className="py-8 text-center text-gray-500">
+                <Search className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                <p>No activities found matching your search criteria</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredActivities.map((activity) => (
+                  <div
+                    key={activity.activityUID}
+                    data-activity-id={activity.id}
+                    className={`border rounded-lg p-4 transition-all duration-200 ${
+                      currentActivityId === activity.id
+                        ? "border-blue-300 bg-blue-50 ring-2 ring-blue-100"
+                        : isolatedActivity === activity.activityUID
+                        ? "border-orange-300 bg-orange-50"
+                        : isolatedActivity &&
+                          isolatedActivity !== activity.activityUID
+                        ? "border-gray-200 bg-gray-50 opacity-60"
+                        : "border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm"
+                    }`}
+                  >
+                    {/* Activity Header */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-medium text-gray-800 max-w-30 text-md">
+                            {activity.name}
+                          </h3>
+                          {currentActivityId === activity.id && (
+                            <div className="px-2 py-1 text-xs font-bold text-white bg-blue-500 rounded-full">
+                              CURRENT
+                            </div>
+                          )}
+                        </div>
+                        <div className="space-y-1 text-xs text-gray-500">
+                          <div>ID: {activity.activityId}</div>
+                          <div>UID: {activity.activityUID}</div>
+                        </div>
+                      </div>
+
+                      {/* Timeline Visibility Toggle */}
+                      <div className="flex flex-col items-end gap-2">
+                        <button
+                          onClick={() =>
+                            handleToggleTimelineVisibility(
+                              activity.activityUID!
+                            )
+                          }
+                          className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
+                            activity.persistAfterEnd
+                              ? "text-green-600 bg-green-50 hover:bg-green-100"
+                              : "text-gray-500 bg-gray-50 hover:bg-gray-100"
+                          }`}
+                          title={
+                            activity.persistAfterEnd
+                              ? "Persist After EndDate"
+                              : "Hide After EndDate"
+                          }
+                        >
+                          {activity.persistAfterEnd ? (
+                            <ToggleRight className="w-4 h-4 text-green-500" />
+                          ) : (
+                            <ToggleLeft className="w-4 h-4 text-gray-400" />
+                          )}
+                          Persist
+                        </button>
+
+                        {/* Timeline Status Badge */}
+                        <div
+                          className={`text-xs px-2 py-1 rounded ${
+                            activity.persistAfterEnd
+                              ? "bg-green-100 text-green-700"
+                              : "bg-gray-100 text-gray-500"
+                          }`}
+                        >
+                          {activity.persistAfterEnd ? "Visible" : "Hidden"}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Date Range */}
+                    <div className="p-2 mb-3 text-sm rounded bg-gray-50">
+                      <div className="flex items-center gap-2 mb-1 text-gray-600">
+                        <Clock className="w-3 h-3" />
+                        <span className="font-medium">Persist</span>
+                      </div>
+                      <div className="text-gray-700">
+                        {formatDate(activity.startDate)} →{" "}
+                        {formatDate(activity.endDate)}
+                      </div>
+                      <div className="mt-1 text-xs text-gray-500">
+                        Duration:{" "}
+                        {getDuration(activity.startDate, activity.endDate)} |
+                        PK: {activity.startPk}-{activity.endPk}
+                      </div>
+                    </div>
+
+                    {/* Linked Models Status */}
+                    <div className="mb-3">
+                      {(activity?.linkedModelIds?.length ?? 0) > 0 ? (
+                        <div className="flex items-center gap-2 text-sm text-green-600">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          Linked to {activity.linkedModelIds?.length} model
+                          element
+                          {activity.linkedModelIds?.length !== 1 ? "s" : ""}
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-sm text-gray-400">
+                          <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                          No linked elements
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-wrap gap-2">
+                      {/* Link Button */}
+                      <button
+                        onClick={() => handleLink(activity.activityUID!)}
+                        className="flex items-center gap-1 px-3 py-1.5 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors"
+                        title="Link Selected Elements"
+                      >
+                        <Link className="w-3 h-3" />
+                        Link
+                      </button>
+
+                      {/* Toggle Visibility Button */}
+                      <button
+                        onClick={() => handleToggleVisibility(activity)}
+                        disabled={activity.linkedModelIds?.length === 0}
+                        className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-colors ${
+                          activity.linkedModelIds?.length === 0
+                            ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                            : visibilityState[activity.activityUID!]
+                            ? "text-white bg-gray-600 hover:bg-gray-700"
+                            : "text-white bg-green-500 hover:bg-green-600"
+                        }`}
+                        title={
+                          visibilityState[activity.activityUID!]
+                            ? "Show Elements"
+                            : "Hide Elements"
+                        }
+                      >
+                        {visibilityState[activity.activityUID!] ? (
+                          <EyeOff className="w-3 h-3" />
+                        ) : (
+                          <Eye className="w-3 h-3" />
+                        )}
+                        {visibilityState[activity.activityUID!]
+                          ? "Show"
+                          : "Hide"}
+                      </button>
+
+                      {/* Isolate Button */}
+                      <button
+                        onClick={() => handleIsolateItem(activity)}
+                        disabled={
+                          activity.linkedModelIds?.length === 0 ||
+                          isolatedActivity === activity.activityUID
+                        }
+                        className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-colors ${
+                          activity.linkedModelIds?.length === 0 ||
+                          isolatedActivity === activity.activityUID
+                            ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                            : "text-white bg-purple-500 hover:bg-purple-600"
+                        }`}
+                        title="Isolate Elements"
+                      >
+                        <Focus className="w-3 h-3" />
+                        Isolate
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
 
-      {/* Footer Info */}
-      <div className="p-4 text-xs text-gray-500 border-t border-gray-200 bg-gray-50">
-        <div>Total Activities: {activities.length}</div>
-        <div>Filtered Activities: {filteredActivities.length}</div>
-        <div>
-          Linked Activities:{" "}
-          {activities.filter((a) => (a.linkedModelIds?.length ?? 0) > 0).length}
-        </div>
-        <div>
-          Not Persisted Activities:
-          {activities.filter((a) => !a.persistAfterEnd).length}
-        </div>
-        {isolatedActivity && (
-          <div className="mt-1 text-orange-600">
-            Isolated:{" "}
-            {activities.find((a) => a.activityUID === isolatedActivity)?.name}
+      {/* Footer Info - Hidden when collapsed */}
+      {!isCollapsed && (
+        <div className="p-4 text-xs text-gray-500 border-t border-gray-200 bg-gray-50">
+          <div>Total Activities: {activities.length}</div>
+          <div>Filtered Activities: {filteredActivities.length}</div>
+          <div>
+            Linked Activities:{" "}
+            {
+              activities.filter((a) => (a.linkedModelIds?.length ?? 0) > 0)
+                .length
+            }
           </div>
-        )}
-      </div>
+          <div>
+            Not Persisted Activities:
+            {activities.filter((a) => !a.persistAfterEnd).length}
+          </div>
+          {isolatedActivity && (
+            <div className="mt-1 text-orange-600">
+              Isolated:{" "}
+              {activities.find((a) => a.activityUID === isolatedActivity)?.name}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

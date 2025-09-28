@@ -20,7 +20,14 @@ import { useParams } from "react-router-dom";
 import Spinner from "src/components/Spinner";
 import { data } from "autoprefixer";
 import { decompressFile } from "src/utils/fileCompresser";
+import { Calendar, Eye, EyeOff } from "lucide-react";
 
+const formatDateShort = (date: Date): string => {
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+};
 const IFCViewer = () => {
   const { id } = useParams();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -34,6 +41,7 @@ const IFCViewer = () => {
   const modelRef = useRef<FRAG.FragmentsModel | null>(null);
   const fragmentsRef = useRef<OBC.FragmentsManager | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [panelsVisible, setPanelsVisible] = useState(false);
   const [modelName, setModelName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState<string>("");
@@ -42,6 +50,12 @@ const IFCViewer = () => {
     useState<OBC.ModelIdMap>();
   const [modelMapIds, setModelMapIds] = useState<Record<string, number[]>>({});
   const html = document.querySelector("html")!;
+  const [currentActivityId, setCurrentActivityId] = useState<string>();
+
+  // let currentAcitivtyRef = useRef();
+  // const setCurrentActivityId = (id) => {
+  //   currentAcitivtyRef.current = id;
+  // };
 
   const initViewer = useCallback(async () => {
     try {
@@ -55,7 +69,7 @@ const IFCViewer = () => {
       const worlds = components.get(OBC.Worlds);
       const world = worlds.create<
         OBC.SimpleScene,
-        OBC.SimpleCamera,
+        OBC.OrthoPerspectiveCamera,
         OBC.SimpleRenderer
       >();
       worldRef.current = world;
@@ -65,7 +79,16 @@ const IFCViewer = () => {
         components,
         containerRef?.current
       );
+
       world.camera = new OBC.SimpleCamera(components);
+      // world.camera = new OBC.OrthoPerspectiveCamera(components);
+
+      // world.renderer = new OBC.SimpleRenderer(
+      //   components,
+      //   containerRef?.current
+      // );
+      // world.camera = new OBC.OrthoPerspectiveCamera(components);
+      // await world.camera.controls.setLookAt(78, 20, -2.2, 26, -4, 25);
 
       await components.init();
 
@@ -471,7 +494,7 @@ const IFCViewer = () => {
       //   setSelectedModelIdMap(modeltestIdMap);
       // }
       await fragmentsRef.current.core.update(true);
-
+      await worldRef.current.scene.three.add(model);
       // Get the synchro code map
 
       //console.log("🚀 ~ loadIFC ~ synchroCodeMap:", activities);
@@ -651,151 +674,237 @@ const IFCViewer = () => {
   //   return (data.IsDefinedBy as FRAG.ItemData[]) ?? [];
   // };
 
-  return projectsLoading ? (
-    <Spinner />
-  ) : (
-    <div className="flex w-full h-screen">
-      {/* Left panel */}
-      <ActivitiesPanel
-        setActivities={setActivities}
-        activities={
-          activities?.sort(
-            (a, b) =>
-              (b.linkedModelIds?.length ?? 0) - (a.linkedModelIds?.length ?? 0)
-          ) ?? []
-        }
-        onLink={(ac, modelId) => console.log("thos ", ac, modelId)}
-        getSelectedModelIds={() => selectedModelIds}
-        toggleVisibilty={(localId) => toggleModelVisibility(localId)}
-        isolateItem={(localId) => toggleModelIsolated(localId)}
-        resetIsolated={(localId) => toggleModelVisibility(localId, true)}
-      />
-
-      <div style={{ width: "100%", height: "100vh", position: "relative" }}>
-        <div className="absolute z-10 top-4 left-4">
-          <AutomaticLinkingModal
-            setActivities={setActivities}
-            activities={activities ?? []}
-            modelRef={modelRef}
-          />
-        </div>
-        {/* <input
-          value={search}
-          onChange={async (e) => {
-            var value = e.target.value;
-            setSearch(value);
-            if (spatialTreeRef.current) {
-              spatialTreeRef.current.queryString = value;
-            }
-
-            const data = spatialTreeRef.current?.value;
-            console.log("🚀 ~ data:", data);
-            // //! let get all local ids
-            // var localIds = (await modelRef.current?.getLocalIds()) ?? [];
-
-            // const elementData = await modelRef.current?.getItemsData(localIds, {
-            //   attributesDefault: true,
-            //   relations: {
-            //     HasProperties: { attributes: true, relations: false },
-            //     DefinesOcurrence: { attributes: true, relations: false },
-            //   },
-            // });
-
-            // const testdata = await getItemPropertySets(localIds);
-            // const fromated = await formatItemPsets(testdata!);
-            // const sycnhCode = findSynchroCodes(
-            //   testdata! as unknown as PropertySet[]
-            // );
-
-            if (!elementData) {
-              return;
-            } // Direct attributes are in the main object
-            console.log("Direct attributes:", elementData, testdata);
-            console.log("formated attributes:", fromated);
-            console.log("sycnhoc attributes:", sycnhCode);
-
-            // Property sets are in IsDefinedBy array
-          }}
-          className="absolute h-20 text-white bg-red-400 left-80 top-10 w-200"
-        /> */}
-        {/* 3D Viewer */}
-        <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
-
-        <div className="absolute flex justify-center w-full p-2 overflow-auto rounded-lg shadow-md bottom-5 bg-white/90">
-          <TimelineScheduling
-            activities={activities ?? []}
-            toggleVisibility={(localId) => toggleModelVisibility(localId)}
-            hideAllItems={hideAllItems}
-            showAllItems={showAllItems}
-          />
-        </div>
-        {/* 🔲 Spatial Tree + Properties Panel container */}
-        <div
-          id="ui-panels"
-          className="absolute top-20 right-5 flex flex-col gap-4 bg-white/90 p-2 rounded-lg shadow-md max-h-[80vh] overflow-auto"
-          style={{ width: "300px" }}
+  return (
+    <div className="flex flex-col w-full h-screen">
+      <div className="flex flex-1 overflow-hidden">
+        <ActivitiesPanel
+          setActivities={setActivities}
+          activities={
+            activities?.sort(
+              (a, b) =>
+                (b.linkedModelIds?.length ?? 0) -
+                (a.linkedModelIds?.length ?? 0)
+            ) ?? []
+          }
+          onLink={(ac, modelId) => console.log("thos ", ac, modelId)}
+          getSelectedModelIds={() => selectedModelIds}
+          toggleVisibilty={(localId) => toggleModelVisibility(localId)}
+          isolateItem={(localId) => toggleModelIsolated(localId)}
+          resetIsolated={(localId) => toggleModelVisibility(localId, true)}
+          currentActivityId={currentActivityId}
         />
 
-        <div
-          id="properties-panel"
-          className="absolute top-20 left-5 flex flex-col gap-4 bg-white/90 p-2 rounded-lg shadow-md max-h-[80vh] overflow-auto"
-          style={{ width: "300px" }}
+        {projectsLoading ? (
+          <Spinner />
+        ) : (
+          <div className="flex flex-col flex-1">
+            {/* Main Content Area - Takes remaining space */}
+            <div className="relative flex-1">
+              <div
+                style={{ width: "100%", height: "100%", position: "relative" }}
+              >
+                <div className="absolute z-10 flex flex-col gap-3 top-4 left-4">
+                  {panelsVisible && (
+                    <AutomaticLinkingModal
+                      setActivities={setActivities}
+                      activities={activities ?? []}
+                      modelRef={modelRef}
+                    />
+                  )}
+                  {/* 
+                  {(() => {
+                    // Find the activity that is currently active based on timeline date
+                    const currentActivity =
+                      currentActivityId &&
+                      activities
+                        ?.filter(
+                          (activity) =>
+                            activity.linkedModelIds &&
+                            activity.linkedModelIds.length > 0
+                        )
+                        .find((activity) => activity.id === currentActivityId);
+
+                    return currentActivity ? (
+                      <div className="p-4 border border-blue-200 rounded-lg shadow-lg bg-white/95 backdrop-blur-sm min-w-64">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                            <span className="text-sm font-semibold text-blue-700">
+                              CURRENT ACTIVITY
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div>
+                            <span className="text-lg font-bold text-gray-900">
+                              {currentActivity.name}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-4 text-sm text-gray-600">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="w-4 h-4" />
+                              <span>
+                                {formatDateShort(currentActivity.startDate)}
+                              </span>
+                            </div>
+                            <span>→</span>
+                            <div className="flex items-center gap-1">
+                              <Calendar className="w-4 h-4" />
+                              <span>
+                                {formatDateShort(currentActivity.endDate)}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between pt-2">
+                            <div className="flex items-center gap-2">
+                              <div className="px-2 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded">
+                                {currentActivity.linkedModelIds?.length}{" "}
+                                elements
+                              </div>
+                            </div>
+                            <div className="text-xs font-medium text-green-600">
+                              Active Now
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      // Show when no activity is currently active
+                      <div className="p-4 border border-gray-200 rounded-lg shadow-lg bg-white/95 backdrop-blur-sm min-w-64">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                          <span className="text-sm font-semibold text-gray-600">
+                            CURRENT ACTIVITY
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          No active construction
+                        </div>
+                      </div>
+                    );
+                  })()} */}
+                </div>
+
+                {/* 3D Viewer - Takes remaining space */}
+                <div
+                  ref={containerRef}
+                  style={{ width: "100%", height: "100%" }}
+                />
+
+                {/* Panel Visibility Toggle */}
+                <div className="absolute z-20 top-4 right-20">
+                  <button
+                    onClick={() => setPanelsVisible(!panelsVisible)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm transition-colors rounded-lg shadow-md bg-white/90 hover:bg-white"
+                  >
+                    {panelsVisible ? (
+                      <>
+                        <EyeOff className="w-4 h-4" />
+                        Hide Panels
+                      </>
+                    ) : (
+                      <>
+                        <Eye className="w-4 h-4" />
+                        Show Panels
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* 🔲 Spatial Tree + Properties Panel container */}
+                {panelsVisible && (
+                  <>
+                    <div
+                      id="ui-panels"
+                      className="absolute top-20 right-5 flex flex-col gap-4 bg-white/90 p-2 rounded-lg shadow-md max-h-[80vh] overflow-auto"
+                      style={{ width: "300px" }}
+                    />
+
+                    <div
+                      id="properties-panel"
+                      className="absolute top-20 left-5 flex flex-col gap-4 bg-white/90 p-2 rounded-lg shadow-md max-h-[80vh] overflow-auto"
+                      style={{ width: "300px" }}
+                    />
+                  </>
+                )}
+
+                {/* Loading Overlay */}
+                {isLoading && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      backgroundColor: "rgba(0,0,0,0.7)",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      zIndex: 1000,
+                    }}
+                  >
+                    <div style={{ color: "white", fontSize: "24px" }}>
+                      Loading...
+                    </div>
+                  </div>
+                )}
+
+                {/* Error Banner */}
+                {error && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "10px",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      backgroundColor: "rgba(255,0,0,0.8)",
+                      color: "white",
+                      padding: "10px 20px",
+                      borderRadius: "5px",
+                      zIndex: 1001,
+                    }}
+                  >
+                    Error: {error}
+                  </div>
+                )}
+
+                {/* Upload / Load buttons */}
+                {panelsVisible && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "10px",
+                      right: "10px",
+                      zIndex: 1000,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "10px",
+                    }}
+                  >
+                    <button
+                      onClick={handleSaveBimData}
+                      className="w-40 p-4 text-white bg-primary hover:bg-primary-500"
+                    >
+                      Save
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Timeline - Full width at bottom */}
+      <div className="w-full bg-white border-t border-gray-300 shadow-lg">
+        <TimelineScheduling
+          activities={activities ?? []}
+          toggleVisibility={(localId) => toggleModelVisibility(localId)}
+          hideAllItems={hideAllItems}
+          showAllItems={showAllItems}
+          setCurrentActivityId={setCurrentActivityId}
         />
-        {/* Loading Overlay */}
-        {isLoading && (
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              backgroundColor: "rgba(0,0,0,0.7)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 1000,
-            }}
-          >
-            <div style={{ color: "white", fontSize: "24px" }}>Loading...</div>
-          </div>
-        )}
-
-        {/* Error Banner */}
-        {error && (
-          <div
-            style={{
-              position: "absolute",
-              top: "10px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              backgroundColor: "rgba(255,0,0,0.8)",
-              color: "white",
-              padding: "10px 20px",
-              borderRadius: "5px",
-              zIndex: 1001,
-            }}
-          >
-            Error: {error}
-          </div>
-        )}
-
-        {/* Upload / Load buttons */}
-        <div
-          style={{
-            position: "absolute",
-            top: "10px",
-            right: "10px",
-            zIndex: 1000,
-            display: "flex",
-            flexDirection: "column",
-            gap: "10px",
-          }}
-        >
-          <button
-            onClick={handleSaveBimData}
-            className="w-40 p-4 text-white bg-primary hover:bg-primary-500"
-          >
-            Save
-          </button>
-        </div>
       </div>
     </div>
   );

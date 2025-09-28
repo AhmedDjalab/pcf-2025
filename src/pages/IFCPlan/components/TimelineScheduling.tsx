@@ -21,6 +21,7 @@ interface TimelineSchedulingProps {
   toggleVisibility: (modelIds: string[]) => void;
   hideAllItems?: () => void;
   showAllItems?: () => void;
+  setCurrentActivityId?: any;
 }
 
 const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
@@ -28,6 +29,7 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
   toggleVisibility,
   hideAllItems,
   showAllItems,
+  setCurrentActivityId,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -39,6 +41,9 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
   const [playbackSpeed, setPlaybackSpeed] = useState(1000); // milliseconds per day
   const intervalRef = useRef<NodeJS.Timeout>();
   const timelineRef = useRef<HTMLDivElement>(null);
+  const [currentActivityName, setCurrentActivityName] = useState<string | null>(
+    null
+  );
 
   // Calculate timeline bounds (1 month before earliest, 1 month after latest)
   useEffect(() => {
@@ -86,7 +91,17 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
 
       return hasStarted && hasLinkedModels && (isPersistent || !hasEnded);
     });
+    const currentActivity = activities.find(
+      (activity) =>
+        currentDate >= activity.startDate && currentDate <= activity.endDate
+    );
 
+    if (currentActivity) {
+      //setCurrentActivityId?.(currentActivity.id);
+      setCurrentActivityName(currentActivity.name);
+    } else {
+      setCurrentActivityName(null);
+    }
     // Get all model IDs that should be visible
     const modelIdsToShow = new Set<string>();
     activitiesToShow.forEach((activity) => {
@@ -303,15 +318,22 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
       </div>
     );
   }
+  const formatDateFull = (date: Date) => {
+    return date.toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   const timelineWidth = getTimelineWidth();
 
   return (
-    <div className="w-full bg-white border border-gray-200 rounded-lg shadow-sm">
-      {/* Horizontal Layout Container */}
-      <div className="flex items-center gap-4 p-3">
+    <div className="w-full bg-white">
+      {/* Compact Timeline Header */}
+      <div className="flex items-center justify-between p-2 border-b border-gray-200">
         {/* Left Controls */}
-        <div className="flex items-center flex-shrink-0 gap-2">
+        <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-gray-600" />
           <button
             onClick={resetTimeline}
@@ -336,101 +358,22 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
             )}
             {isPlaying ? "Pause" : "Play"}
           </button>
+
+          {/* Current Activity */}
+          {currentActivityName && (
+            <div className="px-3 py-1 ml-3 text-xs font-medium text-white bg-blue-500 rounded shadow">
+              {currentActivityName}
+            </div>
+          )}
         </div>
 
-        {/* Timeline Container - Takes remaining space with horizontal scroll */}
-        <div className="relative flex-1 overflow-x-auto" ref={timelineRef}>
-          <div style={{ minWidth: `${timelineWidth}px` }}>
-            {/* Month markers */}
-            <div className="relative h-20 mb-1">
-              {getMonthMarkers().map((marker, index) => (
-                <div
-                  key={index}
-                  className="absolute transform -translate-x-1/2"
-                  style={{ left: `${marker.position}%` }}
-                >
-                  <div className="w-px h-3 bg-gray-400"></div>
-                  <div className="text-xs text-gray-600 mt-0.5 transform -translate-x-1/2 whitespace-nowrap">
-                    {marker.date.toLocaleDateString("en-US", {
-                      month: "short",
-                      year: "2-digit",
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Activity bars - Stacked horizontally */}
-            <div className="relative h-8 mb-2 bg-gray-100 rounded">
-              {activities.map((activity, index) => {
-                const totalDuration =
-                  timelineEnd.getTime() - timelineStart.getTime();
-                const activityStart =
-                  ((activity.startDate.getTime() - timelineStart.getTime()) /
-                    totalDuration) *
-                  100;
-                const activityDuration =
-                  ((activity.endDate.getTime() - activity.startDate.getTime()) /
-                    totalDuration) *
-                  100;
-                const hasStarted = currentDate >= activity.startDate;
-                const isShown = shownActivities.has(activity.activityUID!);
-
-                return (
-                  <div
-                    key={activity.activityUID}
-                    className={`absolute h-1.5 rounded transition-all duration-300 ${
-                      isShown
-                        ? "bg-green-500 shadow-sm"
-                        : hasStarted
-                        ? "bg-orange-400"
-                        : "bg-gray-300"
-                    }`}
-                    style={{
-                      left: `${Math.max(0, activityStart)}%`,
-                      width: `${Math.min(
-                        100 - Math.max(0, activityStart),
-                        activityDuration
-                      )}%`,
-                      top: `${2 + index * 4}px`,
-                    }}
-                    title={`${activity.name}: ${formatDate(
-                      activity.startDate
-                    )} - ${formatDate(activity.endDate)} ${
-                      isShown ? "(Built)" : hasStarted ? "(Ready)" : "(Pending)"
-                    }`}
-                  />
-                );
-              })}
-            </div>
-
-            {/* Timeline Slider */}
-            <div className="relative">
-              <input
-                type="range"
-                min="0"
-                max="100"
-                step="0.1"
-                value={getSliderPosition()}
-                onChange={handleSliderChange}
-                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-              />
-              {/* Current position indicator */}
-              <div
-                className="absolute w-2 h-4 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 rounded pointer-events-none top-1/2"
-                style={{ left: `${getSliderPosition()}%` }}
-              ></div>
-            </div>
-          </div>
+        {/* Current Date */}
+        <div className="px-3 py-1 text-sm font-medium text-blue-800 bg-blue-100 rounded">
+          {formatDateFull(currentDate)}
         </div>
 
         {/* Right Info */}
-        <div className="flex items-center flex-shrink-0 gap-3">
-          {/* Current Date */}
-          <div className="px-2 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded">
-            {formatDateShort(currentDate)}
-          </div>
-
+        <div className="flex items-center gap-3">
           {/* Speed Control */}
           <select
             value={playbackSpeed}
@@ -454,242 +397,21 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
           </div>
         </div>
       </div>
-      {/* Active Activities Bar - Compact Vertical Design */}
-      <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
-        <div className="flex items-start gap-4">
-          <span className="flex-shrink-0 pt-2 text-sm font-semibold text-gray-700">
-            Construction Sequence:
-          </span>
-
-          {Array.from(shownActivities).length === 0 ? (
-            <span className="py-2 text-sm text-gray-500">
-              No activities built yet
-            </span>
-          ) : (
-            <div className="flex-1">
-              {/* Current Activity - Always Visible */}
-              {(() => {
-                const currentActivity = activities
-                  .filter((activity) =>
-                    shownActivities.has(activity.activityUID!)
-                  )
-                  .find(
-                    (activity) =>
-                      currentDate >= activity.startDate &&
-                      currentDate <= activity.endDate
-                  );
-
-                return currentActivity ? (
-                  <div className="p-3 mb-3 border border-blue-200 rounded-lg shadow-sm bg-blue-50">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                          <span className="text-xs font-medium text-blue-600">
-                            CURRENT
-                          </span>
-                        </div>
-                        <span className="text-sm font-semibold text-blue-900">
-                          {currentActivity.name}
-                        </span>
-                      </div>
-                      <div className="text-xs text-blue-700">
-                        {formatDateShort(currentActivity.startDate)} -{" "}
-                        {formatDateShort(currentActivity.endDate)}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-3 mb-3 bg-gray-100 border border-gray-300 rounded-lg">
-                    <div className="text-sm text-center text-gray-600">
-                      No active construction - All activities completed or
-                      pending
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Upcoming & Completed Activities - Vertical Scroll */}
-              <div className="bg-white border border-gray-300 rounded-lg">
-                <div className="overflow-y-auto max-h-40">
-                  {activities
-                    .filter((activity) =>
-                      shownActivities.has(activity.activityUID!)
-                    )
-                    .sort(
-                      (a, b) => a.startDate.getTime() - b.startDate.getTime()
-                    )
-                    .map((activity, index, sortedActivities) => {
-                      const isCurrent =
-                        currentDate >= activity.startDate &&
-                        currentDate <= activity.endDate;
-                      const isCompleted = currentDate > activity.endDate;
-                      const isUpcoming = currentDate < activity.startDate;
-
-                      // Skip current activity since it's shown above
-                      if (isCurrent) return null;
-
-                      return (
-                        <div
-                          key={activity.activityUID}
-                          className={`
-                      flex items-center gap-3 p-2 border-b border-gray-200 last:border-b-0
-                      ${
-                        isCompleted
-                          ? "bg-green-50"
-                          : isUpcoming
-                          ? "bg-orange-50"
-                          : "bg-white"
-                      }
-                      hover:bg-gray-50 transition-colors
-                    `}
-                        >
-                          {/* Status Indicator */}
-                          <div
-                            className={`
-                      w-2 h-2 rounded-full flex-shrink-0
-                      ${
-                        isCompleted
-                          ? "bg-green-500"
-                          : isUpcoming
-                          ? "bg-orange-400"
-                          : "bg-gray-400"
-                      }
-                    `}
-                          ></div>
-
-                          {/* Activity Info */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <span
-                                className={`
-                          text-sm font-medium truncate
-                          ${
-                            isCompleted
-                              ? "text-green-800"
-                              : isUpcoming
-                              ? "text-orange-800"
-                              : "text-gray-700"
-                          }
-                        `}
-                              >
-                                {activity.name}
-                              </span>
-                              <span className="flex-shrink-0 ml-2 text-xs text-gray-500">
-                                {formatDateShort(activity.startDate)}
-                              </span>
-                            </div>
-                            <div className="flex items-center justify-between mt-1">
-                              <span
-                                className={`
-                          text-xs
-                          ${
-                            isCompleted
-                              ? "text-green-600"
-                              : isUpcoming
-                              ? "text-orange-600"
-                              : "text-gray-500"
-                          }
-                        `}
-                              >
-                                {isCompleted
-                                  ? "Completed"
-                                  : isUpcoming
-                                  ? "Upcoming"
-                                  : "In Progress"}
-                              </span>
-                              <span className="flex-shrink-0 text-xs text-gray-400">
-                                {formatDateShort(activity.endDate)}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Status Icon */}
-                          {isCompleted && (
-                            <svg
-                              className="flex-shrink-0 w-4 h-4 text-green-500"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          )}
-                          {isUpcoming && (
-                            <svg
-                              className="flex-shrink-0 w-4 h-4 text-orange-400"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                          )}
-                        </div>
-                      );
-                    })}
-
-                  {/* Empty state for scroll area */}
-                  {activities.filter(
-                    (activity) =>
-                      shownActivities.has(activity.activityUID!) &&
-                      !(
-                        currentDate >= activity.startDate &&
-                        currentDate <= activity.endDate
-                      )
-                  ).length === 0 && (
-                    <div className="p-4 text-sm text-center text-gray-500">
-                      No other activities to show
-                    </div>
-                  )}
-                </div>
-
-                {/* Scroll indicator */}
-                <div className="px-3 py-2 bg-gray-100 border-t border-gray-300 rounded-b-lg">
-                  <div className="flex items-center justify-between text-xs text-gray-600">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span>
-                          Completed:{" "}
-                          {
-                            activities.filter(
-                              (a) =>
-                                shownActivities.has(a.activityUID!) &&
-                                currentDate > a.endDate
-                            ).length
-                          }
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                        <span>
-                          Upcoming:{" "}
-                          {
-                            activities.filter(
-                              (a) =>
-                                shownActivities.has(a.activityUID!) &&
-                                currentDate < a.startDate
-                            ).length
-                          }
-                        </span>
-                      </div>
-                    </div>
-                    <div className="text-gray-400">Scroll to see more ↓</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+      <div className="relative">
+        <input
+          type="range"
+          min="0"
+          max="100"
+          step="0.1"
+          value={getSliderPosition()}
+          onChange={handleSliderChange}
+          className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+        />
+        {/* Current position indicator */}
+        <div
+          className="absolute w-2 h-4 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 rounded pointer-events-none top-1/2"
+          style={{ left: `${getSliderPosition()}%` }}
+        ></div>
       </div>
     </div>
   );
