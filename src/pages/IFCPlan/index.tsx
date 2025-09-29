@@ -21,6 +21,11 @@ import Spinner from "src/components/Spinner";
 import { data } from "autoprefixer";
 import { decompressFile } from "src/utils/fileCompresser";
 import { Calendar, Eye, EyeOff } from "lucide-react";
+import {
+  selectCurrentActivityId,
+  selectCurrentActivityIds,
+} from "src/state/slices/bimSlice";
+import { useSelector } from "react-redux";
 
 const formatDateShort = (date: Date): string => {
   return date.toLocaleDateString("en-US", {
@@ -50,7 +55,7 @@ const IFCViewer = () => {
     useState<OBC.ModelIdMap>();
   const [modelMapIds, setModelMapIds] = useState<Record<string, number[]>>({});
   const html = document.querySelector("html")!;
-  const [currentActivityId, setCurrentActivityId] = useState<string>();
+  const currentActivityIds = useSelector(selectCurrentActivityIds);
 
   // let currentAcitivtyRef = useRef();
   // const setCurrentActivityId = (id) => {
@@ -80,18 +85,21 @@ const IFCViewer = () => {
         containerRef?.current
       );
 
-      world.camera = new OBC.SimpleCamera(components);
-      // world.camera = new OBC.OrthoPerspectiveCamera(components);
+      //world.camera = new OBC.SimpleCamera(components);
+      world.camera = new OBC.OrthoPerspectiveCamera(components);
 
       // world.renderer = new OBC.SimpleRenderer(
       //   components,
       //   containerRef?.current
       // );
-      // world.camera = new OBC.OrthoPerspectiveCamera(components);
-      // await world.camera.controls.setLookAt(78, 20, -2.2, 26, -4, 25);
+      world.camera = new OBC.OrthoPerspectiveCamera(components);
+      await world.camera.controls.setLookAt(78, 20, -2.2, 26, -4, 25);
 
       await components.init();
-
+      world.camera.projection.onChanged.add(() => {
+        const projection = world.camera.projection.current;
+        grid.fade = projection === "Perspective";
+      });
       // Scene setup
       world.scene.setup();
       world.scene.three.background = null;
@@ -588,23 +596,25 @@ const IFCViewer = () => {
   };
   const toggleModelVisibility = async (
     localIds: string[],
-    visible?: boolean
+    visible: boolean // Required parameter
   ) => {
-    const modelIdMap: OBC.ModelIdMap = {};
-    modelIdMap[modelName] = new Set(localIds.map((l) => parseInt(l)));
+    if (!localIds.length) return;
 
-    if (visible === true) {
-      // Show specific items
-      await hiderRef.current?.show(modelIdMap);
-    } else if (visible === false) {
-      // Hide specific items
-      await hiderRef.current?.hide(modelIdMap);
-    } else {
-      // Toggle if no visibility specified
-      await hiderRef.current?.toggle(modelIdMap);
+    try {
+      const modelIdMap: OBC.ModelIdMap = {};
+      modelIdMap[modelName] = new Set(localIds.map((l) => parseInt(l)));
+
+      console.log("🚀 ~ toggleModelVisibility ~ visible:", visible);
+      if (visible) {
+        await hiderRef.current?.show(modelIdMap);
+      } else {
+        await hiderRef.current?.hide(modelIdMap);
+      }
+    } catch (error) {
+      console.error("Toggle visibility error:", error);
+      throw error; // Re-throw to handle in calling code
     }
   };
-
   const hideAllItems = async () => {
     await hiderRef.current?.set(false);
   };
@@ -691,7 +701,7 @@ const IFCViewer = () => {
           toggleVisibilty={(localId) => toggleModelVisibility(localId)}
           isolateItem={(localId) => toggleModelIsolated(localId)}
           resetIsolated={(localId) => toggleModelVisibility(localId, true)}
-          currentActivityId={currentActivityId}
+          // currentActivityId={currentActivityId}
         />
 
         {projectsLoading ? (
@@ -711,81 +721,66 @@ const IFCViewer = () => {
                       modelRef={modelRef}
                     />
                   )}
-                  {/* 
                   {(() => {
-                    // Find the activity that is currently active based on timeline date
-                    const currentActivity =
-                      currentActivityId &&
-                      activities
-                        ?.filter(
-                          (activity) =>
-                            activity.linkedModelIds &&
-                            activity.linkedModelIds.length > 0
-                        )
-                        .find((activity) => activity.id === currentActivityId);
+                    const currentActivities = activities?.filter(
+                      (activity) =>
+                        currentActivityIds?.includes(activity.id) &&
+                        activity.linkedModelIds &&
+                        activity.linkedModelIds.length > 0
+                    );
 
-                    return currentActivity ? (
-                      <div className="p-4 border border-blue-200 rounded-lg shadow-lg bg-white/95 backdrop-blur-sm min-w-64">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                            <span className="text-sm font-semibold text-blue-700">
-                              CURRENT ACTIVITY
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <div>
-                            <span className="text-lg font-bold text-gray-900">
-                              {currentActivity.name}
+                    return currentActivities && currentActivities.length > 0 ? (
+                      <div className="p-2 border border-blue-200 rounded-lg shadow-sm bg-white/95 backdrop-blur-sm max-w-80">
+                        <div className="flex items-center gap-3">
+                          {/* Status Indicator */}
+                          <div className="flex items-center flex-shrink-0 gap-2">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                            <span className="text-xs font-semibold text-blue-700 whitespace-nowrap">
+                              Active:
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-4 text-sm text-gray-600">
-                            <div className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
-                              <span>
-                                {formatDateShort(currentActivity.startDate)}
-                              </span>
-                            </div>
-                            <span>→</span>
-                            <div className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
-                              <span>
-                                {formatDateShort(currentActivity.endDate)}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center justify-between pt-2">
-                            <div className="flex items-center gap-2">
-                              <div className="px-2 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded">
-                                {currentActivity.linkedModelIds?.length}{" "}
-                                elements
+                          {/* Activities as compact chips with vertical scroll */}
+                          <div className="flex-1 min-w-0">
+                            <div className="overflow-y-auto max-h-16 scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-gray-100">
+                              <div className="flex flex-col gap-1">
+                                {currentActivities.map((activity) => (
+                                  <div
+                                    key={activity.id}
+                                    className="flex items-center justify-between gap-2 px-2 py-1 text-xs transition-colors border border-blue-200 rounded bg-blue-50 hover:bg-blue-100"
+                                    title={`${activity.name} (${formatDateShort(
+                                      activity.startDate
+                                    )} - ${formatDateShort(activity.endDate)})`}
+                                  >
+                                    <span className="flex-1 font-medium text-blue-800 truncate">
+                                      {activity.name}
+                                    </span>
+                                    <span className="flex-shrink-0 font-bold text-blue-600">
+                                      {activity.linkedModelIds?.length}
+                                    </span>
+                                  </div>
+                                ))}
                               </div>
                             </div>
-                            <div className="text-xs font-medium text-green-600">
-                              Active Now
-                            </div>
+                          </div>
+
+                          {/* Total count badge */}
+                          <div className="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap">
+                            {currentActivities.length}
                           </div>
                         </div>
                       </div>
                     ) : (
-                      // Show when no activity is currently active
-                      <div className="p-4 border border-gray-200 rounded-lg shadow-lg bg-white/95 backdrop-blur-sm min-w-64">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                          <span className="text-sm font-semibold text-gray-600">
-                            CURRENT ACTIVITY
+                      <div className="p-2 border border-gray-200 rounded-lg shadow-sm bg-white/95 backdrop-blur-sm max-w-80">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                          <span className="text-xs font-semibold text-gray-600">
+                            No active activities
                           </span>
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          No active construction
                         </div>
                       </div>
                     );
-                  })()} */}
+                  })()}
                 </div>
 
                 {/* 3D Viewer - Takes remaining space */}
@@ -903,7 +898,7 @@ const IFCViewer = () => {
           toggleVisibility={(localId) => toggleModelVisibility(localId)}
           hideAllItems={hideAllItems}
           showAllItems={showAllItems}
-          setCurrentActivityId={setCurrentActivityId}
+          // setCurrentActivityId={setCurrentActivityId}
         />
       </div>
     </div>

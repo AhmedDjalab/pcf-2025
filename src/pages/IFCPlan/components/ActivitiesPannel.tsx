@@ -19,6 +19,8 @@ import moment from "moment";
 import { ActivityRelations, UdfSetting } from "src/state/slices/graphSlice";
 import { getExtendPropertyData } from "src/Helpers/parsers";
 import { ActivityModel } from "src/types/Project";
+import { selectCurrentActivityId } from "src/state/slices/bimSlice";
+import { useSelector } from "react-redux";
 
 export const ACTIVI = [
   {
@@ -591,7 +593,6 @@ interface ActivitiesPanelProps {
   resetIsolated: (modelIds: string[]) => void;
   onLink: (activityUid: string, modelIds: string[]) => void;
   getSelectedModelIds: () => string[];
-  currentActivityId?: string;
 }
 
 const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
@@ -602,7 +603,6 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
   getSelectedModelIds,
   activities,
   setActivities,
-  currentActivityId,
 }) => {
   console.log("🚀 ~ ActivitiesPanel ~ activities:", activities);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -615,6 +615,8 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
     activityId: "",
     activityUID: "",
   });
+
+  const currentActivityId = useSelector(selectCurrentActivityId);
 
   useEffect(() => {
     if (currentActivityId && activitiesListRef.current) {
