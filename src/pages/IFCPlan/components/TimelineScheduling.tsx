@@ -160,10 +160,11 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
         // ⭐ CRITICAL: Apply changes in proper sequence
         const updatePromises = [];
 
+        console.warn("🚀 ~ TimelineScheduling ~ toHideFinal:", toHideFinal);
         if (toHideFinal.length > 0) {
           updatePromises.push(toggleVisibility(toHideFinal, false));
         }
-
+        console.warn("🚀 ~ TimelineScheduling ~ toShowFinal:", toShow);
         if (toShow.length > 0) {
           updatePromises.push(toggleVisibility(toShow, true));
         }

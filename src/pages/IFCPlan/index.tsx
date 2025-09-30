@@ -604,12 +604,11 @@ const IFCViewer = () => {
       const modelIdMap: OBC.ModelIdMap = {};
       modelIdMap[modelName] = new Set(localIds.map((l) => parseInt(l)));
 
-      console.log("🚀 ~ toggleModelVisibility ~ visible:", visible);
-      if (visible) {
-        await hiderRef.current?.show(modelIdMap);
-      } else {
-        await hiderRef.current?.hide(modelIdMap);
-      }
+      const hider = componentsRef.current.get(OBC.Hider);
+      hiderRef.current = hider;
+      console.log("🚀 ~ toggleModelVisibility ~ visible:", visible, hider);
+
+      await hider.set(visible, modelIdMap);
     } catch (error) {
       console.error("Toggle visibility error:", error);
       throw error; // Re-throw to handle in calling code
@@ -895,7 +894,9 @@ const IFCViewer = () => {
       <div className="w-full bg-white border-t border-gray-300 shadow-lg">
         <TimelineScheduling
           activities={activities ?? []}
-          toggleVisibility={(localId) => toggleModelVisibility(localId)}
+          toggleVisibility={(localId, visible) =>
+            toggleModelVisibility(localId, visible)
+          }
           hideAllItems={hideAllItems}
           showAllItems={showAllItems}
           // setCurrentActivityId={setCurrentActivityId}
