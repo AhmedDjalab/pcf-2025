@@ -220,24 +220,37 @@ const IFCViewer = () => {
       highlighterRef.current = highlighter;
       try {
         // Blue highlight for currently active activities
-        highlighter.add("activeActivity", [
-          new THREE.MeshBasicMaterial({
-            color: 0x3b82f6,
-            transparent: true,
-            opacity: 0.6,
-            depthTest: false,
-          }),
-        ]);
+        // highlighter.add("activeActivity", [
+        //   new THREE.MeshBasicMaterial({
+        //     color: "red",
+        //     transparent: true,
+        //     opacity: 0.6,
+        //     depthTest: false,
+        //   }),
+        // ]);
+        highlighter.styles.set("activeActivity", {
+          color: "green", // hex string
+          opacity: 1,
+          transparent: false,
+          renderedFaces: 0,
+        });
+
+        highlighter.styles.set("persistentActivity", {
+          color: 0x0000ff, // numeric hex
+          opacity: 1,
+          transparent: false,
+          renderedFaces: 0,
+        });
 
         // Cyan for persistent activities
-        highlighter.add("persistentActivity", [
-          new THREE.MeshBasicMaterial({
-            color: 0x06b6d4,
-            transparent: true,
-            opacity: 0.4,
-            depthTest: false,
-          }),
-        ]);
+        // highlighter.add("persistentActivity", [
+        //   new THREE.MeshBasicMaterial({
+        //     color: "blue",
+        //     transparent: true,
+        //     opacity: 0.4,
+        //     depthTest: false,
+        //   }),
+        // ]);
       } catch (error) {
         console.warn("Could not create custom highlight styles:", error);
       }
@@ -943,10 +956,10 @@ const IFCViewer = () => {
               <div
                 style={{ width: "100%", height: "100%", position: "relative" }}
               >
-                {/* <CameraControls
+                <CameraControls
                   worldRef={worldRef}
                   fragmentsRef={fragmentsRef}
-                /> */}
+                />
                 <div className="absolute z-10 flex flex-col gap-3 top-4 left-4">
                   {panelsVisible && (
                     <AutomaticLinkingModal

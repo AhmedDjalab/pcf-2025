@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import {
   ArrowUp,
   ArrowDown,
@@ -7,7 +7,6 @@ import {
   Maximize2,
   RotateCcw,
 } from "lucide-react";
-import * as THREE from "three";
 
 interface CameraControlsProps {
   worldRef: React.MutableRefObject<any>;
@@ -18,99 +17,84 @@ const CameraControls: React.FC<CameraControlsProps> = ({
   worldRef,
   fragmentsRef,
 }) => {
-  const panSpeed = 5;
+  const panSpeed = 2;
   const zoomSpeed = 2;
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const panCamera = useCallback(
-    (direction: "up" | "down" | "left" | "right") => {
-      if (!worldRef.current?.camera) return;
-
-      const camera = worldRef.current.camera.three;
+    (direction: "up" | "down" | "left" | "right", speed = panSpeed) => {
+      if (!worldRef.current?.camera?.controls) return;
       const controls = worldRef.current.camera.controls;
-
-      // Get current camera direction vectors
-      const offset = new THREE.Vector3();
 
       switch (direction) {
         case "up":
-          offset.set(0, panSpeed, 0);
+          controls.truck(0, speed, false);
           break;
         case "down":
-          offset.set(0, -panSpeed, 0);
+          controls.truck(0, -speed, false);
           break;
         case "left":
-          // Pan left relative to camera view
-          const leftVector = new THREE.Vector3();
-          camera.getWorldDirection(leftVector);
-          leftVector.cross(camera.up).normalize().multiplyScalar(panSpeed);
-          offset.copy(leftVector);
+          controls.truck(-speed, 0, false);
           break;
         case "right":
-          // Pan right relative to camera view
-          const rightVector = new THREE.Vector3();
-          camera.getWorldDirection(rightVector);
-          rightVector.cross(camera.up).normalize().multiplyScalar(-panSpeed);
-          offset.copy(rightVector);
+          controls.truck(speed, 0, false);
           break;
       }
-
-      // Update camera and target position
-      camera.position.add(offset);
-      if (controls.target) {
-        controls.target.add(offset);
-      }
-      controls.update();
     },
     [panSpeed]
   );
 
   const zoomCamera = useCallback(
-    (direction: "in" | "out") => {
-      if (!worldRef.current?.camera) return;
-
-      const camera = worldRef.current.camera.three;
+    (direction: "in" | "out", speed = zoomSpeed) => {
+      if (!worldRef.current?.camera?.controls) return;
       const controls = worldRef.current.camera.controls;
-
-      const zoomDirection = new THREE.Vector3();
-      camera.getWorldDirection(zoomDirection);
-      zoomDirection
-        .normalize()
-        .multiplyScalar(direction === "in" ? zoomSpeed : -zoomSpeed);
-
-      camera.position.add(zoomDirection);
-      controls.update();
+      controls.forward(direction === "in" ? speed : -speed, false);
     },
     [zoomSpeed]
   );
 
-  const resetCamera = useCallback(async () => {
-    if (!worldRef.current?.camera) return;
-
-    // Reset to initial view
-    await worldRef.current.camera.controls.setLookAt(78, 20, -2.2, 26, -4, 25);
+  const resetCamera = useCallback(() => {
+    if (!worldRef.current?.camera?.controls) return;
+    worldRef.current.camera.controls.setLookAt(50, 50, 50, 0, 0, 0, true);
   }, []);
 
   const fitToView = useCallback(() => {
-    if (!worldRef.current?.camera || !fragmentsRef.current) return;
-
-    // Fit all models in view
+    if (!worldRef.current?.camera?.controls || !fragmentsRef.current) return;
     for (const [, model] of fragmentsRef.current.list) {
-      worldRef.current.camera.controls.fitToSphere(model.object, true);
-      break; // Fit to first model
+      worldRef.current.camera.controls.fitToSphere(model.boundingSphere, true);
+      break;
     }
   }, []);
 
-  // Keyboard controls
+  // --- Hold press handler ---
+  const handleHold = (
+    action: () => void,
+    speedUp = false // if true → accelerates over time
+  ) => {
+    let step = 1;
+    action(); // first immediate action
+    intervalRef.current = setInterval(() => {
+      action();
+      if (speedUp && step < 10) step += 0.5; // increase speed gradually
+    }, 100); // every 100ms
+  };
+
+  const stopHold = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  // Keyboard controls (still works)
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      // Don't trigger if user is typing in an input
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement
       ) {
         return;
       }
-
       switch (e.key) {
         case "ArrowUp":
           e.preventDefault();
@@ -150,7 +134,6 @@ const CameraControls: React.FC<CameraControlsProps> = ({
           break;
       }
     };
-
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [panCamera, zoomCamera, resetCamera, fitToView]);
@@ -160,89 +143,68 @@ const CameraControls: React.FC<CameraControlsProps> = ({
       {/* Direction Controls */}
       <div className="p-2 bg-white border border-gray-300 rounded-lg shadow-lg">
         <div className="flex flex-col items-center gap-1">
-          {/* Up Arrow */}
+          {/* Up */}
           <button
-            onClick={() => panCamera("up")}
-            className="p-2 transition-colors bg-gray-100 rounded hover:bg-blue-100 active:bg-blue-200"
-            title="Pan Up (↑)"
+            onMouseDown={() => handleHold(() => panCamera("down"), true)}
+            onMouseUp={stopHold}
+            onMouseLeave={stopHold}
           >
-            <ArrowUp className="w-5 h-5 text-gray-700" />
+            <ArrowUp />
           </button>
 
-          {/* Left, Center, Right */}
+          {/* Left / Fit / Right */}
           <div className="flex gap-1">
             <button
-              onClick={() => panCamera("left")}
-              className="p-2 transition-colors bg-gray-100 rounded hover:bg-blue-100 active:bg-blue-200"
-              title="Pan Left (←)"
+              onMouseDown={() => handleHold(() => panCamera("left"), true)}
+              onMouseUp={stopHold}
+              onMouseLeave={stopHold}
             >
-              <ArrowLeft className="w-5 h-5 text-gray-700" />
+              <ArrowLeft />
             </button>
-
-            <button
-              onClick={fitToView}
-              className="p-2 transition-colors bg-gray-100 rounded hover:bg-green-100 active:bg-green-200"
-              title="Fit to View (F)"
-            >
-              <Maximize2 className="w-5 h-5 text-gray-700" />
+            <button onClick={fitToView}>
+              <Maximize2 />
             </button>
-
             <button
-              onClick={() => panCamera("right")}
-              className="p-2 transition-colors bg-gray-100 rounded hover:bg-blue-100 active:bg-blue-200"
-              title="Pan Right (→)"
+              onMouseDown={() => handleHold(() => panCamera("right"), true)}
+              onMouseUp={stopHold}
+              onMouseLeave={stopHold}
             >
-              <ArrowRight className="w-5 h-5 text-gray-700" />
+              <ArrowRight />
             </button>
           </div>
 
-          {/* Down Arrow */}
+          {/* Down */}
           <button
-            onClick={() => panCamera("down")}
-            className="p-2 transition-colors bg-gray-100 rounded hover:bg-blue-100 active:bg-blue-200"
-            title="Pan Down (↓)"
+            onMouseDown={() => handleHold(() => panCamera("up"), true)}
+            onMouseUp={stopHold}
+            onMouseLeave={stopHold}
           >
-            <ArrowDown className="w-5 h-5 text-gray-700" />
+            <ArrowDown />
           </button>
         </div>
       </div>
 
-      {/* Zoom Controls */}
+      {/* Zoom */}
       <div className="flex gap-1 p-2 bg-white border border-gray-300 rounded-lg shadow-lg">
         <button
-          onClick={() => zoomCamera("in")}
-          className="px-3 py-2 text-lg font-bold transition-colors bg-gray-100 rounded hover:bg-blue-100 active:bg-blue-200"
-          title="Zoom In (+)"
+          onMouseDown={() => handleHold(() => zoomCamera("in"), true)}
+          onMouseUp={stopHold}
+          onMouseLeave={stopHold}
         >
           +
         </button>
         <button
-          onClick={() => zoomCamera("out")}
-          className="px-3 py-2 text-lg font-bold transition-colors bg-gray-100 rounded hover:bg-blue-100 active:bg-blue-200"
-          title="Zoom Out (-)"
+          onMouseDown={() => handleHold(() => zoomCamera("out"), true)}
+          onMouseUp={stopHold}
+          onMouseLeave={stopHold}
         >
           −
         </button>
       </div>
 
-      {/* Reset Camera */}
-      <button
-        onClick={resetCamera}
-        className="flex items-center justify-center gap-2 p-2 text-sm text-white transition-colors bg-blue-600 rounded-lg shadow-lg hover:bg-blue-700 active:bg-blue-800"
-        title="Reset Camera (R)"
-      >
-        <RotateCcw className="w-4 h-4" />
-        Reset View
+      <button className="bg-white p-2" onClick={resetCamera}>
+        <RotateCcw /> Reset
       </button>
-
-      {/* Keyboard Shortcuts Info */}
-      <div className="p-2 text-xs text-gray-600 bg-white border border-gray-200 rounded-lg shadow-sm">
-        <div className="mb-1 font-semibold">Keyboard:</div>
-        <div>Arrows: Pan</div>
-        <div>+/-: Zoom</div>
-        <div>F: Fit view</div>
-        <div>R: Reset</div>
-      </div>
     </div>
   );
 };
