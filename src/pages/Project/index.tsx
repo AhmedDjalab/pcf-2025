@@ -93,7 +93,7 @@ const Projects = () => {
           className="focus:outline-none no-underline text-white bg-fuchsia-500 hover:bg-fuchsia-800 focus:ring-4 focus:ring-bg-fuchsia-300 font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-fuchsia-600 dark:hover-bg-fuchsia-700 dark:focus:ring-ebg-fuchsia-900"
         >
           <EyeIcon className="inline w-5 h-5 mr-2" />
-          Bim
+          BIM4D
         </Link>
         <Link
           to={`/view-plan/${value}`}
