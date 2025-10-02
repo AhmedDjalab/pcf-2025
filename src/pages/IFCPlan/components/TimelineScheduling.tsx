@@ -27,6 +27,7 @@ interface TimelineSchedulingProps {
   toggleVisibility: (modelIds: string[], visible?: boolean) => Promise<void>;
   hideAllItems?: () => Promise<void>;
   showAllItems?: () => Promise<void>;
+  applyVisibility?: any;
 }
 
 const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
@@ -34,6 +35,7 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
   toggleVisibility,
   hideAllItems,
   showAllItems,
+  applyVisibility,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -86,108 +88,169 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
       setVisibleModelIds(new Set());
     }
   }, [isPlaying, hideAllItems]);
+  // useEffect(() => {
+  //   if (activities.length === 0 || !isPlaying) return;
+
+  //   if (updateTimeoutRef.current) {
+  //     clearTimeout(updateTimeoutRef.current);
+  //   }
+
+  //   updateTimeoutRef.current = setTimeout(async () => {
+  //     if (isUpdatingRef.current) return;
+  //     isUpdatingRef.current = true;
+
+  //     try {
+  //       // ⭐ Calculate final visible set
+  //       const shouldBeVisible = new Set<string>();
+
+  //       activities.forEach((activity) => {
+  //         const hasStarted = currentDate >= activity.startDate;
+  //         const hasEnded = currentDate > activity.endDate;
+  //         const hasLinkedModels = (activity.linkedModelIds?.length ?? 0) > 0;
+
+  //         if (!hasLinkedModels || !activity.linkedModelIds) return;
+
+  //         if (activity.persistAfterEnd === true && hasStarted) {
+  //           // Persistent: visible once started
+  //           activity.linkedModelIds.forEach((id) => shouldBeVisible.add(id));
+  //         } else if (hasStarted && !hasEnded) {
+  //           // Active non-persistent: visible during range
+  //           activity.linkedModelIds.forEach((id) => shouldBeVisible.add(id));
+  //         }
+  //         // Non-persistent + ended → do nothing (they stay hidden)
+  //       });
+
+  //       // If nothing changed, skip
+  //       const noChange =
+  //         shouldBeVisible.size === visibleModelIds.size &&
+  //         [...shouldBeVisible].every((id) => visibleModelIds.has(id));
+
+  //       if (noChange) {
+  //         isUpdatingRef.current = false;
+  //         return;
+  //       }
+
+  //       console.log("Visibility update:", {
+  //         date: formatDateShort(currentDate),
+  //         totalVisible: shouldBeVisible.size,
+  //         persistent: activities.filter(
+  //           (a) => a.persistAfterEnd && currentDate >= a.startDate
+  //         ).length,
+  //       });
+
+  //       // ⭐ Apply final state in one go
+  //       await applyVisibility(shouldBeVisible);
+
+  //       // Update state
+  //       setVisibleModelIds(shouldBeVisible);
+  //     } catch (error) {
+  //       console.error("Visibility update error:", error);
+  //     } finally {
+  //       isUpdatingRef.current = false;
+  //     }
+  //   }, 100);
+
+  //   return () => {
+  //     if (updateTimeoutRef.current) {
+  //       clearTimeout(updateTimeoutRef.current);
+  //     }
+  //   };
+  // }, [currentDate, activities, isPlaying, visibleModelIds]);
+  // ⭐ Update current activity names
+
+  // useEffect(() => {
+  //   if (activities.length === 0 || !isPlaying || !applyVisibility) return;
+
+  //   const updateVisibility = async () => {
+  //     if (isUpdatingRef.current) return;
+  //     isUpdatingRef.current = true;
+
+  //     try {
+  //       // Calculate final visible set
+  //       const shouldBeVisible = new Set<string>();
+
+  //       activities.forEach((activity) => {
+  //         const hasStarted = currentDate >= activity.startDate;
+  //         const hasEnded = currentDate > activity.endDate;
+  //         const hasLinkedModels = (activity.linkedModelIds?.length ?? 0) > 0;
+
+  //         if (!hasLinkedModels || !activity.linkedModelIds) return;
+
+  //         if (activity.persistAfterEnd === true && hasStarted) {
+  //           // Persistent: visible once started
+  //           activity.linkedModelIds.forEach((id) => shouldBeVisible.add(id));
+  //         } else if (hasStarted && !hasEnded) {
+  //           // Active non-persistent: visible during range
+  //           activity.linkedModelIds.forEach((id) => shouldBeVisible.add(id));
+  //         }
+  //       });
+
+  //       // Only update if there are actual changes
+  //       const hasChanges =
+  //         shouldBeVisible.size !== visibleModelIds.size ||
+  //         ![...shouldBeVisible].every((id) => visibleModelIds.has(id));
+
+  //       if (hasChanges) {
+  //         console.log("Visibility update:", {
+  //           date: formatDateShort(currentDate),
+  //           totalVisible: shouldBeVisible.size,
+  //           changes: true,
+  //         });
+
+  //         await applyVisibility(shouldBeVisible);
+  //         setVisibleModelIds(shouldBeVisible);
+  //       }
+  //     } catch (error) {
+  //       console.error("Visibility update error:", error);
+  //     } finally {
+  //       isUpdatingRef.current = false;
+  //     }
+  //   };
+
+  //   // Debounce the visibility updates
+  //   const timeoutId = setTimeout(updateVisibility, 50);
+
+  //   return () => {
+  //     clearTimeout(timeoutId);
+  //   };
+  // }, [currentDate, activities, isPlaying, applyVisibility]);
+
   useEffect(() => {
-    if (activities.length === 0 || !isPlaying) return;
+    if (activities.length === 0 || !isPlaying || !applyVisibility) return;
 
-    if (updateTimeoutRef.current) {
-      clearTimeout(updateTimeoutRef.current);
-    }
+    const updateVisibility = async () => {
+      // Calculate final visible set based on current date
+      const shouldBeVisible = new Set<string>();
 
-    updateTimeoutRef.current = setTimeout(async () => {
-      if (isUpdatingRef.current) return;
-      isUpdatingRef.current = true;
+      activities.forEach((activity) => {
+        const hasStarted = currentDate >= activity.startDate;
+        const hasEnded = currentDate > activity.endDate;
+        const hasLinkedModels = (activity.linkedModelIds?.length ?? 0) > 0;
 
-      try {
-        // Start with persistent activities that should always be visible
-        const shouldBeVisible = new Set<string>();
-        const toHide = new Set<string>();
+        if (!hasLinkedModels || !activity.linkedModelIds) return;
 
-        activities.forEach((activity) => {
-          const hasStarted = currentDate >= activity.startDate;
-          const hasEnded = currentDate > activity.endDate;
-          const hasLinkedModels = (activity.linkedModelIds?.length ?? 0) > 0;
-
-          if (!hasLinkedModels || !activity.linkedModelIds) return;
-
-          if (activity.persistAfterEnd === true && hasStarted) {
-            // ⭐ PERSISTENT: Once started, always visible
-            activity.linkedModelIds.forEach((id) => shouldBeVisible.add(id));
-          } else if (hasStarted && !hasEnded) {
-            // ⭐ ACTIVE NON-PERSISTENT: Show while within date range
-            activity.linkedModelIds.forEach((id) => shouldBeVisible.add(id));
-          } else if (hasEnded && !activity.persistAfterEnd) {
-            console.warn(
-              "this is issues ",
-              activity.activityUID,
-              activity.persistAfterEnd
-            );
-            // ⭐ ENDED NON-PERSISTENT: Hide after end date
-            activity.linkedModelIds.forEach((id) => toHide.add(id));
-          }
-          // ⭐ PERSISTENT activities that haven't started yet are not added
-        });
-
-        // Calculate changes from current state
-        const currentlyVisible = visibleModelIds;
-        const toShow = Array.from(shouldBeVisible).filter(
-          (id) => !currentlyVisible.has(id)
-        );
-        const toHideFinal = Array.from(toHide).filter((id) =>
-          currentlyVisible.has(id)
-        );
-
-        // Remove any items from current visibility that shouldn't be visible
-        currentlyVisible.forEach((id) => {
-          if (!shouldBeVisible.has(id) && !toHide.has(id)) {
-            toHideFinal.push(id);
-          }
-        });
-
-        if (toShow.length === 0 && toHideFinal.length === 0) {
-          isUpdatingRef.current = false;
-          return;
+        // Persistent items: show once started, never hide
+        if (activity.persistAfterEnd === true && hasStarted) {
+          activity.linkedModelIds.forEach((id) => shouldBeVisible.add(id));
         }
-
-        console.log("Visibility update:", {
-          date: formatDateShort(currentDate),
-          toShow: toShow.length,
-          toHide: toHideFinal.length,
-          persistent: activities.filter(
-            (a) => a.persistAfterEnd && currentDate >= a.startDate
-          ).length,
-        });
-
-        // ⭐ CRITICAL: Apply changes in proper sequence
-        const updatePromises = [];
-
-        console.warn("🚀 ~ TimelineScheduling ~ toHideFinal:", toHideFinal);
-        if (toHideFinal.length > 0) {
-          updatePromises.push(toggleVisibility(toHideFinal, false));
+        // Non-persistent items: only show during active period
+        else if (hasStarted && !hasEnded) {
+          activity.linkedModelIds.forEach((id) => shouldBeVisible.add(id));
         }
-        console.warn("🚀 ~ TimelineScheduling ~ toShowFinal:", toShow);
-        if (toShow.length > 0) {
-          updatePromises.push(toggleVisibility(toShow, true));
-        }
+        // Items that haven't started or have ended (non-persistent) stay hidden
+      });
 
-        // Wait for all updates to complete
-        await Promise.all(updatePromises);
+      // Apply the visibility state
+      await applyVisibility(shouldBeVisible);
+    };
 
-        // Update state with the final visibility set
-        setVisibleModelIds(shouldBeVisible);
-      } catch (error) {
-        console.error("Visibility update error:", error);
-      } finally {
-        isUpdatingRef.current = false;
-      }
-    }, 100); // Increased debounce for stability
+    // ✅ Reduced debounce time since the manager now handles redundant updates
+    const timeoutId = setTimeout(updateVisibility, 16); // ~60fps
 
     return () => {
-      if (updateTimeoutRef.current) {
-        clearTimeout(updateTimeoutRef.current);
-      }
+      clearTimeout(timeoutId);
     };
-  }, [currentDate, activities, isPlaying, visibleModelIds, toggleVisibility]);
-  // ⭐ Update current activity names
+  }, [currentDate, activities, isPlaying, applyVisibility]);
   useEffect(() => {
     if (activities.length === 0) return;
 
@@ -343,6 +406,22 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
       </div>
     );
   }
+  const getVisibleCount = () => {
+    return activities.reduce((count, activity) => {
+      const hasStarted = currentDate >= activity.startDate;
+      const hasEnded = currentDate > activity.endDate;
+      const hasLinkedModels = (activity.linkedModelIds?.length ?? 0) > 0;
+
+      if (!hasLinkedModels) return count;
+
+      if (activity.persistAfterEnd && hasStarted) {
+        return count + (activity.linkedModelIds?.length || 0);
+      } else if (hasStarted && !hasEnded) {
+        return count + (activity.linkedModelIds?.length || 0);
+      }
+      return count;
+    }, 0);
+  };
 
   return (
     <div className="w-full bg-white">
@@ -418,9 +497,22 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
           </select>
 
           {/* Progress Indicator */}
-          <div className="text-xs text-gray-600">
+          {/* <div className="text-xs text-gray-600">
             <span className="font-medium text-green-600">
               {visibleModelIds.size}
+            </span>
+            <span className="text-gray-400">/</span>
+            <span>
+              {activities.reduce(
+                (sum, a) => sum + (a.linkedModelIds?.length || 0),
+                0
+              )}
+            </span>
+            <div className="text-xs text-gray-500">Visible</div>
+          </div> */}
+          <div className="text-xs text-gray-600">
+            <span className="font-medium text-green-600">
+              {getVisibleCount()}
             </span>
             <span className="text-gray-400">/</span>
             <span>
