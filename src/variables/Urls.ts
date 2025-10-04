@@ -10,7 +10,7 @@ export const CompanyKey = "@Auth:Company_Key";
 export const AuthUserKey = "@Auth:user";
 export const refreshTokens = "refreshToken";
 export const languageKey = "language";
-const env = process.env.REACT_APP_URL;
+const env = import.meta.env.VITE_API_URL;
 export const usedUrl = env;
 //const usedUrl = mainApiUrl;
 //usedUrl = localmainApiUrl;
@@ -59,6 +59,8 @@ export const TaskSlotsUrl = usedUrl + "/TaskSlots";
 export const ActivityStylesUrl = usedUrl + "/ActivityStyles";
 export const ProjectEmployeesUrl = usedUrl + "/ProjectEmployees";
 export const PlansUrl = usedUrl + "/Plans";
+export const BimUrl = usedUrl + "/Bim";
 
 export const UploadImagesUrl = ImagesUrl + "/UploadImage";
+export const UploadFilesUrl = ImagesUrl + "/UploadFile";
 export const HubUrl = siteName + "/notificationHub";

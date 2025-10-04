@@ -13,17 +13,20 @@ import fileMetaReducer, { FileMeta } from "./fileMeta";
 import stageDataReducer, { StageData } from "./currentStageData";
 import stageDataListReducer, { StageDataListItem } from "./stageDataList";
 import imageAssetListReducer, { ImageAssetListItem } from "./imageAssetList";
+import { BimState } from "./slices/bimSlice";
+import bimState from "./slices/bimSlice";
 
 export type StoreState = {
   graph: GraphDataType;
   fileMeta: FileMeta;
+  bim: BimState;
   currentStageData: EntityState<StageData["attrs"]>;
   stageDataList: EntityState<StageDataListItem>;
   imageAssetList: EntityState<ImageAssetListItem>;
 };
 const rootReducer = combineReducers({
   graph: graphSlice,
-
+  bim: bimState,
   fileMeta: fileMetaReducer,
   currentStageData: stageDataReducer,
   stageDataList: stageDataListReducer,

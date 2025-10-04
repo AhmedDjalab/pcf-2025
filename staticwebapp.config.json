@@ -1,5 +1,17 @@
 {
   "navigationFallback": {
     "rewrite": "/index.html"
-  }
+  },
+
+  "mimeTypes": {
+    ".wasm": "application/wasm"
+  },
+  "routes": [
+    {
+      "route": "/wasm/*",
+      "headers": {
+        "Access-Control-Allow-Origin": "*"
+      }
+    }
+  ]
 }

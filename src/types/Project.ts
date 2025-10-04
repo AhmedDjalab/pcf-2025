@@ -21,6 +21,7 @@ export interface Project {
   CreatedAt?: Date;
   ModifierName?: string;
   CreatorName?: string;
+  ifcFileUrl?: string;
   dataDate?: Date;
   userId?: string;
   fileName?: string;
@@ -49,6 +50,8 @@ export interface ActivityModel {
   quantity?: number;
   productionRate?: number;
   workShops?: number;
+  linkedModelIds?: string[];
+  persistAfterEnd?: boolean;
 }
 
 export interface ActivityStyleModel {

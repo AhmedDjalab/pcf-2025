@@ -176,6 +176,7 @@ export interface ProjectSettings {
   file?: string;
   fileName?: string;
   dataDate?: Date;
+  ifcFileUrl?: string;
   hypothesisDescriptions?: string;
   activitiesRelation?: ActivityRelations[];
 }
@@ -409,6 +410,7 @@ export const saveProjectThunk = createAsyncThunk<
       id: state.graph.id,
       title: state.graph.projectSettings.title,
       logoUrl: state.graph.projectSettings.logoImg,
+      ifcFileUrl: state.graph.projectSettings.ifcFileUrl,
       logoUrlId: state.graph.projectSettings.logoId,
       clientLogoUrl: state.graph.projectSettings.clientlogoImg,
       clientLogoId: state.graph.projectSettings.clientlogoImgId,
