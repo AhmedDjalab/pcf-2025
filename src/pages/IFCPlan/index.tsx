@@ -28,6 +28,7 @@ import {
 import { useSelector } from "react-redux";
 import { useVisibilityManager } from "./components/useVisibilityManager";
 import CameraControls from "./components/CameraControls";
+import { useTranslation } from "react-i18next";
 
 const formatDateShort = (date: Date): string => {
   return date.toLocaleDateString("en-US", {
@@ -37,6 +38,7 @@ const formatDateShort = (date: Date): string => {
 };
 const IFCViewer = () => {
   const { id } = useParams();
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const componentsRef = useRef<OBC.Components | null>(null);
   const worldRef = useRef<OBC.World | null>(null);
@@ -970,7 +972,7 @@ const IFCViewer = () => {
                           <div className="flex items-center flex-shrink-0 gap-2">
                             <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                             <span className="text-xs font-semibold text-blue-700 whitespace-nowrap">
-                              Active:
+                              {t("ifcPlan.activeStatus")}:
                             </span>
                           </div>
 
@@ -1009,7 +1011,7 @@ const IFCViewer = () => {
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
                           <span className="text-xs font-semibold text-gray-600">
-                            No active activities
+                            {t("ifcPlan.noActiveActivities")}
                           </span>
                         </div>
                       </div>
@@ -1032,12 +1034,12 @@ const IFCViewer = () => {
                     {panelsVisible ? (
                       <>
                         <EyeOff className="w-4 h-4" />
-                        Hide Panels
+                        {t("ifcPlan.hidePanels")}
                       </>
                     ) : (
                       <>
                         <Eye className="w-4 h-4" />
-                        Show Panels
+                        {t("ifcPlan.showPanels")}
                       </>
                     )}
                   </button>
@@ -1074,7 +1076,7 @@ const IFCViewer = () => {
                     }}
                   >
                     <div style={{ color: "white", fontSize: "24px" }}>
-                      Loading...
+                      {t("ifcPlan.loading")}
                     </div>
                   </div>
                 )}
@@ -1094,11 +1096,11 @@ const IFCViewer = () => {
                       zIndex: 1001,
                     }}
                   >
-                    Error: {error}
+                    {t("ifcPlan.error")}: {error}
                   </div>
                 )}
 
-                {/* Upload / Load buttonsjzs */}
+                {/* Upload / Load buttons */}
                 {panelsVisible && (canWrite || isAdmin) && (
                   <div
                     style={{
@@ -1115,7 +1117,7 @@ const IFCViewer = () => {
                       onClick={handleSaveBimData}
                       className="w-40 p-4 text-white bg-primary hover:bg-primary-500"
                     >
-                      Save
+                      {t("ifcPlan.save")}
                     </button>
                   </div>
                 )}

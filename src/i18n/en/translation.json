@@ -435,5 +435,75 @@
     "month": "Month",
     "year": "Year"
   },
-  "export.pdf": "PDF"
+  "export.pdf": "PDF",
+
+  "activitiesPanel": {
+    "title": "Activities Panel",
+    "expand": "Expand Panel",
+    "collapse": "Collapse Panel",
+    "noActivities": "No activities found matching your search criteria",
+    "search": {
+      "activityId": "Search by Activity ID",
+      "activityIdPlaceholder": "Filter by Activity ID...",
+      "activityUID": "Search by Activity UID",
+      "activityUIDPlaceholder": "Filter by Activity UID..."
+    },
+    "activity": {
+      "current": "CURRENT",
+      "id": "ID",
+      "uid": "UID",
+      "duration": "Duration",
+      "linkedElements": "linked elements",
+      "linkedTo": "Linked to",
+      "modelElements": "model element",
+      "noLinkedElements": "No linked elements"
+    },
+    "visibility": {
+      "visible": "Visible",
+      "hidden": "Hidden",
+      "show": "Show",
+      "hide": "Hide",
+      "persistAfterEnd": "Persist After EndDate",
+      "hideAfterEnd": "Hide After EndDate"
+    },
+    "actions": {
+      "persist": "Persist",
+      "link": "Link",
+      "linkSelected": "Link Selected Elements",
+      "isolate": "Isolate",
+      "isolateElements": "Isolate Elements",
+      "resetIsolation": "Reset Isolation",
+      "showElements": "Show Elements",
+      "hideElements": "Hide Elements"
+    },
+    "footer": {
+      "totalActivities": "Total Activities",
+      "filteredActivities": "Filtered Activities",
+      "linkedActivities": "Linked Activities",
+      "notPersistedActivities": "Not Persisted Activities",
+      "isolated": "Isolated"
+    }
+  },
+  "ifcPlan": {
+    "activeStatus": "Active",
+    "noActiveActivities": "No active activities",
+    "hidePanels": "Hide Panels",
+    "showPanels": "Show Panels",
+    "loading": "Loading...",
+    "error": "Error",
+    "save": "Save"
+  },
+  "timeline": {
+    "reset": "Reset",
+    "play": "Play",
+    "pause": "Pause",
+    "current": "Current",
+    "visible": "Visible",
+    "speed": {
+      "fast": "Fast",
+      "medium": "Medium",
+      "normal": "Normal",
+      "slow": "Slow"
+    }
+  }
 }

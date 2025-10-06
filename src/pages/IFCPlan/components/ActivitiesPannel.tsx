@@ -22,6 +22,7 @@ import { ActivityModel } from "src/types/Project";
 import { selectCurrentActivityId } from "src/state/slices/bimSlice";
 import { useSelector } from "react-redux";
 import { useAuth } from "src/context/UserContext";
+import { useTranslation } from "react-i18next";
 
 export const ACTIVI = [
   {
@@ -606,7 +607,7 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
   setActivities,
 }) => {
   const { canWrite, isAdmin } = useAuth();
-
+  const { t } = useTranslation();
   console.log("🚀 ~ ActivitiesPanel ~ activities:", activities);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const activitiesListRef = useRef(null);
@@ -791,7 +792,7 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
         {!isCollapsed && (
           <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-800">
             <Calendar className="w-5 h-5" />
-            Activities Panel
+            {t("activitiesPanel.title")}
           </h2>
         )}
         <div className="flex items-center gap-2">
@@ -799,7 +800,7 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
             <button
               onClick={handleResetIsolation}
               className="flex items-center gap-1 px-3 py-1 text-sm text-white transition-colors bg-orange-500 rounded hover:bg-orange-600"
-              title="Reset Isolation"
+              title={t("activitiesPanel.actions.resetIsolation")}
             >
               <RotateCcw className="w-4 h-4" />
             </button>
@@ -807,7 +808,11 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="p-1.5 text-gray-500 transition-colors rounded hover:bg-gray-200 hover:text-gray-700"
-            title={isCollapsed ? "Expand Panel" : "Collapse Panel"}
+            title={
+              isCollapsed
+                ? t("activitiesPanel.expand")
+                : t("activitiesPanel.collapse")
+            }
           >
             {isCollapsed ? (
               <ChevronRight className="w-4 h-4" />
@@ -823,13 +828,13 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
         <div className="p-4 space-y-3 border-b border-gray-200 bg-gray-50">
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Search by Activity ID
+              {t("activitiesPanel.search.activityId")}
             </label>
             <div className="relative">
               <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
               <input
                 type="text"
-                placeholder="Filter by Activity ID..."
+                placeholder={t("activitiesPanel.search.activityIdPlaceholder")}
                 value={searchFilters.activityId}
                 onChange={(e) =>
                   handleSearchFilterChange("activityId", e.target.value)
@@ -841,13 +846,13 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Search by Activity UID
+              {t("activitiesPanel.search.activityUID")}
             </label>
             <div className="relative">
               <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
               <input
                 type="text"
-                placeholder="Filter by Activity UID..."
+                placeholder={t("activitiesPanel.search.activityUIDPlaceholder")}
                 value={searchFilters.activityUID}
                 onChange={(e) =>
                   handleSearchFilterChange("activityUID", e.target.value)
@@ -882,7 +887,7 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                 }`}
                 title={`${activity.name}\n${
                   activity.linkedModelIds?.length || 0
-                } linked elements`}
+                } ${t("activitiesPanel.activity.linkedElements")}`}
               >
                 <div className="flex flex-col items-center gap-1">
                   <Calendar
@@ -912,7 +917,7 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
             {filteredActivities.length === 0 ? (
               <div className="py-8 text-center text-gray-500">
                 <Search className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                <p>No activities found matching your search criteria</p>
+                <p>{t("activitiesPanel.noActivities")}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -940,13 +945,19 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                           </h3>
                           {currentActivityId === activity.id && (
                             <div className="px-2 py-1 text-xs font-bold text-white bg-blue-500 rounded-full">
-                              CURRENT
+                              {t("activitiesPanel.activity.current")}
                             </div>
                           )}
                         </div>
                         <div className="space-y-1 text-xs text-gray-500">
-                          <div>ID: {activity.activityId}</div>
-                          <div>UID: {activity.activityUID}</div>
+                          <div>
+                            {t("activitiesPanel.activity.id")}:{" "}
+                            {activity.activityId}
+                          </div>
+                          <div>
+                            {t("activitiesPanel.activity.uid")}:{" "}
+                            {activity.activityUID}
+                          </div>
                         </div>
                       </div>
 
@@ -966,8 +977,10 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                             }`}
                             title={
                               activity.persistAfterEnd
-                                ? "Persist After EndDate"
-                                : "Hide After EndDate"
+                                ? t(
+                                    "activitiesPanel.visibility.persistAfterEnd"
+                                  )
+                                : t("activitiesPanel.visibility.hideAfterEnd")
                             }
                           >
                             {activity.persistAfterEnd ? (
@@ -975,7 +988,7 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                             ) : (
                               <ToggleLeft className="w-4 h-4 text-gray-400" />
                             )}
-                            Persist
+                            {t("activitiesPanel.actions.persist")}
                           </button>
                         )}
                         {/* Timeline Status Badge */}
@@ -986,7 +999,9 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                               : "bg-gray-100 text-gray-500"
                           }`}
                         >
-                          {activity.persistAfterEnd ? "Visible" : "Hidden"}
+                          {activity.persistAfterEnd
+                            ? t("activitiesPanel.visibility.visible")
+                            : t("activitiesPanel.visibility.hidden")}
                         </div>
                       </div>
                     </div>
@@ -995,14 +1010,16 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                     <div className="p-2 mb-3 text-sm rounded bg-gray-50">
                       <div className="flex items-center gap-2 mb-1 text-gray-600">
                         <Clock className="w-3 h-3" />
-                        <span className="font-medium">Persist</span>
+                        <span className="font-medium">
+                          {t("activitiesPanel.actions.persist")}
+                        </span>
                       </div>
                       <div className="text-gray-700">
                         {formatDate(activity.startDate)} →{" "}
                         {formatDate(activity.endDate)}
                       </div>
                       <div className="mt-1 text-xs text-gray-500">
-                        Duration:{" "}
+                        {t("activitiesPanel.activity.duration")}:{" "}
                         {getDuration(activity.startDate, activity.endDate)} |
                         PK: {activity.startPk}-{activity.endPk}
                       </div>
@@ -1013,14 +1030,15 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                       {(activity?.linkedModelIds?.length ?? 0) > 0 ? (
                         <div className="flex items-center gap-2 text-sm text-green-600">
                           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                          Linked to {activity.linkedModelIds?.length} model
-                          element
+                          {t("activitiesPanel.activity.linkedTo")}{" "}
+                          {activity.linkedModelIds?.length}{" "}
+                          {t("activitiesPanel.activity.modelElements")}
                           {activity.linkedModelIds?.length !== 1 ? "s" : ""}
                         </div>
                       ) : (
                         <div className="flex items-center gap-2 text-sm text-gray-400">
                           <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                          No linked elements
+                          {t("activitiesPanel.activity.noLinkedElements")}
                         </div>
                       )}
                     </div>
@@ -1032,10 +1050,10 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                         <button
                           onClick={() => handleLink(activity.activityUID!)}
                           className="flex items-center gap-1 px-3 py-1.5 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors"
-                          title="Link Selected Elements"
+                          title={t("activitiesPanel.actions.linkSelected")}
                         >
                           <Link className="w-3 h-3" />
-                          Link
+                          {t("activitiesPanel.actions.link")}
                         </button>
 
                         {/* Toggle Visibility Button */}
@@ -1051,8 +1069,8 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                           }`}
                           title={
                             visibilityState[activity.activityUID!]
-                              ? "Show Elements"
-                              : "Hide Elements"
+                              ? t("activitiesPanel.actions.showElements")
+                              : t("activitiesPanel.actions.hideElements")
                           }
                         >
                           {visibilityState[activity.activityUID!] ? (
@@ -1061,8 +1079,8 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                             <Eye className="w-3 h-3" />
                           )}
                           {visibilityState[activity.activityUID!]
-                            ? "Show"
-                            : "Hide"}
+                            ? t("activitiesPanel.visibility.show")
+                            : t("activitiesPanel.visibility.hide")}
                         </button>
 
                         {/* Isolate Button */}
@@ -1078,10 +1096,10 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                               ? "text-gray-400 bg-gray-100 cursor-not-allowed"
                               : "text-white bg-purple-500 hover:bg-purple-600"
                           }`}
-                          title="Isolate Elements"
+                          title={t("activitiesPanel.actions.isolateElements")}
                         >
                           <Focus className="w-3 h-3" />
-                          Isolate
+                          {t("activitiesPanel.actions.isolate")}
                         </button>
                       </div>
                     )}
@@ -1096,22 +1114,27 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
       {/* Footer Info - Hidden when collapsed */}
       {!isCollapsed && (
         <div className="p-4 text-xs text-gray-500 border-t border-gray-200 bg-gray-50">
-          <div>Total Activities: {activities.length}</div>
-          <div>Filtered Activities: {filteredActivities.length}</div>
           <div>
-            Linked Activities:{" "}
+            {t("activitiesPanel.footer.totalActivities")}: {activities.length}
+          </div>
+          <div>
+            {t("activitiesPanel.footer.filteredActivities")}:{" "}
+            {filteredActivities.length}
+          </div>
+          <div>
+            {t("activitiesPanel.footer.linkedActivities")}:{" "}
             {
               activities.filter((a) => (a.linkedModelIds?.length ?? 0) > 0)
                 .length
             }
           </div>
           <div>
-            Not Persisted Activities:
+            {t("activitiesPanel.footer.notPersistedActivities")}:
             {activities.filter((a) => !a.persistAfterEnd).length}
           </div>
           {isolatedActivity && (
             <div className="mt-1 text-orange-600">
-              Isolated:{" "}
+              {t("activitiesPanel.footer.isolated")}:{" "}
               {activities.find((a) => a.activityUID === isolatedActivity)?.name}
             </div>
           )}

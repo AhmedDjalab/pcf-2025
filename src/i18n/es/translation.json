@@ -424,5 +424,75 @@
     "day": "Día",
     "month": "Mes",
     "year": "Año"
+  },
+
+  "activitiesPanel": {
+    "title": "Panel de Actividades",
+    "expand": "Expandir Panel",
+    "collapse": "Contraer Panel",
+    "noActivities": "No se encontraron actividades que coincidan con sus criterios de búsqueda",
+    "search": {
+      "activityId": "Buscar por ID de Actividad",
+      "activityIdPlaceholder": "Filtrar por ID de Actividad...",
+      "activityUID": "Buscar por UID de Actividad",
+      "activityUIDPlaceholder": "Filtrar por UID de Actividad..."
+    },
+    "activity": {
+      "current": "ACTUAL",
+      "id": "ID",
+      "uid": "UID",
+      "duration": "Duración",
+      "linkedElements": "elementos vinculados",
+      "linkedTo": "Vinculado a",
+      "modelElements": "elemento del modelo",
+      "noLinkedElements": "Sin elementos vinculados"
+    },
+    "visibility": {
+      "visible": "Visible",
+      "hidden": "Oculto",
+      "show": "Mostrar",
+      "hide": "Ocultar",
+      "persistAfterEnd": "Persistir después de la fecha final",
+      "hideAfterEnd": "Ocultar después de la fecha final"
+    },
+    "actions": {
+      "persist": "Persistir",
+      "link": "Vincular",
+      "linkSelected": "Vincular elementos seleccionados",
+      "isolate": "Aislar",
+      "isolateElements": "Aislar elementos",
+      "resetIsolation": "Restablecer aislamiento",
+      "showElements": "Mostrar elementos",
+      "hideElements": "Ocultar elementos"
+    },
+    "footer": {
+      "totalActivities": "Total de Actividades",
+      "filteredActivities": "Actividades Filtradas",
+      "linkedActivities": "Actividades Vinculadas",
+      "notPersistedActivities": "Actividades No Persisten",
+      "isolated": "Aislado"
+    }
+  },
+  "ifcPlan": {
+    "activeStatus": "Activo",
+    "noActiveActivities": "No hay actividades activas",
+    "hidePanels": "Ocultar Paneles",
+    "showPanels": "Mostrar Paneles",
+    "loading": "Cargando...",
+    "error": "Error",
+    "save": "Guardar"
+  },
+  "timeline": {
+    "reset": "Restablecer",
+    "play": "Reproducir",
+    "pause": "Pausa",
+    "current": "Actual",
+    "visible": "Visible",
+    "speed": {
+      "fast": "Rápido",
+      "medium": "Medio",
+      "normal": "Normal",
+      "slow": "Lento"
+    }
   }
 }

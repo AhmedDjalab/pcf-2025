@@ -423,5 +423,75 @@
   "line": {
     "name": "Linie"
   },
-  "PlanEditorPopUp": "Plan Editor"
+  "PlanEditorPopUp": "Plan Editor",
+
+  "activitiesPanel": {
+    "title": "Aktivitäten-Panel",
+    "expand": "Panel erweitern",
+    "collapse": "Panel reduzieren",
+    "noActivities": "Keine Aktivitäten entsprechen Ihren Suchkriterien",
+    "search": {
+      "activityId": "Nach Aktivitäts-ID suchen",
+      "activityIdPlaceholder": "Nach Aktivitäts-ID filtern...",
+      "activityUID": "Nach Aktivitäts-UID suchen",
+      "activityUIDPlaceholder": "Nach Aktivitäts-UID filtern..."
+    },
+    "activity": {
+      "current": "AKTUELL",
+      "id": "ID",
+      "uid": "UID",
+      "duration": "Dauer",
+      "linkedElements": "verknüpfte Elemente",
+      "linkedTo": "Verknüpft mit",
+      "modelElements": "Modellelement",
+      "noLinkedElements": "Keine verknüpften Elemente"
+    },
+    "visibility": {
+      "visible": "Sichtbar",
+      "hidden": "Ausgeblendet",
+      "show": "Anzeigen",
+      "hide": "Ausblenden",
+      "persistAfterEnd": "Nach Enddatum beibehalten",
+      "hideAfterEnd": "Nach Enddatum ausblenden"
+    },
+    "actions": {
+      "persist": "Beibehalten",
+      "link": "Verknüpfen",
+      "linkSelected": "Ausgewählte Elemente verknüpfen",
+      "isolate": "Isolieren",
+      "isolateElements": "Elemente isolieren",
+      "resetIsolation": "Isolierung zurücksetzen",
+      "showElements": "Elemente anzeigen",
+      "hideElements": "Elemente ausblenden"
+    },
+    "footer": {
+      "totalActivities": "Gesamte Aktivitäten",
+      "filteredActivities": "Gefilterte Aktivitäten",
+      "linkedActivities": "Verknüpfte Aktivitäten",
+      "notPersistedActivities": "Nicht beibehaltene Aktivitäten",
+      "isolated": "Isoliert"
+    }
+  },
+  "ifcPlan": {
+    "activeStatus": "Aktiv",
+    "noActiveActivities": "Keine aktiven Aktivitäten",
+    "hidePanels": "Panels ausblenden",
+    "showPanels": "Panels anzeigen",
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "save": "Speichern"
+  },
+  "timeline": {
+    "reset": "Zurücksetzen",
+    "play": "Abspielen",
+    "pause": "Pause",
+    "current": "Aktuell",
+    "visible": "Sichtbar",
+    "speed": {
+      "fast": "Schnell",
+      "medium": "Mittel",
+      "normal": "Normal",
+      "slow": "Langsam"
+    }
+  }
 }

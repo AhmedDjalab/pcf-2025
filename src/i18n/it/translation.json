@@ -426,5 +426,75 @@
     "day": "Giorno",
     "month": "Mese",
     "year": "Anno"
+  },
+
+  "activitiesPanel": {
+    "title": "Pannello Attività",
+    "expand": "Espandi Pannello",
+    "collapse": "Comprimi Pannello",
+    "noActivities": "Nessuna attività trovata corrispondente ai criteri di ricerca",
+    "search": {
+      "activityId": "Cerca per ID Attività",
+      "activityIdPlaceholder": "Filtra per ID Attività...",
+      "activityUID": "Cerca per UID Attività",
+      "activityUIDPlaceholder": "Filtra per UID Attività..."
+    },
+    "activity": {
+      "current": "ATTUALE",
+      "id": "ID",
+      "uid": "UID",
+      "duration": "Durata",
+      "linkedElements": "elementi collegati",
+      "linkedTo": "Collegato a",
+      "modelElements": "elemento del modello",
+      "noLinkedElements": "Nessun elemento collegato"
+    },
+    "visibility": {
+      "visible": "Visibile",
+      "hidden": "Nascosto",
+      "show": "Mostra",
+      "hide": "Nascondi",
+      "persistAfterEnd": "Persisti dopo la data di fine",
+      "hideAfterEnd": "Nascondi dopo la data di fine"
+    },
+    "actions": {
+      "persist": "Persisti",
+      "link": "Collega",
+      "linkSelected": "Collega elementi selezionati",
+      "isolate": "Isola",
+      "isolateElements": "Isola elementi",
+      "resetIsolation": "Reimposta isolamento",
+      "showElements": "Mostra elementi",
+      "hideElements": "Nascondi elementi"
+    },
+    "footer": {
+      "totalActivities": "Attività Totali",
+      "filteredActivities": "Attività Filtrate",
+      "linkedActivities": "Attività Collegate",
+      "notPersistedActivities": "Attività Non Persistenti",
+      "isolated": "Isolato"
+    }
+  },
+  "ifcPlan": {
+    "activeStatus": "Attivo",
+    "noActiveActivities": "Nessuna attività attiva",
+    "hidePanels": "Nascondi Pannelli",
+    "showPanels": "Mostra Pannelli",
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "save": "Salva"
+  },
+  "timeline": {
+    "reset": "Reimposta",
+    "play": "Riproduci",
+    "pause": "Pausa",
+    "current": "Attuale",
+    "visible": "Visibile",
+    "speed": {
+      "fast": "Veloce",
+      "medium": "Medio",
+      "normal": "Normale",
+      "slow": "Lento"
+    }
   }
 }

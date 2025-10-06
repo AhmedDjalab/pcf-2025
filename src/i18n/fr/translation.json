@@ -5,6 +5,7 @@
   "language.Arabic": "Arabe",
   "language.German": "Allemand",
   "language.Italian": "Italien",
+  "language.Japanese": "Japonese",
 
   "stepper.next": "Suivant",
   "stepper.back": "Retour",
@@ -448,5 +449,75 @@
   },
   "success": {
     "ifcFileUploaded": "Fichier IFC téléchargé avec succès !"
+  },
+
+  "activitiesPanel": {
+    "title": "Panneau d'Activités",
+    "expand": "Développer le panneau",
+    "collapse": "Réduire le panneau",
+    "noActivities": "Aucune activité trouvée correspondant à vos critères de recherche",
+    "search": {
+      "activityId": "Rechercher par ID d'activité",
+      "activityIdPlaceholder": "Filtrer par ID d'activité...",
+      "activityUID": "Rechercher par UID d'activité",
+      "activityUIDPlaceholder": "Filtrer par UID d'activité..."
+    },
+    "activity": {
+      "current": "ACTUELLE",
+      "id": "ID",
+      "uid": "UID",
+      "duration": "Durée",
+      "linkedElements": "éléments liés",
+      "linkedTo": "Lié à",
+      "modelElements": "éléments du modèle",
+      "noLinkedElements": "Aucun élément lié"
+    },
+    "visibility": {
+      "visible": "Visible",
+      "hidden": "Masqué",
+      "show": "Afficher",
+      "hide": "Masquer",
+      "persistAfterEnd": "Persister après la date de fin",
+      "hideAfterEnd": "Masquer après la date de fin"
+    },
+    "actions": {
+      "persist": "Persister",
+      "link": "Lier",
+      "linkSelected": "Lier les éléments sélectionnés",
+      "isolate": "Isoler",
+      "isolateElements": "Isoler les éléments",
+      "resetIsolation": "Réinitialiser l'isolation",
+      "showElements": "Afficher les éléments",
+      "hideElements": "Masquer les éléments"
+    },
+    "footer": {
+      "totalActivities": "Total des activités",
+      "filteredActivities": "Activités filtrées",
+      "linkedActivities": "Activités liées",
+      "notPersistedActivities": "Activités non persistées",
+      "isolated": "Isolé"
+    }
+  },
+  "ifcPlan": {
+    "activeStatus": "Actif",
+    "noActiveActivities": "Aucune activité active",
+    "hidePanels": "Masquer les panneaux",
+    "showPanels": "Afficher les panneaux",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "save": "Sauvegarder"
+  },
+  "timeline": {
+    "reset": "Réinitialiser",
+    "play": "Lecture",
+    "pause": "Pause",
+    "current": "Actuel",
+    "visible": "Visible",
+    "speed": {
+      "fast": "Rapide",
+      "medium": "Moyen",
+      "normal": "Normal",
+      "slow": "Lent"
+    }
   }
 }

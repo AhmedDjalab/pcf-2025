@@ -428,5 +428,75 @@
     "day": "日",
     "month": "月",
     "year": "年"
+  },
+
+  "activitiesPanel": {
+    "title": "アクティビティパネル",
+    "expand": "パネルを展開",
+    "collapse": "パネルを折りたたむ",
+    "noActivities": "検索条件に一致するアクティビティが見つかりません",
+    "search": {
+      "activityId": "アクティビティIDで検索",
+      "activityIdPlaceholder": "アクティビティIDでフィルタ...",
+      "activityUID": "アクティビティUIDで検索",
+      "activityUIDPlaceholder": "アクティビティUIDでフィルタ..."
+    },
+    "activity": {
+      "current": "現在",
+      "id": "ID",
+      "uid": "UID",
+      "duration": "期間",
+      "linkedElements": "リンクされた要素",
+      "linkedTo": "リンク先",
+      "modelElements": "モデル要素",
+      "noLinkedElements": "リンクされた要素はありません"
+    },
+    "visibility": {
+      "visible": "表示",
+      "hidden": "非表示",
+      "show": "表示する",
+      "hide": "非表示にする",
+      "persistAfterEnd": "終了日後も持続",
+      "hideAfterEnd": "終了日後に非表示"
+    },
+    "actions": {
+      "persist": "持続",
+      "link": "リンク",
+      "linkSelected": "選択した要素をリンク",
+      "isolate": "分離",
+      "isolateElements": "要素を分離",
+      "resetIsolation": "分離をリセット",
+      "showElements": "要素を表示",
+      "hideElements": "要素を非表示"
+    },
+    "footer": {
+      "totalActivities": "アクティビティ合計",
+      "filteredActivities": "フィルタされたアクティビティ",
+      "linkedActivities": "リンクされたアクティビティ",
+      "notPersistedActivities": "持続しないアクティビティ",
+      "isolated": "分離済み"
+    }
+  },
+  "ifcPlan": {
+    "activeStatus": "アクティブ",
+    "noActiveActivities": "アクティブなアクティビティがありません",
+    "hidePanels": "パネルを非表示",
+    "showPanels": "パネルを表示",
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "save": "保存"
+  },
+  "timeline": {
+    "reset": "リセット",
+    "play": "再生",
+    "pause": "一時停止",
+    "current": "現在",
+    "visible": "表示中",
+    "speed": {
+      "fast": "速い",
+      "medium": "中速",
+      "normal": "通常",
+      "slow": "遅い"
+    }
   }
 }

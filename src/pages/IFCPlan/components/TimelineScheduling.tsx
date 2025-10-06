@@ -10,6 +10,7 @@ import {
   setCurrentActivityId,
   setCurrentActivityIds,
 } from "src/state/slices/bimSlice";
+import { useTranslation } from "react-i18next";
 
 // interface Activity {
 //   activityUID: string;
@@ -37,6 +38,7 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
   showAllItems,
   applyVisibility,
 }) => {
+  const { t } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [timelineStart, setTimelineStart] = useState<Date>(new Date());
@@ -435,7 +437,7 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
             className="flex items-center gap-1 px-2 py-1 text-xs text-gray-700 transition-colors bg-gray-200 rounded hover:bg-gray-300"
           >
             <RotateCcw className="w-3 h-3" />
-            Reset
+            {t("timeline.reset")}
           </button>
 
           <button
@@ -451,7 +453,7 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
             ) : (
               <Play className="w-3 h-3" />
             )}
-            {isPlaying ? "Pause" : "Play"}
+            {isPlaying ? t("timeline.pause") : t("timeline.play")}
           </button>
 
           {/* Current Activities Display - Vertical Scroll */}
@@ -460,7 +462,7 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
               <div className="flex items-center flex-shrink-0 gap-1">
                 <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                 <span className="text-xs font-medium text-blue-700">
-                  Current:
+                  {t("timeline.current")}:
                 </span>
               </div>
               <div className="flex flex-col gap-1 pr-2 overflow-y-auto max-h-16 scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-gray-100">
@@ -490,26 +492,13 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
             onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
             className="px-2 py-1 text-xs border border-gray-300 rounded"
           >
-            <option value={100}>Fast</option>
-            <option value={500}>Medium</option>
-            <option value={1000}>Normal</option>
-            <option value={2000}>Slow</option>
+            <option value={100}>{t("timeline.speed.fast")}</option>
+            <option value={500}>{t("timeline.speed.medium")}</option>
+            <option value={1000}>{t("timeline.speed.normal")}</option>
+            <option value={2000}>{t("timeline.speed.slow")}</option>
           </select>
 
           {/* Progress Indicator */}
-          {/* <div className="text-xs text-gray-600">
-            <span className="font-medium text-green-600">
-              {visibleModelIds.size}
-            </span>
-            <span className="text-gray-400">/</span>
-            <span>
-              {activities.reduce(
-                (sum, a) => sum + (a.linkedModelIds?.length || 0),
-                0
-              )}
-            </span>
-            <div className="text-xs text-gray-500">Visible</div>
-          </div> */}
           <div className="text-xs text-gray-600">
             <span className="font-medium text-green-600">
               {getVisibleCount()}
@@ -521,7 +510,7 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
                 0
               )}
             </span>
-            <div className="text-xs text-gray-500">Visible</div>
+            <div className="text-xs text-gray-500">{t("timeline.visible")}</div>
           </div>
         </div>
       </div>
