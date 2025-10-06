@@ -1099,7 +1099,7 @@ const IFCViewer = () => {
                 )}
 
                 {/* Upload / Load buttonsjzs */}
-                {panelsVisible && (
+                {panelsVisible && (canWrite || isAdmin) && (
                   <div
                     style={{
                       position: "absolute",

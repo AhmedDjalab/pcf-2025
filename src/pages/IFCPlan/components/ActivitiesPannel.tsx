@@ -21,6 +21,7 @@ import { getExtendPropertyData } from "src/Helpers/parsers";
 import { ActivityModel } from "src/types/Project";
 import { selectCurrentActivityId } from "src/state/slices/bimSlice";
 import { useSelector } from "react-redux";
+import { useAuth } from "src/context/UserContext";
 
 export const ACTIVI = [
   {
@@ -604,6 +605,8 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
   activities,
   setActivities,
 }) => {
+  const { canWrite, isAdmin } = useAuth();
+
   console.log("🚀 ~ ActivitiesPanel ~ activities:", activities);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const activitiesListRef = useRef(null);
@@ -949,31 +952,32 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
 
                       {/* Timeline Visibility Toggle */}
                       <div className="flex flex-col items-end gap-2">
-                        <button
-                          onClick={() =>
-                            handleToggleTimelineVisibility(
-                              activity.activityUID!
-                            )
-                          }
-                          className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
-                            activity.persistAfterEnd
-                              ? "text-green-600 bg-green-50 hover:bg-green-100"
-                              : "text-gray-500 bg-gray-50 hover:bg-gray-100"
-                          }`}
-                          title={
-                            activity.persistAfterEnd
-                              ? "Persist After EndDate"
-                              : "Hide After EndDate"
-                          }
-                        >
-                          {activity.persistAfterEnd ? (
-                            <ToggleRight className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <ToggleLeft className="w-4 h-4 text-gray-400" />
-                          )}
-                          Persist
-                        </button>
-
+                        {(canWrite || isAdmin) && (
+                          <button
+                            onClick={() =>
+                              handleToggleTimelineVisibility(
+                                activity.activityUID!
+                              )
+                            }
+                            className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
+                              activity.persistAfterEnd
+                                ? "text-green-600 bg-green-50 hover:bg-green-100"
+                                : "text-gray-500 bg-gray-50 hover:bg-gray-100"
+                            }`}
+                            title={
+                              activity.persistAfterEnd
+                                ? "Persist After EndDate"
+                                : "Hide After EndDate"
+                            }
+                          >
+                            {activity.persistAfterEnd ? (
+                              <ToggleRight className="w-4 h-4 text-green-500" />
+                            ) : (
+                              <ToggleLeft className="w-4 h-4 text-gray-400" />
+                            )}
+                            Persist
+                          </button>
+                        )}
                         {/* Timeline Status Badge */}
                         <div
                           className={`text-xs px-2 py-1 rounded ${
@@ -1022,63 +1026,65 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex flex-wrap gap-2">
-                      {/* Link Button */}
-                      <button
-                        onClick={() => handleLink(activity.activityUID!)}
-                        className="flex items-center gap-1 px-3 py-1.5 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors"
-                        title="Link Selected Elements"
-                      >
-                        <Link className="w-3 h-3" />
-                        Link
-                      </button>
+                    {(canWrite || isAdmin) && (
+                      <div className="flex flex-wrap gap-2">
+                        {/* Link Button */}
+                        <button
+                          onClick={() => handleLink(activity.activityUID!)}
+                          className="flex items-center gap-1 px-3 py-1.5 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors"
+                          title="Link Selected Elements"
+                        >
+                          <Link className="w-3 h-3" />
+                          Link
+                        </button>
 
-                      {/* Toggle Visibility Button */}
-                      <button
-                        onClick={() => handleToggleVisibility(activity)}
-                        disabled={activity.linkedModelIds?.length === 0}
-                        className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-colors ${
-                          activity.linkedModelIds?.length === 0
-                            ? "text-gray-400 bg-gray-100 cursor-not-allowed"
-                            : visibilityState[activity.activityUID!]
-                            ? "text-white bg-gray-600 hover:bg-gray-700"
-                            : "text-white bg-green-500 hover:bg-green-600"
-                        }`}
-                        title={
-                          visibilityState[activity.activityUID!]
-                            ? "Show Elements"
-                            : "Hide Elements"
-                        }
-                      >
-                        {visibilityState[activity.activityUID!] ? (
-                          <EyeOff className="w-3 h-3" />
-                        ) : (
-                          <Eye className="w-3 h-3" />
-                        )}
-                        {visibilityState[activity.activityUID!]
-                          ? "Show"
-                          : "Hide"}
-                      </button>
+                        {/* Toggle Visibility Button */}
+                        <button
+                          onClick={() => handleToggleVisibility(activity)}
+                          disabled={activity.linkedModelIds?.length === 0}
+                          className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-colors ${
+                            activity.linkedModelIds?.length === 0
+                              ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                              : visibilityState[activity.activityUID!]
+                              ? "text-white bg-gray-600 hover:bg-gray-700"
+                              : "text-white bg-green-500 hover:bg-green-600"
+                          }`}
+                          title={
+                            visibilityState[activity.activityUID!]
+                              ? "Show Elements"
+                              : "Hide Elements"
+                          }
+                        >
+                          {visibilityState[activity.activityUID!] ? (
+                            <EyeOff className="w-3 h-3" />
+                          ) : (
+                            <Eye className="w-3 h-3" />
+                          )}
+                          {visibilityState[activity.activityUID!]
+                            ? "Show"
+                            : "Hide"}
+                        </button>
 
-                      {/* Isolate Button */}
-                      <button
-                        onClick={() => handleIsolateItem(activity)}
-                        disabled={
-                          activity.linkedModelIds?.length === 0 ||
-                          isolatedActivity === activity.activityUID
-                        }
-                        className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-colors ${
-                          activity.linkedModelIds?.length === 0 ||
-                          isolatedActivity === activity.activityUID
-                            ? "text-gray-400 bg-gray-100 cursor-not-allowed"
-                            : "text-white bg-purple-500 hover:bg-purple-600"
-                        }`}
-                        title="Isolate Elements"
-                      >
-                        <Focus className="w-3 h-3" />
-                        Isolate
-                      </button>
-                    </div>
+                        {/* Isolate Button */}
+                        <button
+                          onClick={() => handleIsolateItem(activity)}
+                          disabled={
+                            activity.linkedModelIds?.length === 0 ||
+                            isolatedActivity === activity.activityUID
+                          }
+                          className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-colors ${
+                            activity.linkedModelIds?.length === 0 ||
+                            isolatedActivity === activity.activityUID
+                              ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                              : "text-white bg-purple-500 hover:bg-purple-600"
+                          }`}
+                          title="Isolate Elements"
+                        >
+                          <Focus className="w-3 h-3" />
+                          Isolate
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
