@@ -1,5 +1,6 @@
 //@ts-ignore
 //@ts-noCheck
+
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as OBC from "@thatopen/components";
 import * as BUI from "@thatopen/ui";
@@ -29,6 +30,7 @@ import { useSelector } from "react-redux";
 import { useVisibilityManager } from "./components/useVisibilityManager";
 import CameraControls from "./components/CameraControls";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "src/context/UserContext";
 
 const formatDateShort = (date: Date): string => {
   return date.toLocaleDateString("en-US", {
@@ -39,6 +41,7 @@ const formatDateShort = (date: Date): string => {
 const IFCViewer = () => {
   const { id } = useParams();
   const { t } = useTranslation();
+  const { canWrite, isAdmin } = useAuth();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const componentsRef = useRef<OBC.Components | null>(null);
   const worldRef = useRef<OBC.World | null>(null);
