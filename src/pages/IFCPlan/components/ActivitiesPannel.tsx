@@ -1019,8 +1019,9 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                         {formatDate(activity.endDate)}
                       </div>
                       <div className="mt-1 text-xs text-gray-500">
-                        {t("activitiesPanel.activity.duration")}: PK:{" "}
-                        {activity.startPk}-{activity.endPk}
+                        {t("activitiesPanel.activity.duration")}:{" "}
+                        {activity.duration} | PK: {activity.startPk}-
+                        {activity.endPk}
                       </div>
                     </div>
 
