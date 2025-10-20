@@ -14,6 +14,11 @@
 }
 
 
+
+.accordion-collapse {
+  transition: none !important;
+}
+
 .selection-box {
   position: absolute;
   background: rgba(0, 120, 255, 0.1);
