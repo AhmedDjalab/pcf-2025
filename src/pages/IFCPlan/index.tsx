@@ -219,34 +219,12 @@ const IFCViewer = () => {
       world.renderer.onBeforeUpdate.add(() => stats.begin());
       world.renderer.onAfterUpdate.add(() => stats.end());
       const highlighter = components.get(OBCF.Highlighter);
-      highlighter.setup({
-        world,
-      });
+      // highlighter.setup({
+      //   world,
+      // });
       highlighterRef.current = highlighter;
-      try {
-        // Blue highlight for currently active activities
-        highlighter.add("activeActivity", [
-          new THREE.MeshBasicMaterial({
-            color: 0x3b82f6,
-            transparent: true,
-            opacity: 0.6,
-            depthTest: false,
-          }),
-        ]);
 
-        // Cyan for persistent activities
-        highlighter.add("persistentActivity", [
-          new THREE.MeshBasicMaterial({
-            color: 0x06b6d4,
-            transparent: true,
-            opacity: 0.4,
-            depthTest: false,
-          }),
-        ]);
-      } catch (error) {
-        console.warn("Could not create custom highlight styles:", error);
-      }
-
+      highlighter.setup({ world });
       let selectedFragmentIdMap: Record<string, number[]> = {};
       let hiddenElements = new Set<string>();
       highlighter.events.select.onHighlight.add(
@@ -316,62 +294,62 @@ const IFCViewer = () => {
   //   );
   // }, []);
 
-  useEffect(() => {
-    if (!highlighterRef.current || !currentActivityIds.length || !activities) {
-      // Clear highlights when no activities are current
-      if (highlighterRef.current) {
-        highlighterRef.current.clear("activeActivity");
-      }
-      return;
-    }
+  // useEffect(() => {
+  //   if (!highlighterRef.current || !currentActivityIds.length || !activities) {
+  //     // Clear highlights when no activities are current
+  //     if (highlighterRef.current) {
+  //       highlighterRef.current.clear("activeActivity");
+  //     }
+  //     return;
+  //   }
 
-    const updateHighlights = async () => {
-      try {
-        // Get all model IDs for current activities
-        const currentActivityModelIds = activities
-          .filter((activity) => currentActivityIds.includes(activity.id))
-          .flatMap((activity) => activity.linkedModelIds || []);
-        console.warn(
-          "🚀 ~ updateHighlights ~ currentActivityModelIds:",
-          currentActivityModelIds
-        );
+  //   const updateHighlights = async () => {
+  //     try {
+  //       // Get all model IDs for current activities
+  //       const currentActivityModelIds = activities
+  //         .filter((activity) => currentActivityIds.includes(activity.id))
+  //         .flatMap((activity) => activity.linkedModelIds || []);
+  //       console.warn(
+  //         "🚀 ~ updateHighlights ~ currentActivityModelIds:",
+  //         currentActivityModelIds
+  //       );
 
-        if (currentActivityModelIds.length === 0) {
-          await highlighterRef.current?.clear("activeActivity");
-          return;
-        }
+  //       if (currentActivityModelIds.length === 0) {
+  //         await highlighterRef.current?.clear("activeActivity");
+  //         return;
+  //       }
 
-        // Create ModelIdMap for highlighting
-        const modelIdMap: OBC.ModelIdMap = {
-          [modelName]: new Set(
-            currentActivityModelIds.map((id) => parseInt(id))
-          ),
-        };
+  //       // Create ModelIdMap for highlighting
+  //       const modelIdMap: OBC.ModelIdMap = {
+  //         [modelName]: new Set(
+  //           currentActivityModelIds.map((id) => parseInt(id))
+  //         ),
+  //       };
 
-        // Apply blue highlight to current activities
-        await highlighterRef.current?.highlightByID(
-          "activeActivity",
-          modelIdMap,
-          true,
-          false // Don't zoom to selection
-        );
+  //       // Apply blue highlight to current activities
+  //       await highlighterRef.current?.highlightByID(
+  //         "activeActivity",
+  //         modelIdMap,
+  //         true,
+  //         false // Don't zoom to selection
+  //       );
 
-        console.log("Highlighted current activities:", {
-          activityCount: currentActivityIds.length,
-          elementCount: currentActivityModelIds.length,
-        });
-      } catch (error) {
-        console.error("Error highlighting activities:", error);
-      }
-    };
+  //       console.log("Highlighted current activities:", {
+  //         activityCount: currentActivityIds.length,
+  //         elementCount: currentActivityModelIds.length,
+  //       });
+  //     } catch (error) {
+  //       console.error("Error highlighting activities:", error);
+  //     }
+  //   };
 
-    // Debounce to avoid too frequent updates
-    const timeoutId = setTimeout(updateHighlights, 50);
+  //   // Debounce to avoid too frequent updates
+  //   const timeoutId = setTimeout(updateHighlights, 50);
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [currentActivityIds, activities, modelName]);
+  //   return () => {
+  //     clearTimeout(timeoutId);
+  //   };
+  // }, [currentActivityIds, activities, modelName]);
   useEffect(() => {
     const container = containerRef.current;
 
@@ -952,7 +930,7 @@ const IFCViewer = () => {
                   worldRef={worldRef}
                   fragmentsRef={fragmentsRef}
                 />
-                <div className="absolute z-10 flex flex-col gap-3 top-4 left-4">
+                <div className="absolute z-10 flex flex-col gap-3 bottom-4 left-4">
                   {panelsVisible && (
                     <AutomaticLinkingModal
                       setActivities={setActivities}
@@ -1010,7 +988,7 @@ const IFCViewer = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="p-2 border border-gray-200 rounded-lg shadow-sm bg-white/95 backdrop-blur-sm max-w-80">
+                      <div className=" p-2 border border-gray-200 rounded-lg shadow-sm bg-white/95 backdrop-blur-sm max-w-80">
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
                           <span className="text-xs font-semibold text-gray-600">
@@ -1049,7 +1027,7 @@ const IFCViewer = () => {
                 </div>
 
                 {/* 🔲 Spatial Tree + Properties Panel container */}
-                {panelsVisible && (
+                {
                   <>
                     <div
                       id="ui-panels"
@@ -1063,7 +1041,7 @@ const IFCViewer = () => {
                       style={{ width: "300px" }}
                     />
                   </>
-                )}
+                }
 
                 {/* Loading Overlay */}
                 {isLoading && (
