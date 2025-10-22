@@ -24,7 +24,7 @@ import Spinner from "./Spinner";
 import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import { base64ToFile } from "src/Helpers/utils";
 import { QueryClient, useQuery } from "@tanstack/react-query";
-import { siteName } from "src/variables/Urls";
+import { ImagesUrl, siteName } from "src/variables/Urls";
 import { editEmployee } from "src/Services/EmployeeService";
 import { useParams } from "react-router-dom";
 import { UploadFilesUrl } from "src/variables/Urls";
@@ -157,14 +157,67 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
     return validExtensions.includes(fileExtension);
   };
 
-  // IFC File upload handler
+  // // IFC File upload handler
+  // const handleIfcFileUpload = async (file: File) => {
+  //   setIfcError("");
+  //   setIfcSuccess("");
+
+  //   if (!file) return;
+
+  //   // Validate file extension
+  //   if (!validateIfcFile(file)) {
+  //     setIfcError(
+  //       t("errors.invalidIfcFile") ||
+  //         "Please upload a valid IFC file (.ifc extension only)"
+  //     );
+  //     return;
+  //   }
+
+  //   if (!projectTitle.trim()) {
+  //     setIfcError(
+  //       t("errors.projectTitleRequired") ||
+  //         "Please enter a project title before uploading IFC file"
+  //     );
+  //     return;
+  //   }
+
+  //   setIfcUploading(true);
+
+  //   try {
+  //     const formData = new FormData();
+  //     const compressedBlob = await compressFile(file);
+
+  //     formData.append("file", compressedBlob, file.name + ".gz");
+  //     // Use project title as folder path name
+  //     formData.append("folderPathName", projectTitle.trim());
+
+  //     const response = await api.post(UploadFilesUrl, formData, {
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     });
+
+  //     if (response.status === 200) {
+  //       const fullUrl = response.data;
+  //       setIfcFileUrl(fullUrl);
+  //       setIfcSuccess(
+  //         t("success.ifcFileUploaded") || "IFC file uploaded successfully!"
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.error("Error uploading IFC file:", error);
+  //     setIfcError(
+  //       t("errors.ifcUploadFailed") ||
+  //         "Failed to upload IFC file. Please try again."
+  //     );
+  //   } finally {
+  //     setIfcUploading(false);
+  //   }
+  // };
   const handleIfcFileUpload = async (file: File) => {
     setIfcError("");
     setIfcSuccess("");
 
     if (!file) return;
 
-    // Validate file extension
     if (!validateIfcFile(file)) {
       setIfcError(
         t("errors.invalidIfcFile") ||
@@ -184,20 +237,37 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
     setIfcUploading(true);
 
     try {
-      const formData = new FormData();
+      // 1️⃣ Compress file first (you already have compressFile)
       const compressedBlob = await compressFile(file);
 
-      formData.append("file", compressedBlob, file.name + ".gz");
-      // Use project title as folder path name
-      formData.append("folderPathName", projectTitle.trim());
+      // 2️⃣ Convert compressed blob to Base64
+      const base64Data = await blobToBase64(compressedBlob);
 
-      const response = await api.post(UploadFilesUrl, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // 3️⃣ Send JSON body instead of FormData
+      const payload = {
+        fileName: file.name + ".gz",
+        folderPathName: projectTitle.trim(),
+        fileBase64: base64Data,
+      };
 
+      const response = await api.post(
+        ImagesUrl + "/UploadBase64File",
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+          maxBodyLength: Infinity,
+          maxContentLength: Infinity,
+        }
+      );
       if (response.status === 200) {
         const fullUrl = response.data;
-        setIfcFileUrl(fullUrl);
+        console.log("🚀 ~ handleIfcFileUpload ~ fullUrl:", fullUrl.value);
+        const fileUrl =
+          typeof response.data === "string"
+            ? response.data
+            : response.data?.value || response.data?.url || "";
+
+        setIfcFileUrl(fileUrl);
         setIfcSuccess(
           t("success.ifcFileUploaded") || "IFC file uploaded successfully!"
         );
@@ -213,6 +283,20 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
     }
   };
 
+  // Utility to convert blob to base64
+  const blobToBase64 = (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64DataUrl = reader.result as string;
+        // Remove prefix "data:...;base64,"
+        const base64 = base64DataUrl.split(",")[1];
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
   const handleRemoveIfcFile = () => {
     setIfcFileUrl("");
     setIfcError("");
@@ -331,8 +415,9 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
                           "IFC File Uploaded"}
                       </p>
                       <p className="max-w-xs text-xs text-green-600 truncate dark:text-green-400">
-                        {ifcFileUrl.split("/").pop() ||
-                          "File uploaded successfully"}
+                        {typeof ifcFileUrl === "string"
+                          ? ifcFileUrl.replace(/\\/g, "/").split("/").pop()
+                          : "File uploaded successfully"}
                       </p>
                     </div>
                   </div>

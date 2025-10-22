@@ -930,7 +930,7 @@ const IFCViewer = () => {
                   worldRef={worldRef}
                   fragmentsRef={fragmentsRef}
                 />
-                <div className="absolute z-10 flex flex-col gap-3 bottom-4 left-4">
+                <div className="absolute z-10 flex flex-col gap-3 bottom-20 left-4">
                   {panelsVisible && (
                     <AutomaticLinkingModal
                       setActivities={setActivities}
@@ -988,7 +988,7 @@ const IFCViewer = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className=" p-2 border border-gray-200 rounded-lg shadow-sm bg-white/95 backdrop-blur-sm max-w-80">
+                      <div className="p-2 border border-gray-200 rounded-lg shadow-sm  bg-white/95 backdrop-blur-sm max-w-80">
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
                           <span className="text-xs font-semibold text-gray-600">
