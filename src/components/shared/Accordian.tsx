@@ -3,13 +3,13 @@ import React, { useEffect, useState } from "react";
 export interface AccordionProps {
   title: string;
   children: React.ReactNode;
-  isOpenTrigger: boolean;
+  isOpenTrigger?: boolean;
 }
 const Accordion = ({ title, children, isOpenTrigger }: AccordionProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    setIsOpen(isOpenTrigger);
+    setIsOpen(isOpenTrigger ?? false);
   }, [isOpenTrigger]);
 
   const toggleAccordion = () => {
@@ -17,7 +17,7 @@ const Accordion = ({ title, children, isOpenTrigger }: AccordionProps) => {
   };
 
   return (
-    <div className="rounded-none border border-l-0 border-r-0 border-t-0 border-neutral-200 bg-white dark:border-strokedark dark:bg-boxdark">
+    <div className="bg-white border border-t-0 border-l-0 border-r-0 rounded-none border-neutral-200 dark:border-strokedark dark:bg-boxdark">
       <h2 className="mb-0">
         <button
           className={`overflow-anchor-none hover:z-2 focus:z-3 group relative flex w-full items-center rounded-none border-0 bg-white px-5 py-4 text-left text-base text-neutral-800 transition focus:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white ${
@@ -42,7 +42,7 @@ const Accordion = ({ title, children, isOpenTrigger }: AccordionProps) => {
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke="currentColor"
-              className="h-6 w-6"
+              className="w-6 h-6"
             >
               <path d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
             </svg>

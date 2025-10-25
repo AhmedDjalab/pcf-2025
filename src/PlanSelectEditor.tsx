@@ -20,10 +20,10 @@ function PlanSelectEditor({
 
   return (
     <div className="dark:bg-boxdark-2 dark:text-bodydark fixed mt-20 inset-0 z-50 mx-auto flex items-center shadow-sm justify-center w-[90%] h-[90%] my-auto bg-opacity-50">
-      <div className=" dark:bg-boxdark-2 dark:text-bodydark relative  bg-white rounded-lg shadow-sm  w-full h-full  overflow-auto">
+      <div className="relative w-full h-full overflow-auto bg-white rounded-lg shadow-sm dark:bg-boxdark-2 dark:text-bodydark">
         {/* Modal Header */}
-        <div className="flex  justify-between items-center p-2 border-b border-gray-300">
-          <h2 className="text-lg font-bold dark:text-white   text-gray-800 text-black">
+        <div className="flex items-center justify-between p-2 border-b border-gray-300">
+          <h2 className="text-lg font-bold text-black text-gray-800 dark:text-white">
             {t("PlanEditorPopUp")}
           </h2>
 

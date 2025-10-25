@@ -31,6 +31,7 @@ import { useVisibilityManager } from "./components/useVisibilityManager";
 import CameraControls from "./components/CameraControls";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "src/context/UserContext";
+import toast from "react-hot-toast";
 
 const formatDateShort = (date: Date): string => {
   return date.toLocaleDateString("en-US", {
@@ -56,6 +57,7 @@ const IFCViewer = () => {
   const [panelsVisible, setPanelsVisible] = useState(false);
   const [modelName, setModelName] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
   const [selectedModelIds, setSelectedModelIds] = useState<string[]>([]);
   const [selectedModelIdMap, setSelectedModelIdMap] =
@@ -717,49 +719,102 @@ const IFCViewer = () => {
     return null; // not found
   };
 
-  const currentVisibleIds = new Set<number>();
-  const currentHiddenIds = new Set<number>();
-  const toggleModelVisibility = async (
-    localIds: string[],
-    visible: boolean
-  ) => {
+  // const currentVisibleIds = new Set<number>();
+  // const currentHiddenIds = new Set<number>();
+  // const toggleModelVisibility = async (
+  //   localIds: string[],
+  //   visible: boolean
+  // ) => {
+  //   if (!localIds.length) return;
+
+  //   try {
+  //     const hider = componentsRef.current.get(OBC.Hider);
+  //     hiderRef.current = hider;
+
+  //     // Deduplicate
+  //     const numericIds = Array.from(new Set(localIds.map((l) => parseInt(l))));
+
+  //     // Filter against our own cached state instead of re-applying
+  //     const idsToToggle = numericIds.filter((id) =>
+  //       visible ? !currentVisibleIds.has(id) : !currentHiddenIds.has(id)
+  //     );
+
+  //     if (!idsToToggle.length) {
+  //       // nothing changed → no flicker
+  //       return;
+  //     }
+
+  //     const modelIdMap: OBC.ModelIdMap = {
+  //       [modelName]: new Set(idsToToggle),
+  //     };
+
+  //     await hider.set(visible, modelIdMap);
+
+  //     // Update our cache
+  //     if (visible) {
+  //       idsToToggle.forEach((id) => {
+  //         currentVisibleIds.add(id);
+  //         currentHiddenIds.delete(id);
+  //       });
+  //     } else {
+  //       idsToToggle.forEach((id) => {
+  //         currentHiddenIds.add(id);
+  //         currentVisibleIds.delete(id);
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Toggle visibility error:", error);
+  //     throw error;
+  //   }
+  // };
+
+  const visibleIds = new Set<number>();
+
+  const showAllModels = async () => {
+    const hider = componentsRef.current.get(OBC.Hider);
+    hiderRef.current = hider;
+    await hider.set(true);
+  };
+
+  const toggleModelVisibility = async (localIds: string[]) => {
+    console.log("🚀 ~ toggleModelVisibility ~ localIds:", localIds);
     if (!localIds.length) return;
 
     try {
       const hider = componentsRef.current.get(OBC.Hider);
       hiderRef.current = hider;
 
-      // Deduplicate
       const numericIds = Array.from(new Set(localIds.map((l) => parseInt(l))));
 
-      // Filter against our own cached state instead of re-applying
-      const idsToToggle = numericIds.filter((id) =>
-        visible ? !currentVisibleIds.has(id) : !currentHiddenIds.has(id)
-      );
+      const modelIdMap: OBC.ModelIdMap = { [modelName]: new Set(numericIds) };
 
-      if (!idsToToggle.length) {
-        // nothing changed → no flicker
-        return;
-      }
+      await hider.toggle(modelIdMap);
 
-      const modelIdMap: OBC.ModelIdMap = {
-        [modelName]: new Set(idsToToggle),
-      };
+      // // Split into ones currently visible vs hidden
+      // const toHide: number[] = [];
+      // const toShow: number[] = [];
 
-      await hider.set(visible, modelIdMap);
+      // numericIds.forEach((id) => {
+      //   if (visibleIds.has(id)) {
+      //     toHide.push(id);
+      //   } else {
+      //     toShow.push(id);
+      //   }
+      // });
 
-      // Update our cache
-      if (visible) {
-        idsToToggle.forEach((id) => {
-          currentVisibleIds.add(id);
-          currentHiddenIds.delete(id);
-        });
-      } else {
-        idsToToggle.forEach((id) => {
-          currentHiddenIds.add(id);
-          currentVisibleIds.delete(id);
-        });
-      }
+      // // Hide visible ones
+      // if (toHide.length) {
+      //   const modelIdMap: OBC.ModelIdMap = { [modelName]: new Set(toHide) };
+      //   await hider.set(false, modelIdMap);
+      //   toHide.forEach((id) => visibleIds.delete(id));
+      // }
+
+      // // Show hidden ones
+      // if (toShow.length) {
+      //   const modelIdMap: OBC.ModelIdMap = { [modelName]: new Set(toShow) };
+      //   await hider.set(true, modelIdMap);
+      //   toShow.forEach((id) => visibleIds.add(id));
+      // }
     } catch (error) {
       console.error("Toggle visibility error:", error);
       throw error;
@@ -836,33 +891,48 @@ const IFCViewer = () => {
   // };
 
   const toggleModelIsolated = async (localIds: string[], visible?: boolean) => {
-    if (!selectedModelIdMap) return;
+    console.log("🚀 ~ toggleModelIsolated ~ localIds:", localIds);
+    if (!localIds.length) return;
 
-    const modelIdMap: OBC.ModelIdMap = {};
+    //const modelIdMap: OBC.ModelIdMap = {};
+    const hider = componentsRef.current.get(OBC.Hider);
+    hiderRef.current = hider;
+    const numericIds = Array.from(new Set(localIds.map((l) => parseInt(l))));
 
-    modelIdMap[modelName] = new Set(localIds.map((l) => parseInt(l)));
+    const modelIdMap: OBC.ModelIdMap = { [modelName]: new Set(numericIds) };
     console.log("🚀 ~ toggleModelVisibility ~ modelIdMap:", modelIdMap);
-    await hiderRef.current?.isolate(modelIdMap);
+    await hider.isolate(modelIdMap);
   };
-  const handleSaveBimData = () => {
-    const activitiesWithLinkedModel: BimDataModel[] =
-      activities
-        ?.filter((a) => a.linkedModelIds && a.linkedModelIds.length > 0) // keep only activities with linked models
-        .map((a) => ({
+  const handleSaveBimData = async () => {
+    try {
+      setIsSubmitting(true);
+      const activitiesWithLinkedModel: BimDataModel[] =
+        activities.map((a) => ({
           linkedModelIds: a.linkedModelIds,
           activityId: a.id,
           persistAfterEnd: a.persistAfterEnd,
         })) ?? [];
 
-    console.log(
-      "🚀 ~ handleSaveBimData ~ activitiesWithLinkedModel:",
-      activitiesWithLinkedModel
-    );
+      console.log(
+        "🚀 ~ handleSaveBimData ~ activitiesWithLinkedModel:",
+        activitiesWithLinkedModel
+      );
 
-    saveBimData({
-      projectId: id,
-      activityBimLinkeds: activitiesWithLinkedModel,
-    });
+      var result = await saveBimData({
+        projectId: id,
+        activityBimLinkeds: activitiesWithLinkedModel,
+      });
+
+      if (result?.status === 200) {
+        toast.success("it updated succeffully");
+      }
+
+      setIsSubmitting(false);
+    } catch (error) {
+      console.log("🚀 ~ handleSaveBimData ~ error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // const formatItemPsets = (rawPsets: FRAG.ItemData[]) => {
@@ -897,6 +967,22 @@ const IFCViewer = () => {
   //   return (data.IsDefinedBy as FRAG.ItemData[]) ?? [];
   // };
 
+  const handleVisibilty = async (localIds, visible) => {
+    console.log("🚀 ~ handleVisibilty ~ localIds, visible:", localIds, visible);
+    if (!localIds.length) return;
+
+    try {
+      const hider = componentsRef.current.get(OBC.Hider);
+      hiderRef.current = hider;
+
+      const numericIds = Array.from(new Set(localIds.map((l) => parseInt(l))));
+
+      const modelIdMap: OBC.ModelIdMap = { [modelName]: new Set(numericIds) };
+      await hider.set(false);
+      await hider.set(visible, modelIdMap);
+    } catch {}
+  };
+
   return (
     <div className="flex flex-col w-full h-screen">
       <div className="flex flex-1 overflow-hidden">
@@ -913,8 +999,22 @@ const IFCViewer = () => {
           getSelectedModelIds={() => selectedModelIds}
           toggleVisibilty={(localId) => toggleModelVisibility(localId)}
           isolateItem={(localId) => toggleModelIsolated(localId)}
-          resetIsolated={(localId) => toggleModelVisibility(localId, true)}
+          resetIsolated={(localId) => showAllModels()}
           // currentActivityId={currentActivityId}
+          handleSaveBimData={handleSaveBimData}
+          isSubmitting={isSubmitting}
+          handleVisibilty={(localId, visibile) =>
+            handleVisibilty(localId, visibile)
+          }
+          AutomaticLinkingLogic={
+            <AutomaticLinkingModal
+              setActivities={setActivities}
+              activities={activities ?? []}
+              modelRef={modelRef}
+            />
+          }
+
+          //? we need to add autotmatic link button and save btn here
         />
 
         {projectsLoading ? (
@@ -931,13 +1031,6 @@ const IFCViewer = () => {
                   fragmentsRef={fragmentsRef}
                 />
                 <div className="absolute z-10 flex flex-col gap-3 bottom-20 left-4">
-                  {panelsVisible && (
-                    <AutomaticLinkingModal
-                      setActivities={setActivities}
-                      activities={activities ?? []}
-                      modelRef={modelRef}
-                    />
-                  )}
                   {(() => {
                     const currentActivities = activities?.filter(
                       (activity) =>
@@ -988,7 +1081,7 @@ const IFCViewer = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="p-2 border border-gray-200 rounded-lg shadow-sm  bg-white/95 backdrop-blur-sm max-w-80">
+                      <div className="p-2 border border-gray-200 rounded-lg shadow-sm bg-white/95 backdrop-blur-sm max-w-80">
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
                           <span className="text-xs font-semibold text-gray-600">
@@ -1007,7 +1100,7 @@ const IFCViewer = () => {
                 />
 
                 {/* Panel Visibility Toggle */}
-                <div className="absolute z-20 top-4 right-20">
+                {/* <div className="absolute z-20 top-4 right-20">
                   <button
                     onClick={() => setPanelsVisible(!panelsVisible)}
                     className="flex items-center gap-2 px-3 py-2 text-sm transition-colors rounded-lg shadow-md bg-white/90 hover:bg-white"
@@ -1024,7 +1117,7 @@ const IFCViewer = () => {
                       </>
                     )}
                   </button>
-                </div>
+                </div> */}
 
                 {/* 🔲 Spatial Tree + Properties Panel container */}
                 {
@@ -1094,12 +1187,12 @@ const IFCViewer = () => {
                       gap: "10px",
                     }}
                   >
-                    <button
-                      onClick={handleSaveBimData}
+                    {/* <button
+                      onClick={}
                       className="w-40 p-4 text-white bg-primary hover:bg-primary-500"
                     >
                       {t("ifcPlan.save")}
-                    </button>
+                    </button> */}
                   </div>
                 )}
               </div>

@@ -23,578 +23,22 @@ import { selectCurrentActivityId } from "src/state/slices/bimSlice";
 import { useSelector } from "react-redux";
 import { useAuth } from "src/context/UserContext";
 import { useTranslation } from "react-i18next";
+import { Spinner } from "react-bootstrap";
+import { Circle } from "react-konva";
+import Accordion from "src/components/shared/Accordian";
 
-export const ACTIVI = [
-  {
-    uid: "8599",
-    name: "DEL-27 : Délai Titulaire",
-    activityId: "EPR2.508", // Added prefix
-    startDate: new Date("2026-09-01T20:00:00"),
-    endDate: new Date("2026-09-01T20:00:00"),
-    startPk: 2393,
-    endPk: 2443,
-    linkedModelIds: [],
-    style: "Délai Titulaire",
-  },
-  {
-    uid: "8620",
-    name: "JAL-2 Mise à disposition PDL eaux potable zone ouest",
-    activityId: "EPR2.2403", // Added prefix
-    startDate: new Date("2026-09-30T07:00:00"),
-    endDate: new Date("2026-09-30T07:00:00"),
-    startPk: 2500,
-    endPk: 2520,
-    linkedModelIds: [],
-    style: "MAD",
-  },
-  {
-    uid: "8622",
-    name: "JAL-3 Mise à disposition PDL électricité zone est",
-    activityId: "EPR2.2399", // Added prefix
-    startDate: new Date("2026-09-30T07:00:00"),
-    endDate: new Date("2026-09-30T07:00:00"),
-    startPk: 1900,
-    endPk: 1913,
-    linkedModelIds: [],
-    style: "MAD",
-  },
-  {
-    uid: "8624",
-    name: "JAL-4 Mise à disposition PDL électricité zone ouest",
-    activityId: "EPR2.112", // Added prefix
-    startDate: new Date("2026-09-30T07:00:00"),
-    endDate: new Date("2026-09-30T07:00:00"),
-    startPk: 1920,
-    endPk: 1943,
-    linkedModelIds: [],
-    style: "MAD",
-  },
-  {
-    uid: "8626",
-    name: "JAL-5 Mise à disposition PDL eaux industrielles zone est",
-    activityId: "EPR2.114", // Added prefix
-    startDate: new Date("2026-11-02T07:00:00"),
-    endDate: new Date("2026-11-02T07:00:00"),
-    startPk: 2500,
-    endPk: 2520,
-    linkedModelIds: [],
-    style: "MAD",
-  },
-  {
-    uid: "8628",
-    name: "JAL-6 Mise à disposition PDL eaux industrielles zone ouest",
-    activityId: "EPR2.116", // Added prefix
-    startDate: new Date("2026-11-02T07:00:00"),
-    endDate: new Date("2026-11-02T07:00:00"),
-    startPk: 1943,
-    endPk: 1963,
-    linkedModelIds: [],
-    style: "MAD",
-  },
-  {
-    uid: "8630",
-    name: "JAL-7 Mise à disposition PDL eaux potable zone est",
-    activityId: "EPR2.118", // Added prefix
-    startDate: new Date("2026-11-02T07:00:00"),
-    endDate: new Date("2026-11-02T07:00:00"),
-    startPk: 2500,
-    endPk: 2520,
-    linkedModelIds: [],
-    style: "MAD",
-  },
-  {
-    uid: "8632",
-    name: 'JAL-8 Mise a disposition de la zone dite "Flore 2" (Fin retrait des espèces zone flore 2)',
-    activityId: "EPR2.120", // Added prefix
-    startDate: new Date("2026-11-16T07:00:00"),
-    endDate: new Date("2026-11-16T07:00:00"),
-    startPk: 594,
-    endPk: 1109,
-    linkedModelIds: [],
-    style: "MAD",
-  },
-  {
-    uid: "8636",
-    name: "JAL-10 Mise à disposition PDL eaux potable zone ouest sud bloc usine",
-    activityId: "EPR2.124", // Added prefix
-    startDate: new Date("2026-11-02T07:00:00"),
-    endDate: new Date("2026-11-02T07:00:00"),
-    startPk: 1920,
-    endPk: 1943,
-    linkedModelIds: [],
-    style: "MAD",
-  },
-  {
-    uid: "8640",
-    name: "JAL-12 Mise à disposition PDL eaux industrielles zone ouest sud bloc usine",
-    activityId: "EPR2.128", // Added prefix
-    startDate: new Date("2026-11-02T07:00:00"),
-    endDate: new Date("2026-11-02T07:00:00"),
-    startPk: 1920,
-    endPk: 1943,
-    linkedModelIds: [],
-    style: "MAD",
-  },
-  {
-    uid: "8648",
-    name: "JAL-16 Fin de travaux de dévoiement des réseaux du corridor technique (emprise grand colombier)",
-    activityId: "EPR2.136", // Added prefix
-    startDate: new Date("2026-09-30T09:00:00"),
-    endDate: new Date("2026-09-30T09:00:00"),
-    startPk: 1713,
-    endPk: 1963,
-    linkedModelIds: [],
-    style: "MAD",
-  },
-  {
-    uid: "8663",
-    name: "Phase 2 : Balisage 1ère quinzaine d'octobre ",
-    activityId: "EPR2.146", // Added prefix
-    startDate: new Date("2026-10-01T07:00:00"),
-    endDate: new Date("2026-10-16T20:00:00"),
-    startPk: 594,
-    endPk: 1109,
-    linkedModelIds: [],
-    style: "Contrainte Environnementale",
-  },
-  {
-    uid: "8664",
-    name: "Phase 2 : Prélèvement flore (zones bleues)",
-    activityId: "EPR2.147", // Added prefix
-    startDate: new Date("2026-11-16T07:00:00"),
-    endDate: new Date("2027-01-01T20:00:00"),
-    startPk: 594,
-    endPk: 1109,
-    linkedModelIds: [],
-    style: "Contrainte Environnementale",
-  },
-  {
-    uid: "8671",
-    name: "Phase 2 : Zone de sanctuaire amphibien provisoire",
-    activityId: "EPR2.148", // Added prefix
-    startDate: new Date("2026-09-01T07:00:00"),
-    endDate: new Date("2027-08-15T20:00:00"),
-    startPk: 2540,
-    endPk: 2550,
-    linkedModelIds: [],
-    style: "Contrainte Environnementale",
-  },
-  {
-    uid: "572",
-    name: "Retrait des espèces florales - orchidées (zone 2 rouge)",
-    activityId: "EPR2.153", // Added prefix
-    startDate: new Date("2026-09-30T07:00:00"),
-    endDate: new Date("2026-11-15T20:00:00"),
-    startPk: 594,
-    endPk: 860,
-    linkedModelIds: [],
-    style: "Contrainte Environnementale",
-  },
-  {
-    uid: "9628",
-    name: "Zone EST : Réalisation de la plateforme & VRD",
-    activityId: "EPR2.232", // Added prefix
-    startDate: new Date("2026-10-19T07:00:00"),
-    endDate: new Date("2026-10-23T20:00:00"),
-    startPk: 2393,
-    endPk: 2443,
-    linkedModelIds: [],
-    style: "Installation de chantier",
-  },
-  {
-    uid: "8932",
-    name: "Zone EST : Installation de la base vie pionnière",
-    activityId: "EPR2.233", // Added prefix
-    startDate: new Date("2026-10-26T07:00:00"),
-    endDate: new Date("2026-11-06T20:00:00"),
-    startPk: 2393,
-    endPk: 2443,
-    linkedModelIds: [],
-    style: "Installation de chantier",
-  },
-  {
-    uid: "8930",
-    name: "Zone EST : Aménagement du parking Parking 400 places NG2003",
-    activityId: "EPR2.235", // Added prefix
-    startDate: new Date("2026-11-09T07:00:00"),
-    endDate: new Date("2026-12-03T20:00:00"),
-    startPk: 2393,
-    endPk: 2443,
-    linkedModelIds: [],
-    style: "Parking",
-  },
-  {
-    uid: "9629",
-    name: "Zone EST : Réalisation de la plateforme & VRD",
-    activityId: "EPR2.238", // Added prefix
-    startDate: new Date("2026-12-04T07:00:00"),
-    endDate: new Date("2026-12-15T20:00:00"),
-    startPk: 2393,
-    endPk: 2443,
-    linkedModelIds: [],
-    style: "Terrassement",
-  },
-  {
-    uid: "8906",
-    name: "Zone EST : Installation Base Vie NG2003",
-    activityId: "EPR2.239", // Added prefix
-    startDate: new Date("2026-12-16T07:00:00"),
-    endDate: new Date("2027-01-22T20:00:00"),
-    startPk: 2393,
-    endPk: 2443,
-    linkedModelIds: [],
-    style: "Terrassement",
-  },
-  {
-    uid: "9630",
-    name: "Zone EST : Réalisation de la plateforme & VRD",
-    activityId: "EPR2.243", // Added prefix
-    startDate: new Date("2026-12-04T07:00:00"),
-    endDate: new Date("2026-12-15T20:00:00"),
-    startPk: 2343,
-    endPk: 2393,
-    linkedModelIds: [],
-    style: "Centrale à Béton",
-  },
-  {
-    uid: "8903",
-    name: "Zone EST : Installation de la centrale à béton / stock / ateliers / labos",
-    activityId: "EPR2.244", // Added prefix
-    startDate: new Date("2026-12-16T07:00:00"),
-    endDate: new Date("2027-03-09T20:00:00"),
-    startPk: 2343,
-    endPk: 2393,
-    linkedModelIds: [],
-    style: "Centrale à Béton",
-  },
-  {
-    uid: "8669",
-    name: "Zone OUEST : Phase 2 : Retrait des clôtures/voiries réseaux existants",
-    activityId: "EPR2.271", // Added prefix
-    startDate: new Date("2026-11-09T07:00:00"),
-    endDate: new Date("2027-02-12T20:00:00"),
-    startPk: 193,
-    endPk: 1683,
-    linkedModelIds: [],
-    style: "VRD",
-  },
-  {
-    uid: "8670",
-    name: "Zone OUEST : Phase 2 : Débroussaillage/décapage de la zone Ex-TERF",
-    activityId: "EPR2.272", // Added prefix
-    startDate: new Date("2026-11-09T07:00:00"),
-    endDate: new Date("2027-02-12T20:00:00"),
-    startPk: 193,
-    endPk: 1683,
-    linkedModelIds: [],
-    style: "Terrassement",
-  },
-  {
-    uid: "7803",
-    name: "Zone OUEST : Décapage Plateformes installations",
-    activityId: "EPR2.278", // Added prefix
-    startDate: new Date("2026-11-16T07:00:00"),
-    endDate: new Date("2027-02-16T20:00:00"),
-    startPk: 529,
-    endPk: 594,
-    linkedModelIds: [],
-    style: "Terrassement",
-  },
-  {
-    uid: "89",
-    name: "Zone OUEST : Amenée matériel pour la réalisation des plots d’essais.",
-    activityId: "EPR2.301", // Added prefix
-    startDate: new Date("2026-12-04T07:00:00"),
-    endDate: new Date("2027-02-12T20:00:00"),
-    startPk: 1713,
-    endPk: 1763,
-    linkedModelIds: [],
-    style: "Installation de chantier",
-  },
-  {
-    uid: "8676",
-    name: "Phase 2 : Débroussaillage/décapage and viabilisation de la zone Sud OVH",
-    activityId: "EPR2.316", // Added prefix
-    startDate: new Date("2026-12-14T07:00:00"),
-    endDate: new Date("2027-01-22T20:00:00"),
-    startPk: 2343,
-    endPk: 2443,
-    linkedModelIds: [],
-    style: "Terrassement",
-  },
-  {
-    uid: "7239",
-    name: "Phase 2 : Construction du pont OVH",
-    activityId: "EPR2.320", // Added prefix
-    startDate: new Date("2026-12-03T20:00:00"),
-    endDate: new Date("2027-04-20T20:00:00"),
-    startPk: 2443,
-    endPk: 2500,
-    linkedModelIds: [],
-    style: "GC",
-  },
-  {
-    uid: "9443",
-    name: "Pont provisoire OVH 1 travée",
-    activityId: "EPR2.476", // Added prefix
-    startDate: new Date("2026-09-30T07:00:00"),
-    endDate: new Date("2027-05-26T20:00:00"),
-    startPk: 2443,
-    endPk: 2500,
-    linkedModelIds: [],
-    style: "GC",
-  },
-  {
-    uid: "7812",
-    name: "Déblai/remblai, régalge et compactage PF de la  Zone Est secteur B",
-    activityId: "EPR2.589", // Added prefix
-    startDate: new Date("2026-12-14T07:00:00"),
-    endDate: new Date("2027-01-18T20:00:00"),
-    startPk: 2343,
-    endPk: 2550,
-    linkedModelIds: [],
-    style: "Plateforme",
-  },
-  {
-    uid: "7837",
-    name: " Déblai/remblai, régalge et compactage PF installations",
-    activityId: "EPR2.594", // Added prefix
-    startDate: new Date("2026-12-24T07:00:00"),
-    endDate: new Date("2027-02-10T20:00:00"),
-    startPk: 1763,
-    endPk: 1813,
-    linkedModelIds: [],
-    style: "Plateforme",
-  },
-  {
-    uid: "312",
-    name: "Réalisation des voiries PST Zone Est secteur A",
-    activityId: "EPR2.600", // Added prefix
-    startDate: new Date("2026-11-16T07:00:00"),
-    endDate: new Date("2027-01-27T20:00:00"),
-    startPk: 1713,
-    endPk: 1763,
-    linkedModelIds: [],
-    style: "VRD",
-  },
-  {
-    uid: "2226",
-    name: "Décapage Côté Est – Mise en dépôt provisoire",
-    activityId: "EPR2.646", // Added prefix
-    startDate: new Date("2026-11-16T07:00:00"),
-    endDate: new Date("2027-03-03T20:00:00"),
-    startPk: 1993,
-    endPk: 2243,
-    linkedModelIds: [],
-    style: "Terrassement",
-  },
-  {
-    uid: "2380",
-    name: "Déblais mis en remblai PF à +11m NGF",
-    activityId: "EPR2.649", // Added prefix
-    startDate: new Date("2026-12-24T07:00:00"),
-    endDate: new Date("2027-04-19T20:00:00"),
-    startPk: 1993,
-    endPk: 2243,
-    linkedModelIds: [],
-    style: "Terrassement",
-  },
-  {
-    uid: "8665",
-    name: "Phase 2 : Déviation du wateringue et de la route des enrochements",
-    activityId: "EPR2.666", // Added prefix
-    startDate: new Date("2026-09-30T07:00:00"),
-    endDate: new Date("2027-01-12T20:00:00"),
-    startPk: 2193,
-    endPk: 2243,
-    linkedModelIds: [],
-    style: "VRD",
-  },
-  {
-    uid: "8667",
-    name: "Phase 2 : Débroussaillage/décapage de la zone CUD",
-    activityId: "EPR2.667", // Added prefix
-    startDate: new Date("2026-12-14T07:00:00"),
-    endDate: new Date("2027-02-12T20:00:00"),
-    startPk: 2243,
-    endPk: 2293,
-    linkedModelIds: [],
-    style: "Terrassement",
-  },
-  {
-    uid: "8666",
-    name: 'Phase 2 : Débroussaillage/décapage de la zone "New Odysselec"',
-    activityId: "EPR2.670", // Added prefix
-    startDate: new Date("2026-12-04T09:00:00"),
-    endDate: new Date("2026-12-29T10:00:00"),
-    startPk: 2093,
-    endPk: 2193,
-    linkedModelIds: [],
-    style: "Terrassement",
-  },
-  {
-    uid: "8683",
-    name: "Phase 3 : Remblaiement de plateforme Sud BU à +11,00mNGF de",
-    activityId: "EPR2.671", // Added prefix
-    startDate: new Date("2026-12-01T07:00:00"),
-    endDate: new Date("2027-03-30T20:00:00"),
-    startPk: 1683,
-    endPk: 1713,
-    linkedModelIds: [],
-    style: "Terrassement",
-  },
-  {
-    uid: "9074",
-    name: "BU : Reconnaissance et caractérisation des sols",
-    activityId: "EPR2.700", // Added prefix
-    startDate: new Date("2026-11-27T20:00:00"),
-    endDate: new Date("2026-11-27T20:00:00"),
-    startPk: 193,
-    endPk: 1683,
-    linkedModelIds: [],
-    style: "Pyrotechnique",
-  },
-  {
-    uid: "9280",
-    name: "BU : Retrait des clôtures / voiries et réseaux existants",
-    activityId: "EPR2.703", // Added prefix
-    startDate: new Date("2026-11-30T07:00:00"),
-    endDate: new Date("2026-12-17T20:00:00"),
-    startPk: 193,
-    endPk: 1683,
-    linkedModelIds: [],
-    style: "Terrassement",
-  },
-  {
-    uid: "9279",
-    name: "BU : Débroussaillage / Décapage du site sur 20cm (+5.3m NGF)",
-    activityId: "EPR2.704", // Added prefix
-    startDate: new Date("2026-12-22T07:00:00"),
-    endDate: new Date("2027-02-10T20:00:00"),
-    startPk: 193,
-    endPk: 1683,
-    linkedModelIds: [],
-    style: "Terrassement",
-  },
-  {
-    uid: "9671",
-    name: "BOP 2 : Création PF pour PM 10, 11 et 12 et PM 14, 15 et 16 du BOP 2",
-    activityId: "EPR2.972", // Added prefix
-    startDate: new Date("2025-09-30T07:00:00"),
-    endDate: new Date("2025-10-02T20:00:00"),
-    startPk: 193,
-    endPk: 361,
-    linkedModelIds: [],
-    style: "Plateforme",
-  },
-  {
-    uid: "9406",
-    name: "BOP 2 : Réalisation des tirants par passes de terrassements zones BOP Tr 2 à -7,00 NGF ",
-    activityId: "EPR2.986", // Added prefix
-    startDate: new Date("2025-09-30T07:00:00"),
-    endDate: new Date("2025-10-02T20:00:00"),
-    startPk: 361,
-    endPk: 529,
-    linkedModelIds: [],
-    style: "Tirants",
-  },
-  {
-    uid: "9358",
-    name: "BOP 2 : Réalisation des tirants par passes de terrassements zones BOP Tr 2 à -6,50 NGF",
-    activityId: "EPR2.992", // Added prefix
-    startDate: new Date("2025-09-30T07:00:00"),
-    endDate: new Date("2025-10-02T20:00:00"),
-    startPk: 361,
-    endPk: 529,
-    linkedModelIds: [],
-    style: "Tirants",
-  },
-  {
-    uid: "9399",
-    name: "BOP 2 : Réalisation des tirants par passes de terrassements zones BOP Tr 2 à -12,00 NGF",
-    activityId: "EPR2.994", // Added prefix
-    startDate: new Date("2025-09-30T07:00:00"),
-    endDate: new Date("2025-10-15T20:00:00"),
-    startPk: 361,
-    endPk: 529,
-    linkedModelIds: [],
-    style: "Tirants",
-  },
-  {
-    uid: "9257",
-    name: "Canal Secteur 1 : Diagnostics pyrotechniques pour forages",
-    activityId: "EPR2.1018", // Added prefix
-    startDate: new Date("2026-11-09T07:00:00"),
-    endDate: new Date("2027-01-14T20:00:00"),
-    startPk: 25,
-    endPk: 193,
-    linkedModelIds: [],
-    style: "Pyrotechnique",
-  },
-  {
-    uid: "9067",
-    name: "Canal Secteur 1 : Réalisation de la vibro Canal Secteur 1 côté Rive Gauche",
-    activityId: "EPR2.1019", // Added prefix
-    startDate: new Date("2026-12-22T07:00:00"),
-    endDate: new Date("2027-04-27T20:00:00"),
-    startPk: 25,
-    endPk: 193,
-    linkedModelIds: [],
-    style: "Vibro",
-  },
-  {
-    uid: "338",
-    name: "Inspection",
-    activityId: "EPR2.1329", // Added prefix
-    startDate: new Date("2025-10-01T07:00:00"),
-    endDate: new Date("2025-10-01T20:00:00"),
-    startPk: 1109,
-    endPk: 1170,
-    linkedModelIds: [],
-    style: "Réception",
-  },
-  {
-    uid: "339",
-    name: "levée de réserves",
-    activityId: "EPR2.1330", // Added prefix
-    startDate: new Date("2025-10-02T07:00:00"),
-    endDate: new Date("2025-11-04T20:00:00"),
-    startPk: 1109,
-    endPk: 1170,
-    linkedModelIds: [],
-    style: "Réception",
-  },
-  {
-    uid: "340",
-    name: "Inspection finale",
-    activityId: "EPR2.1331", // Added prefix
-    startDate: new Date("2025-11-05T07:00:00"),
-    endDate: new Date("2025-11-05T20:00:00"),
-    startPk: 1109,
-    endPk: 1170,
-    linkedModelIds: [],
-    style: "Réception",
-  },
-  {
-    uid: "341",
-    name: "Réception",
-    activityId: "EPR2.1332", // Added prefix
-    startDate: new Date("2025-11-05T20:00:00"),
-    endDate: new Date("2025-11-05T20:00:00"),
-    startPk: 1109,
-    endPk: 1170,
-    linkedModelIds: [],
-    style: "Réception",
-  },
-];
 interface ActivitiesPanelProps {
   setActivities: Function;
   activities: ActivityModel[];
   toggleVisibilty: (modelIds: string[]) => void;
+  handleVisibilty: (modelIds: string[], visible: boolean) => void;
   isolateItem: (modelIds: string[]) => void;
   resetIsolated: (modelIds: string[]) => void;
   onLink: (activityUid: string, modelIds: string[]) => void;
   getSelectedModelIds: () => string[];
+  AutomaticLinkingLogic: JSX.Element;
+  handleSaveBimData: any;
+  isSubmitting: boolean;
 }
 
 const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
@@ -605,6 +49,10 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
   getSelectedModelIds,
   activities,
   setActivities,
+  AutomaticLinkingLogic,
+  handleSaveBimData,
+  isSubmitting,
+  handleVisibilty,
 }) => {
   const { canWrite, isAdmin } = useAuth();
   const { t } = useTranslation();
@@ -614,10 +62,13 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
   const [visibilityState, setVisibilityState] = useState<{
     [key: string]: boolean;
   }>({});
-  const [isolatedActivity, setIsolatedActivity] = useState<string | null>(null);
+  const [isolatedActivity, setIsolatedActivity] = useState<string[] | null>(
+    null
+  );
   const [searchFilters, setSearchFilters] = useState({
     activityId: "",
     activityUID: "",
+    name: "",
   });
 
   const currentActivityId = useSelector(selectCurrentActivityId);
@@ -660,8 +111,14 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
           activity.activityUID
             .toLowerCase()
             .includes(searchFilters.activityUID.toLowerCase()));
+      const matchesName =
+        searchFilters.name === "" ||
+        (activity.name &&
+          activity.name
+            .toLowerCase()
+            .includes(searchFilters.name.toLowerCase()));
 
-      return matchesId && matchesUID;
+      return matchesId && matchesUID && matchesName;
     });
   }, [activities, searchFilters]);
 
@@ -710,19 +167,19 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
     const hasExistingLinks = (currentActivity?.linkedModelIds ?? []).length > 0;
 
     // If there are existing links, we can clear them without needing selected elements
-    if (hasExistingLinks) {
-      setActivities((prev) =>
-        prev.map((activity) =>
-          activity.activityUID === uid
-            ? {
-                ...activity,
-                linkedModelIds: [],
-              }
-            : activity
-        )
-      );
-      return; // Exit early, no need to call onLink
-    }
+    // if (hasExistingLinks) {
+    //   setActivities((prev) =>
+    //     prev.map((activity) =>
+    //       activity.activityUID === uid
+    //         ? {
+    //             ...activity,
+    //             linkedModelIds: [],
+    //           }
+    //         : activity
+    //     )
+    //   );
+    //   return; // Exit early, no need to call onLink
+    // }
 
     // Only check for selected elements when we want to add new links
     const selectedIds = getSelectedModelIds();
@@ -745,6 +202,22 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
 
     onLink(uid, selectedIds);
   };
+  const resetLinking = (uid: string) => {
+    // Find the current activity to check its current linked state
+    const currentActivity = activities.find((a) => a.activityUID === uid);
+    const hasExistingLinks = (currentActivity?.linkedModelIds ?? []).length > 0;
+
+    setActivities((prev) =>
+      prev.map((activity) =>
+        activity.activityUID === uid
+          ? {
+              ...activity,
+              linkedModelIds: [],
+            }
+          : activity
+      )
+    );
+  };
 
   const handleToggleVisibility = (activity: ActivityModel) => {
     if (activity.linkedModelIds?.length === 0) {
@@ -764,31 +237,60 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
       alert("No linked model elements to isolate.");
       return;
     }
-
     isolateItem(activity.linkedModelIds ?? []);
-    setIsolatedActivity(activity.activityUID!);
+    console.log(
+      "🚀 ~ handleIsolateItem ~ activity.linkedModelIds:",
+      activity.linkedModelIds
+    );
+
+    setIsolatedActivity([activity.activityUID!]);
   };
 
   const handleResetIsolation = () => {
-    if (isolatedActivity) {
-      const activity = activities.find(
-        (a) => a.activityUID === isolatedActivity
+    console.log(
+      "🚀 ~ handleResetIsolation ~ isolatedActivity:",
+      isolatedActivity
+    );
+
+    if (isolatedActivity?.length) {
+      // Find all matching activities
+      const matchedActivities = activities.filter((a) =>
+        isolatedActivity.includes(a.activityUID!)
       );
-      if (activity) {
-        resetIsolated(activity.linkedModelIds ?? []);
+
+      // Collect all linked model IDs from those activities
+      const linkedIds = matchedActivities.flatMap(
+        (a) => a.linkedModelIds ?? []
+      );
+
+      // Reset isolation for all found model IDs
+      if (linkedIds.length) {
+        resetIsolated(linkedIds);
       }
     }
+
+    // Clear isolation state
     setIsolatedActivity(null);
+  };
+  const showLinkedShapeActivities = () => {
+    const linkedActiives = activities.filter(
+      (x) => (x.linkedModelIds?.length ?? 0) > 0
+    );
+    const localIds = linkedActiives.flatMap((x) => x.linkedModelIds);
+    const activityUIDs = linkedActiives.flatMap((x) => x.activityUID!);
+    console.log("🚀 ~ showLinkedShapeActivities ~ localIds:", localIds);
+    setIsolatedActivity(activityUIDs);
+    handleVisibilty(localIds, true);
   };
 
   return (
     <div
-      className={`flex flex-col h-full bg-white border-r border-gray-200 transition-all duration-300 ${
+      className={`flex flex-col h-full  bg-white border-r border-gray-200 transition-all duration-300 ${
         isCollapsed ? "w-16" : "w-96"
       }`}
     >
       {/* Header - Collapsible */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 max-h-20 bg-gray-50">
         {!isCollapsed && (
           <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-800">
             <Calendar className="w-5 h-5" />
@@ -822,46 +324,94 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
           </button>
         </div>
       </div>
-
+      {/* buttons */}
+      <div className="flex items-center justify-center gap-2 p-2 ">
+        {AutomaticLinkingLogic}
+        <button
+          onClick={handleSaveBimData}
+          disabled={isSubmitting}
+          className="w-20 px-2 py-2 font-medium text-white transition-all duration-200 transform rounded-lg shadow-md bg-primary hover:bg-primary-600 active:bg-primary-700 hover:shadow-lg hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+        >
+          {isSubmitting ? (
+            <div className="flex items-center justify-center">
+              <div className="w-6 h-6 border-4 border-white rounded-full border-t-transparent animate-spin"></div>
+            </div>
+          ) : (
+            t("ifcPlan.save")
+          )}
+        </button>
+        <button
+          onClick={showLinkedShapeActivities}
+          className="w-20 px-2 py-2 font-medium text-white transition-all duration-200 transform bg-orange-300 rounded-lg shadow-md hover:bg-orange-600 active:bg-orange-700 hover:shadow-lg hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+        >
+          {t("ifcPlan.showObject")}
+        </button>
+      </div>
       {/* Search Filters - Hidden when collapsed */}
       {!isCollapsed && (
-        <div className="p-4 space-y-3 border-b border-gray-200 bg-gray-50">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              {t("activitiesPanel.search.activityId")}
-            </label>
-            <div className="relative">
-              <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
-              <input
-                type="text"
-                placeholder={t("activitiesPanel.search.activityIdPlaceholder")}
-                value={searchFilters.activityId}
-                onChange={(e) =>
-                  handleSearchFilterChange("activityId", e.target.value)
-                }
-                className="w-full py-2 pl-10 pr-3 transition-colors border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-          </div>
+        <Accordion title="filters">
+          <div className="p-4 space-y-3 border-b border-gray-200 bg-gray-50">
+            {/*//! add  activity linking and sae button */}
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              {t("activitiesPanel.search.activityUID")}
-            </label>
-            <div className="relative">
-              <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
-              <input
-                type="text"
-                placeholder={t("activitiesPanel.search.activityUIDPlaceholder")}
-                value={searchFilters.activityUID}
-                onChange={(e) =>
-                  handleSearchFilterChange("activityUID", e.target.value)
-                }
-                className="w-full py-2 pl-10 pr-3 transition-colors border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                {t("activitiesPanel.search.activityId")}
+              </label>
+              <div className="relative">
+                <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                <input
+                  type="text"
+                  placeholder={t(
+                    "activitiesPanel.search.activityIdPlaceholder"
+                  )}
+                  value={searchFilters.activityId}
+                  onChange={(e) =>
+                    handleSearchFilterChange("activityId", e.target.value)
+                  }
+                  className="w-full py-2 pl-10 pr-3 transition-colors border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                {t("activitiesPanel.search.activityUID")}
+              </label>
+              <div className="relative">
+                <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                <input
+                  type="text"
+                  placeholder={t(
+                    "activitiesPanel.search.activityUIDPlaceholder"
+                  )}
+                  value={searchFilters.activityUID}
+                  onChange={(e) =>
+                    handleSearchFilterChange("activityUID", e.target.value)
+                  }
+                  className="w-full py-2 pl-10 pr-3 transition-colors border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                {t("activitiesPanel.search.name")}
+              </label>
+              <div className="relative">
+                <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                <input
+                  type="text"
+                  placeholder={t("activitiesPanel.search.namePlaceholder")}
+                  value={searchFilters.name}
+                  onChange={(e) =>
+                    handleSearchFilterChange("name", e.target.value)
+                  }
+                  className="w-full py-2 pl-10 pr-3 transition-colors border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
             </div>
           </div>
-        </div>
+        </Accordion>
       )}
 
       {/* Activities List */}
@@ -904,7 +454,7 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                   </span>
                   {activity.linkedModelIds?.length > 0 && (
                     <div className="text-xs font-bold text-green-600">
-                      {activity.linkedModelIds.length}
+                      {activity.linkedModelIds?.length}
                     </div>
                   )}
                 </div>
@@ -1055,6 +605,14 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                           <Link className="w-3 h-3" />
                           {t("activitiesPanel.actions.link")}
                         </button>
+                        <button
+                          onClick={() => resetLinking(activity.activityUID!)}
+                          className="flex items-center gap-1 px-3 py-1.5 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors"
+                          title={t("activitiesPanel.actions.reset")}
+                        >
+                          <RotateCcw className="w-3 h-3" />
+                          {t("activitiesPanel.actions.reset")}
+                        </button>
 
                         {/* Toggle Visibility Button */}
                         <button
@@ -1068,7 +626,7 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                               : "text-white bg-green-500 hover:bg-green-600"
                           }`}
                           title={
-                            visibilityState[activity.activityUID!]
+                            !visibilityState[activity.activityUID!]
                               ? t("activitiesPanel.actions.showElements")
                               : t("activitiesPanel.actions.hideElements")
                           }
@@ -1088,11 +646,11 @@ const ActivitiesPanel: React.FC<ActivitiesPanelProps> = ({
                           onClick={() => handleIsolateItem(activity)}
                           disabled={
                             activity.linkedModelIds?.length === 0 ||
-                            isolatedActivity === activity.activityUID
+                            isolatedActivity?.includes(activity.activityUID!)
                           }
                           className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-colors ${
                             activity.linkedModelIds?.length === 0 ||
-                            isolatedActivity === activity.activityUID
+                            isolatedActivity?.includes(activity.activityUID!)
                               ? "text-gray-400 bg-gray-100 cursor-not-allowed"
                               : "text-white bg-purple-500 hover:bg-purple-600"
                           }`}

@@ -157,11 +157,11 @@ const AutomaticLinkingModal = ({
   };
 
   return (
-    <div className="p-6">
+    <div className="">
       {/* Automatic Linking Button */}
       <button
         onClick={() => setShowModal(true)}
-        className="px-4 py-2 font-medium text-white transition-all duration-300 transform bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 hover:scale-105"
+        className="px-2 py-2 text-sm font-medium text-white transition-all duration-300 transform bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 hover:scale-105"
       >
         Automatic Linking
       </button>
@@ -171,9 +171,9 @@ const AutomaticLinkingModal = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
           <div className="w-full max-w-md overflow-hidden transition-all duration-300 transform scale-95 bg-white shadow-2xl rounded-xl animate-in fade-in-90 zoom-in-90">
             {/* Modal Header */}
-            <div className="p-5 text-white bg-gradient-to-r from-blue-500 to-blue-600">
+            <div className="p-5 text-white bg-gradient-to-r from-purple-500 to-purple-600">
               <h2 className="text-xl font-bold">Link Activities to Geometry</h2>
-              <p className="mt-1 text-sm text-blue-100">
+              <p className="mt-1 text-sm text-purple-100">
                 Connect activities to IFC elements using IFC Code
               </p>
             </div>
