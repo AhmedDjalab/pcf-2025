@@ -446,7 +446,9 @@
       "activityId": "Search by Activity ID",
       "activityIdPlaceholder": "Filter by Activity ID...",
       "activityUID": "Search by Activity UID",
-      "activityUIDPlaceholder": "Filter by Activity UID..."
+      "activityUIDPlaceholder": "Filter by Activity UID...",
+      "name": "Name",
+      "namePlaceholder": "Search by name..."
     },
     "activity": {
       "current": "CURRENT",
@@ -469,6 +471,7 @@
     "actions": {
       "persist": "Persist",
       "link": "Link",
+      "reset": "Unlink",
       "linkSelected": "Link Selected Elements",
       "isolate": "Isolate",
       "isolateElements": "Isolate Elements",
@@ -491,7 +494,8 @@
     "showPanels": "Show Panels",
     "loading": "Loading...",
     "error": "Error",
-    "save": "Save"
+    "save": "Save",
+    "showObject": "Linked objs."
   },
   "timeline": {
     "reset": "Reset",

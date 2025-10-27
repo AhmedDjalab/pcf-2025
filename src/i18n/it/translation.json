@@ -443,6 +443,8 @@
       "current": "ATTUALE",
       "id": "ID",
       "uid": "UID",
+      "name": "Nome",
+      "namePlaceholder": "Cerca per nome...",
       "duration": "Durata",
       "linkedElements": "elementi collegati",
       "linkedTo": "Collegato a",
@@ -482,7 +484,9 @@
     "showPanels": "Mostra Pannelli",
     "loading": "Caricamento...",
     "error": "Errore",
-    "save": "Salva"
+    "save": "Salva",
+    "reset": "Scollega",
+    "showObject": "Oggetti collegati"
   },
   "timeline": {
     "reset": "Reimposta",

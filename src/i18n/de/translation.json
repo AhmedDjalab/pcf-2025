@@ -434,7 +434,9 @@
       "activityId": "Nach Aktivitäts-ID suchen",
       "activityIdPlaceholder": "Nach Aktivitäts-ID filtern...",
       "activityUID": "Nach Aktivitäts-UID suchen",
-      "activityUIDPlaceholder": "Nach Aktivitäts-UID filtern..."
+      "activityUIDPlaceholder": "Nach Aktivitäts-UID filtern...",
+      "name": "Name",
+      "namePlaceholder": "Nach Namen suchen..."
     },
     "activity": {
       "current": "AKTUELL",
@@ -457,6 +459,8 @@
     "actions": {
       "persist": "Beibehalten",
       "link": "Verknüpfen",
+      "reset": "Verknüpfung aufheben",
+
       "linkSelected": "Ausgewählte Elemente verknüpfen",
       "isolate": "Isolieren",
       "isolateElements": "Elemente isolieren",
@@ -479,7 +483,8 @@
     "showPanels": "Panels anzeigen",
     "loading": "Lädt...",
     "error": "Fehler",
-    "save": "Speichern"
+    "save": "Speichern",
+    "showObject": "Verknüpfte Objekte"
   },
   "timeline": {
     "reset": "Zurücksetzen",

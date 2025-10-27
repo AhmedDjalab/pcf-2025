@@ -435,7 +435,9 @@
       "activityId": "Buscar por ID de Actividad",
       "activityIdPlaceholder": "Filtrar por ID de Actividad...",
       "activityUID": "Buscar por UID de Actividad",
-      "activityUIDPlaceholder": "Filtrar por UID de Actividad..."
+      "activityUIDPlaceholder": "Filtrar por UID de Actividad...",
+      "name": "Nombre",
+      "namePlaceholder": "Buscar por nombre..."
     },
     "activity": {
       "current": "ACTUAL",
@@ -458,6 +460,8 @@
     "actions": {
       "persist": "Persistir",
       "link": "Vincular",
+      "reset": "Desvincular",
+
       "linkSelected": "Vincular elementos seleccionados",
       "isolate": "Aislar",
       "isolateElements": "Aislar elementos",
@@ -480,7 +484,8 @@
     "showPanels": "Mostrar Paneles",
     "loading": "Cargando...",
     "error": "Error",
-    "save": "Guardar"
+    "save": "Guardar",
+    "showObject": "Objetos vinculados"
   },
   "timeline": {
     "reset": "Restablecer",

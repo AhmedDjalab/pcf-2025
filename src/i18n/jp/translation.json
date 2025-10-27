@@ -439,7 +439,9 @@
       "activityId": "アクティビティIDで検索",
       "activityIdPlaceholder": "アクティビティIDでフィルタ...",
       "activityUID": "アクティビティUIDで検索",
-      "activityUIDPlaceholder": "アクティビティUIDでフィルタ..."
+      "activityUIDPlaceholder": "アクティビティUIDでフィルタ...",
+      "name": "名前",
+      "namePlaceholder": "名前で検索..."
     },
     "activity": {
       "current": "現在",
@@ -460,6 +462,8 @@
       "hideAfterEnd": "終了日後に非表示"
     },
     "actions": {
+      "reset": "リンク解除",
+
       "persist": "持続",
       "link": "リンク",
       "linkSelected": "選択した要素をリンク",
@@ -484,7 +488,8 @@
     "showPanels": "パネルを表示",
     "loading": "読み込み中...",
     "error": "エラー",
-    "save": "保存"
+    "save": "保存",
+    "showObject": "リンクされたオブジェクト"
   },
   "timeline": {
     "reset": "リセット",
