@@ -261,97 +261,6 @@ const IFCViewer = () => {
     }
   }, [html]);
 
-  // useEffect(() => {
-  //   if (!highlighterRef.current) return;
-
-  //   // Define a custom highlight style for active activities
-  //   highlighterRef.current.styles.create(
-  //     "activeActivity",
-  //     new Set(),
-  //     worldRef.current!,
-  //     {
-  //       color: new THREE.Color(0x3b82f6), // Blue color
-  //       opacity: 0.8,
-  //       lineWidth: 2,
-  //       fillEnabled: true,
-  //     }
-  //   );
-  // }, []);
-
-  // // Add this effect to highlight current activities in blue
-  // useEffect(() => {
-  //   if (!highlighterRef.current) return;
-
-  //   // Define a custom highlight style for active activities
-  //   highlighterRef.current.styles.create(
-  //     "activeActivity",
-  //     new Set(),
-  //     worldRef.current!,
-  //     {
-  //       color: new THREE.Color(0x3b82f6), // Blue color
-  //       opacity: 0.8,
-  //       lineWidth: 2,
-  //       fillEnabled: true,
-  //     }
-  //   );
-  // }, []);
-
-  // useEffect(() => {
-  //   if (!highlighterRef.current || !currentActivityIds.length || !activities) {
-  //     // Clear highlights when no activities are current
-  //     if (highlighterRef.current) {
-  //       highlighterRef.current.clear("activeActivity");
-  //     }
-  //     return;
-  //   }
-
-  //   const updateHighlights = async () => {
-  //     try {
-  //       // Get all model IDs for current activities
-  //       const currentActivityModelIds = activities
-  //         .filter((activity) => currentActivityIds.includes(activity.id))
-  //         .flatMap((activity) => activity.linkedModelIds || []);
-  //       console.warn(
-  //         "🚀 ~ updateHighlights ~ currentActivityModelIds:",
-  //         currentActivityModelIds
-  //       );
-
-  //       if (currentActivityModelIds.length === 0) {
-  //         await highlighterRef.current?.clear("activeActivity");
-  //         return;
-  //       }
-
-  //       // Create ModelIdMap for highlighting
-  //       const modelIdMap: OBC.ModelIdMap = {
-  //         [modelName]: new Set(
-  //           currentActivityModelIds.map((id) => parseInt(id))
-  //         ),
-  //       };
-
-  //       // Apply blue highlight to current activities
-  //       await highlighterRef.current?.highlightByID(
-  //         "activeActivity",
-  //         modelIdMap,
-  //         true,
-  //         false // Don't zoom to selection
-  //       );
-
-  //       console.log("Highlighted current activities:", {
-  //         activityCount: currentActivityIds.length,
-  //         elementCount: currentActivityModelIds.length,
-  //       });
-  //     } catch (error) {
-  //       console.error("Error highlighting activities:", error);
-  //     }
-  //   };
-
-  //   // Debounce to avoid too frequent updates
-  //   const timeoutId = setTimeout(updateHighlights, 50);
-
-  //   return () => {
-  //     clearTimeout(timeoutId);
-  //   };
-  // }, [currentActivityIds, activities, modelName]);
   useEffect(() => {
     const container = containerRef.current;
 
@@ -719,55 +628,6 @@ const IFCViewer = () => {
     return null; // not found
   };
 
-  // const currentVisibleIds = new Set<number>();
-  // const currentHiddenIds = new Set<number>();
-  // const toggleModelVisibility = async (
-  //   localIds: string[],
-  //   visible: boolean
-  // ) => {
-  //   if (!localIds.length) return;
-
-  //   try {
-  //     const hider = componentsRef.current.get(OBC.Hider);
-  //     hiderRef.current = hider;
-
-  //     // Deduplicate
-  //     const numericIds = Array.from(new Set(localIds.map((l) => parseInt(l))));
-
-  //     // Filter against our own cached state instead of re-applying
-  //     const idsToToggle = numericIds.filter((id) =>
-  //       visible ? !currentVisibleIds.has(id) : !currentHiddenIds.has(id)
-  //     );
-
-  //     if (!idsToToggle.length) {
-  //       // nothing changed → no flicker
-  //       return;
-  //     }
-
-  //     const modelIdMap: OBC.ModelIdMap = {
-  //       [modelName]: new Set(idsToToggle),
-  //     };
-
-  //     await hider.set(visible, modelIdMap);
-
-  //     // Update our cache
-  //     if (visible) {
-  //       idsToToggle.forEach((id) => {
-  //         currentVisibleIds.add(id);
-  //         currentHiddenIds.delete(id);
-  //       });
-  //     } else {
-  //       idsToToggle.forEach((id) => {
-  //         currentHiddenIds.add(id);
-  //         currentVisibleIds.delete(id);
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Toggle visibility error:", error);
-  //     throw error;
-  //   }
-  // };
-
   const visibleIds = new Set<number>();
 
   const showAllModels = async () => {
@@ -821,75 +681,6 @@ const IFCViewer = () => {
     }
   };
 
-  // const applyVisibility = async (shouldBeVisible: Set<string>) => {
-  //   if (!shouldBeVisible.size) return;
-
-  //   const hider = componentsRef.current.get(OBC.Hider);
-  //   hiderRef.current = hider;
-
-  //   const ids = Array.from(shouldBeVisible).map((id) => parseInt(id));
-
-  //   const modelIdMap: OBC.ModelIdMap = {
-  //     [modelName]: new Set(ids),
-  //   };
-
-  //   // 🚀 One call: everything in the set is visible, others hidden
-  //   await hider.set(true, modelIdMap);
-
-  //   // Update local cache (optional)
-  //   currentVisibleIds.clear();
-  //   ids.forEach((id) => currentVisibleIds.add(id));
-  //   currentHiddenIds.clear();
-  // };
-
-  // const applyVisibility = useCallback(
-  //   async (shouldBeVisible: Set<string>) => {
-  //     if (!hiderRef.current || !fragmentsRef.current) return;
-
-  //     try {
-  //       // Get all possible model IDs from fragments
-  //       const allModelIds = new Set<string>();
-  //       for (const [modelId, model] of fragmentsRef.current.list) {
-  //         // Get all items in this model
-  //         const allItems = await model.getLocalIds();
-  //         console.log("🚀 ~ IFCViewer ~ allItems:", allItems);
-  //         allItems.forEach((item) => allModelIds.add(item.toString()));
-  //       }
-
-  //       // Determine which items to hide (all items minus visible ones)
-  //       const idsToHide = Array.from(allModelIds).filter(
-  //         (id) => !shouldBeVisible.has(id)
-  //       );
-  //       const idsToShow = Array.from(shouldBeVisible);
-
-  //       // Batch visibility updates
-  //       if (idsToShow.length > 0) {
-  //         const showModelIdMap: OBC.ModelIdMap = {
-  //           [modelName]: new Set(idsToShow.map((id) => parseInt(id))),
-  //         };
-  //         await hiderRef.current.set(true, showModelIdMap);
-  //       }
-
-  //       if (idsToHide.length > 0) {
-  //         const hideModelIdMap: OBC.ModelIdMap = {
-  //           [modelName]: new Set(idsToHide.map((id) => parseInt(id))),
-  //         };
-  //         await hiderRef.current.set(false, hideModelIdMap);
-  //       }
-  //     } catch (error) {
-  //       console.error("Apply visibility error:", error);
-  //     }
-  //   },
-  //   [modelName]
-  // );
-
-  // const hideAllItems = async () => {
-  //   await hiderRef.current?.set(false);
-  // };
-  // const showAllItems = async () => {
-  //   await hiderRef.current?.set(true);
-  // };
-
   const toggleModelIsolated = async (localIds: string[], visible?: boolean) => {
     console.log("🚀 ~ toggleModelIsolated ~ localIds:", localIds);
     if (!localIds.length) return;
@@ -934,38 +725,6 @@ const IFCViewer = () => {
       setIsSubmitting(false);
     }
   };
-
-  // const formatItemPsets = (rawPsets: FRAG.ItemData[]) => {
-  //   const result: Record<string, Record<string, any>> = {};
-  //   for (const [_, pset] of rawPsets.entries()) {
-  //     const { Name: psetName, HasProperties } = pset;
-  //     if (!("value" in psetName && Array.isArray(HasProperties))) continue;
-  //     const props: Record<string, any> = {};
-  //     for (const [_, prop] of HasProperties.entries()) {
-  //       const { Name, NominalValue } = prop;
-  //       if (!("value" in Name && "value" in NominalValue)) continue;
-  //       const name = Name.value;
-  //       const nominalValue = NominalValue.value;
-  //       if (!(name && nominalValue !== undefined)) continue;
-  //       props[name] = nominalValue;
-  //     }
-  //     result[psetName.value] = props;
-  //   }
-  //   return result;
-  // };
-  // const getItemPropertySets = async (localIds: number[]) => {
-  //   if (!localIds) return null;
-  //   const [data] =
-  //     (await modelRef.current?.getItemsData(localIds, {
-  //       attributesDefault: false,
-  //       attributes: ["Name", "NominalValue"],
-  //       relations: {
-  //         IsDefinedBy: { attributes: true, relations: true },
-  //         DefinesOcurrence: { attributes: false, relations: false },
-  //       },
-  //     })) ?? [];
-  //   return (data.IsDefinedBy as FRAG.ItemData[]) ?? [];
-  // };
 
   const handleVisibilty = async (localIds, visible) => {
     console.log("🚀 ~ handleVisibilty ~ localIds, visible:", localIds, visible);
@@ -1013,8 +772,6 @@ const IFCViewer = () => {
               modelRef={modelRef}
             />
           }
-
-          //? we need to add autotmatic link button and save btn here
         />
 
         {projectsLoading ? (
@@ -1215,3 +972,244 @@ const IFCViewer = () => {
 };
 
 export default IFCViewer;
+
+// const applyVisibility = async (shouldBeVisible: Set<string>) => {
+//   if (!shouldBeVisible.size) return;
+
+//   const hider = componentsRef.current.get(OBC.Hider);
+//   hiderRef.current = hider;
+
+//   const ids = Array.from(shouldBeVisible).map((id) => parseInt(id));
+
+//   const modelIdMap: OBC.ModelIdMap = {
+//     [modelName]: new Set(ids),
+//   };
+
+//   // 🚀 One call: everything in the set is visible, others hidden
+//   await hider.set(true, modelIdMap);
+
+//   // Update local cache (optional)
+//   currentVisibleIds.clear();
+//   ids.forEach((id) => currentVisibleIds.add(id));
+//   currentHiddenIds.clear();
+// };
+
+// const applyVisibility = useCallback(
+//   async (shouldBeVisible: Set<string>) => {
+//     if (!hiderRef.current || !fragmentsRef.current) return;
+
+//     try {
+//       // Get all possible model IDs from fragments
+//       const allModelIds = new Set<string>();
+//       for (const [modelId, model] of fragmentsRef.current.list) {
+//         // Get all items in this model
+//         const allItems = await model.getLocalIds();
+//         console.log("🚀 ~ IFCViewer ~ allItems:", allItems);
+//         allItems.forEach((item) => allModelIds.add(item.toString()));
+//       }
+
+//       // Determine which items to hide (all items minus visible ones)
+//       const idsToHide = Array.from(allModelIds).filter(
+//         (id) => !shouldBeVisible.has(id)
+//       );
+//       const idsToShow = Array.from(shouldBeVisible);
+
+//       // Batch visibility updates
+//       if (idsToShow.length > 0) {
+//         const showModelIdMap: OBC.ModelIdMap = {
+//           [modelName]: new Set(idsToShow.map((id) => parseInt(id))),
+//         };
+//         await hiderRef.current.set(true, showModelIdMap);
+//       }
+
+//       if (idsToHide.length > 0) {
+//         const hideModelIdMap: OBC.ModelIdMap = {
+//           [modelName]: new Set(idsToHide.map((id) => parseInt(id))),
+//         };
+//         await hiderRef.current.set(false, hideModelIdMap);
+//       }
+//     } catch (error) {
+//       console.error("Apply visibility error:", error);
+//     }
+//   },
+//   [modelName]
+// );
+
+// const hideAllItems = async () => {
+//   await hiderRef.current?.set(false);
+// };
+// const showAllItems = async () => {
+//   await hiderRef.current?.set(true);
+// };
+
+// const currentVisibleIds = new Set<number>();
+// const currentHiddenIds = new Set<number>();
+// const toggleModelVisibility = async (
+//   localIds: string[],
+//   visible: boolean
+// ) => {
+//   if (!localIds.length) return;
+
+//   try {
+//     const hider = componentsRef.current.get(OBC.Hider);
+//     hiderRef.current = hider;
+
+//     // Deduplicate
+//     const numericIds = Array.from(new Set(localIds.map((l) => parseInt(l))));
+
+//     // Filter against our own cached state instead of re-applying
+//     const idsToToggle = numericIds.filter((id) =>
+//       visible ? !currentVisibleIds.has(id) : !currentHiddenIds.has(id)
+//     );
+
+//     if (!idsToToggle.length) {
+//       // nothing changed → no flicker
+//       return;
+//     }
+
+//     const modelIdMap: OBC.ModelIdMap = {
+//       [modelName]: new Set(idsToToggle),
+//     };
+
+//     await hider.set(visible, modelIdMap);
+
+//     // Update our cache
+//     if (visible) {
+//       idsToToggle.forEach((id) => {
+//         currentVisibleIds.add(id);
+//         currentHiddenIds.delete(id);
+//       });
+//     } else {
+//       idsToToggle.forEach((id) => {
+//         currentHiddenIds.add(id);
+//         currentVisibleIds.delete(id);
+//       });
+//     }
+//   } catch (error) {
+//     console.error("Toggle visibility error:", error);
+//     throw error;
+//   }
+// };
+// const formatItemPsets = (rawPsets: FRAG.ItemData[]) => {
+//   const result: Record<string, Record<string, any>> = {};
+//   for (const [_, pset] of rawPsets.entries()) {
+//     const { Name: psetName, HasProperties } = pset;
+//     if (!("value" in psetName && Array.isArray(HasProperties))) continue;
+//     const props: Record<string, any> = {};
+//     for (const [_, prop] of HasProperties.entries()) {
+//       const { Name, NominalValue } = prop;
+//       if (!("value" in Name && "value" in NominalValue)) continue;
+//       const name = Name.value;
+//       const nominalValue = NominalValue.value;
+//       if (!(name && nominalValue !== undefined)) continue;
+//       props[name] = nominalValue;
+//     }
+//     result[psetName.value] = props;
+//   }
+//   return result;
+// };
+// const getItemPropertySets = async (localIds: number[]) => {
+//   if (!localIds) return null;
+//   const [data] =
+//     (await modelRef.current?.getItemsData(localIds, {
+//       attributesDefault: false,
+//       attributes: ["Name", "NominalValue"],
+//       relations: {
+//         IsDefinedBy: { attributes: true, relations: true },
+//         DefinesOcurrence: { attributes: false, relations: false },
+//       },
+//     })) ?? [];
+//   return (data.IsDefinedBy as FRAG.ItemData[]) ?? [];
+// };
+
+// useEffect(() => {
+//   if (!highlighterRef.current) return;
+
+//   // Define a custom highlight style for active activities
+//   highlighterRef.current.styles.create(
+//     "activeActivity",
+//     new Set(),
+//     worldRef.current!,
+//     {
+//       color: new THREE.Color(0x3b82f6), // Blue color
+//       opacity: 0.8,
+//       lineWidth: 2,
+//       fillEnabled: true,
+//     }
+//   );
+// }, []);
+
+// // Add this effect to highlight current activities in blue
+// useEffect(() => {
+//   if (!highlighterRef.current) return;
+
+//   // Define a custom highlight style for active activities
+//   highlighterRef.current.styles.create(
+//     "activeActivity",
+//     new Set(),
+//     worldRef.current!,
+//     {
+//       color: new THREE.Color(0x3b82f6), // Blue color
+//       opacity: 0.8,
+//       lineWidth: 2,
+//       fillEnabled: true,
+//     }
+//   );
+// }, []);
+
+// useEffect(() => {
+//   if (!highlighterRef.current || !currentActivityIds.length || !activities) {
+//     // Clear highlights when no activities are current
+//     if (highlighterRef.current) {
+//       highlighterRef.current.clear("activeActivity");
+//     }
+//     return;
+//   }
+
+//   const updateHighlights = async () => {
+//     try {
+//       // Get all model IDs for current activities
+//       const currentActivityModelIds = activities
+//         .filter((activity) => currentActivityIds.includes(activity.id))
+//         .flatMap((activity) => activity.linkedModelIds || []);
+//       console.warn(
+//         "🚀 ~ updateHighlights ~ currentActivityModelIds:",
+//         currentActivityModelIds
+//       );
+
+//       if (currentActivityModelIds.length === 0) {
+//         await highlighterRef.current?.clear("activeActivity");
+//         return;
+//       }
+
+//       // Create ModelIdMap for highlighting
+//       const modelIdMap: OBC.ModelIdMap = {
+//         [modelName]: new Set(
+//           currentActivityModelIds.map((id) => parseInt(id))
+//         ),
+//       };
+
+//       // Apply blue highlight to current activities
+//       await highlighterRef.current?.highlightByID(
+//         "activeActivity",
+//         modelIdMap,
+//         true,
+//         false // Don't zoom to selection
+//       );
+
+//       console.log("Highlighted current activities:", {
+//         activityCount: currentActivityIds.length,
+//         elementCount: currentActivityModelIds.length,
+//       });
+//     } catch (error) {
+//       console.error("Error highlighting activities:", error);
+//     }
+//   };
+
+//   // Debounce to avoid too frequent updates
+//   const timeoutId = setTimeout(updateHighlights, 50);
+
+//   return () => {
+//     clearTimeout(timeoutId);
+//   };
+// }, [currentActivityIds, activities, modelName]);

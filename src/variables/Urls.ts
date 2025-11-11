@@ -60,6 +60,7 @@ export const ActivityStylesUrl = usedUrl + "/ActivityStyles";
 export const ProjectEmployeesUrl = usedUrl + "/ProjectEmployees";
 export const PlansUrl = usedUrl + "/Plans";
 export const BimUrl = usedUrl + "/Bim";
+export const CADUrl = usedUrl + "/CAD";
 
 export const UploadImagesUrl = ImagesUrl + "/UploadImage";
 export const UploadFilesUrl = ImagesUrl + "/UploadFile";

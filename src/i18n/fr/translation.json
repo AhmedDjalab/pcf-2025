@@ -273,7 +273,14 @@
       "delete": "Supprimer",
       "viewGraph": "Planning",
       "viewPlan": "Phasage",
-      "download": "Télécharger"
+      "download": "Télécharger",
+      "cadStatus": {
+        "inprogress": "Traduction en cours...",
+        "success": "Ouvrir la visionneuse CAD",
+        "failed": "Échec de la traduction",
+        "timedout": "Délai dépassé",
+        "unknown": "Statut inconnu"
+      }
     }
   },
   "graphSettings": {

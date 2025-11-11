@@ -1,0 +1,288 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { useQuery } from "@tanstack/react-query";
+import { getBim } from "src/Services/BimService";
+import { useParams } from "react-router-dom";
+import Spinner from "src/components/Spinner";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "src/context/UserContext";
+import {
+  CADDataModel,
+  getAccessToken,
+  getCADInfo,
+  saveCADData,
+} from "src/Services/CADService";
+import AutomaticLinkingModal from "../IFCPlan/components/AutomaticLinkingModal";
+import ActivitiesPanel from "../IFCPlan/components/ActivitiesPannel";
+import { ActivityModel } from "src/types/Project";
+import { viewerVisibility } from "./viewerVisibility";
+import ActivitiesCADPanel from "./components/ActivitiesCADPanel";
+import toast from "react-hot-toast";
+
+declare const Autodesk: any;
+const formatDateShort = (date: Date): string => {
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+};
+const CADViewer = () => {
+  const { id } = useParams();
+  const { t } = useTranslation();
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  const { canWrite, isAdmin } = useAuth();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const viewerRef = useRef<any>(null);
+  const [activities, setActivities] = useState<ActivityModel[]>();
+  const [selectedObjectIds, setSelectedObjectIds] = useState<string[]>();
+  const { i18n } = useTranslation();
+  useEffect(() => {
+    waitForAutodesk();
+    const viewer = viewerRef.current;
+    console.log("🚀 ~ CADViewer ~ viewer:", viewer);
+
+    if (!viewer) return;
+
+    const handleSelectionChanged = (event: any) => {
+      let selSet = event.selections[0];
+      if (!selSet) {
+        return;
+      }
+      const dbIdArray = selSet.dbIdArray;
+      console.log("Selected object IDs:", event);
+      if (dbIdArray && dbIdArray.length > 0) {
+        console.log("Selected object IDs:", dbIdArray);
+        setSelectedObjectIds(dbIdArray);
+      } else {
+        console.log("Nothing selected");
+        setSelectedObjectIds([]);
+      }
+    };
+
+    // Add listener
+    viewer.addEventListener(
+      Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT,
+      handleSelectionChanged
+    );
+
+    // Cleanup
+    return () => {
+      viewer.removeEventListener(
+        Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT,
+        handleSelectionChanged
+      );
+    };
+  });
+
+  const {
+    showAllModels,
+    toggleModelVisibility,
+    toggleModelIsolated,
+    handleVisibilty,
+  } = viewerVisibility(viewerRef);
+  // let currentAcitivtyRef = useRef();
+  // const setCurrentActivityId = (id) => {
+  //   currentAcitivtyRef.current = id;
+  // };
+
+  const initViewer = useCallback(async (urn: string) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // Dispose any existing viewer instance first
+      if (viewerRef.current) {
+        viewerRef.current.finish();
+        viewerRef.current = null;
+        console.log("🔄 Previous viewer instance cleared.");
+      }
+
+      const tokenResponse = await getAccessToken();
+      if (!tokenResponse) return;
+
+      const { access_token, expires_in } = tokenResponse;
+
+      const options = {
+        env: "AutodeskProduction",
+        getAccessToken: (onTokenReady: any) =>
+          onTokenReady(access_token, expires_in),
+
+        language: i18n.language,
+      };
+
+      await waitForAutodesk();
+
+      // Initialize Autodesk Viewer environment
+      await new Promise<void>((resolve) => {
+        Autodesk.Viewing.Initializer(options, () => resolve());
+      });
+
+      const viewerDiv = containerRef.current!;
+      const viewer = new Autodesk.Viewing.GuiViewer3D(viewerDiv, {
+        extensions: ["Autodesk.DocumentBrowser"],
+      });
+      viewerRef.current = viewer;
+
+      const started = viewer.start();
+      if (started !== 0) throw new Error("Viewer failed to start.");
+
+      viewer.setTheme("light-theme");
+
+      Autodesk.Viewing.Document.load(
+        `urn:${urn}`,
+        (doc) => {
+          const defaultModel = doc.getRoot().getDefaultGeometry();
+          viewer.loadDocumentNode(doc, defaultModel).then(() => {
+            console.log("✅ Model loaded successfully!");
+          });
+          setIsLoading(false);
+        },
+        (errorCode) => {
+          console.error("❌ Failed to load document", errorCode);
+          setError("Failed to load model.");
+          setIsLoading(false);
+        }
+      );
+    } catch (err: any) {
+      console.error("🚨 Failed to initialize viewer:", err);
+      setError(err.message || "Initialization failed");
+      setIsLoading(false);
+    }
+  }, []);
+
+  const waitForAutodesk = () =>
+    new Promise<void>((resolve, reject) => {
+      if ((window as any).Autodesk) return resolve();
+      const check = setInterval(() => {
+        if ((window as any).Autodesk) {
+          clearInterval(check);
+          resolve();
+        }
+      }, 100);
+      setTimeout(() => reject(new Error("Autodesk SDK not loaded")), 20000);
+    });
+
+  const {
+    data: projectsData,
+    isLoading: projectsLoading,
+    refetch: refetchProject,
+    isSuccess: isSuccess,
+  } = useQuery({
+    queryKey: ["activitiesCAD", id],
+    queryFn: () => {
+      return getCADInfo({
+        projectId: id!,
+        search: "",
+      });
+    },
+
+    refetchOnWindowFocus: false,
+    staleTime: 6000,
+  });
+  useEffect(() => {
+    if (containerRef.current && isSuccess && projectsData) {
+      if (projectsData) {
+        const activities = projectsData.activities.map((ac) => ({
+          ...ac,
+          startDate: new Date(ac.startDate),
+          endDate: new Date(ac.endDate),
+          persistAfterEnd: ac.persistAfterEnd,
+        }));
+        setActivities(activities);
+      }
+      initViewer(projectsData.cadFileURN);
+    }
+    return () => {
+      if (viewerRef.current) {
+        console.log("🧹 Disposing viewer...");
+        viewerRef.current.finish();
+        viewerRef.current = null;
+      }
+    };
+  }, [initViewer, containerRef, projectsData, isSuccess]);
+
+  const handleSaveCadData = async () => {
+    try {
+      setIsSubmitting(true);
+      if (!activities) return;
+      const activitiesWithLinkedModel: CADDataModel[] =
+        activities.map((a) => ({
+          cadLinkedModelIds: a.cadLinkedModelIds,
+          activityId: a.id,
+          persistAfterEnd: a.persistAfterEnd,
+        })) ?? [];
+
+      var result = await saveCADData({
+        projectId: id!,
+        activityCadLinkeds: activitiesWithLinkedModel,
+      });
+
+      if (result?.status === 200) {
+        toast.success("it updated succeffully");
+      }
+
+      setIsSubmitting(false);
+    } catch (error) {
+      console.log("🚀 ~ handleSaveBimData ~ error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  return (
+    <div className="flex flex-col w-full h-screen">
+      <div className="flex flex-1 overflow-hidden">
+        {projectsLoading ? (
+          <Spinner></Spinner>
+        ) : (
+          <ActivitiesCADPanel
+            setActivities={setActivities}
+            activities={activities ?? []}
+            onLink={(ac, modelId) => console.log("thos ", ac, modelId)}
+            getSelectedModelIds={() => selectedObjectIds ?? []}
+            toggleVisibilty={(localId) => toggleModelVisibility(localId)}
+            isolateItem={(localId) => toggleModelIsolated(localId)}
+            resetIsolated={(localId) => showAllModels()}
+            handleSaveBimData={handleSaveCadData}
+            isSubmitting={isSubmitting}
+            handleVisibilty={(localId, visibile) =>
+              handleVisibilty(localId, visibile)
+            }
+            AutomaticLinkingLogic={
+              <AutomaticLinkingModal
+                setActivities={() => {}}
+                activities={[]}
+                modelRef={{}}
+              />
+            }
+          />
+        )}
+
+        <div className="relative flex-1">
+          {/* Autodesk Viewer */}
+          <div
+            ref={containerRef}
+            style={{ width: "100%", height: "100%", position: "relative" }}
+          />
+
+          {/* {isLoading && (
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70">
+              <div className="text-xl text-white">{t("ifcPlan.loading")}</div>
+            </div>
+          )} */}
+
+          {/* Error Banner */}
+          {error && (
+            <div className="absolute z-50 px-4 py-2 text-white -translate-x-1/2 rounded-md top-3 left-1/2 bg-red-600/80">
+              {t("ifcPlan.error")}: {error}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CADViewer;

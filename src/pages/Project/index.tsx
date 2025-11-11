@@ -29,6 +29,7 @@ import Spinner from "src/components/Spinner";
 import { Project } from "src/types/Project";
 import {
   DocumentChartBarIcon,
+  QuestionMarkCircleIcon,
   TrashIcon,
   UserIcon,
 } from "@heroicons/react/24/solid";
@@ -42,6 +43,7 @@ import moment from "moment-timezone";
 import { Cell, Column, Row } from "react-table";
 import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import UsersModal from "src/components/UsersModal";
+import { ClockIcon, XCircleIcon } from "lucide-react";
 // test
 const exampleProjects = [
   {
@@ -77,7 +79,78 @@ const Projects = () => {
   // iwant to test the new bnahc deployed
   const ActionButtonsCell = ({ value, row }: any) => {
     const employeesId = row.original["employeesId"];
+    var cadStatus = row.original["cadFileStatus"];
 
+    const getCadButtonProps = () => {
+      switch (cadStatus) {
+        case "inprogress":
+          return {
+            text: t("projectsList.buttons.cadStatus.inprogress"),
+            color: "bg-yellow-400",
+            hover: "hover:bg-yellow-500",
+            ring: "focus:ring-yellow-200",
+            disabled: true,
+            icon: (
+              <svg
+                className="inline w-4 h-4 mr-2 text-white animate-spin"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+            ),
+          };
+        case "success":
+          return {
+            text: t("projectsList.buttons.cadStatus.success"),
+            color: "bg-emerald-600",
+            hover: "hover:bg-emerald-700",
+            ring: "focus:ring-emerald-300",
+            disabled: false,
+            icon: <EyeIcon className="inline w-5 h-5 mr-2" />,
+          };
+        case "failed":
+          return {
+            text: t("projectsList.buttons.cadStatus.failed"),
+            color: "bg-red-500",
+            hover: "hover:bg-red-500",
+            ring: "focus:ring-red-300",
+            disabled: true,
+            icon: <XCircleIcon className="inline w-5 h-5 mr-2" />,
+          };
+        case "timedout":
+          return {
+            text: t("projectsList.buttons.cadStatus.timedout"),
+            color: "bg-gray-400",
+            hover: "hover:bg-gray-400",
+            ring: "focus:ring-gray-300",
+            disabled: true,
+            icon: <ClockIcon className="inline w-5 h-5 mr-2" />,
+          };
+        default:
+          return {
+            text: t("projectsList.buttons.cadStatus.unknown"),
+            color: "bg-gray-300",
+            hover: "hover:bg-gray-300",
+            ring: "focus:ring-gray-200",
+            disabled: true,
+            icon: <QuestionMarkCircleIcon className="inline w-5 h-5 mr-2" />,
+          };
+      }
+    };
+
+    const btn = getCadButtonProps();
     return (
       <div className="flex gap-2">
         <Link
@@ -95,6 +168,20 @@ const Projects = () => {
           <EyeIcon className="inline w-5 h-5 mr-2" />
           BIM4D
         </Link>
+        <button
+          onClick={() => !btn.disabled && navigate(`/testcad/${value}`)}
+          disabled={btn.disabled}
+          className={`focus:outline-none text-white no-underline ${btn.color} ${
+            btn.hover
+          } focus:ring-4 ${
+            btn.ring
+          } font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 transition-all duration-150 ${
+            btn.disabled ? "opacity-100 cursor-not-allowed !text-gray-600" : ""
+          }`}
+        >
+          {btn.icon}
+          {btn.text}
+        </button>
         <Link
           to={`/view-plan/${value}`}
           className="focus:outline-none no-underline text-white bg-[#f7ad25] hover:bg-[#f7ad25] focus:ring-4 focus:ring-[#f7ad25] font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-[#f7ad25] dark:hover-bg-[#f7ad25] dark:focus:ring-[#f7ad25]"

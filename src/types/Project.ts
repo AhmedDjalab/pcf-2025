@@ -7,6 +7,7 @@ export interface Project {
   logoUrl?: string;
   logoUrlId?: string | null;
   clientLogoUrl?: string;
+  cadFileStatus?: string;
   clientLogoId?: string | null;
   fileType?: ProjectFileType;
   companyId: string;
@@ -29,6 +30,7 @@ export interface Project {
 }
 
 export interface ActivityModel {
+  cadLinkedModelIds?: string[];
   activityUID?: string;
   predecessorActivityID?: string;
   productionRateUnit?: string;
@@ -51,6 +53,7 @@ export interface ActivityModel {
   productionRate?: number;
   workShops?: number;
   linkedModelIds?: string[];
+
   persistAfterEnd?: boolean;
 }
 

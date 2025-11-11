@@ -177,6 +177,9 @@ export interface ProjectSettings {
   fileName?: string;
   dataDate?: Date;
   ifcFileUrl?: string;
+  cadFileUrl?: string;
+  cadFileName?: string;
+  cadFileUrn?: string;
   hypothesisDescriptions?: string;
   activitiesRelation?: ActivityRelations[];
 }
@@ -411,6 +414,9 @@ export const saveProjectThunk = createAsyncThunk<
       title: state.graph.projectSettings.title,
       logoUrl: state.graph.projectSettings.logoImg,
       ifcFileUrl: state.graph.projectSettings.ifcFileUrl,
+      cadFileUrl: state.graph.projectSettings.cadFileUrl,
+      cadFileName: state.graph.projectSettings.cadFileName,
+      cadFileUrn: state.graph.projectSettings.cadFileUrn,
       logoUrlId: state.graph.projectSettings.logoId,
       clientLogoUrl: state.graph.projectSettings.clientlogoImg,
       clientLogoId: state.graph.projectSettings.clientlogoImgId,
@@ -1065,6 +1071,8 @@ const GraphSlice = createSlice({
           fileType: action.payload.data!.fileType ?? undefined,
           fileName: action.payload.data!.fileName ?? undefined,
           dataDate: action.payload.data!.dataDate ?? undefined,
+          ifcFileUrl: action.payload.data!.ifcFileUrl ?? undefined,
+          cadFileUrl: action.payload.data!.cadFileUrl ?? undefined,
           hypothesisDescriptions:
             action.payload.data?.hypothesisDescriptions ?? undefined,
         },

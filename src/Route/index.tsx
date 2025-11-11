@@ -17,6 +17,7 @@ import ErrorPage from "src/pages/ErrorPage";
 import MicrosoftLoginCallback from "src/Auth/MicrosoftCallBackLogin";
 import PlanView from "src/pages/Plans/PlanView";
 import IFCViewer from "src/pages/IFCPlan";
+import CADViewer from "src/pages/CADViewer";
 
 const AppRoutes = () => {
   const isLogged = IsAuth();
@@ -37,6 +38,8 @@ const AppRoutes = () => {
         <Route path="/about-us" element={<AboutUs />} />
 
         <Route path="/graph" element={<DrawGraphStep />} />
+        <Route path="/testCad" element={<CADViewer />} />
+        <Route path="/testCad/:id" element={<CADViewer />} />
         <Route path="/graph/:id" element={<DrawGraphStep />} />
         <Route path="/view-graph/:id" element={<ViewGraph />} />
         <Route path="/view-plan/:id" element={<PlanView />} />

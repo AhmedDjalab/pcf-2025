@@ -276,7 +276,14 @@
       "delete": "Delete",
       "viewGraph": "Schedule",
       "viewPlan": "Phasing",
-      "download": "Download"
+      "download": "Download",
+      "cadStatus": {
+        "inprogress": "Translating...",
+        "success": "Open CAD Viewer",
+        "failed": "Translation Failed",
+        "timedout": "Translation Timed Out",
+        "unknown": "CAD File"
+      }
     }
   },
   "graphSettings": {

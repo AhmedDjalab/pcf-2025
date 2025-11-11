@@ -41,10 +41,15 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
   const { id } = useParams();
 
   const [fileName, setFileName] = useState("");
+  const [cadFileName, setCADFileName] = useState("");
   const [clientfileName, setClientFileName] = useState("");
   const [ifcFileUrl, setIfcFileUrl] = useState("");
+  const [cadFileUrl, setCADFileUrl] = useState("");
   const [ifcUploading, setIfcUploading] = useState(false);
+  const [cadUploading, setCADUploading] = useState(false);
   const [ifcError, setIfcError] = useState("");
+  const [cadError, setCADError] = useState("");
+  const [cadSuccess, setCADSuccess] = useState("");
   const [ifcSuccess, setIfcSuccess] = useState("");
 
   const fileType = useSelector(
@@ -125,6 +130,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
       setSelectedImage(projectSettings.logoImg || "");
       setSelectedClientImage(projectSettings.clientlogoImg || "");
       setIfcFileUrl(projectSettings.ifcFileUrl || "");
+      setCADFileUrl(projectSettings.cadFileUrl || "");
     }
   }, [projectSettings]);
 
@@ -157,61 +163,89 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
     return validExtensions.includes(fileExtension);
   };
 
-  // // IFC File upload handler
-  // const handleIfcFileUpload = async (file: File) => {
-  //   setIfcError("");
-  //   setIfcSuccess("");
+  const validateCADFile = (file: File) => {
+    const validExtensions = [".dwg"];
+    const fileName = file.name.toLowerCase();
+    const fileExtension = fileName.substring(fileName.lastIndexOf("."));
 
-  //   if (!file) return;
+    return validExtensions.includes(fileExtension);
+  };
 
-  //   // Validate file extension
-  //   if (!validateIfcFile(file)) {
-  //     setIfcError(
-  //       t("errors.invalidIfcFile") ||
-  //         "Please upload a valid IFC file (.ifc extension only)"
-  //     );
-  //     return;
-  //   }
+  const handleCADFileUpload = async (file: File) => {
+    setCADError("");
+    setCADSuccess("");
 
-  //   if (!projectTitle.trim()) {
-  //     setIfcError(
-  //       t("errors.projectTitleRequired") ||
-  //         "Please enter a project title before uploading IFC file"
-  //     );
-  //     return;
-  //   }
+    if (!file) return;
 
-  //   setIfcUploading(true);
+    if (!validateCADFile(file)) {
+      setCADError(
+        t("errors.invalidCadFile") ||
+          "Please upload a valid CAD file (.dwg extension only)"
+      );
+      return;
+    }
 
-  //   try {
-  //     const formData = new FormData();
-  //     const compressedBlob = await compressFile(file);
+    if (!projectTitle.trim()) {
+      setIfcError(
+        t("errors.projectTitleRequired") ||
+          "Please enter a project title before uploading CAD file"
+      );
+      return;
+    }
 
-  //     formData.append("file", compressedBlob, file.name + ".gz");
-  //     // Use project title as folder path name
-  //     formData.append("folderPathName", projectTitle.trim());
+    setIfcUploading(true);
 
-  //     const response = await api.post(UploadFilesUrl, formData, {
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     });
+    try {
+      setCADFileName(file.name);
+      // 1️⃣ Compress file first (you already have compressFile)
+      const compressedBlob = await compressFile(file);
 
-  //     if (response.status === 200) {
-  //       const fullUrl = response.data;
-  //       setIfcFileUrl(fullUrl);
-  //       setIfcSuccess(
-  //         t("success.ifcFileUploaded") || "IFC file uploaded successfully!"
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.error("Error uploading IFC file:", error);
-  //     setIfcError(
-  //       t("errors.ifcUploadFailed") ||
-  //         "Failed to upload IFC file. Please try again."
-  //     );
-  //   } finally {
-  //     setIfcUploading(false);
-  //   }
-  // };
+      // 2️⃣ Convert compressed blob to Base64
+      const base64Data = await blobToBase64(compressedBlob);
+
+      // 3️⃣ Send JSON body instead of FormData
+      const payload = {
+        fileName: file.name + ".gz",
+        folderPathName: projectTitle.trim(),
+        fileBase64: base64Data,
+      };
+
+      const response = await api.post(
+        ImagesUrl + "/UploadBase64File",
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+          maxBodyLength: Infinity,
+          maxContentLength: Infinity,
+        }
+      );
+      if (response.status === 200) {
+        const fullUrl = response.data;
+        console.log(
+          "🚀 ~ handleIfcFileUpload ~ fullUrl: - !cad",
+          fullUrl.value
+        );
+        const fileUrl =
+          typeof response.data === "string"
+            ? response.data
+            : response.data?.value || response.data?.url || "";
+
+        setCADFileUrl(fileUrl);
+        setCADSuccess(
+          t("success.CadFileUploaded") || "CAD file uploaded successfully!"
+        );
+      }
+    } catch (error) {
+      console.error("Error uploading CAD file:", error);
+      setIfcError(
+        t("errors.cadUploadFailed") ||
+          "Failed to upload CAD file. Please try again."
+      );
+    } finally {
+      setIfcUploading(false);
+    }
+  };
+
   const handleIfcFileUpload = async (file: File) => {
     setIfcError("");
     setIfcSuccess("");
@@ -303,6 +337,12 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
     setIfcSuccess("");
   };
 
+  const handleRemoveCADFile = () => {
+    setCADFileUrl("");
+    setCADError("");
+    setCADSuccess("");
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const projectSetting: ProjectSettings = {
@@ -314,7 +354,9 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
       )?.id!,
       employeesId: selectedEmployees.map((x) => x.value),
       file: selectedImage,
-      ifcFileUrl: ifcFileUrl, // Add IFC file URL to project settings
+      ifcFileUrl: ifcFileUrl,
+      cadFileUrl: cadFileUrl,
+      cadFileName: cadFileName,
     };
     dispatch(updateProjectSettingsValue({ projectSettings: projectSetting }));
     setCurrentStep((step) => step + 1);
@@ -553,6 +595,181 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
             )}
           </div>
 
+          {/* CAD File Upload Section */}
+          <div className="mb-4">
+            <label
+              htmlFor="cadFile"
+              className="block mb-2 text-sm font-bold text-gray-700 dark:text-white"
+            >
+              {t("projectForm.cadFile") || "CAD File"}
+              <span className="ml-2 text-xs text-gray-500">
+                ({t("projectForm.optional") || "Optional"})
+              </span>
+            </label>
+
+            {cadFileUrl ? (
+              // Show uploaded file
+              <div className="relative p-4 border-2 border-green-300 border-dashed rounded-lg dark:border-green-600 bg-green-50 dark:bg-green-900/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center justify-center w-8 h-8 bg-green-500 rounded-full">
+                      <svg
+                        className="w-4 h-4 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M5 13l4 4L19 7"
+                        ></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-green-700 dark:text-green-300">
+                        {t("projectForm.cadFileUploaded") ||
+                          "CAD File Uploaded"}
+                      </p>
+                      <p className="max-w-xs text-xs text-green-600 truncate dark:text-green-400">
+                        {typeof cadFileUrl === "string"
+                          ? cadFileUrl.replace(/\\/g, "/").split("/").pop()
+                          : "File uploaded successfully"}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveCADFile}
+                    disabled={!canWrite && !isAdmin}
+                    className="text-red-500 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    title={t("projectForm.removeFile") || "Remove file"}
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // Upload area
+              <div className="relative">
+                <label
+                  className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
+                    cadUploading || (!canWrite && !isAdmin)
+                      ? "cursor-not-allowed opacity-50"
+                      : ""
+                  }`}
+                >
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    {cadUploading ? (
+                      <>
+                        <Spinner height="32" width="32" />
+                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                          {t("projectForm.uploadingIfcFile") ||
+                            "Uploading IFC file..."}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                          ></path>
+                        </svg>
+                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                          <span className="font-semibold">
+                            {t("projectForm.clickToUploadCAD") ||
+                              "Click to upload CAD file"}
+                          </span>
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {t("projectForm.CADFilesOnly") || "CAD files only"}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept=".dwg"
+                    onChange={(e) =>
+                      e.target.files?.[0] &&
+                      handleCADFileUpload(e.target.files[0])
+                    }
+                    disabled={
+                      cadUploading ||
+                      !projectTitle.trim() ||
+                      (!canWrite && !isAdmin)
+                    }
+                  />
+                </label>
+
+                {!projectTitle.trim() && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
+                    <p className="px-4 text-sm text-center text-white">
+                      {t("projectForm.enterProjectTitleFirst") ||
+                        "Enter project title first"}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Error/Success Messages */}
+            {ifcError && (
+              <div className="flex items-center p-3 mt-2 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-800/20 dark:text-red-400">
+                <svg
+                  className="flex-shrink-0 w-4 h-4 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                  ></path>
+                </svg>
+                <span>{ifcError}</span>
+              </div>
+            )}
+
+            {ifcSuccess && (
+              <div className="flex items-center p-3 mt-2 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-800/20 dark:text-green-400">
+                <svg
+                  className="flex-shrink-0 w-4 h-4 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5v2.25a.75.75 0 001.5 0V10.5a.75.75 0 00-.75-.75H9z"
+                    clipRule="evenodd"
+                  ></path>
+                </svg>
+                <span>{ifcSuccess}</span>
+              </div>
+            )}
+          </div>
           <div className="mb-4">
             <label
               htmlFor="projectFileType"
