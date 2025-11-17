@@ -18,6 +18,8 @@ import { ActivityModel } from "src/types/Project";
 import { viewerVisibility } from "./viewerVisibility";
 import ActivitiesCADPanel from "./components/ActivitiesCADPanel";
 import toast from "react-hot-toast";
+import TimelineScheduling from "../IFCPlan/components/TimelineScheduling";
+import TimelineSchedulingCAD from "./components/TimeShedulingCAD";
 
 declare const Autodesk: any;
 const formatDateShort = (date: Date): string => {
@@ -35,10 +37,29 @@ const CADViewer = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const viewerRef = useRef<any>(null);
+  const viewerRef = useRef<Autodesk.Viewing.GuiViewer3D | null>(null);
+
   const [activities, setActivities] = useState<ActivityModel[]>();
   const [selectedObjectIds, setSelectedObjectIds] = useState<string[]>();
   const { i18n } = useTranslation();
+
+  const {
+    data: projectsData,
+    isLoading: projectsLoading,
+    refetch: refetchProject,
+    isSuccess: isSuccess,
+  } = useQuery({
+    queryKey: ["activitiesCAD", id],
+    queryFn: () => {
+      return getCADInfo({
+        projectId: id!,
+        search: "",
+      });
+    },
+
+    refetchOnWindowFocus: false,
+    staleTime: 6000,
+  });
   useEffect(() => {
     waitForAutodesk();
     const viewer = viewerRef.current;
@@ -82,11 +103,78 @@ const CADViewer = () => {
     toggleModelVisibility,
     toggleModelIsolated,
     handleVisibilty,
-  } = viewerVisibility(viewerRef);
+    deleteAll,
+    hideAllModels,
+    applyVisibility,
+    hideEverythingAndMakeWhite,
+  } = viewerVisibility(viewerRef, projectsData?.cadFileUrl!);
   // let currentAcitivtyRef = useRef();
   // const setCurrentActivityId = (id) => {
   //   currentAcitivtyRef.current = id;
   // };
+
+  const getBlocksWithIds = (
+    viewer: Autodesk.Viewing.GuiViewer3D
+  ): Promise<any[]> => {
+    return new Promise((resolve, reject) => {
+      const model = viewer.model;
+
+      if (!model) {
+        reject(new Error("No model loaded"));
+        return;
+      }
+
+      // Correct way to get the instance tree
+      model.getObjectTree((tree) => {
+        if (!tree) {
+          reject(new Error("Object tree not available"));
+          return;
+        }
+
+        try {
+          const rootId = tree.getRootId();
+          const allDbIds: number[] = [];
+
+          // Enumerate all nodes
+          tree.enumNodeChildren(
+            rootId,
+            (dbId) => {
+              allDbIds.push(dbId);
+            },
+            true
+          ); // true = recursive
+
+          console.log(`📊 Collected ${allDbIds.length} node IDs`);
+
+          if (allDbIds.length === 0) {
+            resolve([]);
+            return;
+          }
+
+          // Get properties for all elements
+          model.getBulkProperties(
+            allDbIds,
+            {},
+            (results) => {
+              console.log(
+                "📦 Successfully retrieved properties for",
+                results.length,
+                "blocks"
+              );
+              resolve(results);
+            },
+            (error) => {
+              console.error("❌ Error in getBulkProperties:", error);
+              reject(new Error(`Failed to get bulk properties: ${error}`));
+            }
+          );
+        } catch (error) {
+          console.error("❌ Error during tree traversal:", error);
+          reject(error);
+        }
+      });
+    });
+  };
 
   const initViewer = useCallback(async (urn: string) => {
     try {
@@ -121,24 +209,56 @@ const CADViewer = () => {
       });
 
       const viewerDiv = containerRef.current!;
-      const viewer = new Autodesk.Viewing.GuiViewer3D(viewerDiv, {
-        extensions: ["Autodesk.DocumentBrowser"],
-      });
+      const viewer: Autodesk.Viewing.GuiViewer3D =
+        new Autodesk.Viewing.GuiViewer3D(viewerDiv, {
+          extensions: ["Autodesk.DocumentBrowser"],
+        });
       viewerRef.current = viewer;
 
       const started = viewer.start();
       if (started !== 0) throw new Error("Viewer failed to start.");
 
-      viewer.setTheme("light-theme");
-
+      // viewer.setTheme("light-theme");
+      console.log("tisi si urn ", urn);
       Autodesk.Viewing.Document.load(
         `urn:${urn}`,
         (doc) => {
           const defaultModel = doc.getRoot().getDefaultGeometry();
-          viewer.loadDocumentNode(doc, defaultModel).then(() => {
-            console.log("✅ Model loaded successfully!");
-          });
-          setIsLoading(false);
+
+          // Listen for geometry loaded event
+          const onGeometryLoaded = () => {
+            console.log("✅ Geometry fully loaded!");
+
+            // Get blocks after geometry is loaded
+            getBlocksWithIds(viewer)
+              .then((blocks) => {
+                console.log("📊 Total blocks:", blocks.length);
+                blocks.forEach((block) => {
+                  console.log(
+                    `ID: ${block.dbId}, Name: ${block.name}, ExternalID: ${block.externalId}`
+                  );
+                  console.log("Properties:", block.properties);
+                });
+              })
+              .catch((error) => {
+                console.error("❌ Error getting blocks:", error);
+              });
+
+            setIsLoading(false);
+
+            // Remove listener after use
+            viewer.removeEventListener(
+              Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
+              onGeometryLoaded
+            );
+          };
+
+          viewer.addEventListener(
+            Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
+            onGeometryLoaded
+          );
+
+          viewer.loadDocumentNode(doc, defaultModel);
         },
         (errorCode) => {
           console.error("❌ Failed to load document", errorCode);
@@ -146,6 +266,15 @@ const CADViewer = () => {
           setIsLoading(false);
         }
       );
+
+      viewer.setQualityLevel(false, false);
+      viewer.setLightPreset(1);
+      viewer.setQualityLevel(false, false);
+      viewer.setGhosting(false);
+      viewer.setGroundShadow(false);
+      viewer.setGroundReflection(false);
+      viewer.setEnvMapBackground(false);
+      viewer.setProgressiveRendering(false);
     } catch (err: any) {
       console.error("🚨 Failed to initialize viewer:", err);
       setError(err.message || "Initialization failed");
@@ -165,27 +294,10 @@ const CADViewer = () => {
       setTimeout(() => reject(new Error("Autodesk SDK not loaded")), 20000);
     });
 
-  const {
-    data: projectsData,
-    isLoading: projectsLoading,
-    refetch: refetchProject,
-    isSuccess: isSuccess,
-  } = useQuery({
-    queryKey: ["activitiesCAD", id],
-    queryFn: () => {
-      return getCADInfo({
-        projectId: id!,
-        search: "",
-      });
-    },
-
-    refetchOnWindowFocus: false,
-    staleTime: 6000,
-  });
   useEffect(() => {
     if (containerRef.current && isSuccess && projectsData) {
       if (projectsData) {
-        const activities = projectsData.activities.map((ac) => ({
+        const activities = projectsData.activities?.map((ac) => ({
           ...ac,
           startDate: new Date(ac.startDate),
           endDate: new Date(ac.endDate),
@@ -280,6 +392,20 @@ const CADViewer = () => {
             </div>
           )}
         </div>
+      </div>
+      <div className="w-full bg-white border-t border-gray-300 shadow-lg">
+        <TimelineSchedulingCAD
+          activities={activities ?? []}
+          applyVisibility={applyVisibility}
+          hideAllItems={() =>
+            hideEverythingAndMakeWhite(
+              viewerRef.current,
+              viewerRef.current?.model
+            )
+          }
+          showAllItems={showAllModels}
+          toggleVisibility={toggleModelVisibility}
+        />
       </div>
     </div>
   );

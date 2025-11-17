@@ -55,6 +55,7 @@ export interface ActivityModel {
   linkedModelIds?: string[];
 
   persistAfterEnd?: boolean;
+  persistCADAfterEnd?: boolean;
 }
 
 export interface ActivityStyleModel {

@@ -1,29 +1,14 @@
-//@ts-ignore
-//@ts-noCheck
-
-import React, { useState, useEffect, useRef } from "react";
-import { Play, Pause, RotateCcw, Calendar } from "lucide-react";
-import { ActivityModel } from "src/types/Project";
+import { Calendar, RotateCcw, Pause, Play } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectCurrentActivityIds,
-  setCurrentActivityId,
   setCurrentActivityIds,
 } from "src/state/slices/bimSlice";
-import { useTranslation } from "react-i18next";
+import { ActivityModel } from "src/types/Project";
 
-// interface Activity {
-//   activityUID: string;
-//   name: string;
-//   activityId: string;
-//   startDate: Date;
-//   endDate: Date;
-//   startPk: number;
-//   endPk: number;
-//   linkedModelIds: string[];
-// }
-
-interface TimelineSchedulingProps {
+interface TimelineSchedulingCADProps {
   activities: ActivityModel[];
   toggleVisibility: (modelIds: string[], visible?: boolean) => Promise<void>;
   hideAllItems?: () => Promise<void>;
@@ -31,7 +16,7 @@ interface TimelineSchedulingProps {
   applyVisibility?: any;
 }
 
-const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
+const TimelineSchedulingCAD: React.FC<TimelineSchedulingCADProps> = ({
   activities,
   toggleVisibility,
   hideAllItems,
@@ -101,17 +86,16 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
       activities.forEach((activity) => {
         const hasStarted = currentDate >= activity.startDate;
         const hasEnded = currentDate > activity.endDate;
-        const hasLinkedModels = (activity.linkedModelIds?.length ?? 0) > 0;
+        const hasLinkedModels = (activity.cadLinkedModelIds?.length ?? 0) > 0;
 
-        if (!hasLinkedModels || !activity.linkedModelIds) return;
-
-        // Persistent items: show once started, never hide
-        if (activity.persistAfterEnd === true && hasStarted) {
-          activity.linkedModelIds.forEach((id) => shouldBeVisible.add(id));
+        if (!hasLinkedModels || !activity.cadLinkedModelIds) return;
+        // // Persistent items: show once started, never hide
+        if (activity.persistCADAfterEnd === true && hasStarted) {
+          activity.cadLinkedModelIds.forEach((id) => shouldBeVisible.add(id));
         }
         // Non-persistent items: only show during active period
         else if (hasStarted && !hasEnded) {
-          activity.linkedModelIds.forEach((id) => shouldBeVisible.add(id));
+          activity.cadLinkedModelIds.forEach((id) => shouldBeVisible.add(id));
         }
         // Items that haven't started or have ended (non-persistent) stay hidden
       });
@@ -286,14 +270,14 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
     return activities.reduce((count, activity) => {
       const hasStarted = currentDate >= activity.startDate;
       const hasEnded = currentDate > activity.endDate;
-      const hasLinkedModels = (activity.linkedModelIds?.length ?? 0) > 0;
+      const hasLinkedModels = (activity.cadLinkedModelIds?.length ?? 0) > 0;
 
       if (!hasLinkedModels) return count;
 
-      if (activity.persistAfterEnd && hasStarted) {
-        return count + (activity.linkedModelIds?.length || 0);
+      if (activity.persistCADAfterEnd && hasStarted) {
+        return count + (activity.cadLinkedModelIds?.length || 0);
       } else if (hasStarted && !hasEnded) {
-        return count + (activity.linkedModelIds?.length || 0);
+        return count + (activity.cadLinkedModelIds?.length || 0);
       }
       return count;
     }, 0);
@@ -380,7 +364,7 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
             <span className="text-gray-400">/</span>
             <span>
               {activities.reduce(
-                (sum, a) => sum + (a.linkedModelIds?.length || 0),
+                (sum, a) => sum + (a.cadLinkedModelIds?.length || 0),
                 0
               )}
             </span>
@@ -409,131 +393,4 @@ const TimelineScheduling: React.FC<TimelineSchedulingProps> = ({
   );
 };
 
-export default TimelineScheduling;
-
-// useEffect(() => {
-//   if (activities.length === 0 || !isPlaying) return;
-
-//   if (updateTimeoutRef.current) {
-//     clearTimeout(updateTimeoutRef.current);
-//   }
-
-//   updateTimeoutRef.current = setTimeout(async () => {
-//     if (isUpdatingRef.current) return;
-//     isUpdatingRef.current = true;
-
-//     try {
-//       // ⭐ Calculate final visible set
-//       const shouldBeVisible = new Set<string>();
-
-//       activities.forEach((activity) => {
-//         const hasStarted = currentDate >= activity.startDate;
-//         const hasEnded = currentDate > activity.endDate;
-//         const hasLinkedModels = (activity.linkedModelIds?.length ?? 0) > 0;
-
-//         if (!hasLinkedModels || !activity.linkedModelIds) return;
-
-//         if (activity.persistAfterEnd === true && hasStarted) {
-//           // Persistent: visible once started
-//           activity.linkedModelIds.forEach((id) => shouldBeVisible.add(id));
-//         } else if (hasStarted && !hasEnded) {
-//           // Active non-persistent: visible during range
-//           activity.linkedModelIds.forEach((id) => shouldBeVisible.add(id));
-//         }
-//         // Non-persistent + ended → do nothing (they stay hidden)
-//       });
-
-//       // If nothing changed, skip
-//       const noChange =
-//         shouldBeVisible.size === visibleModelIds.size &&
-//         [...shouldBeVisible].every((id) => visibleModelIds.has(id));
-
-//       if (noChange) {
-//         isUpdatingRef.current = false;
-//         return;
-//       }
-
-//       console.log("Visibility update:", {
-//         date: formatDateShort(currentDate),
-//         totalVisible: shouldBeVisible.size,
-//         persistent: activities.filter(
-//           (a) => a.persistAfterEnd && currentDate >= a.startDate
-//         ).length,
-//       });
-
-//       // ⭐ Apply final state in one go
-//       await applyVisibility(shouldBeVisible);
-
-//       // Update state
-//       setVisibleModelIds(shouldBeVisible);
-//     } catch (error) {
-//       console.error("Visibility update error:", error);
-//     } finally {
-//       isUpdatingRef.current = false;
-//     }
-//   }, 100);
-
-//   return () => {
-//     if (updateTimeoutRef.current) {
-//       clearTimeout(updateTimeoutRef.current);
-//     }
-//   };
-// }, [currentDate, activities, isPlaying, visibleModelIds]);
-// ⭐ Update current activity names
-
-// useEffect(() => {
-//   if (activities.length === 0 || !isPlaying || !applyVisibility) return;
-
-//   const updateVisibility = async () => {
-//     if (isUpdatingRef.current) return;
-//     isUpdatingRef.current = true;
-
-//     try {
-//       // Calculate final visible set
-//       const shouldBeVisible = new Set<string>();
-
-//       activities.forEach((activity) => {
-//         const hasStarted = currentDate >= activity.startDate;
-//         const hasEnded = currentDate > activity.endDate;
-//         const hasLinkedModels = (activity.linkedModelIds?.length ?? 0) > 0;
-
-//         if (!hasLinkedModels || !activity.linkedModelIds) return;
-
-//         if (activity.persistAfterEnd === true && hasStarted) {
-//           // Persistent: visible once started
-//           activity.linkedModelIds.forEach((id) => shouldBeVisible.add(id));
-//         } else if (hasStarted && !hasEnded) {
-//           // Active non-persistent: visible during range
-//           activity.linkedModelIds.forEach((id) => shouldBeVisible.add(id));
-//         }
-//       });
-
-//       // Only update if there are actual changes
-//       const hasChanges =
-//         shouldBeVisible.size !== visibleModelIds.size ||
-//         ![...shouldBeVisible].every((id) => visibleModelIds.has(id));
-
-//       if (hasChanges) {
-//         console.log("Visibility update:", {
-//           date: formatDateShort(currentDate),
-//           totalVisible: shouldBeVisible.size,
-//           changes: true,
-//         });
-
-//         await applyVisibility(shouldBeVisible);
-//         setVisibleModelIds(shouldBeVisible);
-//       }
-//     } catch (error) {
-//       console.error("Visibility update error:", error);
-//     } finally {
-//       isUpdatingRef.current = false;
-//     }
-//   };
-
-//   // Debounce the visibility updates
-//   const timeoutId = setTimeout(updateVisibility, 50);
-
-//   return () => {
-//     clearTimeout(timeoutId);
-//   };
-// }, [currentDate, activities, isPlaying, applyVisibility]);
+export default TimelineSchedulingCAD;

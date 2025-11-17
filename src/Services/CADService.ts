@@ -79,3 +79,24 @@ export async function saveCADData(bimData: SavedCADDataModel) {
     // );
   }
 }
+
+export type TranslationStatus = {
+  status: string;
+  progress: string;
+  messages: string[];
+};
+
+export async function getCADStatus({ urn }: { urn: string }) {
+  try {
+    let config = {
+      params: {
+        urn: urn,
+      },
+    };
+    const { data } = await api.get(apiEndpoint + "/GetModelStatus", config);
+    return data as TranslationStatus;
+  } catch (ex: any) {
+    throw ex;
+    // console.log("🚀 ~ file: CompanyService.ts:43 ~ getCompanies ~ ex:", ex);
+  }
+}

@@ -44,6 +44,7 @@ import { Cell, Column, Row } from "react-table";
 import { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import UsersModal from "src/components/UsersModal";
 import { ClockIcon, XCircleIcon } from "lucide-react";
+import ButtonStatus from "./ButtonStatus";
 // test
 const exampleProjects = [
   {
@@ -80,6 +81,8 @@ const Projects = () => {
   const ActionButtonsCell = ({ value, row }: any) => {
     const employeesId = row.original["employeesId"];
     var cadStatus = row.original["cadFileStatus"];
+    var cadUrn = row.original["cadFileURN"];
+    var cadUrl = row.original["cadFileUrl"];
 
     const getCadButtonProps = () => {
       switch (cadStatus) {
@@ -168,7 +171,7 @@ const Projects = () => {
           <EyeIcon className="inline w-5 h-5 mr-2" />
           BIM4D
         </Link>
-        <button
+        {/* <button
           onClick={() => !btn.disabled && navigate(`/testcad/${value}`)}
           disabled={btn.disabled}
           className={`focus:outline-none text-white no-underline ${btn.color} ${
@@ -181,7 +184,16 @@ const Projects = () => {
         >
           {btn.icon}
           {btn.text}
-        </button>
+        </button> */}
+
+        {cadUrn && (
+          <ButtonStatus
+            urn={cadUrn}
+            value={value}
+            status={cadStatus}
+            url={cadUrl}
+          />
+        )}
         <Link
           to={`/view-plan/${value}`}
           className="focus:outline-none no-underline text-white bg-[#f7ad25] hover:bg-[#f7ad25] focus:ring-4 focus:ring-[#f7ad25] font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-[#f7ad25] dark:hover-bg-[#f7ad25] dark:focus:ring-[#f7ad25]"

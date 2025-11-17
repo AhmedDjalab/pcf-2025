@@ -50,20 +50,23 @@ const TexturePicker = ({
 
   useEffect(() => {
     // Access the SVG element using the ref
+    if (!selectedTexture) return;
     const svg = d3.select(svgRef.current);
     svg.selectAll(`${".svg-" + sanitizeClassName(key.trim())}`).remove();
 
     // Continue with your D3 operations on 'svg'
-    const texture = selectedTexture.configuration
-      .id(selectedTexture.id + sanitizeClassName(key))
-      .stroke(color);
+    const texture =
+      selectedTexture?.configuration
+        .id(selectedTexture.id + sanitizeClassName(key))
+        .stroke(color) ?? "";
     svg.call(texture);
 
     // Apply textures to all texture options
     texturesData.forEach((textureOption) => {
-      const optionTexture = textureOption.configuration
-        .id(textureOption.id + sanitizeClassName(key))
-        .stroke(color);
+      const optionTexture =
+        textureOption?.configuration
+          .id(textureOption.id + sanitizeClassName(key))
+          .stroke(color) ?? "";
       svg.call(optionTexture);
     });
   }, [selectedTexture, color, key]);
@@ -72,7 +75,7 @@ const TexturePicker = ({
 
   return (
     <div
-      className="relative justify-center items-center flex"
+      className="relative flex items-center justify-center"
       ref={popover}
       key={key}
     >
@@ -103,16 +106,17 @@ const TexturePicker = ({
             width={width}
             height={height}
             style={{
-              fill: selectedTexture.configuration
-                .id(selectedTexture.id + sanitizeClassName(key))
-                .url(),
+              fill:
+                selectedTexture?.configuration
+                  .id(selectedTexture.id + sanitizeClassName(key))
+                  .url() ?? "",
             }}
           />
         </svg>
       </div>
       {isOpen && (
         <div className="absolute z-20 max-h-40 overflow-y-auto shadow-[0_6px_12px_rgba(0,0,0,0.15)] rounded-[9px] left-0 top-[calc(100%_+_2px)] dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-          <div className="grid grid-cols-3  gap-4 px-4  justify-start bg-white p-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+          <div className="grid justify-start grid-cols-3 gap-4 p-2 px-4 bg-white dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
             {texturesData.map((texture) => (
               <div
                 key={texture.id + sanitizeClassName(key)}

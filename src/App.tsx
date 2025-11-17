@@ -6,7 +6,6 @@ import { persistStore } from "redux-persist";
 import { AuthProvider } from "./context/UserContext";
 import { initReactI18next } from "react-i18next";
 import initI18n from "./i18n/config";
-import * as Sentry from "@sentry/react";
 
 // Initialize i18n with the desired language
 initI18n();

@@ -154,7 +154,7 @@ const ActivitiesCADPanel: React.FC<ActivitiesCADPanelProps> = ({
         activity.activityUID === activityUID
           ? {
               ...activity,
-              persistAfterEnd: !activity.persistAfterEnd,
+              persistCADAfterEnd: !activity.persistCADAfterEnd,
             }
           : activity
       )
@@ -524,19 +524,19 @@ const ActivitiesCADPanel: React.FC<ActivitiesCADPanelProps> = ({
                               )
                             }
                             className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
-                              activity.persistAfterEnd
+                              activity.persistCADAfterEnd
                                 ? "text-green-600 bg-green-50 hover:bg-green-100"
                                 : "text-gray-500 bg-gray-50 hover:bg-gray-100"
                             }`}
                             title={
-                              activity.persistAfterEnd
+                              activity.persistCADAfterEnd
                                 ? t(
-                                    "activitiesPanel.visibility.persistAfterEnd"
+                                    "activitiesPanel.visibility.persistCADAfterEnd"
                                   )
                                 : t("activitiesPanel.visibility.hideAfterEnd")
                             }
                           >
-                            {activity.persistAfterEnd ? (
+                            {activity.persistCADAfterEnd ? (
                               <ToggleRight className="w-4 h-4 text-green-500" />
                             ) : (
                               <ToggleLeft className="w-4 h-4 text-gray-400" />
@@ -547,12 +547,12 @@ const ActivitiesCADPanel: React.FC<ActivitiesCADPanelProps> = ({
                         {/* Timeline Status Badge */}
                         <div
                           className={`text-xs px-2 py-1 rounded ${
-                            activity.persistAfterEnd
+                            activity.persistCADAfterEnd
                               ? "bg-green-100 text-green-700"
                               : "bg-gray-100 text-gray-500"
                           }`}
                         >
-                          {activity.persistAfterEnd
+                          {activity.persistCADAfterEnd
                             ? t("activitiesPanel.visibility.visible")
                             : t("activitiesPanel.visibility.hidden")}
                         </div>
@@ -691,7 +691,7 @@ const ActivitiesCADPanel: React.FC<ActivitiesCADPanelProps> = ({
           </div>
           <div>
             {t("activitiesPanel.footer.notPersistedActivities")}:
-            {activities.filter((a) => !a.persistAfterEnd).length}
+            {activities.filter((a) => !a.persistCADAfterEnd).length}
           </div>
           {isolatedActivity && (
             <div className="mt-1 text-orange-600">
