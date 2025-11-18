@@ -56,7 +56,6 @@ const ActivitiesCADPanel: React.FC<ActivitiesCADPanelProps> = ({
 }) => {
   const { canWrite, isAdmin } = useAuth();
   const { t } = useTranslation();
-  console.log("🚀 ~ ActivitiesPanel ~ activities:", activities);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const activitiesListRef = useRef(null);
   const [visibilityState, setVisibilityState] = useState<{
@@ -164,7 +163,6 @@ const ActivitiesCADPanel: React.FC<ActivitiesCADPanelProps> = ({
   const handleLink = (uid: string) => {
     // Find the current activity to check its current linked state
     const currentActivity = activities.find((a) => a.activityUID === uid);
-    console.log("🚀 ~ handleLink ~ currentActivity:", currentActivity);
     const hasExistingLinks =
       (currentActivity?.cadLinkedModelIds ?? []).length > 0;
 
@@ -241,20 +239,11 @@ const ActivitiesCADPanel: React.FC<ActivitiesCADPanelProps> = ({
       return;
     }
     isolateItem(activity.cadLinkedModelIds ?? []);
-    console.log(
-      "🚀 ~ handleIsolateItem ~ activity.cadLinkedModelIds:",
-      activity.cadLinkedModelIds
-    );
 
     setIsolatedActivity([activity.activityUID!]);
   };
 
   const handleResetIsolation = () => {
-    console.log(
-      "🚀 ~ handleResetIsolation ~ isolatedActivity:",
-      isolatedActivity
-    );
-
     if (isolatedActivity?.length) {
       // Find all matching activities
       const matchedActivities = activities.filter((a) =>
@@ -281,7 +270,7 @@ const ActivitiesCADPanel: React.FC<ActivitiesCADPanelProps> = ({
     );
     const localIds = linkedActiives.flatMap((x) => x.cadLinkedModelIds);
     const activityUIDs = linkedActiives.flatMap((x) => x.activityUID!);
-    console.log("🚀 ~ showLinkedShapeActivities ~ localIds:", localIds);
+
     setIsolatedActivity(activityUIDs);
     handleVisibilty(localIds, true);
   };

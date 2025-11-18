@@ -20,6 +20,7 @@ import ActivitiesCADPanel from "./components/ActivitiesCADPanel";
 import toast from "react-hot-toast";
 import TimelineScheduling from "../IFCPlan/components/TimelineScheduling";
 import TimelineSchedulingCAD from "./components/TimeShedulingCAD";
+import AutomaticCADLinkingModal from "../IFCPlan/components/AutomaticCADLinkingModal";
 
 declare const Autodesk: any;
 const formatDateShort = (date: Date): string => {
@@ -39,7 +40,7 @@ const CADViewer = () => {
   const [error, setError] = useState<string | null>(null);
   const viewerRef = useRef<Autodesk.Viewing.GuiViewer3D | null>(null);
 
-  const [activities, setActivities] = useState<ActivityModel[]>();
+  const [activities, setActivities] = useState<ActivityModel[]>([]);
   const [selectedObjectIds, setSelectedObjectIds] = useState<string[]>();
   const { i18n } = useTranslation();
 
@@ -63,7 +64,6 @@ const CADViewer = () => {
   useEffect(() => {
     waitForAutodesk();
     const viewer = viewerRef.current;
-    console.log("🚀 ~ CADViewer ~ viewer:", viewer);
 
     if (!viewer) return;
 
@@ -73,12 +73,10 @@ const CADViewer = () => {
         return;
       }
       const dbIdArray = selSet.dbIdArray;
-      console.log("Selected object IDs:", event);
+
       if (dbIdArray && dbIdArray.length > 0) {
-        console.log("Selected object IDs:", dbIdArray);
         setSelectedObjectIds(dbIdArray);
       } else {
-        console.log("Nothing selected");
         setSelectedObjectIds([]);
       }
     };
@@ -113,65 +111,53 @@ const CADViewer = () => {
   //   currentAcitivtyRef.current = id;
   // };
 
-  const getBlocksWithIds = (
+  const getBlockReferences = (
     viewer: Autodesk.Viewing.GuiViewer3D
   ): Promise<any[]> => {
     return new Promise((resolve, reject) => {
       const model = viewer.model;
+      if (!model) return reject("No model loaded");
 
-      if (!model) {
-        reject(new Error("No model loaded"));
-        return;
-      }
-
-      // Correct way to get the instance tree
       model.getObjectTree((tree) => {
-        if (!tree) {
-          reject(new Error("Object tree not available"));
-          return;
-        }
+        if (!tree) return reject("Object tree not available");
 
-        try {
-          const rootId = tree.getRootId();
-          const allDbIds: number[] = [];
+        const rootId = tree.getRootId();
+        const allDbIds: number[] = [];
 
-          // Enumerate all nodes
-          tree.enumNodeChildren(
-            rootId,
-            (dbId) => {
-              allDbIds.push(dbId);
-            },
-            true
-          ); // true = recursive
+        // Collect all dbIds
+        tree.enumNodeChildren(
+          rootId,
+          (dbId) => {
+            allDbIds.push(dbId);
+          },
+          true
+        );
 
-          console.log(`📊 Collected ${allDbIds.length} node IDs`);
+        if (allDbIds.length === 0) return resolve([]);
 
-          if (allDbIds.length === 0) {
-            resolve([]);
-            return;
-          }
+        // Get only block references using bulk properties
+        model.getBulkProperties(
+          allDbIds,
+          ["Block Name", "Category", "Type", "AutoCAD Block"],
+          (results) => {
+            const blockRefs = results.filter((item) =>
+              item.properties?.some(
+                (p) =>
+                  (p.displayName === "Block Name" ||
+                    p.displayName === "AutoCAD Block" ||
+                    p.displayName === "Category" ||
+                    p.displayName === "Type") &&
+                  (p.displayValue === "BlockReference" ||
+                    (typeof p.displayValue === "string" &&
+                      p.displayValue.includes("Block")))
+              )
+            );
 
-          // Get properties for all elements
-          model.getBulkProperties(
-            allDbIds,
-            {},
-            (results) => {
-              console.log(
-                "📦 Successfully retrieved properties for",
-                results.length,
-                "blocks"
-              );
-              resolve(results);
-            },
-            (error) => {
-              console.error("❌ Error in getBulkProperties:", error);
-              reject(new Error(`Failed to get bulk properties: ${error}`));
-            }
-          );
-        } catch (error) {
-          console.error("❌ Error during tree traversal:", error);
-          reject(error);
-        }
+            console.log("📦 Found block references:", blockRefs.length);
+            resolve(blockRefs);
+          },
+          (error) => reject(error)
+        );
       });
     });
   };
@@ -230,7 +216,7 @@ const CADViewer = () => {
             console.log("✅ Geometry fully loaded!");
 
             // Get blocks after geometry is loaded
-            getBlocksWithIds(viewer)
+            getBlockReferences(viewer)
               .then((blocks) => {
                 console.log("📊 Total blocks:", blocks.length);
                 blocks.forEach((block) => {
@@ -363,11 +349,15 @@ const CADViewer = () => {
               handleVisibilty(localId, visibile)
             }
             AutomaticLinkingLogic={
-              <AutomaticLinkingModal
-                setActivities={() => {}}
-                activities={[]}
-                modelRef={{}}
-              />
+              viewerRef.current ? (
+                <AutomaticCADLinkingModal
+                  setActivities={setActivities}
+                  activities={activities}
+                  viewer={viewerRef.current}
+                />
+              ) : (
+                <Spinner />
+              )
             }
           />
         )}
