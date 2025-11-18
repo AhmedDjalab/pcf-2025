@@ -193,7 +193,7 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
       return;
     }
 
-    setIfcUploading(true);
+    setCADUploading(true);
 
     try {
       setCADFileName(file.name);
@@ -237,12 +237,12 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
       }
     } catch (error) {
       console.error("Error uploading CAD file:", error);
-      setIfcError(
+      setCADError(
         t("errors.cadUploadFailed") ||
           "Failed to upload CAD file. Please try again."
       );
     } finally {
-      setIfcUploading(false);
+      setCADUploading(false);
     }
   };
 
@@ -419,357 +419,42 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
             />
           </div>
 
-          {/* IFC File Upload Section */}
-          <div className="mb-4">
-            <label
-              htmlFor="ifcFile"
-              className="block mb-2 text-sm font-bold text-gray-700 dark:text-white"
-            >
-              {t("projectForm.ifcFile") || "IFC File"}
-              <span className="ml-2 text-xs text-gray-500">
-                ({t("projectForm.optional") || "Optional"})
-              </span>
-            </label>
+          <FileUploadSection
+            label={t("projectForm.ifcFile")}
+            optional={t("projectForm.optional")}
+            fileUrl={ifcFileUrl}
+            uploading={ifcUploading}
+            uploadLabel="IFC File"
+            uploadOnlyLabel={t("projectForm.clickToUploadIfc")}
+            removeFile={handleRemoveIfcFile}
+            handleUpload={handleIfcFileUpload}
+            error={ifcError}
+            success={ifcSuccess}
+            accept=".ifc"
+            projectTitle={projectTitle}
+            canWrite={canWrite}
+            isAdmin={isAdmin}
+            t={t}
+          />
 
-            {ifcFileUrl ? (
-              // Show uploaded file
-              <div className="relative p-4 border-2 border-green-300 border-dashed rounded-lg dark:border-green-600 bg-green-50 dark:bg-green-900/20">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex items-center justify-center w-8 h-8 bg-green-500 rounded-full">
-                      <svg
-                        className="w-4 h-4 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        ></path>
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-green-700 dark:text-green-300">
-                        {t("projectForm.ifcFileUploaded") ||
-                          "IFC File Uploaded"}
-                      </p>
-                      <p className="max-w-xs text-xs text-green-600 truncate dark:text-green-400">
-                        {typeof ifcFileUrl === "string"
-                          ? ifcFileUrl.replace(/\\/g, "/").split("/").pop()
-                          : "File uploaded successfully"}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleRemoveIfcFile}
-                    disabled={!canWrite && !isAdmin}
-                    className="text-red-500 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={t("projectForm.removeFile") || "Remove file"}
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      ></path>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            ) : (
-              // Upload area
-              <div className="relative">
-                <label
-                  className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
-                    ifcUploading || (!canWrite && !isAdmin)
-                      ? "cursor-not-allowed opacity-50"
-                      : ""
-                  }`}
-                >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    {ifcUploading ? (
-                      <>
-                        <Spinner height="32" width="32" />
-                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                          {t("projectForm.uploadingIfcFile") ||
-                            "Uploading IFC file..."}
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <svg
-                          className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                          ></path>
-                        </svg>
-                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                          <span className="font-semibold">
-                            {t("projectForm.clickToUploadIfc") ||
-                              "Click to upload IFC file"}
-                          </span>
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {t("projectForm.ifcFilesOnly") || "IFC files only"}
-                        </p>
-                      </>
-                    )}
-                  </div>
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept=".ifc"
-                    onChange={(e) =>
-                      e.target.files?.[0] &&
-                      handleIfcFileUpload(e.target.files[0])
-                    }
-                    disabled={
-                      ifcUploading ||
-                      !projectTitle.trim() ||
-                      (!canWrite && !isAdmin)
-                    }
-                  />
-                </label>
+          <FileUploadSection
+            label={t("projectForm.cadFile")}
+            optional={t("projectForm.optional")}
+            fileUrl={cadFileUrl}
+            uploading={cadUploading}
+            uploadLabel="CAD File"
+            uploadOnlyLabel={t("projectForm.clickToUploadCAD")}
+            removeFile={handleRemoveCADFile}
+            handleUpload={handleCADFileUpload}
+            error={cadError}
+            success={cadSuccess}
+            accept=".dwg"
+            projectTitle={projectTitle}
+            canWrite={canWrite}
+            isAdmin={isAdmin}
+            t={t}
+          />
 
-                {!projectTitle.trim() && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
-                    <p className="px-4 text-sm text-center text-white">
-                      {t("projectForm.enterProjectTitleFirst") ||
-                        "Enter project title first"}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Error/Success Messages */}
-            {ifcError && (
-              <div className="flex items-center p-3 mt-2 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-800/20 dark:text-red-400">
-                <svg
-                  className="flex-shrink-0 w-4 h-4 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
-                <span>{ifcError}</span>
-              </div>
-            )}
-
-            {ifcSuccess && (
-              <div className="flex items-center p-3 mt-2 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-800/20 dark:text-green-400">
-                <svg
-                  className="flex-shrink-0 w-4 h-4 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5v2.25a.75.75 0 001.5 0V10.5a.75.75 0 00-.75-.75H9z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
-                <span>{ifcSuccess}</span>
-              </div>
-            )}
-          </div>
-
-          {/* CAD File Upload Section */}
-          <div className="mb-4">
-            <label
-              htmlFor="cadFile"
-              className="block mb-2 text-sm font-bold text-gray-700 dark:text-white"
-            >
-              {t("projectForm.cadFile") || "CAD File"}
-              <span className="ml-2 text-xs text-gray-500">
-                ({t("projectForm.optional") || "Optional"})
-              </span>
-            </label>
-
-            {cadFileUrl ? (
-              // Show uploaded file
-              <div className="relative p-4 border-2 border-green-300 border-dashed rounded-lg dark:border-green-600 bg-green-50 dark:bg-green-900/20">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex items-center justify-center w-8 h-8 bg-green-500 rounded-full">
-                      <svg
-                        className="w-4 h-4 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        ></path>
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-green-700 dark:text-green-300">
-                        {t("projectForm.cadFileUploaded") ||
-                          "CAD File Uploaded"}
-                      </p>
-                      <p className="max-w-xs text-xs text-green-600 truncate dark:text-green-400">
-                        {typeof cadFileUrl === "string"
-                          ? cadFileUrl.replace(/\\/g, "/").split("/").pop()
-                          : "File uploaded successfully"}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleRemoveCADFile}
-                    disabled={!canWrite && !isAdmin}
-                    className="text-red-500 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={t("projectForm.removeFile") || "Remove file"}
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      ></path>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            ) : (
-              // Upload area
-              <div className="relative">
-                <label
-                  className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
-                    cadUploading || (!canWrite && !isAdmin)
-                      ? "cursor-not-allowed opacity-50"
-                      : ""
-                  }`}
-                >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    {cadUploading ? (
-                      <>
-                        <Spinner height="32" width="32" />
-                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                          {t("projectForm.uploadingIfcFile") ||
-                            "Uploading IFC file..."}
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <svg
-                          className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                          ></path>
-                        </svg>
-                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                          <span className="font-semibold">
-                            {t("projectForm.clickToUploadCAD") ||
-                              "Click to upload CAD file"}
-                          </span>
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {t("projectForm.CADFilesOnly") || "CAD files only"}
-                        </p>
-                      </>
-                    )}
-                  </div>
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept=".dwg"
-                    onChange={(e) =>
-                      e.target.files?.[0] &&
-                      handleCADFileUpload(e.target.files[0])
-                    }
-                    disabled={
-                      cadUploading ||
-                      !projectTitle.trim() ||
-                      (!canWrite && !isAdmin)
-                    }
-                  />
-                </label>
-
-                {!projectTitle.trim() && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
-                    <p className="px-4 text-sm text-center text-white">
-                      {t("projectForm.enterProjectTitleFirst") ||
-                        "Enter project title first"}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Error/Success Messages */}
-            {ifcError && (
-              <div className="flex items-center p-3 mt-2 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-800/20 dark:text-red-400">
-                <svg
-                  className="flex-shrink-0 w-4 h-4 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
-                <span>{ifcError}</span>
-              </div>
-            )}
-
-            {ifcSuccess && (
-              <div className="flex items-center p-3 mt-2 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-800/20 dark:text-green-400">
-                <svg
-                  className="flex-shrink-0 w-4 h-4 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5v2.25a.75.75 0 001.5 0V10.5a.75.75 0 00-.75-.75H9z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
-                <span>{ifcSuccess}</span>
-              </div>
-            )}
-          </div>
           <div className="mb-4">
             <label
               htmlFor="projectFileType"
@@ -849,6 +534,170 @@ const ProjectSettingForm = ({ setCurrentStep }: MultiStepFormProps) => {
             </button>
           </div>
         </form>
+      )}
+    </div>
+  );
+};
+
+const FileUploadSection = ({
+  label,
+  optional,
+  fileUrl,
+  uploading,
+  uploadLabel,
+  uploadOnlyLabel,
+  removeFile,
+  handleUpload,
+  error,
+  success,
+  accept,
+  projectTitle,
+  canWrite,
+  isAdmin,
+  t,
+}) => {
+  const disabled = uploading || !projectTitle.trim() || (!canWrite && !isAdmin);
+
+  return (
+    <div className="mb-4">
+      <label className="block mb-2 text-sm font-bold text-gray-700 dark:text-white">
+        {label}
+        {optional && (
+          <span className="ml-2 text-xs text-gray-500">({optional})</span>
+        )}
+      </label>
+
+      {/* File already uploaded */}
+      {fileUrl ? (
+        <div className="relative p-4 border-2 border-green-300 border-dashed rounded-lg dark:border-green-600 bg-green-50 dark:bg-green-900/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center justify-center w-8 h-8 bg-green-500 rounded-full">
+                <svg
+                  className="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-green-700 dark:text-green-300">
+                  {uploadLabel} Uploaded
+                </p>
+                <p className="max-w-xs text-xs text-green-600 truncate dark:text-green-400">
+                  {typeof fileUrl === "string"
+                    ? fileUrl.replace(/\\/g, "/").split("/").pop()
+                    : t("projectForm.fileUploaded") || "File uploaded"}
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={removeFile}
+              disabled={!canWrite && !isAdmin}
+              className="text-red-500 hover:text-red-700 disabled:opacity-50"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      ) : (
+        // Upload UI
+        <div className="relative">
+          <label
+            className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
+              disabled ? "cursor-not-allowed opacity-50" : ""
+            }`}
+          >
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              {uploading ? (
+                <>
+                  <Spinner height="32" width="32" />
+                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    {t("projectForm.uploading") ||
+                      `Uploading ${uploadLabel}...`}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
+                  </svg>
+
+                  <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                    {uploadOnlyLabel}
+                  </p>
+
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {uploadOnlyLabel.replace("Click to upload ", "") + " only"}
+                  </p>
+                </>
+              )}
+            </div>
+
+            <input
+              type="file"
+              className="hidden"
+              accept={accept}
+              disabled={disabled}
+              onChange={(e) =>
+                e.target.files?.[0] && handleUpload(e.target.files[0])
+              }
+            />
+          </label>
+
+          {!projectTitle.trim() && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
+              <p className="px-4 text-sm text-center text-white">
+                {t("projectForm.enterProjectTitleFirst")}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Messages */}
+      {error && (
+        <div className="flex items-center p-3 mt-2 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-800/20 dark:text-red-400">
+          <span>{error}</span>
+        </div>
+      )}
+
+      {success && (
+        <div className="flex items-center p-3 mt-2 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-800/20 dark:text-green-400">
+          <span>{success}</span>
+        </div>
       )}
     </div>
   );

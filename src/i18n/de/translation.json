@@ -498,5 +498,22 @@
       "normal": "Normal",
       "slow": "Langsam"
     }
+  },
+  "projectForm": {
+    "ifcFile": "IFC-Datei",
+    "optional": "Optional",
+    "clickToUploadIfc": "Klicken Sie hier, um eine IFC-Datei hochzuladen",
+    "ifcFilesOnly": "Nur IFC-Dateien sind erlaubt",
+
+    "cadFile": "CAD-Datei",
+    "clickToUploadCAD": "Klicken Sie hier, um eine CAD-Datei hochzuladen",
+    "CADFilesOnly": "Nur CAD-Dateien sind erlaubt",
+    "uploading": "Hochladen läuft...",
+
+    "enterProjectTitleFirst": "Bitte zuerst den Projekttitel eingeben"
+  },
+  "success": {
+    "CadFileUploaded": "Die CAD-Datei wurde erfolgreich hochgeladen.",
+    "ifcFileUploaded": "Die IFC-Datei wurde erfolgreich hochgeladen."
   }
 }

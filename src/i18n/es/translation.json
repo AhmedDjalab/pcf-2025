@@ -499,5 +499,22 @@
       "normal": "Normal",
       "slow": "Lento"
     }
+  },
+  "projectForm": {
+    "ifcFile": "Archivo IFC",
+    "optional": "Opcional",
+    "clickToUploadIfc": "Haz clic para subir un archivo IFC",
+    "ifcFilesOnly": "Solo se permiten archivos IFC",
+
+    "cadFile": "Archivo CAD",
+    "clickToUploadCAD": "Haz clic para subir un archivo CAD",
+    "CADFilesOnly": "Solo se permiten archivos CAD",
+    "uploading": "Subiendo archivo...",
+
+    "enterProjectTitleFirst": "Por favor, introduce primero el título del proyecto"
+  },
+  "success": {
+    "CadFileUploaded": "El archivo CAD se ha subido correctamente.",
+    "ifcFileUploaded": "El archivo IFC se ha subido correctamente."
   }
 }

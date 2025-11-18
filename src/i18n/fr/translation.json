@@ -447,7 +447,11 @@
     "uploadingIfcFile": "Téléchargement du fichier IFC...",
     "clickToUploadIfc": "Cliquez pour télécharger un fichier IFC",
     "ifcFilesOnly": "Fichiers IFC uniquement",
-    "enterProjectTitleFirst": "Entrez d’abord le titre du projet"
+    "enterProjectTitleFirst": "Entrez d’abord le titre du projet",
+    "uploading": "Téléchargement en cours...",
+    "cadFile": "Fichier CAD",
+    "clickToUploadCAD": "Cliquez pour importer un fichier CAD",
+    "CADFilesOnly": "Seuls les fichiers CAD sont autorisés"
   },
   "errors": {
     "invalidIfcFile": "Veuillez télécharger un fichier IFC valide (extension .ifc uniquement)",
@@ -455,7 +459,8 @@
     "ifcUploadFailed": "Échec du téléchargement du fichier IFC. Veuillez réessayer."
   },
   "success": {
-    "ifcFileUploaded": "Fichier IFC téléchargé avec succès !"
+    "ifcFileUploaded": "Fichier IFC téléchargé avec succès !",
+    "CadFileUploaded": "Le fichier CAD a été téléchargé avec succès."
   },
 
   "activitiesPanel": {

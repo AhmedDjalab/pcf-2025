@@ -503,5 +503,22 @@
       "normal": "通常",
       "slow": "遅い"
     }
+  },
+  "projectForm": {
+    "ifcFile": "IFCファイル",
+    "optional": "任意",
+    "clickToUploadIfc": "IFCファイルをアップロードするにはクリックしてください",
+    "ifcFilesOnly": "IFCファイルのみが許可されています",
+    "uploading": "アップロード中...",
+
+    "cadFile": "CADファイル",
+    "clickToUploadCAD": "CADファイルをアップロードするにはクリックしてください",
+    "CADFilesOnly": "CADファイルのみが許可されています",
+
+    "enterProjectTitleFirst": "まずプロジェクト名を入力してください"
+  },
+  "success": {
+    "CadFileUploaded": "CADファイルが正常にアップロードされました。",
+    "ifcFileUploaded": "IFCファイルが正常にアップロードされました。"
   }
 }

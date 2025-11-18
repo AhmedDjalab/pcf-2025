@@ -516,5 +516,22 @@
       "normal": "Normal",
       "slow": "Slow"
     }
+  },
+  "projectForm": {
+    "ifcFile": "IFC File",
+    "optional": "Optional",
+    "clickToUploadIfc": "Click to upload IFC file",
+    "ifcFilesOnly": "Only IFC files are allowed",
+
+    "cadFile": "CAD File",
+    "clickToUploadCAD": "Click to upload CAD file",
+    "CADFilesOnly": "Only CAD files are allowed",
+    "uploading": "Uploading...",
+
+    "enterProjectTitleFirst": "Please enter the project title first"
+  },
+  "success": {
+    "CadFileUploaded": "CAD file uploaded successfully.",
+    "ifcFileUploaded": "IFC file uploaded successfully."
   }
 }
